@@ -1,54 +1,157 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoIcon } from "./logo-icon";
 
 export function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+    setSolutionsOpen(false);
+  }, [pathname]);
+
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center px-6 md:px-12 py-8 w-full max-w-[1800px] mx-auto"
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <Link
-        href="/"
-        className="group flex items-center gap-3 liquid-glass px-4 py-2 rounded-[4px] hover:bg-white/[0.05] transition-colors"
-        aria-label="Muditek homepage"
+    <>
+      <nav
+        className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1800px] mx-auto"
+        role="navigation"
+        aria-label="Main navigation"
       >
-        <LogoIcon size={22} />
-        <span className="text-[12px] font-black tracking-[0.2em] text-foreground uppercase pt-[1px]">
-          MUDITEK
-        </span>
-      </Link>
-
-      <div className="hidden md:flex items-center gap-12">
-        <div className="relative group">
-          <button className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer">
-            Solutions
-          </button>
-          <div className="absolute top-full left-0 mt-3 w-52 py-3 bg-card border border-white/[0.05] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl z-50 rounded-[4px]">
-            <Link href="/mudiagent" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.03] transition-colors">
-              mudiAgent
-            </Link>
-            <Link href="/revenue-machine" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.03] transition-colors">
-              Pipeline Diagnostic
-            </Link>
-            <Link href="/pe-ops" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.03] transition-colors">
-              Operational Infrastructure
-            </Link>
-          </div>
-        </div>
-        <Link href="/#proof" className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-          About
+        {/* Logo */}
+        <Link
+          href="/"
+          className="group flex items-center gap-3 liquid-glass px-4 py-2 rounded-[4px] hover:bg-white/[0.05] transition-colors relative z-50"
+          aria-label="Muditek homepage"
+        >
+          <LogoIcon size={22} />
+          <span className="text-[12px] font-black tracking-[0.2em] text-foreground uppercase pt-[1px]">
+            MUDITEK
+          </span>
         </Link>
-      </div>
 
-      <Link
-        href="#contact"
-        className="hidden md:flex px-6 py-2.5 rounded-[2px] text-[10px] font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-10">
+          {/* Solutions dropdown */}
+          <div className="relative group">
+            <button className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
+              Solutions
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity mt-[1px]">
+                <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div className="absolute top-full left-0 mt-3 w-56 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
+              <Link href="/mudiagent" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                mudiAgent
+              </Link>
+              <Link href="/revenue-machine" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Pipeline Diagnostic
+              </Link>
+              <Link href="/pe-ops" className="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Operational Infrastructure
+              </Link>
+            </div>
+          </div>
+
+          <Link href="/about" className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            About
+          </Link>
+          <Link href="/newsletter" className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            Newsletter
+          </Link>
+        </div>
+
+        {/* Desktop CTA */}
+        <a
+          href="mailto:ghiles@muditek.com"
+          className="hidden md:flex px-6 py-2.5 rounded-[2px] text-[10px] font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+        >
+          Book a Call
+        </a>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="md:hidden relative z-50 w-10 h-10 flex flex-col items-center justify-center gap-[5px]"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+        >
+          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "rotate-45 translate-y-[6.5px]" : ""}`} />
+          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0" : "opacity-100"}`} />
+          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "-rotate-45 -translate-y-[6.5px]" : ""}`} />
+        </button>
+      </nav>
+
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 z-40 bg-background/95 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+          mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
       >
-        Book a Call
-      </Link>
-    </nav>
+        <div className="flex flex-col items-start justify-center h-full px-10 gap-1">
+          {/* Solutions group */}
+          <button
+            onClick={() => setSolutionsOpen(!solutionsOpen)}
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex items-center gap-3 ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "100ms" : "0ms" }}
+          >
+            Solutions
+            <svg width="14" height="14" viewBox="0 0 8 8" fill="none" className={`transition-transform duration-300 ${solutionsOpen ? "rotate-180" : ""}`}>
+              <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-48 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
+            <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
+              <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
+              <Link href="/revenue-machine" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Pipeline Diagnostic</Link>
+              <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
+            </div>
+          </div>
+
+          <Link
+            href="/about"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "180ms" : "0ms" }}
+          >
+            About
+          </Link>
+
+          <Link
+            href="/newsletter"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "260ms" : "0ms" }}
+          >
+            Newsletter
+          </Link>
+
+          <a
+            href="mailto:ghiles@muditek.com"
+            className={`mt-8 px-8 py-4 bg-foreground text-background text-[11px] font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "340ms" : "0ms" }}
+          >
+            Book a Call
+          </a>
+        </div>
+      </div>
+    </>
   );
 }

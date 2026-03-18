@@ -25,9 +25,10 @@ export function Footer() {
             </div>
             <div>
               <span className="block text-[9px] font-black tracking-[0.25em] uppercase text-foreground/25 mb-4">Company</span>
-              <Link href="/#proof" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors mb-2.5 font-medium">About</Link>
+              <Link href="/about" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors mb-2.5 font-medium">About</Link>
+              <Link href="/newsletter" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors mb-2.5 font-medium">Newsletter</Link>
               <a href="mailto:ghiles@muditek.com" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors mb-2.5 font-medium">Contact</a>
-              <a href="#" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors font-medium">LinkedIn</a>
+              <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="block text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors font-medium">LinkedIn</a>
             </div>
             <div>
               <span className="block text-[9px] font-black tracking-[0.25em] uppercase text-foreground/25 mb-4">Legal</span>

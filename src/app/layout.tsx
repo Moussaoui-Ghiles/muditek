@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { WhatsAppBubble } from "@/components/whatsapp-bubble";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,13 +11,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Muditek — AI Systems That Eliminate Operational Waste",
+  title: "Muditek — Redefining the Future of Business with AI Systems",
   description:
-    "On-premises AI systems for telecom, B2B SaaS, and investment firms. We find where you're bleeding money and build the systems that fix it.",
+    "We diagnose where companies lose money to manual operations and build AI systems that fix it. On-premises AI for telecom, pipeline diagnostics for B2B SaaS, operational infrastructure for investment firms.",
   openGraph: {
-    title: "Muditek — AI Systems That Eliminate Operational Waste",
+    title: "Muditek — Redefining the Future of Business with AI Systems",
     description:
-      "We find where you're bleeding money — and build the AI systems that fix it.",
+      "Your best people are stuck doing work a machine should handle. We find where you're bleeding money — and build the systems that fix it.",
     type: "website",
   },
 };
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.variable} font-sans noise`}>{children}</body>
+      <body className={`${inter.variable} font-sans noise`}>
+        {children}
+        <WhatsAppBubble />
+      </body>
     </html>
   );
 }

@@ -16,7 +16,7 @@ const config: Config = {
         foreground: "hsl(210 15% 92%)",
         card: "hsl(215 35% 7%)",
         primary: {
-          DEFAULT: "#06B6D4",
+          DEFAULT: "#F59E0B",
           foreground: "hsl(210 50% 4%)",
         },
         "hero-sub": "hsl(210 15% 45%)",

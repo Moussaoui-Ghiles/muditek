@@ -79,10 +79,10 @@ export default function Home() {
            </div>
            
            <h1 className="text-5xl sm:text-7xl lg:text-[100px] font-black tracking-[-0.04em] leading-[0.9] text-foreground text-balance drop-shadow-2xl">
-              Your best people are stuck doing work <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">a machine should handle.</span>
+              Redefining the Future of Business with Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">AI Systems.</span>
            </h1>
            <p className="mt-8 text-lg md:text-xl font-light text-hero-sub max-w-2xl leading-relaxed">
-             We find where you&apos;re bleeding money — and build the AI systems that fix it.
+             Your best people are stuck doing work a machine should handle. We find where you&apos;re bleeding money — and build the systems that fix it.
            </p>
            
            <div className="mt-14 flex flex-col sm:flex-row items-center gap-5">

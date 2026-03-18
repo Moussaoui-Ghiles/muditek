@@ -1,0 +1,25 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="top-grad" gradientUnits="userSpaceOnUse" x1="150" y1="50" x2="150" y2="150">
+      <stop offset="0%" stop-color="#C8D4E0" /><stop offset="100%" stop-color="#8A9AAC" />
+    </linearGradient>
+    <linearGradient id="left-grad" gradientUnits="userSpaceOnUse" x1="150" y1="150" x2="63.3975" y2="200">
+      <stop offset="0%" stop-color="#7A8D9F" /><stop offset="100%" stop-color="#4A5A6A" />
+    </linearGradient>
+    <linearGradient id="right-grad" gradientUnits="userSpaceOnUse" x1="150" y1="150" x2="236.6025" y2="200">
+      <stop offset="0%" stop-color="#94A7BA" /><stop offset="100%" stop-color="#5A6D80" />
+    </linearGradient>
+    <mask id="m-cut">
+      <rect x="0" y="0" width="1000" height="1000" fill="white" />
+      <path d="M 142 40 V 135 L 80 170.7957 V 260 H 110 V 176.906 L 150 200 L 190 176.906 V 260 H 220 V 170.7957 L 158 135 V 40 Z" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="300" height="300" fill="#0F1419" />
+
+  <g mask="url(#m-cut)">
+    <path d="M 150 150 L 63.3975 100 L 150 50 L 236.6025 100 Z" fill="url(#top-grad)" />
+    <path d="M 150 150 L 63.3975 100 L 63.3975 200 L 150 250 Z" fill="url(#left-grad)" />
+    <path d="M 150 150 L 236.6025 100 L 236.6025 200 L 150 250 Z" fill="url(#right-grad)" />
+  </g>
+</svg>

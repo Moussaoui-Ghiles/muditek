@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -42,16 +43,16 @@ export default function RevenueMachinePage() {
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
             <div className="flex items-center gap-4 mb-8">
-              <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-400/70 flex items-center gap-3">
+              <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-emerald-400/70 flex items-center gap-3">
                 <span className="w-8 h-[1px] bg-emerald-400/50" />
                 Muditek / Pipeline Diagnostic
               </h2>
-              <span className="px-3 py-1 border border-emerald-500/20 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-400/80 rounded-[2px]">€50K Guarantee</span>
+              <span className="px-3 py-1 border border-emerald-500/20 text-[11px] font-black uppercase tracking-[0.2em] text-emerald-400/80 rounded-[2px]">€50K Guarantee</span>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 uppercase text-balance">
+            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance">
               You&apos;re losing money you already paid to <span className="text-emerald-400 italic font-medium">generate.</span>
             </h1>
           </ScrollReveal>
@@ -86,11 +87,17 @@ export default function RevenueMachinePage() {
         </div>
       </section>
 
+      {/* ══════ IMAGE BREAK ══════ */}
+      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
+        <Image src="/images/revenue-dashboard.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.3) saturate(1.4) hue-rotate(10deg) brightness(0.6)' }} aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+      </div>
+
       {/* ══════ WHY NOW ══════ */}
       <section className="py-20 w-full flex justify-center border-t border-b border-white/[0.02] bg-card/[0.2]">
         <div className="max-w-[1100px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h3 className="text-xl font-black uppercase tracking-[0.05em] text-foreground mb-8">And the window is closing.</h3>
+            <h3 className="text-xl font-black tracking-[0.05em] text-foreground mb-8">And the window is closing.</h3>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -101,7 +108,7 @@ export default function RevenueMachinePage() {
               <ScrollReveal key={item.title} delay={i * 80}>
                 <div className="border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
                   <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-emerald-400/80 mb-3">{item.title}</h4>
-                  <p className="text-sm text-foreground/50 font-light leading-relaxed">{item.body}</p>
+                  <p className="text-[15px] text-foreground/55 font-light leading-relaxed">{item.body}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -117,11 +124,11 @@ export default function RevenueMachinePage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-400/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-emerald-400/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-emerald-400/50" />
               The 5 Leaks
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 uppercase max-w-3xl">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 max-w-3xl">
               We find the leaks. In euros. With the <span className="text-emerald-400 italic font-medium">formulas.</span>
             </h3>
             <p className="text-base text-foreground/50 font-light leading-relaxed mb-16 max-w-2xl">
@@ -137,9 +144,9 @@ export default function RevenueMachinePage() {
                   <div className="flex items-start gap-6">
                     <span className="text-3xl font-black text-foreground/[0.06] shrink-0">{leak.num}</span>
                     <div>
-                      <h4 className="text-lg font-black uppercase tracking-[0.05em] text-foreground mb-2 group-hover:text-emerald-400 transition-colors">{leak.name}</h4>
-                      <p className="text-sm text-foreground/50 font-light leading-relaxed mb-3">{leak.example}</p>
-                      <code className="text-[10px] text-emerald-400/60 font-mono tracking-wider">{leak.formula}</code>
+                      <h4 className="text-lg font-black tracking-[0.05em] text-foreground mb-2 group-hover:text-emerald-400 transition-colors">{leak.name}</h4>
+                      <p className="text-[15px] text-foreground/55 font-light leading-relaxed mb-3">{leak.example}</p>
+                      <code className="text-[11px] text-emerald-400/60 font-mono tracking-wider">{leak.formula}</code>
                     </div>
                   </div>
                 </div>
@@ -154,11 +161,11 @@ export default function RevenueMachinePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-400/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-emerald-400/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-emerald-400/50" />
               Process
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16 uppercase">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
               Three phases. ROI at every <span className="text-emerald-400 italic font-medium">step.</span>
             </h3>
           </ScrollReveal>
@@ -170,15 +177,15 @@ export default function RevenueMachinePage() {
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/0 to-transparent group-hover:via-emerald-500/70 transition-all duration-[1.2s]" />
                   <div>
                     <span className="text-5xl font-black text-foreground/[0.06] block mb-6">{phase.num}</span>
-                    <h4 className="text-lg font-black uppercase tracking-[0.05em] text-foreground mb-1">{phase.title}</h4>
+                    <h4 className="text-lg font-black tracking-[0.05em] text-foreground mb-1">{phase.title}</h4>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[10px] font-mono text-emerald-400/80 tracking-wider">{phase.price}</span>
-                      <span className="text-[10px] font-mono text-foreground/30 tracking-wider">· {phase.time}</span>
+                      <span className="text-[11px] font-mono text-emerald-400/80 tracking-wider">{phase.price}</span>
+                      <span className="text-[11px] font-mono text-foreground/30 tracking-wider">· {phase.time}</span>
                     </div>
-                    <p className="text-sm text-foreground/50 font-light leading-relaxed">{phase.body}</p>
+                    <p className="text-[15px] text-foreground/55 font-light leading-relaxed">{phase.body}</p>
                   </div>
                   <div className="pt-6 mt-8 border-t border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-emerald-400/60 tracking-wider uppercase">{phase.metric}</span>
+                    <span className="text-[11px] font-mono text-emerald-400/60 tracking-wider uppercase">{phase.metric}</span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -194,11 +201,11 @@ export default function RevenueMachinePage() {
             <div className="doppelrand mx-auto mb-16 inline-block">
               <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400 pt-[1px]">€50K Guarantee</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400 pt-[1px]">€50K Guarantee</span>
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto uppercase">
+            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto">
               If we can&apos;t find €50K in annual leakage, <span className="text-emerald-400 italic font-medium">you pay nothing.</span>
             </h2>
 
@@ -206,7 +213,7 @@ export default function RevenueMachinePage() {
               At €800K+ ARR with 2+ sales reps, there are always leaks. We&apos;ve never missed the €50K threshold. Every number has a formula. Every formula uses your actual numbers. Not estimates — math.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-foreground/40 mb-16">
+            <div className="flex flex-wrap justify-center gap-4 text-[11px] font-mono uppercase tracking-wider text-foreground/40 mb-16">
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">B2B SaaS</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">€800K-1.8M ARR</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">2-5 Sales Reps</span>
@@ -220,16 +227,16 @@ export default function RevenueMachinePage() {
       <section className="py-24 md:py-32 w-full flex justify-center">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>
           </ScrollReveal>
           {FAQ.map((item, i) => (
             <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 ${i < FAQ.length - 1 ? "border-b border-white/[0.03]" : ""}`}>
+              <div className={`py-8 pl-5 border-l-2 border-emerald-500/20 hover:border-emerald-500/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
                 <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-sm text-foreground/50 font-light leading-relaxed max-w-2xl">{item.a}</p>
+                <p className="text-[15px] text-foreground/55 font-light leading-relaxed max-w-2xl">{item.a}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -240,7 +247,7 @@ export default function RevenueMachinePage() {
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
         <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance uppercase">
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance">
               You pay €2,000. We show you where you&apos;re losing <span className="text-emerald-400 italic font-medium">€80,000-180,000.</span>
             </h2>
             <p className="text-lg text-foreground/40 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
@@ -254,7 +261,7 @@ export default function RevenueMachinePage() {
             </a>
           </ScrollReveal>
         </div>
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[20vw] font-black tracking-[-0.05em] text-white/[0.01] pointer-events-none whitespace-nowrap z-0 select-none">
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[20vw] font-black tracking-[-0.05em] text-white/[0.015] pointer-events-none whitespace-nowrap z-0 select-none">
           DIAGNOSTIC
         </div>
       </section>

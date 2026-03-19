@@ -66,7 +66,7 @@ export default async function NewsletterPage() {
         <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-[900px] w-full px-6 md:px-12 relative z-10 text-center">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-8 flex items-center justify-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-8 flex items-center justify-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Newsletter
               <span className="w-8 h-[1px] bg-primary/50" />
@@ -74,7 +74,7 @@ export default async function NewsletterPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-8 uppercase text-balance">
+            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-8 text-balance">
               B2B <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">Agents</span>
             </h1>
           </ScrollReveal>
@@ -104,7 +104,7 @@ export default async function NewsletterPage() {
 
       {/* ══════ STATS BAR ══════ */}
       <section className="py-8 w-full flex justify-center border-t border-b border-white/[0.03] bg-card/[0.15]">
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-[10px] font-mono uppercase tracking-widest text-foreground/40">
+        <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-[11px] font-mono uppercase tracking-wider text-foreground/40">
           <span>5,300+ subscribers</span>
           <span className="hidden md:inline text-foreground/10">|</span>
           <span>40% open rate</span>
@@ -118,11 +118,11 @@ export default async function NewsletterPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Past Editions
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16 uppercase">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
               Every edition ships a <span className="text-primary italic font-medium">system.</span>
             </h3>
           </ScrollReveal>
@@ -138,7 +138,7 @@ export default async function NewsletterPage() {
                     className="group block h-full border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md p-8 rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
                   >
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
-                    <div className="text-[10px] font-mono text-foreground/30 tracking-wider mb-4">
+                    <div className="text-[11px] font-mono text-foreground/30 tracking-wider mb-4">
                       {formatDate(post.publish_date || post.created)}
                     </div>
                     <h4 className="text-base font-bold text-foreground/80 group-hover:text-foreground transition-colors leading-snug mb-3">
@@ -149,7 +149,7 @@ export default async function NewsletterPage() {
                         {post.subtitle}
                       </p>
                     )}
-                    <div className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 group-hover:text-primary transition-colors flex items-center gap-2">
+                    <div className="mt-6 text-[11px] font-black uppercase tracking-[0.2em] text-primary/70 group-hover:text-primary transition-colors flex items-center gap-2">
                       Read
                       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </div>
@@ -169,7 +169,7 @@ export default async function NewsletterPage() {
       <section className="py-32 w-full flex justify-center relative border-t border-white/[0.02] bg-card/[0.15] mesh-subtle">
         <div className="max-w-[800px] w-full px-6 text-center">
           <ScrollReveal>
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance uppercase">
+            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance">
               Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
             <p className="text-base text-foreground/50 max-w-xl mx-auto leading-relaxed font-light mb-12">

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LogoIcon } from "./logo-icon";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,7 +35,7 @@ export function Navbar() {
           className="group flex items-center gap-3 liquid-glass px-4 py-2 rounded-[4px] hover:bg-white/[0.05] transition-colors relative z-50"
           aria-label="Muditek homepage"
         >
-          <LogoIcon size={22} />
+          <Image src="/icon.svg" alt="" width={22} height={22} aria-hidden="true" />
           <span className="text-[12px] font-black tracking-[0.2em] text-foreground uppercase pt-[1px]">
             MUDITEK
           </span>

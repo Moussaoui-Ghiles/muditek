@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -29,23 +30,23 @@ const FAQ = [
 
 export default function PEOpsPage() {
   return (
-    <div className="bg-background min-h-[100dvh] text-foreground selection:bg-amber-500/20 flex flex-col items-center">
+    <div className="bg-background min-h-[100dvh] text-foreground selection:bg-sky-500/20 flex flex-col items-center">
       <Navbar />
 
       {/* ══════ HERO — FULL NARRATIVE FROM PE PDF ══════ */}
       <section className="pt-32 md:pt-44 pb-24 md:pb-32 w-full flex justify-center relative overflow-hidden">
-        <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-amber-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-sky-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-amber-400/70 mb-8 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-amber-400/50" />
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-sky-400/70 mb-8 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-sky-400/50" />
               Muditek / Operational Infrastructure
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 uppercase text-balance max-w-5xl">
-              Your team spends more time managing investor administration than managing <span className="text-amber-400 italic font-medium">investments.</span>
+            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance max-w-5xl">
+              Your team spends more time managing investor administration than managing <span className="text-sky-400 italic font-medium">investments.</span>
             </h1>
           </ScrollReveal>
 
@@ -66,7 +67,7 @@ export default function PEOpsPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-amber-500 text-background font-black text-[11px] uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <Link href="#contact" className="group relative px-10 py-5 bg-sky-500 text-background font-black text-[11px] uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   See the Demo
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -84,12 +85,12 @@ export default function PEOpsPage() {
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02] bg-card/[0.2]">
         <div className="max-w-[1100px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-amber-400/70 mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-amber-400/50" />
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-sky-400/70 mb-6 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-sky-400/50" />
               The Transformation
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-8 uppercase max-w-3xl">
-              Every process that takes hours now takes <span className="text-amber-400 italic font-medium">a few clicks.</span>
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-8 max-w-3xl">
+              Every process that takes hours now takes <span className="text-sky-400 italic font-medium">a few clicks.</span>
             </h3>
           </ScrollReveal>
           <ScrollReveal delay={80}>
@@ -102,17 +103,23 @@ export default function PEOpsPage() {
         </div>
       </section>
 
+      {/* ══════ IMAGE BREAK ══════ */}
+      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
+        <Image src="/images/pe-office.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.3) saturate(1.3) brightness(0.65)' }} aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+      </div>
+
       {/* ══════ CASE STUDY ══════ */}
       <section id="case-study" className="py-32 md:py-48 w-full flex justify-center relative">
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-amber-400/70 mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-amber-400/50" />
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-sky-400/70 mb-6 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-sky-400/50" />
               Case Study
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 uppercase max-w-3xl">
-              How we built this for a <span className="text-amber-400 italic font-medium">merchant banking firm.</span>
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 max-w-3xl">
+              How we built this for a <span className="text-sky-400 italic font-medium">merchant banking firm.</span>
             </h3>
             <p className="text-base text-foreground/50 font-light leading-relaxed mb-16 max-w-2xl">
               We built everything described above for a regulated merchant banking firm managing PE, VC, and real estate investments across multiple jurisdictions. Their team was spending 30+ hours per week on manual investor operations, and the workload grew with every new LP.
@@ -121,15 +128,15 @@ export default function PEOpsPage() {
 
           {/* Before/After Table */}
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl mb-10">
-            <div className="grid grid-cols-2 px-8 py-6 border-b border-white/[0.05] text-[10px] font-black uppercase tracking-[0.25em] text-foreground/40 bg-white/[0.01]">
+            <div className="grid grid-cols-2 px-8 py-6 border-b border-white/[0.05] text-[11px] font-black uppercase tracking-[0.2em] text-foreground/40 bg-white/[0.01]">
               <div>Before</div>
-              <div className="text-amber-400">After</div>
+              <div className="text-sky-400">After</div>
             </div>
             {CASE_STUDY.map((row, i) => (
               <ScrollReveal key={i} delay={i * 50}>
                 <div className={`group grid grid-cols-2 px-8 py-6 items-center stat-row cursor-default ${i < CASE_STUDY.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
                   <div className="text-[12px] text-foreground/40 pr-6 font-light">{row.before}</div>
-                  <div className="text-[12px] text-foreground/80 font-medium group-hover:text-amber-400 transition-colors">{row.after}</div>
+                  <div className="text-[12px] text-foreground/80 font-medium group-hover:text-sky-400 transition-colors">{row.after}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -146,7 +153,7 @@ export default function PEOpsPage() {
               ].map((m) => (
                 <div key={m.label} className="border border-white/[0.05] bg-card/[0.2] p-8 text-center rounded-[4px]">
                   <span className="text-3xl font-black text-foreground block mb-1 tracking-tight">{m.value}</span>
-                  <span className="text-[10px] font-mono text-foreground/40 tracking-widest uppercase">{m.label}</span>
+                  <span className="text-[11px] font-mono text-foreground/40 tracking-wider uppercase">{m.label}</span>
                 </div>
               ))}
             </div>
@@ -162,15 +169,15 @@ export default function PEOpsPage() {
 
       {/* ══════ HOW WE WORK ══════ */}
       <section className="py-32 md:py-48 w-full flex justify-center relative overflow-hidden border-t border-white/[0.02]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-amber-400/70 mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-amber-400/50" />
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-sky-400/70 mb-6 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-sky-400/50" />
               Process
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16 uppercase">
-              How we work with your <span className="text-amber-400 italic font-medium">firm.</span>
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
+              How we work with your <span className="text-sky-400 italic font-medium">firm.</span>
             </h3>
           </ScrollReveal>
 
@@ -182,17 +189,17 @@ export default function PEOpsPage() {
             ].map((phase, i) => (
               <ScrollReveal key={phase.title} delay={i * 100}>
                 <div className="group border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.4] backdrop-blur-md p-10 md:p-12 rounded-[4px] transition-all duration-500 card-lift">
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/0 to-transparent group-hover:via-amber-500/50 transition-all duration-[1.2s]" />
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/0 to-transparent group-hover:via-sky-500/50 transition-all duration-[1.2s]" />
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-                    <h4 className="text-xl font-black uppercase tracking-[0.05em] text-foreground">{phase.title}</h4>
+                    <h4 className="text-xl font-black tracking-[0.05em] text-foreground">{phase.title}</h4>
                     <div className="flex items-center gap-3">
-                      <span className="text-[11px] font-mono text-amber-400 tracking-wider">{phase.price}</span>
+                      <span className="text-[11px] font-mono text-sky-400 tracking-wider">{phase.price}</span>
                       <span className="text-[11px] font-mono text-foreground/30 tracking-wider">· {phase.time}</span>
                     </div>
                   </div>
                   <p className="text-base text-foreground/50 font-light leading-relaxed max-w-3xl">{phase.body}</p>
                   {phase.guarantee && (
-                    <p className="text-sm text-amber-400/70 mt-6 italic font-mono tracking-wider">{phase.guarantee}</p>
+                    <p className="text-sm text-sky-400/70 mt-6 italic font-mono tracking-wider">{phase.guarantee}</p>
                   )}
                 </div>
               </ScrollReveal>
@@ -202,11 +209,11 @@ export default function PEOpsPage() {
           {/* What You Own */}
           <ScrollReveal delay={300}>
             <div className="border border-white/[0.05] bg-card/[0.2] p-10 mt-6 rounded-[4px]">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/60 mb-6">What You Own</h4>
+              <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground/60 mb-6">What You Own</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {["Complete source code", "Your database, your infrastructure", "No subscription fees", "No per-seat licensing", "No vendor lock-in", "Extend or modify independently"].map((item) => (
                   <span key={item} className="text-[11px] text-foreground/50 font-light flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />{item}
+                    <span className="w-1 h-1 rounded-full bg-sky-400 shrink-0" />{item}
                   </span>
                 ))}
               </div>
@@ -222,16 +229,16 @@ export default function PEOpsPage() {
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>
           </ScrollReveal>
           {FAQ.map((item, i) => (
             <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 ${i < FAQ.length - 1 ? "border-b border-white/[0.03]" : ""}`}>
+              <div className={`py-8 pl-5 border-l-2 border-sky-500/20 hover:border-sky-500/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
                 <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-sm text-foreground/50 font-light leading-relaxed max-w-2xl">{item.a}</p>
+                <p className="text-[15px] text-foreground/55 font-light leading-relaxed max-w-2xl">{item.a}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -242,16 +249,16 @@ export default function PEOpsPage() {
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
         <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-8 text-balance uppercase">
-              Find out what your firm is losing to <span className="text-amber-400 italic font-medium">manual operations.</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-8 text-balance">
+              Find out what your firm is losing to <span className="text-sky-400 italic font-medium">manual operations.</span>
             </h2>
             <p className="text-lg text-foreground/40 font-light max-w-2xl mx-auto mb-6 leading-relaxed">
               Book a 30-minute call. We&apos;ll walk through your current workflows, identify where your team is spending the most time on work that isn&apos;t generating returns, and show you the working system we built.
             </p>
-            <p className="text-[10px] font-mono text-foreground/25 tracking-widest uppercase mb-14">
+            <p className="text-[11px] font-mono text-foreground/25 tracking-wider uppercase mb-14">
               I take 1-2 build clients at a time. Each engagement gets my full attention.
             </p>
-            <a href="mailto:ghiles@muditek.com" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-amber-500 text-background text-[13px] font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href="mailto:ghiles@muditek.com" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-[13px] font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 See the Demo
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />
@@ -259,7 +266,7 @@ export default function PEOpsPage() {
             </a>
           </ScrollReveal>
         </div>
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.01] pointer-events-none whitespace-nowrap z-0 select-none">
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.015] pointer-events-none whitespace-nowrap z-0 select-none">
           MUDITEK
         </div>
       </section>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -54,14 +55,14 @@ export default function MudiAgentPage() {
 
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-8 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Muditek / mudiAgent
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 uppercase text-balance">
+            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance">
               Your best engineers are compiling <span className="text-primary italic font-medium">reports.</span>
             </h1>
           </ScrollReveal>
@@ -98,16 +99,22 @@ export default function MudiAgentPage() {
         </div>
       </section>
 
+      {/* ══════ IMAGE BREAK ══════ */}
+      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
+        <Image src="/images/noc-center.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.4) saturate(1.6) hue-rotate(-10deg) brightness(0.6)' }} aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+      </div>
+
       {/* ══════ WHAT CHANGES (PAS: Solution) ══════ */}
       <section id="transformation" className="py-32 md:py-48 w-full flex justify-center relative border-t border-white/[0.02]">
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               What Changes
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-8 uppercase max-w-3xl">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-8 max-w-3xl">
               Not a chatbot. A digital <span className="text-primary italic font-medium">employee.</span>
             </h3>
           </ScrollReveal>
@@ -123,7 +130,7 @@ export default function MudiAgentPage() {
 
           {/* Before/After Table — CRO: specific proof of transformation */}
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-[10px] font-black uppercase tracking-[0.25em] text-foreground/40 bg-white/[0.01]">
+            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-[11px] font-black uppercase tracking-[0.2em] text-foreground/40 bg-white/[0.01]">
               <div className="col-span-2">Workflow</div>
               <div>Before</div>
               <div className="text-primary">After mudiAgent</div>
@@ -133,7 +140,7 @@ export default function MudiAgentPage() {
                 <div className={`group grid grid-cols-4 px-8 py-7 items-center stat-row cursor-default ${i < BEFORE_AFTER.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
                   <div className="col-span-2 text-[13px] font-bold tracking-[0.1em] uppercase text-foreground/70 group-hover:text-foreground transition-colors">{row.label}</div>
                   <div className="text-[11px] font-mono text-foreground/30 line-through tracking-wider">{row.before}</div>
-                  <div className="text-[12px] font-mono font-black tracking-widest text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(90,159,204,0.4)]">{row.after}</div>
+                  <div className="text-[12px] font-mono font-black tracking-wider text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">{row.after}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -146,11 +153,11 @@ export default function MudiAgentPage() {
         <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Why Not ChatGPT
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 uppercase max-w-3xl">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 max-w-3xl">
               Cloud AI costs 3-5x more at scale <span className="text-primary italic font-medium">(a16z)</span> and still can&apos;t do the work.
             </h3>
             <p className="text-base text-foreground/40 font-light max-w-2xl mb-16">
@@ -159,7 +166,7 @@ export default function MudiAgentPage() {
           </ScrollReveal>
 
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-3 px-8 py-6 border-b border-white/[0.05] text-[10px] font-black uppercase tracking-[0.25em] text-foreground/40 bg-white/[0.01]">
+            <div className="grid grid-cols-3 px-8 py-6 border-b border-white/[0.05] text-[11px] font-black uppercase tracking-[0.2em] text-foreground/40 bg-white/[0.01]">
               <div>What Matters</div>
               <div className="text-red-400/70">ChatGPT / Copilot</div>
               <div className="text-primary">mudiAgent</div>
@@ -182,11 +189,11 @@ export default function MudiAgentPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Process
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16 uppercase">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
               From audit to deployment in <span className="text-primary italic font-medium">4 weeks.</span>
             </h3>
           </ScrollReveal>
@@ -203,14 +210,14 @@ export default function MudiAgentPage() {
                   <div>
                     <span className="text-5xl font-black text-foreground/[0.06] block mb-6">{phase.num}</span>
                     <div className="flex items-center gap-3 mb-2">
-                      <h4 className="text-lg font-black uppercase tracking-[0.05em] text-foreground">{phase.title}</h4>
-                      <span className="text-[9px] font-mono text-primary/60 tracking-widest uppercase">{phase.time}</span>
+                      <h4 className="text-lg font-black tracking-[0.05em] text-foreground">{phase.title}</h4>
+                      <span className="text-[11px] font-mono text-primary/60 tracking-wider uppercase">{phase.time}</span>
                     </div>
-                    <p className="text-[10px] font-mono text-primary/80 tracking-wider uppercase mb-5">{phase.highlight}</p>
-                    <p className="text-sm text-foreground/50 font-light leading-relaxed">{phase.body}</p>
+                    <p className="text-[11px] font-mono text-primary/80 tracking-wider uppercase mb-5">{phase.highlight}</p>
+                    <p className="text-[15px] text-foreground/55 font-light leading-relaxed">{phase.body}</p>
                   </div>
                   <div className="pt-6 mt-8 border-t border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-foreground/40 tracking-wider uppercase">{phase.metric}</span>
+                    <span className="text-[11px] font-mono text-foreground/40 tracking-wider uppercase">{phase.metric}</span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -224,11 +231,11 @@ export default function MudiAgentPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               The Cost of Waiting
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 uppercase max-w-3xl">
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 max-w-3xl">
               The math on doing <span className="text-primary italic font-medium">nothing.</span>
             </h3>
             <p className="text-base text-foreground/40 font-light max-w-2xl mb-16">
@@ -240,7 +247,7 @@ export default function MudiAgentPage() {
             {/* Cost of doing nothing — Loss Aversion framing */}
             <ScrollReveal delay={80}>
               <div className="border border-red-500/[0.1] bg-red-500/[0.02] p-10 rounded-[4px]">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-red-400/70 mb-6 block">What you lose by waiting</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-red-400/70 mb-6 block">What you lose by waiting</span>
                 <div className="space-y-5">
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">832 hrs/year</span>
@@ -261,32 +268,32 @@ export default function MudiAgentPage() {
             {/* Muditek pricing — Anchoring against waste cost */}
             <ScrollReveal delay={160}>
               <div className="border border-primary/[0.15] bg-primary/[0.03] p-10 rounded-[4px]">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary/70 mb-6 block">What mudiAgent costs</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/70 mb-6 block">What mudiAgent costs</span>
                 <div className="space-y-5">
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€0</span>
-                      <span className="text-[10px] font-mono text-primary/60 tracking-wider">Discovery Audit</span>
+                      <span className="text-[11px] font-mono text-primary/60 tracking-wider">Discovery Audit</span>
                     </div>
                     <p className="text-[11px] text-foreground/40 font-light mt-1">Free. Written roadmap in 1 week. No commitment.</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€15K</span>
-                      <span className="text-[10px] font-mono text-primary/60 tracking-wider">Pilot deployment</span>
+                      <span className="text-[11px] font-mono text-primary/60 tracking-wider">Pilot deployment</span>
                     </div>
                     <p className="text-[11px] text-foreground/40 font-light mt-1">One agent, one workflow. Live in 4 weeks. You own it.</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€3K</span>
-                      <span className="text-[10px] font-mono text-primary/60 tracking-wider">/month retainer</span>
+                      <span className="text-[11px] font-mono text-primary/60 tracking-wider">/month retainer</span>
                     </div>
                     <p className="text-[11px] text-foreground/40 font-light mt-1">Monitoring. Optimization. Support. Scale when ready.</p>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-primary/[0.1]">
-                  <p className="text-[10px] text-foreground/30 font-mono tracking-wider">No per-user fees. No cloud costs. No subscription. The system is yours.</p>
+                  <p className="text-[11px] text-foreground/30 font-mono tracking-wider">No per-user fees. No cloud costs. No subscription. The system is yours.</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -295,7 +302,7 @@ export default function MudiAgentPage() {
           {/* Pricing context — Anchoring against alternatives */}
           <ScrollReveal delay={240}>
             <div className="border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-4 block">For context</span>
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-4 block">For context</span>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px]">
                 <div>
                   <span className="text-foreground/60 font-medium block mb-1">ChatGPT Enterprise</span>
@@ -322,11 +329,11 @@ export default function MudiAgentPage() {
             <div className="doppelrand mx-auto mb-16 inline-block">
               <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-[1px]">40-Hour Guarantee</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary pt-[1px]">40-Hour Guarantee</span>
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto uppercase">
+            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto">
               Every quarter you wait, your competitors get further <span className="text-primary italic font-medium">ahead.</span>
             </h2>
 
@@ -338,7 +345,7 @@ export default function MudiAgentPage() {
               If mudiAgent doesn&apos;t save your team at least 40 hours in 90 days, we reconfigure until it does — at no additional cost.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-foreground/40 mb-16">
+            <div className="flex flex-wrap justify-center gap-4 text-[11px] font-mono uppercase tracking-wider text-foreground/40 mb-16">
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">Telecom Operators</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">Traders & Integrators</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">50+ Employees</span>
@@ -353,16 +360,16 @@ export default function MudiAgentPage() {
       <section className="py-24 md:py-32 w-full flex justify-center">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
+            <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-foreground/40 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>
           </ScrollReveal>
           {FAQ.map((item, i) => (
             <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 ${i < FAQ.length - 1 ? "border-b border-white/[0.03]" : ""}`}>
+              <div className={`py-8 pl-5 border-l-2 border-primary/20 hover:border-primary/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
                 <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-sm text-foreground/50 font-light leading-relaxed max-w-2xl">{item.a}</p>
+                <p className="text-[15px] text-foreground/55 font-light leading-relaxed max-w-2xl">{item.a}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -373,13 +380,13 @@ export default function MudiAgentPage() {
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
         <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance uppercase">
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance">
               Tell us what eats your team&apos;s <span className="text-primary italic font-medium">time.</span>
             </h2>
             <p className="text-lg text-foreground/40 font-light max-w-2xl mx-auto mb-6 leading-relaxed">
               In 30 minutes, we&apos;ll identify your top 3 automation targets and estimate the hours you&apos;d recover. No pitch. No commitment. Just a clear picture of what&apos;s possible.
             </p>
-            <p className="text-[10px] font-mono text-foreground/25 tracking-widest uppercase mb-14">
+            <p className="text-[11px] font-mono text-foreground/25 tracking-wider uppercase mb-14">
               We take a limited number of deployments per quarter to ensure configuration quality
             </p>
             <a href="mailto:ghiles@muditek.com" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-[13px] font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
@@ -390,9 +397,10 @@ export default function MudiAgentPage() {
             </a>
           </ScrollReveal>
         </div>
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.01] pointer-events-none whitespace-nowrap z-0 select-none">
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.015] pointer-events-none whitespace-nowrap z-0 select-none">
           MUDIAGENT
         </div>
+
       </section>
 
       <Footer />

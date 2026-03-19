@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoIcon } from "./logo-icon";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
           <div>
             <Link href="/" className="group flex items-center gap-2.5 mb-4" aria-label="Muditek homepage">
-              <LogoIcon size={18} />
+              <Image src="/icon.svg" alt="" width={18} height={18} aria-hidden="true" />
               <span className="text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase">MUDITEK</span>
             </Link>
             <p className="text-[11px] text-foreground/25 max-w-[28ch] leading-relaxed font-light">

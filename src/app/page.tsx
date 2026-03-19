@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { LogoIcon } from "@/components/logo-icon";
 
 const VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260309_042944_4a2205b7-b061-490a-852b-92d9e9955ce9.mp4";
@@ -35,44 +35,29 @@ const PROOF_METRICS = [
 export default function Home() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
+      <Navbar />
+
       {/* ══════════════════════════════════════════
-          HERO — AVANT-GARDE 
+          HERO — AVANT-GARDE
           ══════════════════════════════════════════ */}
-      <div className="relative w-full h-[100dvh] min-h-[800px] overflow-hidden flex flex-col justify-between items-center">
+      <div className="relative w-full h-[100dvh] min-h-[800px] overflow-hidden flex flex-col items-center">
         {/* VIDEO BACKGROUND */}
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="absolute inset-0 w-full h-full object-cover z-0" 
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0"
           aria-hidden="true"
         >
           <source src={VIDEO_URL} type="video/mp4" />
         </video>
-        
+
         {/* DEEP OVERLAY GRADIENT */}
         <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/90 via-background/40 to-background" aria-hidden="true" />
 
-        {/* TOP NAV LUXE */}
-        <nav className="relative z-20 flex justify-between items-center px-6 md:px-12 py-8 w-full max-w-[1800px]" role="navigation">
-          <Link href="/" className="group flex items-center gap-3 liquid-glass px-4 py-2 rounded-[4px] hover:bg-white/[0.05] transition-colors" aria-label="Muditek homepage">
-             <LogoIcon size={22} />
-             <span className="text-[12px] font-black tracking-[0.2em] text-foreground uppercase pt-[1px]">MUDITEK</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-12">
-             <div className="relative group">
-                <button className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">Solutions</button>
-             </div>
-             <Link href="#proof" className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">About</Link>
-          </div>
-          <Link href="#contact" className="hidden md:flex px-6 py-2.5 rounded-[2px] text-[10px] font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press">
-            Book a Call
-          </Link>
-        </nav>
-
         {/* HERO TYPOGRAPHY & CTA */}
-        <div className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center max-w-5xl w-full">
+        <div className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center max-w-5xl w-full pt-24">
            <div className="mb-10 liquid-glass border border-white/[0.05] px-5 py-2 rounded-full flex items-center gap-3">
              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-foreground/70">Diagnose · Build · Own</span>
@@ -81,7 +66,7 @@ export default function Home() {
            <h1 className="text-5xl sm:text-7xl lg:text-[100px] font-black tracking-[-0.04em] leading-[0.9] text-foreground text-balance drop-shadow-2xl">
               Redefining the Future of Business with Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">AI Systems.</span>
            </h1>
-           <p className="mt-8 text-lg md:text-xl font-light text-hero-sub max-w-2xl leading-relaxed">
+           <p className="mt-8 text-lg md:text-xl font-light text-foreground/60 max-w-2xl leading-relaxed">
              Your best people are stuck doing work a machine should handle. We find where you&apos;re bleeding money — and build the systems that fix it.
            </p>
            
@@ -101,7 +86,7 @@ export default function Home() {
 
         {/* TICKER TAPE / MARQUEE */}
         <div className="relative z-20 w-full border-t border-white/[0.05] bg-background/50 backdrop-blur-md overflow-hidden flex h-16 items-center">
-           <div className="absolute left-0 md:left-6 text-[9px] font-black uppercase tracking-[0.25em] text-foreground/40 z-10 bg-background/90 px-6 py-2 backdrop-blur-sm border-r border-white/[0.05]">
+           <div className="absolute left-0 md:left-6 text-[11px] font-black uppercase tracking-[0.25em] text-foreground/40 z-10 bg-background/90 px-6 py-2 backdrop-blur-sm border-r border-white/[0.05]">
              Integrations
            </div>
            <div className="flex animate-marquee w-max pl-48" style={{ animationDuration: '40s' }}>
@@ -133,18 +118,18 @@ export default function Home() {
           ══════════════════════════════════════════ */}
       <section id="solutions" className="py-32 md:py-48 relative border-b border-white/[0.02] w-full flex flex-col items-center">
         {/* Subdued blueprint grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.015] mesh-subtle" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.025] mesh-subtle" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         
         <div className="max-w-[1500px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-24 gap-8">
                 <div>
-                   <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
+                   <h2 className="text-[11px] font-black tracking-[0.3em] uppercase text-primary/70 mb-6 flex items-center gap-3">
                      <span className="w-8 h-[1px] bg-primary/50" />
-                     What We Build
+                     Solutions
                    </h2>
                    <h3 className="text-4xl md:text-6xl font-black tracking-[-0.03em] leading-[0.9] text-foreground max-w-3xl text-balance">
-                      Which of these sounds like <span className="text-foreground/40 italic font-medium">your office?</span>
+                      The waste looks different in every industry. The approach <span className="text-primary italic font-medium">doesn&apos;t.</span>
                    </h3>
                 </div>
                 <div className="hidden md:block w-[1px] h-24 bg-white/[0.08]" />
@@ -154,24 +139,24 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* mudiAgent Card */}
             <ScrollReveal delay={100}>
-              <div className="group relative h-[520px] border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+              <div className="group relative h-[520px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/5 rounded-full blur-[80px] group-hover:bg-primary/10 transition-colors" />
                 
                 <div className="relative z-10">
-                   <div className="text-[10px] font-mono text-primary/50 mb-8 tracking-widest uppercase">For Telecom & Enterprise</div>
-                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 uppercase group-hover:text-primary transition-colors">mudiAgent</h4>
-                   <p className="text-sm text-foreground/50 leading-relaxed font-light mb-6">
+                   <div className="text-[10px] font-mono text-primary/50 mb-8 tracking-wider uppercase">For Telecom & Enterprise</div>
+                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 group-hover:text-primary transition-colors">mudiAgent</h4>
+                   <p className="text-[15px] text-foreground/55 leading-relaxed font-light mb-6">
                      Every Monday, someone on your team spends 6 hours pulling the same report from 5 systems. Every day, someone searches shared drives for 45 minutes to find one document. mudiAgent handles all of it — on a device in your office. No cloud.
                    </p>
                 </div>
                 
                 <div className="relative z-10 pt-6 border-t border-white/[0.05]">
                    <div className="flex justify-between items-center text-xs font-mono mb-8">
-                     <span className="text-foreground/40 tracking-wider">SLA Reports:</span>
-                     <span className="text-primary font-bold">2-3 days → 1 hr</span>
+                     <span className="text-foreground/40 tracking-wider">Time saved weekly:</span>
+                     <span className="text-primary font-bold">40+ hours</span>
                    </div>
-                   <Link href="/mudiagent" className="btn-press inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-primary transition-colors">
+                   <Link href="/mudiagent" className="btn-press inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-primary transition-colors">
                       Free Discovery Audit <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                    </Link>
                 </div>
@@ -180,14 +165,14 @@ export default function Home() {
 
             {/* Revenue Machine Card */}
             <ScrollReveal delay={200}>
-               <div className="group relative h-[520px] border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+               <div className="group relative h-[520px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/0 to-transparent group-hover:via-emerald-500/70 transition-all duration-[1.2s]" />
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] group-hover:bg-emerald-500/10 transition-colors" />
                 
                 <div className="relative z-10">
-                   <div className="text-[10px] font-mono text-emerald-500/50 mb-8 tracking-widest uppercase">For B2B SaaS</div>
-                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 uppercase group-hover:text-emerald-400 transition-colors">Pipeline Diagnostic</h4>
-                   <p className="text-sm text-foreground/50 leading-relaxed font-light mb-6">
+                   <div className="text-[10px] font-mono text-emerald-500/50 mb-8 tracking-wider uppercase">For B2B SaaS</div>
+                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 group-hover:text-emerald-400 transition-colors">Pipeline Diagnostic</h4>
+                   <p className="text-[15px] text-foreground/55 leading-relaxed font-light mb-6">
                      A lead fills out your demo request at 2 pm. Your team responds 18 hours later. The competitor responded in 4 minutes. That lead cost €200 to generate. The deal was worth €10K. Gone. We find every leak like this — and quantify it.
                    </p>
                 </div>
@@ -197,7 +182,7 @@ export default function Home() {
                      <span className="text-foreground/40 tracking-wider">Recovered:</span>
                      <span className="text-emerald-400 font-bold">€80-180K/yr</span>
                    </div>
-                   <Link href="/revenue-machine" className="btn-press inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-emerald-400 transition-colors">
+                   <Link href="/revenue-machine" className="btn-press inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-emerald-400 transition-colors">
                       Book Your Diagnostic <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                    </Link>
                 </div>
@@ -206,24 +191,24 @@ export default function Home() {
 
             {/* PE Ops Card */}
             <ScrollReveal delay={300}>
-               <div className="group relative h-[520px] border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/0 to-transparent group-hover:via-amber-500/70 transition-all duration-[1.2s]" />
-                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] group-hover:bg-amber-500/10 transition-colors" />
+               <div className="group relative h-[520px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/0 to-transparent group-hover:via-sky-500/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-sky-500/5 rounded-full blur-[80px] group-hover:bg-sky-500/10 transition-colors" />
                 
                 <div className="relative z-10">
-                   <div className="text-[10px] font-mono text-amber-500/50 mb-8 tracking-widest uppercase">For Investment Firms</div>
-                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 uppercase group-hover:text-amber-400 transition-colors">Operational Infrastructure</h4>
-                   <p className="text-sm text-foreground/50 leading-relaxed font-light mb-6">
+                   <div className="text-[10px] font-mono text-sky-500/50 mb-8 tracking-wider uppercase">For Investment Firms</div>
+                   <h4 className="text-2xl font-black tracking-[0.02em] text-foreground mb-4 group-hover:text-sky-400 transition-colors">Operational Infrastructure</h4>
+                   <p className="text-[15px] text-foreground/55 leading-relaxed font-light mb-6">
                      Your compliance person tracks 40 LPs in a spreadsheet. Your ops team generates agreements in Word. Forty investors, forty documents, forty chances for error. We built the system that replaces all of it — in production for a merchant bank.
                    </p>
                 </div>
                 
                 <div className="relative z-10 pt-6 border-t border-white/[0.05]">
                    <div className="flex justify-between items-center text-xs font-mono mb-8">
-                     <span className="text-foreground/40 tracking-wider">Onboarding:</span>
-                     <span className="text-amber-400 font-bold">Weeks → 3-5 Days</span>
+                     <span className="text-foreground/40 tracking-wider">LP onboarding:</span>
+                     <span className="text-sky-400 font-bold">weeks → 3-5 days</span>
                    </div>
-                   <Link href="/pe-ops" className="btn-press inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-amber-400 transition-colors">
+                   <Link href="/pe-ops" className="btn-press inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-sky-400 transition-colors">
                       See the Demo <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                    </Link>
                 </div>
@@ -232,6 +217,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ══════ IMAGE BREAK ══════ */}
+      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
+        <Image src="/images/documents-desk.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.4) saturate(1.6) hue-rotate(-10deg) brightness(0.6)' }} aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+      </div>
 
       {/* ══════════════════════════════════════════
           PROOF — METRICS GRID
@@ -244,13 +235,13 @@ export default function Home() {
             <div className="xl:w-1/3 xl:pt-12">
                <ScrollReveal>
                   <div className="w-12 h-[1px] bg-primary mb-10" />
-                  <h2 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 uppercase">
+                  <h2 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6">
                      We built this<br />for ourselves.<br /><span className="text-primary italic font-medium">Then clients asked.</span>
                   </h2>
                   <p className="text-base text-foreground/50 font-light leading-relaxed mb-10 max-w-[400px]">
                      Every number below comes from our own operations. We built mudiAgent to run Muditek. When clients saw the results, they asked us to deploy it for them.
                   </p>
-                  <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/[0.02] border border-white/[0.05] rounded-[2px] text-[10px] font-mono uppercase tracking-widest text-primary/70">
+                  <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/[0.02] border border-white/[0.05] rounded-[2px] text-[11px] font-mono uppercase tracking-wider text-primary/70">
                     <div className="w-1 h-1 rounded-full bg-primary" />
                     Limited Engagements per Quarter
                   </div>
@@ -259,7 +250,7 @@ export default function Home() {
 
             <div className="xl:w-2/3">
                <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-                 <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-[10px] font-black uppercase tracking-[0.25em] text-foreground/40 bg-white/[0.01]">
+                 <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-[11px] font-black uppercase tracking-[0.2em] text-foreground/40 bg-white/[0.01]">
                    <div className="col-span-2">Task</div>
                    <div>Before</div>
                    <div className="text-primary">After mudiAgent</div>
@@ -274,7 +265,7 @@ export default function Home() {
                           <div className="text-[11px] font-mono text-foreground/30 line-through tracking-wider">
                             {row.before}
                           </div>
-                          <div className="text-[12px] font-mono font-black tracking-widest text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(90,159,204,0.4)]">
+                          <div className="text-[12px] font-mono font-black tracking-wider text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">
                             {row.after}
                           </div>
                        </div>
@@ -294,11 +285,11 @@ export default function Home() {
                <div className="doppelrand mx-auto mb-16 inline-block">
                  <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-[1px]">Zero-Risk Guarantee</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary pt-[1px]">Zero-Risk Guarantee</span>
                  </div>
                </div>
                
-               <h2 className="text-3xl md:text-5xl lg:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto uppercase">
+               <h2 className="text-3xl md:text-5xl lg:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto">
                  Every engagement starts with a diagnostic. If we can&apos;t quantify the waste, <span className="text-primary italic font-medium">you don&apos;t pay.</span>
                </h2>
                
@@ -322,7 +313,7 @@ export default function Home() {
       <section id="contact" className="py-48 min-h-[60vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
          <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
             <ScrollReveal>
-               <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance uppercase drop-shadow-2xl">
+               <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance drop-shadow-2xl">
                   Stop paying people to do work <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/40 italic font-medium pr-2">a machine</span> should handle.
                </h2>
                <p className="text-lg md:text-xl text-foreground/40 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
@@ -339,7 +330,7 @@ export default function Home() {
          </div>
          
          {/* Massive typographic watermark behind text */}
-         <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.01] pointer-events-none whitespace-nowrap z-0 select-none">
+         <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.015] pointer-events-none whitespace-nowrap z-0 select-none">
             MUDITEK
          </div>
       </section>

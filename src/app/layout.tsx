@@ -11,13 +11,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Muditek — Redefining the Future of Business with AI Systems",
+  title: "Muditek | AI Systems That Eliminate Operational Waste",
   description:
-    "We diagnose where companies lose money to manual operations and build AI systems that fix it. On-premises AI for telecom, pipeline diagnostics for B2B SaaS, operational infrastructure for investment firms.",
+    "We diagnose where companies lose money to manual operations and build AI systems that fix it. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
+  icons: {
+    icon: "/icon.svg",
+  },
   openGraph: {
-    title: "Muditek — Redefining the Future of Business with AI Systems",
+    title: "Muditek | AI Systems That Eliminate Operational Waste",
     description:
-      "Your best people are stuck doing work a machine should handle. We find where you're bleeding money — and build the systems that fix it.",
+      "Your best people are stuck doing work a machine should handle. We find where you're bleeding money, then build the systems that fix it.",
     type: "website",
   },
 };

@@ -22,7 +22,7 @@ export function WhatsAppBubble() {
       </div>
 
       {/* Tooltip */}
-      <span className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-card border border-white/[0.06] text-[10px] font-bold text-foreground/70 uppercase tracking-wider whitespace-nowrap rounded-[4px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+      <span className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-card border border-white/[0.06] text-xs font-bold text-foreground/70 uppercase tracking-wider whitespace-nowrap rounded-[4px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
         Chat on WhatsApp
       </span>
     </a>

@@ -62,7 +62,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               How We Work
             </h2>
@@ -117,7 +117,7 @@ export default function AboutPage() {
           </ScrollReveal>
 
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-xs font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
+            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-sm font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
               <div className="col-span-2">Task</div>
               <div>Before</div>
               <div className="text-primary">After mudiAgent</div>
@@ -126,8 +126,8 @@ export default function AboutPage() {
               <ScrollReveal key={row.label} delay={i * 60}>
                 <div className={`group grid grid-cols-4 px-8 py-7 items-center stat-row cursor-default ${i < PROOF_METRICS.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
                   <div className="col-span-2 text-sm font-bold tracking-[0.1em] uppercase text-foreground/70 group-hover:text-foreground transition-colors">{row.label}</div>
-                  <div className="text-xs font-mono text-foreground/50 line-through tracking-wider">{row.before}</div>
-                  <div className="text-xs font-mono font-black tracking-wider text-primary/90 group-hover:text-primary">{row.after}</div>
+                  <div className="text-sm font-mono text-foreground/50 line-through tracking-wider">{row.before}</div>
+                  <div className="text-sm font-mono font-black tracking-wider text-primary/90 group-hover:text-primary">{row.after}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -139,7 +139,7 @@ export default function AboutPage() {
       <section className="py-32 md:py-40 w-full flex justify-center relative">
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Track Record
             </h2>
@@ -153,7 +153,7 @@ export default function AboutPage() {
               <ScrollReveal key={m.label} delay={i * 80}>
                 <div className="border border-white/[0.05] bg-card/[0.2] p-8 text-center rounded-[4px] card-lift">
                   <span className="text-3xl md:text-4xl font-black text-foreground block mb-2 tracking-tight">{m.value}</span>
-                  <span className="text-xs font-mono text-foreground/60 tracking-wider uppercase">{m.label}</span>
+                  <span className="text-sm font-mono text-foreground/60 tracking-wider uppercase">{m.label}</span>
                 </div>
               </ScrollReveal>
             ))}
@@ -161,7 +161,7 @@ export default function AboutPage() {
 
           <ScrollReveal delay={400}>
             <div className="mt-12 border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
-              <h4 className="text-xs font-black uppercase tracking-[0.2em] text-foreground/60 mb-4">Differentiators</h4>
+              <h4 className="text-sm font-black uppercase tracking-[0.2em] text-foreground/60 mb-4">Differentiators</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-foreground/70 font-light leading-relaxed">
                 <p><span className="text-foreground/80 font-medium">Diagnose first, build second.</span> Every engagement starts with a diagnostic that quantifies waste in euros. No guesswork.</p>
                 <p><span className="text-foreground/80 font-medium">Client owns everything.</span> No SaaS fees, no vendor lock-in, no data in someone else&apos;s cloud. You own the code.</p>
@@ -177,7 +177,7 @@ export default function AboutPage() {
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
         <div className="max-w-[1100px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-foreground/60 mb-8 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Founder
             </h2>
@@ -189,8 +189,8 @@ export default function AboutPage() {
                   I build AI systems that run business operations. 35+ systems in production across telecom, financial services, and B2B SaaS. $3M+ in revenue generated and saved for clients. I built mudiAgent to run my own company first. When clients saw the results, they asked me to deploy it for them. 35,000+ professionals follow what I build on LinkedIn. Every system I ship gets documented in the B2B Agents newsletter (5,300+ subscribers, 40.7% open rate).
                 </p>
                 <div className="flex items-center gap-4">
-                  <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>
-                  <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-foreground/60 tracking-wider hover:text-foreground transition-colors">LinkedIn</a>
+                  <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>
+                  <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-foreground/60 tracking-wider hover:text-foreground transition-colors">LinkedIn</a>
                 </div>
               </div>
             </div>

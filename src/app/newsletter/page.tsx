@@ -166,7 +166,7 @@ export default async function NewsletterPage() {
                     )}
 
                     <div className="p-6">
-                      <div className="text-xs font-mono text-foreground/50 tracking-wider mb-3">
+                      <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
                         {formatDate(post.publish_date || post.created)}
                       </div>
                       <h4 className="text-base font-bold text-foreground/90 group-hover:text-foreground transition-colors leading-snug mb-3">

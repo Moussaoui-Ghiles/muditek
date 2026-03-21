@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { JsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "mudiAgent | Digital Employees for Telecom & Enterprise | Muditek",
@@ -26,7 +27,7 @@ const BEFORE_AFTER = [
 const CHATGPT_COMPARISON = [
   { category: "Your data", chatgpt: "Uploaded to US/EU servers. Zero control over access.", mudiagent: "Stays in your office. Full audit trail. Your infrastructure." },
   { category: "Workflow automation", chatgpt: "Can't read WhatsApp. Can't send emails. Can't fill your CRM. Can't run at 6 am.", mudiagent: "Reads WhatsApp, sends emails, fills forms, operates CRM/ERP, runs on a timer." },
-  { category: "Cost at scale", chatgpt: "$20-150/person/month. 100 people = $24K-$180K/year.", mudiagent: "One device. Everyone uses it. No per-user fees." },
+  { category: "Cost at scale", chatgpt: "Per-user pricing. 100 people = significant recurring cost, scaling with every hire.", mudiagent: "One device. Everyone uses it. No per-user fees." },
   { category: "Memory", chatgpt: "Forgets every conversation. Doesn't know your templates or procedures.", mudiagent: "Trained on your documents. Builds institutional knowledge that compounds." },
   { category: "Concurrent users", chatgpt: "One person at a time. No shared workflows.", mudiagent: "20-50 concurrent users. Company-wide intelligence." },
 ];
@@ -42,6 +43,33 @@ const FAQ = [
 export default function MudiAgentPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "mudiAgent",
+          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          description: "On-premises AI digital employees for telecom and enterprise. Automates SLA reporting, knowledge search, follow-ups, and software operation.",
+          url: "https://muditek.com/mudiagent",
+          areaServed: "Worldwide",
+          offers: [
+            { "@type": "Offer", name: "Free Discovery Audit", price: "0", priceCurrency: "EUR", description: "Written automation roadmap in 1 week." },
+            { "@type": "Offer", name: "Pilot Deployment", price: "15000", priceCurrency: "EUR", description: "One agent, one workflow. Live in 4 weeks." },
+            { "@type": "Offer", name: "Monthly Retainer", price: "3000", priceCurrency: "EUR", description: "Monitoring, optimization, support, scaling." },
+          ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((item) => ({
+            "@type": "Question",
+            name: item.q,
+            acceptedAnswer: { "@type": "Answer", text: item.a },
+          })),
+        }}
+      />
       <Navbar />
 
       {/* ══════ HERO — NARRATIVE PROBLEM (PAS: Problem) ══════ */}
@@ -72,14 +100,12 @@ export default function MudiAgentPage() {
 
           <ScrollReveal delay={160}>
             <div className="max-w-3xl space-y-6 text-base md:text-lg text-foreground/70 font-light leading-relaxed mb-6">
-              <p>Your NOC engineer opens 4 systems every Monday morning. NMS for alarms. BSS for subscriber data. The ticketing system for open incidents. A spreadsheet for the template. They spend the next 6 hours pulling numbers, cross-referencing, formatting, and emailing a report that follows the exact same structure every single week.</p>
-              <p>Down the hall, someone is searching a shared drive for a procedure document. They know it exists. They saw it last month. Forty-five minutes later, they find a version from 2019 and aren&apos;t sure if it&apos;s current. They send a message to three colleagues asking if anyone has the latest. Two reply tomorrow. One never replies.</p>
-              <p>Meanwhile, your field team is on-site. They take photos, dictate voice notes, and scribble on a clipboard. When they get back to the office, someone spends 90 minutes turning their notes into a formatted report. Except this time, the notes are incomplete. They forgot one measurement. And nobody catches it until the client asks.</p>
-              <p>Every person in your operations, from the NOC engineer running alarm correlation to the project manager chasing subcontractor updates, is spending a third of their week on work that follows the same pattern every time. The same sources, the same format, the same steps.</p>
+              <p>Your NOC engineer opens 4 systems every Monday morning. Six hours later, they email a report that follows the exact same structure every single week. Down the hall, someone spends 45 minutes searching a shared drive for a procedure document they saw last month. Your field team gets back from site and someone spends 90 minutes formatting their notes into a report.</p>
+              <p>Every person in your operations — from the NOC engineer running alarm correlation to the project manager chasing subcontractor updates — is spending a third of their week on work that follows the same pattern every time. The same sources, the same format, the same steps.</p>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={240}>
+          <ScrollReveal delay={220}>
             <p className="text-sm text-foreground/50 italic max-w-2xl mb-14">
               It&apos;s not that your people aren&apos;t good. It&apos;s that the work isn&apos;t worthy of them.
             </p>
@@ -87,14 +113,14 @@ export default function MudiAgentPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-foreground text-background font-black text-xs uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <Link href="#contact" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book a Free Discovery Audit
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
               </Link>
-              <Link href="#transformation" className="px-8 py-5 border border-white/[0.1] text-foreground text-xs font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
+              <Link href="#transformation" className="px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
                 See What Changes
               </Link>
             </div>
@@ -113,7 +139,7 @@ export default function MudiAgentPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               What Changes
             </h2>
@@ -133,17 +159,17 @@ export default function MudiAgentPage() {
 
           {/* Before/After Table — CRO: specific proof of transformation */}
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-xs font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
+            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-sm font-black uppercase tracking-[0.15em] text-foreground/60 bg-white/[0.01]">
               <div className="col-span-2">Workflow</div>
               <div>Before</div>
               <div className="text-primary">After mudiAgent</div>
             </div>
             {BEFORE_AFTER.map((row, i) => (
               <ScrollReveal key={row.label} delay={i * 60}>
-                <div className={`group grid grid-cols-4 px-8 py-7 items-center stat-row cursor-default ${i < BEFORE_AFTER.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
+                <div className={`group grid grid-cols-4 px-8 py-8 items-center stat-row cursor-default ${i < BEFORE_AFTER.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
                   <div className="col-span-2 text-sm font-bold tracking-[0.1em] uppercase text-foreground/70 group-hover:text-foreground transition-colors">{row.label}</div>
-                  <div className="text-xs font-mono text-foreground/50 line-through tracking-wider">{row.before}</div>
-                  <div className="text-xs font-mono font-black tracking-wider text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">{row.after}</div>
+                  <div className="text-sm font-mono text-foreground/50 line-through tracking-wider">{row.before}</div>
+                  <div className="text-base font-mono font-black tracking-wider text-primary/90 group-hover:text-primary drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">{row.after}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -156,7 +182,7 @@ export default function MudiAgentPage() {
         <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Why Not ChatGPT
             </h2>
@@ -169,17 +195,17 @@ export default function MudiAgentPage() {
           </ScrollReveal>
 
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-3 px-8 py-6 border-b border-white/[0.05] text-xs font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
+            <div className="grid grid-cols-3 px-8 py-6 border-b border-white/[0.05] text-sm font-black uppercase tracking-[0.15em] text-foreground/60 bg-white/[0.01]">
               <div>What Matters</div>
               <div className="text-red-400/70">ChatGPT / Copilot</div>
               <div className="text-primary">mudiAgent</div>
             </div>
             {CHATGPT_COMPARISON.map((row, i) => (
               <ScrollReveal key={row.category} delay={i * 60}>
-                <div className={`group grid grid-cols-3 px-8 py-6 items-start stat-row cursor-default ${i < CHATGPT_COMPARISON.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
-                  <div className="text-xs font-bold tracking-[0.1em] uppercase text-foreground/60">{row.category}</div>
-                  <div className="text-xs text-foreground/50 font-light leading-relaxed pr-4">{row.chatgpt}</div>
-                  <div className="text-xs text-foreground/70 font-medium leading-relaxed">{row.mudiagent}</div>
+                <div className={`group grid grid-cols-3 px-8 py-7 items-start stat-row cursor-default ${i < CHATGPT_COMPARISON.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
+                  <div className="text-sm font-bold tracking-[0.1em] uppercase text-foreground/60">{row.category}</div>
+                  <div className="text-sm text-foreground/60 leading-relaxed pr-4">{row.chatgpt}</div>
+                  <div className="text-sm text-foreground/80 font-medium leading-relaxed">{row.mudiagent}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -192,7 +218,7 @@ export default function MudiAgentPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Process
             </h2>
@@ -214,13 +240,13 @@ export default function MudiAgentPage() {
                     <span className="text-5xl font-black text-foreground/[0.06] block mb-6">{phase.num}</span>
                     <div className="flex items-center gap-3 mb-2">
                       <h4 className="text-lg font-black tracking-[0.05em] text-foreground">{phase.title}</h4>
-                      <span className="text-xs font-mono text-primary/60 tracking-wider uppercase">{phase.time}</span>
+                      <span className="text-sm font-mono text-primary/60 tracking-wider uppercase">{phase.time}</span>
                     </div>
-                    <p className="text-xs font-mono text-primary/80 tracking-wider uppercase mb-5">{phase.highlight}</p>
+                    <p className="text-sm font-mono text-primary/80 tracking-wider uppercase mb-5">{phase.highlight}</p>
                     <p className="text-base text-foreground/70 font-light leading-relaxed">{phase.body}</p>
                   </div>
                   <div className="pt-6 mt-8 border-t border-white/[0.05]">
-                    <span className="text-xs font-mono text-foreground/60 tracking-wider uppercase">{phase.metric}</span>
+                    <span className="text-sm font-mono text-foreground/60 tracking-wider uppercase">{phase.metric}</span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -234,7 +260,7 @@ export default function MudiAgentPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               The Cost of Waiting
             </h2>
@@ -250,19 +276,19 @@ export default function MudiAgentPage() {
             {/* Cost of doing nothing — Loss Aversion framing */}
             <ScrollReveal delay={80}>
               <div className="border border-red-500/[0.1] bg-red-500/[0.02] p-10 rounded-[4px]">
-                <span className="text-xs font-black uppercase tracking-[0.2em] text-red-400/70 mb-6 block">What you lose by waiting</span>
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-red-400/70 mb-6 block">What you lose by waiting</span>
                 <div className="space-y-5">
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">832 hrs/year</span>
-                    <p className="text-xs text-foreground/60 font-light mt-1">20 hrs/week manual reporting × 52 weeks × 80% automatable</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">20 hrs/week manual reporting × 52 weeks × 80% automatable</p>
                   </div>
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">2,500+ hrs/year</span>
-                    <p className="text-xs text-foreground/60 font-light mt-1">20 people × 5 searches/day × 30 min each. mudiAgent: 10 seconds.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">20 people × 5 searches/day × 30 min each. mudiAgent: 10 seconds.</p>
                   </div>
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">€200K+/year</span>
-                    <p className="text-xs text-foreground/60 font-light mt-1">That&apos;s 2-3 engineers&apos; salaries, spent on work a machine should do</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">That&apos;s 2-3 engineers&apos; salaries, spent on work a machine should do</p>
                   </div>
                 </div>
               </div>
@@ -271,32 +297,32 @@ export default function MudiAgentPage() {
             {/* Muditek pricing — Anchoring against waste cost */}
             <ScrollReveal delay={160}>
               <div className="border border-primary/[0.15] bg-primary/[0.03] p-10 rounded-[4px]">
-                <span className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-6 block">What mudiAgent costs</span>
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-primary mb-6 block">What mudiAgent costs</span>
                 <div className="space-y-5">
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€0</span>
-                      <span className="text-xs font-mono text-primary/60 tracking-wider">Discovery Audit</span>
+                      <span className="text-sm font-mono text-primary/60 tracking-wider">Discovery Audit</span>
                     </div>
-                    <p className="text-xs text-foreground/60 font-light mt-1">Free. Written roadmap in 1 week. No commitment.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">Free. Written roadmap in 1 week. No commitment.</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€15K</span>
-                      <span className="text-xs font-mono text-primary/60 tracking-wider">Pilot deployment</span>
+                      <span className="text-sm font-mono text-primary/60 tracking-wider">Pilot deployment</span>
                     </div>
-                    <p className="text-xs text-foreground/60 font-light mt-1">One agent, one workflow. Live in 4 weeks. You own it.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">One agent, one workflow. Live in 4 weeks. You own it.</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-foreground font-mono">€3K</span>
-                      <span className="text-xs font-mono text-primary/60 tracking-wider">/month retainer</span>
+                      <span className="text-sm font-mono text-primary/60 tracking-wider">/month retainer</span>
                     </div>
-                    <p className="text-xs text-foreground/60 font-light mt-1">Monitoring. Optimization. Support. Scale when ready.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">Monitoring. Optimization. Support. Scale when ready.</p>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-primary/[0.1]">
-                  <p className="text-xs text-foreground/50 font-mono tracking-wider">No per-user fees. No cloud costs. No subscription. The system is yours.</p>
+                  <p className="text-sm text-foreground/50 font-mono tracking-wider">No per-user fees. No cloud costs. No subscription. The system is yours.</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -305,11 +331,11 @@ export default function MudiAgentPage() {
           {/* Pricing context — Anchoring against alternatives */}
           <ScrollReveal delay={240}>
             <div className="border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground/50 mb-4 block">For context</span>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground/50 mb-4 block">For context</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                 <div>
                   <span className="text-foreground/60 font-medium block mb-1">ChatGPT Enterprise</span>
-                  <span className="text-foreground/50 font-light">$60/user/month × 50 users = $36,000/year. Still can&apos;t automate one workflow.</span>
+                  <span className="text-foreground/50 font-light">Per-user pricing × 50 users = significant annual cost. Still can&apos;t automate one workflow.</span>
                 </div>
                 <div>
                   <span className="text-foreground/60 font-medium block mb-1">Traditional automation project</span>
@@ -332,7 +358,7 @@ export default function MudiAgentPage() {
             <div className="doppelrand mx-auto mb-16 inline-block">
               <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-primary pt-[1px]">40-Hour Guarantee</span>
+                <span className="text-sm font-black uppercase tracking-[0.3em] text-primary pt-[1px]">40-Hour Guarantee</span>
               </div>
             </div>
 
@@ -348,7 +374,7 @@ export default function MudiAgentPage() {
               If mudiAgent doesn&apos;t save your team at least 40 hours in 90 days, we reconfigure until it does, at no additional cost.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 text-xs font-mono uppercase tracking-wider text-foreground/60 mb-16">
+            <div className="flex flex-wrap justify-center gap-4 text-sm font-mono uppercase tracking-wider text-foreground/60 mb-16">
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">Telecom Operators</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">Traders & Integrators</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">50+ Employees</span>
@@ -363,7 +389,7 @@ export default function MudiAgentPage() {
       <section className="py-24 md:py-32 w-full flex justify-center">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>
@@ -389,7 +415,7 @@ export default function MudiAgentPage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-6 leading-relaxed">
               In 30 minutes, we&apos;ll identify your top 3 automation targets and estimate the hours you&apos;d recover. No pitch. No commitment. Just a clear picture of what&apos;s possible.
             </p>
-            <p className="text-xs font-mono text-foreground/50 tracking-wider uppercase mb-14">
+            <p className="text-sm font-mono text-foreground/50 tracking-wider uppercase mb-14">
               We take a limited number of deployments per quarter to ensure configuration quality
             </p>
             <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">

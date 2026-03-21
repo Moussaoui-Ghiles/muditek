@@ -4,10 +4,11 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { JsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Operational Infrastructure for Investment Firms | Muditek",
-  description: "Custom operational infrastructure for PE firms. Investor onboarding in 3-5 days. KYC automated. You own the platform. Alternative to Juniper Square.",
+  description: "Custom operational infrastructure for private equity and investment banking firms. Investor onboarding in 3-5 days. KYC automated. You own the platform. Alternative to Juniper Square.",
 };
 
 const CASE_STUDY = [
@@ -31,6 +32,33 @@ const FAQ = [
 export default function PEOpsPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-sky-500/20 flex flex-col items-center">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Operational Infrastructure for Investment Firms",
+          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          description: "Custom operational infrastructure for private equity and investment banking firms. Investor onboarding, KYC automation, document generation, e-signatures, fee computation. Alternative to Juniper Square.",
+          url: "https://muditek.com/pe-ops",
+          areaServed: "Worldwide",
+          offers: [
+            { "@type": "Offer", name: "Discovery", price: "8000", priceCurrency: "EUR", description: "Complete specification with clear ROI. 2-4 weeks." },
+            { "@type": "Offer", name: "Build", price: "40000", priceCurrency: "EUR", description: "Custom-built operational infrastructure. 4-8 weeks." },
+            { "@type": "Offer", name: "Monthly Retainer", price: "5000", priceCurrency: "EUR", description: "New funds, jurisdictions, regulatory changes. Ongoing support." },
+          ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((item) => ({
+            "@type": "Question",
+            name: item.q,
+            acceptedAnswer: { "@type": "Answer", text: item.a },
+          })),
+        }}
+      />
       <Navbar />
 
       {/* ══════ HERO — FULL NARRATIVE FROM PE PDF ══════ */}
@@ -70,13 +98,13 @@ export default function PEOpsPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-sky-500 text-background font-black text-xs uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <Link href="#contact" className="group relative px-10 py-5 bg-sky-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   See the Demo
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
               </Link>
-              <Link href="#case-study" className="px-8 py-5 border border-white/[0.1] text-foreground text-xs font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
+              <Link href="#case-study" className="px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
                 View Case Study
               </Link>
             </div>
@@ -88,7 +116,7 @@ export default function PEOpsPage() {
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02] bg-card/[0.2]">
         <div className="max-w-[1100px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-sky-400/50" />
               The Transformation
             </h2>
@@ -117,7 +145,7 @@ export default function PEOpsPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-sky-400/50" />
               Case Study
             </h2>
@@ -125,21 +153,21 @@ export default function PEOpsPage() {
               How we built this for a <span className="text-sky-400 italic font-medium">merchant banking firm.</span>
             </h3>
             <p className="text-base text-foreground/70 font-light leading-relaxed mb-16 max-w-2xl">
-              We built everything described above for a regulated merchant banking firm managing PE, VC, and real estate investments across multiple jurisdictions. Their team was spending 30+ hours per week on manual investor operations, and the workload grew with every new LP.
+              We built everything described above for a regulated merchant banking firm managing private equity, venture capital, and real estate investments across multiple jurisdictions. Their team was spending 30+ hours per week on manual investor operations, and the workload grew with every new LP.
             </p>
           </ScrollReveal>
 
           {/* Before/After Table */}
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl mb-10">
-            <div className="grid grid-cols-2 px-8 py-6 border-b border-white/[0.05] text-xs font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
+            <div className="grid grid-cols-2 px-8 py-6 border-b border-white/[0.05] text-sm font-black uppercase tracking-[0.15em] text-foreground/60 bg-white/[0.01]">
               <div>Before</div>
               <div className="text-sky-400">After</div>
             </div>
             {CASE_STUDY.map((row, i) => (
               <ScrollReveal key={i} delay={i * 50}>
-                <div className={`group grid grid-cols-2 px-8 py-6 items-center stat-row cursor-default ${i < CASE_STUDY.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
-                  <div className="text-xs text-foreground/60 pr-6 font-light">{row.before}</div>
-                  <div className="text-xs text-foreground/80 font-medium group-hover:text-sky-400 transition-colors">{row.after}</div>
+                <div className={`group grid grid-cols-2 px-8 py-7 items-center stat-row cursor-default ${i < CASE_STUDY.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
+                  <div className="text-sm text-foreground/60 pr-6 font-light">{row.before}</div>
+                  <div className="text-sm text-foreground/80 font-medium group-hover:text-sky-400 transition-colors">{row.after}</div>
                 </div>
               </ScrollReveal>
             ))}
@@ -156,7 +184,7 @@ export default function PEOpsPage() {
               ].map((m) => (
                 <div key={m.label} className="border border-white/[0.05] bg-card/[0.2] p-8 text-center rounded-[4px]">
                   <span className="text-3xl font-black text-foreground block mb-1 tracking-tight">{m.value}</span>
-                  <span className="text-xs font-mono text-foreground/60 tracking-wider uppercase">{m.label}</span>
+                  <span className="text-sm font-mono text-foreground/60 tracking-wider uppercase">{m.label}</span>
                 </div>
               ))}
             </div>
@@ -175,7 +203,7 @@ export default function PEOpsPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-sky-400 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-sky-400/50" />
               Process
             </h2>
@@ -196,8 +224,8 @@ export default function PEOpsPage() {
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                     <h4 className="text-xl font-black tracking-[0.05em] text-foreground">{phase.title}</h4>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-sky-400 tracking-wider">{phase.price}</span>
-                      <span className="text-xs font-mono text-foreground/50 tracking-wider">· {phase.time}</span>
+                      <span className="text-sm font-mono text-sky-400 tracking-wider">{phase.price}</span>
+                      <span className="text-sm font-mono text-foreground/50 tracking-wider">· {phase.time}</span>
                     </div>
                   </div>
                   <p className="text-base text-foreground/70 font-light leading-relaxed max-w-3xl">{phase.body}</p>
@@ -212,15 +240,15 @@ export default function PEOpsPage() {
           {/* What You Own */}
           <ScrollReveal delay={300}>
             <div className="border border-white/[0.05] bg-card/[0.2] p-10 mt-6 rounded-[4px]">
-              <h4 className="text-xs font-black uppercase tracking-[0.2em] text-foreground/60 mb-6">What You Own</h4>
+              <h4 className="text-sm font-black uppercase tracking-[0.2em] text-foreground/60 mb-6">What You Own</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {["Complete source code", "Your database, your infrastructure", "No subscription fees", "No per-seat licensing", "No vendor lock-in", "Extend or modify independently"].map((item) => (
-                  <span key={item} className="text-xs text-foreground/70 font-light flex items-center gap-2">
+                  <span key={item} className="text-sm text-foreground/70 font-light flex items-center gap-2">
                     <span className="w-1 h-1 rounded-full bg-sky-400 shrink-0" />{item}
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-foreground/50 mt-8 font-mono tracking-wider">
+              <p className="text-sm text-foreground/50 mt-8 font-mono tracking-wider">
                 Juniper Square: $700K+/year, subscription, you never own it. Traditional dev shop: €100-200K, 12+ months. Muditek: pay once, own it forever, delivered in 4-8 weeks.
               </p>
             </div>
@@ -232,7 +260,7 @@ export default function PEOpsPage() {
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>
@@ -258,7 +286,7 @@ export default function PEOpsPage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-6 leading-relaxed">
               Book a 30-minute call. We&apos;ll walk through your current workflows, identify where your team is spending the most time on work that isn&apos;t generating returns, and show you the working system we built.
             </p>
-            <p className="text-xs font-mono text-foreground/50 tracking-wider uppercase mb-14">
+            <p className="text-sm font-mono text-foreground/50 tracking-wider uppercase mb-14">
               I take 1-2 build clients at a time. Each engagement gets my full attention.
             </p>
             <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">

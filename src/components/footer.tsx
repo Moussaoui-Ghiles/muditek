@@ -18,13 +18,14 @@ export function Footer() {
 
           <nav className="flex gap-16 md:gap-20" aria-label="Footer navigation">
             <div>
-              <span className="block text-xs font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Solutions</span>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Solutions</span>
               <Link href="/mudiagent" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Revenue Leak Audit</Link>
-              <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Operational Infrastructure</Link>
+              <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Operational Infrastructure</Link>
+              <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
             </div>
             <div>
-              <span className="block text-xs font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Company</span>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Company</span>
               <Link href="/about" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">About</Link>
               <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
               <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
@@ -34,7 +35,7 @@ export function Footer() {
         </div>
 
         <div className="h-px bg-white/[0.06] mb-6" />
-        <p className="text-xs text-foreground/40 font-mono tracking-wider">&copy; {new Date().getFullYear()} Muditek. All rights reserved.</p>
+        <p className="text-sm text-foreground/50 font-mono tracking-wider">&copy; {new Date().getFullYear()} Muditek. All rights reserved.</p>
       </div>
     </footer>
   );

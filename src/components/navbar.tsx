@@ -11,20 +11,17 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
     setSolutionsOpen(false);
   }, [pathname]);
 
-  // Scroll-triggered navbar background
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Prevent scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -37,45 +34,47 @@ export function Navbar() {
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Logo */}
-        <Link
-          href="/"
-          className="group flex items-center gap-3 relative z-50"
-          aria-label="Muditek homepage"
-        >
+        <Link href="/" className="group flex items-center gap-3 relative z-50" aria-label="Muditek homepage">
           <Image src="/icon.svg" alt="" width={36} height={36} aria-hidden="true" />
-          <span className="text-base font-black tracking-[0.2em] text-foreground uppercase">
-            MUDITEK
-          </span>
+          <span className="text-base font-black tracking-[0.2em] text-foreground uppercase">MUDITEK</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-10">
+          <Link href="/" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            Home
+          </Link>
+
           {/* Solutions dropdown */}
           <div className="relative group">
-            <button className="text-xs uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
+            <button className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
               Solutions
               <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity mt-[1px]">
                 <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <div className="absolute top-full left-0 mt-3 w-56 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
-              <Link href="/mudiagent" className="block px-5 py-2.5 text-xs uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+            <div className="absolute top-full left-0 mt-3 w-72 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
+              <Link href="/mudiagent" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 mudiAgent
               </Link>
-              <Link href="/revenue-leak-audit" className="block px-5 py-2.5 text-xs uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+              <Link href="/revenue-leak-audit" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Revenue Leak Audit
               </Link>
-              <Link href="/pe-ops" className="block px-5 py-2.5 text-xs uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+              <Link href="/pe-ops" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Operational Infrastructure
+              </Link>
+              <div className="h-px bg-white/[0.04] mx-5 my-2" />
+              <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Revenue Leak Calculator
+                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Free</span>
               </Link>
             </div>
           </div>
 
-          <Link href="/about" className="text-xs uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+          <Link href="/about" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             About
           </Link>
-          <Link href="/newsletter" className="text-xs uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+          <Link href="/newsletter" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Newsletter
           </Link>
         </div>
@@ -85,7 +84,7 @@ export function Navbar() {
           href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden md:flex px-6 py-2.5 rounded-[2px] text-xs font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+          className="hidden md:flex px-6 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
         >
           Book a Call
         </a>
@@ -110,24 +109,34 @@ export function Navbar() {
         }`}
       >
         <div className="flex flex-col items-start justify-center h-full px-10 gap-1">
-          {/* Solutions group */}
+          <Link
+            href="/"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "60ms" : "0ms" }}
+          >
+            Home
+          </Link>
+
           <button
             onClick={() => setSolutionsOpen(!solutionsOpen)}
             className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex items-center gap-3 ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             }`}
-            style={{ transitionDelay: mobileOpen ? "100ms" : "0ms" }}
+            style={{ transitionDelay: mobileOpen ? "120ms" : "0ms" }}
           >
             Solutions
             <svg width="14" height="14" viewBox="0 0 8 8" fill="none" className={`transition-transform duration-300 ${solutionsOpen ? "rotate-180" : ""}`}>
               <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-48 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
+          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-64 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
             <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
               <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
+              <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
             </div>
           </div>
 
@@ -136,7 +145,7 @@ export function Navbar() {
             className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             }`}
-            style={{ transitionDelay: mobileOpen ? "180ms" : "0ms" }}
+            style={{ transitionDelay: mobileOpen ? "200ms" : "0ms" }}
           >
             About
           </Link>
@@ -155,10 +164,10 @@ export function Navbar() {
             href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
             target="_blank"
             rel="noopener noreferrer"
-            className={`mt-8 px-8 py-4 bg-foreground text-background text-xs font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
+            className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             }`}
-            style={{ transitionDelay: mobileOpen ? "340ms" : "0ms" }}
+            style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
           >
             Book a Call
           </a>

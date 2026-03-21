@@ -1,0 +1,41 @@
+# Muditek
+
+> AI systems that eliminate operational waste.
+
+Muditek diagnoses where companies lose money to manual operations and builds AI systems that fix it. Founded by Ghiles Moussaoui. Based in Europe.
+
+## Services
+
+- [mudiAgent](https://muditek.com/mudiagent): On-premises AI digital employees for telecom and enterprise. Automates SLA reporting, knowledge search, follow-ups, and software operation. No cloud, no per-user fees. 40-hour guarantee.
+- [Revenue Leak Audit](https://muditek.com/revenue-leak-audit): Diagnoses where B2B SaaS pipelines lose €80-180K/year with exact formulas. Builds AI systems to fix speed-to-lead, pipeline conversion, churn, and outbound performance. €50K guarantee.
+- [Operational Infrastructure for Private Equity & Investment Banking](https://muditek.com/pe-ops): Custom operational infrastructure for private equity and investment banking firms. Investor onboarding, KYC automation, document generation, e-signatures, fee computation. Alternative to Juniper Square at a fraction of the cost.
+
+## Tools
+
+- [Revenue Leak Calculator](https://muditek.com/tools/revenue-leak-calculator): Free calculator that estimates annual revenue leakage from speed-to-lead decay, pipeline conversion gaps, and excess churn.
+
+## Target Audiences
+
+- Telecom operators and traders with 50+ employees needing on-premises AI automation
+- B2B SaaS founders at €800K-1.8M ARR with 2-5 sales reps losing pipeline revenue
+- Private equity, venture capital, and investment banking firms managing investor operations across multiple jurisdictions
+
+## Key Differentiators
+
+- Diagnose first: every engagement starts with a diagnostic that quantifies the problem in euros with formulas
+- Client owns everything: source code, infrastructure, data. No SaaS subscriptions, no vendor lock-in
+- Weeks not months: delivered in 4-8 weeks, not 12-18 month enterprise projects
+- On-premises AI: data stays in the client's building, never touches third-party servers
+
+## Guarantees
+
+- mudiAgent: 40 hours saved in 90 days or reconfigured at no cost
+- Revenue Leak Audit: €50K in annual leakage found or you pay nothing
+- Operational Infrastructure: €150K+ in annual operational waste identified or you pay nothing
+
+## Contact
+
+- Website: https://muditek.com
+- Book a call: https://muditek.com/about
+- Newsletter: https://muditek.com/newsletter
+- LinkedIn: https://www.linkedin.com/in/ghiles-moussaoui-b36218250/

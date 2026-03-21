@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { JsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
@@ -35,6 +36,33 @@ const FAQ = [
 export default function RevenueMachinePage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-emerald-500/20 flex flex-col items-center">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Revenue Leak Audit",
+          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          description: "Diagnoses where B2B SaaS pipelines lose €80-180K/year with exact formulas. Builds AI systems to fix speed-to-lead, pipeline conversion, churn, and outbound.",
+          url: "https://muditek.com/revenue-leak-audit",
+          areaServed: "Worldwide",
+          offers: [
+            { "@type": "Offer", name: "Diagnostic", price: "2000", priceCurrency: "EUR", description: "Prioritized leak report with euro amounts, formulas, and fix roadmap in 5 days." },
+            { "@type": "Offer", name: "Build the Fix", price: "5000", priceCurrency: "EUR", description: "Per fix. Speed-to-lead automation, pipeline scoring, outbound rebuild." },
+            { "@type": "Offer", name: "Monthly Retainer", price: "3000", priceCurrency: "EUR", description: "Monthly Revenue Recovery Report. 3-5x return every billing cycle." },
+          ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((item) => ({
+            "@type": "Question",
+            name: item.q,
+            acceptedAnswer: { "@type": "Answer", text: item.a },
+          })),
+        }}
+      />
       <Navbar />
 
       {/* ══════ HERO — NARRATIVE ══════ */}
@@ -48,7 +76,7 @@ export default function RevenueMachinePage() {
                 <span className="w-8 h-[1px] bg-emerald-400/50" />
                 Muditek / Revenue Leak Audit
               </h2>
-              <span className="px-3 py-1 border border-emerald-500/20 text-xs font-black uppercase tracking-[0.2em] text-emerald-400/80 rounded-[2px]">€50K Guarantee</span>
+              <span className="px-3 py-1 border border-emerald-500/20 text-sm font-black uppercase tracking-[0.2em] text-emerald-400/80 rounded-[2px]">€50K Guarantee</span>
             </div>
           </ScrollReveal>
 
@@ -74,13 +102,13 @@ export default function RevenueMachinePage() {
 
           <ScrollReveal delay={280}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-xs uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <Link href="#contact" className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book Your Diagnostic · €2,000
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
               </Link>
-              <Link href="#leaks" className="px-8 py-5 border border-white/[0.1] text-foreground text-xs font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
+              <Link href="#leaks" className="px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
                 See the 5 Leaks
               </Link>
             </div>
@@ -108,14 +136,14 @@ export default function RevenueMachinePage() {
             ].map((item, i) => (
               <ScrollReveal key={item.title} delay={i * 80}>
                 <div className="border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
-                  <h4 className="text-xs font-black uppercase tracking-[0.15em] text-emerald-400/80 mb-3">{item.title}</h4>
+                  <h4 className="text-sm font-black uppercase tracking-[0.15em] text-emerald-400/80 mb-3">{item.title}</h4>
                   <p className="text-base text-foreground/70 font-light leading-relaxed">{item.body}</p>
                 </div>
               </ScrollReveal>
             ))}
           </div>
           <ScrollReveal delay={300}>
-            <p className="text-xs text-foreground/50 italic mt-8 font-mono tracking-wider">Your revenue operations are the only lever left. You can&apos;t buy your way out of broken unit economics.</p>
+            <p className="text-sm text-foreground/50 italic mt-8 font-mono tracking-wider">Your revenue operations are the only lever left. You can&apos;t buy your way out of broken unit economics.</p>
           </ScrollReveal>
         </div>
       </section>
@@ -125,7 +153,7 @@ export default function RevenueMachinePage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-emerald-400 mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-emerald-400 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-emerald-400/50" />
               The 5 Leaks
             </h2>
@@ -147,7 +175,7 @@ export default function RevenueMachinePage() {
                     <div>
                       <h4 className="text-lg font-black tracking-[0.05em] text-foreground mb-2 group-hover:text-emerald-400 transition-colors">{leak.name}</h4>
                       <p className="text-base text-foreground/70 font-light leading-relaxed mb-3">{leak.example}</p>
-                      <code className="text-xs text-emerald-400/60 font-mono tracking-wider">{leak.formula}</code>
+                      <code className="text-sm text-emerald-400/60 font-mono tracking-wider">{leak.formula}</code>
                     </div>
                   </div>
                 </div>
@@ -162,7 +190,7 @@ export default function RevenueMachinePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-emerald-400 mb-6 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-emerald-400 mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-emerald-400/50" />
               Process
             </h2>
@@ -180,13 +208,13 @@ export default function RevenueMachinePage() {
                     <span className="text-5xl font-black text-foreground/[0.06] block mb-6">{phase.num}</span>
                     <h4 className="text-lg font-black tracking-[0.05em] text-foreground mb-1">{phase.title}</h4>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-xs font-mono text-emerald-400/80 tracking-wider">{phase.price}</span>
-                      <span className="text-xs font-mono text-foreground/50 tracking-wider">· {phase.time}</span>
+                      <span className="text-sm font-mono text-emerald-400/80 tracking-wider">{phase.price}</span>
+                      <span className="text-sm font-mono text-foreground/50 tracking-wider">· {phase.time}</span>
                     </div>
                     <p className="text-base text-foreground/70 font-light leading-relaxed">{phase.body}</p>
                   </div>
                   <div className="pt-6 mt-8 border-t border-white/[0.05]">
-                    <span className="text-xs font-mono text-emerald-400/60 tracking-wider uppercase">{phase.metric}</span>
+                    <span className="text-sm font-mono text-emerald-400/60 tracking-wider uppercase">{phase.metric}</span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -202,7 +230,7 @@ export default function RevenueMachinePage() {
             <div className="doppelrand mx-auto mb-16 inline-block">
               <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400 pt-[1px]">€50K Guarantee</span>
+                <span className="text-sm font-black uppercase tracking-[0.3em] text-emerald-400 pt-[1px]">€50K Guarantee</span>
               </div>
             </div>
 
@@ -211,10 +239,10 @@ export default function RevenueMachinePage() {
             </h2>
 
             <p className="text-base text-foreground/70 max-w-2xl mx-auto leading-relaxed font-light mb-12">
-              At €800K+ ARR with 2+ sales reps, there are always leaks. We&apos;ve never missed the €50K threshold. Every number has a formula. Every formula uses your actual numbers. Not estimates. Math.
+              At €800K+ ARR with 2+ sales reps, there are always leaks. Every number has a formula. Every formula uses your actual numbers. Not estimates. Math.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 text-xs font-mono uppercase tracking-wider text-foreground/60 mb-16">
+            <div className="flex flex-wrap justify-center gap-4 text-sm font-mono uppercase tracking-wider text-foreground/60 mb-16">
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">B2B SaaS</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">€800K-1.8M ARR</span>
               <span className="px-4 py-2 border border-white/[0.05] rounded-[2px]">2-5 Sales Reps</span>
@@ -228,7 +256,7 @@ export default function RevenueMachinePage() {
       <section className="py-24 md:py-32 w-full flex justify-center">
         <div className="max-w-[900px] w-full px-6 md:px-12">
           <ScrollReveal>
-            <h2 className="text-xs font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-foreground/20" />
               Common Questions
             </h2>

@@ -1,6 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: hsl(210 50% 4%);
+  --color-foreground: hsl(210 15% 92%);
+  --color-card: hsl(215 35% 7%);
+  --color-primary: #F59E0B;
+  --color-primary-foreground: hsl(210 50% 4%);
+  --color-hero-sub: hsl(210 15% 45%);
+  --color-muted: hsl(215 20% 10%);
+  --color-muted-foreground: hsl(210 15% 45%);
+  --color-border: hsl(210 18% 15%);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --animate-marquee: marquee 20s linear infinite;
+
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+}
 
 @layer base {
   html {
@@ -51,7 +70,7 @@
     pointer-events: none;
   }
 
-  /* ─── Button Press Physics (taste-skill: tactile feedback) ─── */
+  /* ─── Button Press Physics ─── */
   .btn-press {
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
@@ -63,7 +82,7 @@
     transform: scale(0.97) translateY(1px);
   }
 
-  /* ─── Card Lift (soft-skill: hover elevation) ─── */
+  /* ─── Card Lift ─── */
   .card-lift {
     transition: all 0.6s cubic-bezier(0.32, 0.72, 0, 1);
   }
@@ -72,7 +91,7 @@
     box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.5);
   }
 
-  /* ─── Stat Row Hover (redesign-skill: interactive metrics) ─── */
+  /* ─── Stat Row Hover ─── */
   .stat-row {
     transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   }
@@ -81,7 +100,7 @@
     padding-left: 1.25rem;
   }
 
-  /* ─── Scroll Reveal (soft-skill: staggered entry) ─── */
+  /* ─── Scroll Reveal ─── */
   .sr {
     opacity: 0;
     transform: translateY(2rem);
@@ -94,7 +113,7 @@
     filter: blur(0);
   }
 
-  /* ─── Double Bezel (soft-skill: Doppelrand) ─── */
+  /* ─── Double Bezel (Doppelrand) ─── */
   .doppelrand {
     padding: 6px;
     border-radius: 2rem;
@@ -110,7 +129,7 @@
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
-  /* ─── Noise Overlay (taste-skill: anti-flat, grain texture) ─── */
+  /* ─── Noise Overlay ─── */
   .noise::after {
     content: "";
     position: fixed;

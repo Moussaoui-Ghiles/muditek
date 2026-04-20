@@ -437,12 +437,10 @@ export default function RevenueLeakCalculatorPage() {
                     Book Your Diagnostic
                   </a>
                   <a
-                    href="https://b2bagents.beehiiv.com/subscribe"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/subscribe"
                     className="inline-flex items-center justify-center px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press"
                   >
-                    Subscribe to B2B Agents
+                    Subscribe to Newsletter
                   </a>
                 </div>
               </div>

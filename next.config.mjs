@@ -28,6 +28,12 @@ const nextConfig = {
         destination: "/revenue-leak-audit",
         permanent: true,
       },
+      {
+        // Legacy LinkedIn campaign URLs — UUID at root → /c/[id]
+        source: "/:id(:?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+        destination: "/c/:id",
+        permanent: true,
+      },
     ];
   },
 };

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { NewsletterInline } from "@/components/newsletter-inline";
 
 export const metadata: Metadata = {
   title: "About Muditek | AI Systems That Eliminate Operational Waste",
@@ -172,6 +173,9 @@ export default function AboutPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ══════ NEWSLETTER ══════ */}
+      <NewsletterInline tags={["source:about"]} />
 
       {/* ══════ FOUNDER ══════ */}
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">

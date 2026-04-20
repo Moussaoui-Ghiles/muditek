@@ -5,6 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
@@ -148,6 +150,9 @@ export default function RevenueMachinePage() {
         </div>
       </section>
 
+      {/* ══════ NEWSLETTER ══════ */}
+      <NewsletterInline tags={["source:revenue-audit", "segment:saas"]} accentColor="emerald" />
+
       {/* ══════ THE 5 LEAKS ══════ */}
       <section id="leaks" className="py-32 md:py-48 w-full flex justify-center relative">
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
@@ -222,6 +227,14 @@ export default function RevenueMachinePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════ LEAD MAGNET ══════ */}
+      <LeadMagnetGate
+        title="The 5-Leak Diagnostic Framework"
+        description="The exact methodology we use to find €80-180K in annual pipeline leakage — with the formulas, benchmark sources, and a self-assessment worksheet."
+        tags={["source:revenue-audit", "segment:saas", "lead-magnet:5-leak-framework"]}
+        accentColor="emerald"
+      />
 
       {/* ══════ GUARANTEE ══════ */}
       <section className="py-32 w-full relative border-t border-b border-white/[0.02] bg-card/[0.2] flex justify-center mesh-subtle">

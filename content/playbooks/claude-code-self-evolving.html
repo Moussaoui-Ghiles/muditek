@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How To Transform Claude Code Into A Self-Evolving System — Full Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000000;
+  --surface: #0c0c0e;
+  --surface-2: #141417;
+  --surface-3: #1a1a1f;
+  --border: #232328;
+  --border-subtle: #1a1a1f;
+  --text: #f5f5f7;
+  --text-secondary: #ececf0;
+  --text-muted: #a8a8b2;
+  --accent: #34d399;
+  --accent-dim: #065f46;
+  --accent-glow: rgba(52, 211, 153, 0.07);
+  --accent-border: rgba(52, 211, 153, 0.18);
+  --orange: #f97316;
+  --purple: #a78bfa;
+  --code-bg: #0a0a0d;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+/* ── Layout ── */
+.container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+.wide { max-width: 960px; margin: 0 auto; padding: 0 28px; }
+
+section { padding: 80px 0; }
+section + section { border-top: 1px solid var(--border-subtle); }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  padding: 100px 28px 80px;
+  text-align: center;
+  overflow: hidden;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 1000px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.05) 0%, rgba(52, 211, 153, 0.02) 30%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+}
+
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.hero-logo svg { width: 20px; height: 20px; }
+
+.hero-logo .sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 7vw, 84px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 900px;
+  margin: 0 auto 32px;
+  color: #ffffff;
+}
+
+.hero h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--accent), #6ee7b7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 22px;
+  color: var(--text);
+  max-width: 640px;
+  margin: 0 auto 56px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-num {
+  font-family: var(--font-code);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hero-stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ── Typography ── */
+h2 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #ffffff;
+  margin-top: 48px;
+}
+
+h3:first-child { margin-top: 0; }
+
+h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+p { margin-bottom: 18px; color: var(--text); font-size: 18px; }
+p:last-child { margin-bottom: 0; }
+strong { color: var(--text); font-weight: 600; }
+
+a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+a:hover { opacity: 0.8; }
+
+/* ── Section Intro ── */
+.intro-text {
+  font-size: 20px;
+  line-height: 1.7;
+  color: var(--text);
+  max-width: 680px;
+  margin-bottom: 48px;
+}
+
+/* ── Blockquote ── */
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 24px 28px;
+  margin: 32px 0;
+  background: var(--accent-glow);
+  border-radius: 0 10px 10px 0;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+blockquote p { color: var(--text); }
+
+/* ── Layers ── */
+.layers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.layer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  transition: border-color 0.3s, transform 0.3s;
+  cursor: default;
+}
+
+.layer-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-2px);
+}
+
+.layer-num {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.layer-card h3 { font-size: 20px; margin-bottom: 10px; margin-top: 0; }
+
+.layer-card p { font-size: 16px; line-height: 1.6; color: var(--text); }
+
+/* ── TOC ── */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.toc-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 6px;
+}
+
+.toc-grid a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.toc-grid a:hover {
+  background: var(--accent-glow);
+  color: var(--text);
+}
+
+.toc-grid a .num {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 22px;
+}
+
+/* ── Step Header ── */
+.step { margin-bottom: 64px; }
+.step:last-child { margin-bottom: 0; }
+
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 5px 12px;
+  background: var(--accent-glow);
+  border-radius: 6px;
+  border: 1px solid var(--accent-border);
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Code Blocks ── */
+.code-block {
+  position: relative;
+  margin: 28px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--code-bg);
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-path {
+  font-family: var(--font-code);
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.cp-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cp-btn:hover { color: var(--text); border-color: var(--text-muted); }
+.cp-btn.ok { color: var(--accent); border-color: var(--accent); }
+.cp-btn svg { width: 14px; height: 14px; }
+
+.code-block pre {
+  padding: 22px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 1.7;
+  color: #d8d8e0;
+  tab-size: 2;
+}
+
+.code-block pre .c { color: #5c5c6e; font-style: italic; }
+.code-block pre .k { color: #c084fc; }
+.code-block pre .s { color: #34d399; }
+.code-block pre .f { color: #60a5fa; }
+.code-block pre .n { color: #fbbf24; }
+.code-block pre .h { color: #f0f0f3; font-weight: 600; }
+.code-block pre .t { color: #3a3a42; }
+.code-block pre .tl { color: var(--text); }
+.code-block pre .tc { color: #5c5c6e; font-style: italic; }
+
+/* ── Callout ── */
+.callout {
+  background: var(--accent-glow);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 22px 28px;
+  margin: 28px 0;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.callout p { color: var(--text); font-size: 17px; }
+.callout strong { color: var(--accent); }
+
+.callout-warn {
+  background: rgba(251, 191, 36, 0.05);
+  border-color: rgba(251, 191, 36, 0.18);
+}
+
+.callout-warn strong { color: #fbbf24; }
+
+/* ── Timeline ── */
+.timeline {
+  margin: 48px 0;
+  position: relative;
+  padding-left: 36px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-dim), var(--border));
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 40px;
+  padding-left: 10px;
+}
+
+.tl-item:last-child { margin-bottom: 0; }
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
+}
+
+.tl-session {
+  font-family: var(--font-code);
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.tl-item p { font-size: 17px; color: var(--text); line-height: 1.7; }
+
+/* ── FAQ ── */
+.faq-item {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 24px 0;
+}
+
+.faq-item:last-child { border-bottom: none; }
+
+.faq-q { font-weight: 700; color: var(--text); margin-bottom: 10px; font-size: 18px; }
+.faq-a { color: var(--text); font-size: 17px; line-height: 1.7; }
+
+/* ── Customize ── */
+.cust-grid { display: grid; gap: 10px; margin-top: 28px; }
+
+.cust-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  align-items: start;
+}
+
+.cust-tag {
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.cust-tag.must { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+.cust-tag.should { background: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.18); }
+.cust-tag.keep { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent-border); }
+
+.cust-row p { font-size: 16px; color: var(--text); }
+
+/* ── Hooks Table ── */
+.htable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 28px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.htable th {
+  background: var(--surface-2);
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.htable td {
+  padding: 16px 18px;
+  font-size: 16px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.htable tr:last-child td { border-bottom: none; }
+.htable code {
+  font-family: var(--font-code);
+  font-size: 13px;
+  background: var(--code-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--accent);
+}
+
+/* ── Checklist ── */
+.checklist { list-style: none; margin: 28px 0; }
+
+.checklist li {
+  position: relative;
+  padding: 14px 0 14px 40px;
+  font-size: 17px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.6;
+}
+
+.checklist li:last-child { border-bottom: none; }
+
+.checklist li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+}
+
+/* ── Big Flow ── */
+.flow-visual {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 40px 0;
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 2;
+  color: var(--text);
+  text-align: center;
+  overflow-x: auto;
+}
+
+.flow-visual .arrow { color: var(--accent); font-weight: 600; }
+.flow-visual .node { color: var(--text); }
+
+/* ── CTA ── */
+.cta-section {
+  padding: 100px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+}
+
+.cta-section::after {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.cta-section h2 {
+  font-size: clamp(32px, 5vw, 48px);
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 19px;
+  max-width: 560px;
+  margin: 0 auto 40px;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(52, 211, 153, 0.2);
+  opacity: 1;
+}
+
+.cta-btn svg { width: 20px; height: 20px; }
+
+.cta-sub {
+  margin-top: 20px;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 28px;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.footer p { color: var(--text-secondary); font-size: 14px; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  body { font-size: 17px; }
+  .hero { padding: 80px 20px 60px; min-height: auto; }
+  .hero h1 { font-size: 36px; }
+  .hero-stats { gap: 32px; }
+  section { padding: 56px 0; }
+  .layers-grid { grid-template-columns: 1fr; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .code-block pre { font-size: 13px; padding: 16px; }
+  .toc { padding: 28px; }
+  .htable th, .htable td { padding: 12px 14px; }
+  .cta-section { padding: 80px 20px; }
+  .flow-visual { padding: 24px; font-size: 12px; }
+}
+
+/* ── Print ── */
+@media print {
+  body { background: white; color: #111; font-size: 14px; }
+  .hero::before, .hero::after, .cta-section::before, .cta-section::after { display: none; }
+  .cp-btn { display: none; }
+  .code-block { break-inside: avoid; border-color: #ddd; }
+  section + section { border-color: #eee; }
+  a { color: #111; }
+  .hero h1 em { -webkit-text-fill-color: #059669; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════ HERO ═════ -->
+<header class="hero">
+  <div style="margin-bottom:56px;">
+    <svg viewBox="-30 250 1150 1310" width="72" height="72" xmlns="http://www.w3.org/2000/svg"><path fill="#D97757" d="M489.8,1506.7l15.8-69.8,18-90.1,14.6-72.1,13.5-88.9,7.9-29.3-1.1-2.3-5.6,1.1-67.6,92.3-102.5,138.5-81.1,85.6-19.1,7.9-33.8-16.9,3.4-31.5,19.1-27,111.5-143,67.6-88.9,43.9-50.7-1.1-6.8h-2.3l-297.2,193.7-52.9,6.8-23.6-21.4,3.4-34.9,11.3-11.3,88.9-61.9,221.8-123.8,3.4-11.3-3.4-5.6h-11.3l-37.2-2.3-126.1-3.4-109.2-4.5-107-5.6-27-5.6L0,989.9l2.3-16.9,22.5-14.6,32.7,2.3,70.9,5.6,107,6.8,77.7,4.5,114.8,12.4h18l2.3-7.9-5.6-4.5-4.5-4.5-111.5-74.3-119.3-78.8-63.1-46.2-33.8-23.6-16.9-21.4-6.8-47.3,30.4-33.8,41.7,3.4,10.1,2.3,41.7,32.7,88.9,68.7,117.1,86.7,16.9,13.5,7.9-4.5v-3.4l-7.9-12.4-63.1-114.8-67.6-117.1-30.4-48.4-7.9-29.3c-3-10.1-4.5-21.4-4.5-33.8l34.9-47.3,19.1-6.8,47.3,6.8,19.1,16.9,29.3,66.4,46.2,104.7,73.2,141.9,21.4,42.8,11.3,38.3,4.5,12.4h7.9v-6.8l5.6-81.1,11.3-98,11.3-126.1,3.4-36,18-42.8,34.9-22.5,27,12.4,22.5,32.7-3.4,20.3-12.4,86.7-27,136.2-16.9,92.3h10.1l11.3-12.4,46.2-60.8,77.7-96.8,33.8-38.3,40.5-42.8,25.9-20.3h48.4l34.9,52.9-15.8,55.2-49.5,63.1-41.7,52.9-59.7,79.9-36,64.2,3.4,4.5h7.9l134-29.3,73.2-12.4,85.6-14.6,39.4,18,4.5,18-15.8,38.3-92.3,22.5-108.1,21.4-161,38.3-2.3,1.1,2.3,3.4,72.1,6.8,31.5,2.3h76.6l141.9,10.1,37.2,24.8,21.4,29.3-3.4,23.6-57.4,28.1-76.6-18-180.1-42.8-60.8-14.6h-9v4.5l51.8,50.7,93.4,84.4,118.2,109.2,5.6,27-14.6,22.5-15.8-2.3-103.6-78.8-40.5-34.9-90.1-75.4h-5.6v7.9l20.3,30.4,110.3,165.5,5.6,50.7-7.9,15.8-29.3,10.1-30.4-5.6-65.3-90.1-66.4-102.5-54-91.2-5.6,4.5-32.7,340-14.6,16.9-33.8,13.5-28.1-21.4-15.8-34.9Z"/></svg>
+  </div>
+  <h1>Transform Claude Code<br>Into a <em>Self-Evolving</em> System</h1>
+  <p class="hero-sub">The system that took corrections from 4-5 per session to near zero by session 20. Every mistake Claude makes gets captured, verified, and turned into a permanent rule it never breaks again.</p>
+  <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+    <div style="text-align:center;">
+      <div style="font-family:var(--font-code);font-size:36px;font-weight:700;color:#fff;">4-5 <span style="font-size:20px;color:var(--accent);">&rarr;</span> 0</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">corrections per session</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:var(--font-code);font-size:36px;font-weight:700;color:#fff;">20</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">sessions to full evolution</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:var(--font-code);font-size:36px;font-weight:700;color:#fff;">1</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">copy-paste to set up</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═════ INTRO ═════ -->
+<section>
+  <div class="container">
+    <p class="intro-text">The future of AI is about self-evolution in every step. Agents are now evolving themselves. Research keeps showing the benefits of self-evolving systems from every angle. Why shouldn't your Claude Code have a self-evolving system as well?</p>
+    <p class="intro-text">If you are ready to give your Claude new wings and turn it into something beyond the initial standard version that evolves through sessions, then this is your guide.</p>
+
+    <blockquote>
+      <p>By the end, you'll have a Claude Code setup that (1) follows a decision framework before writing code, (2) delegates complex tasks to specialized agents, (3) enforces security and performance rules only when relevant, (4) captures your corrections and turns them into permanent knowledge, and (5) gets measurably better every session.</p>
+    </blockquote>
+
+    <p>You're building a system where:</p>
+    <p>Every correction you make gets captured and logged. When the same correction appears twice, it mutates into a permanent rule that Claude follows forever. Codebase patterns Claude discovers during work get observed and recorded like field notes. The evolution system reviews all accumulated signals and proposes which learned behaviors should graduate into permanent DNA.</p>
+    <p><strong>Natural selection for your AI engineering system.</strong> The useful patterns survive. The outdated rules get pruned. The system gets fitter every generation.</p>
+  </div>
+</section>
+
+<!-- ═════ WHAT ═════ -->
+<section id="what">
+  <div class="container">
+    <h4>Architecture</h4>
+    <h2>The Four Layers</h2>
+    <div class="layers-grid">
+      <div class="layer-card">
+        <div class="layer-num">LAYER 01</div>
+        <h3>The Cognitive Core</h3>
+        <p>A CLAUDE.md that doesn't just list commands but programs how Claude thinks. A decision framework it runs before writing any code. Quality gates it checks before calling anything done.</p>
+      </div>
+      <div class="layer-card">
+        <div class="layer-num">LAYER 02</div>
+        <h3>Specialized Agents</h3>
+        <p>Two subagent personas: an architect who plans and a reviewer who validates. Spawned for focused work with different tool access and model tiers. Isolated context, sharp output.</p>
+      </div>
+      <div class="layer-card">
+        <div class="layer-num">LAYER 03</div>
+        <h3>Path-Scoped Rules</h3>
+        <p>Security rules that only load when you're editing auth code. API design rules that only activate in your handlers directory. Performance rules that watch for N+1 queries everywhere. Context stays lean because it only loads what's relevant.</p>
+      </div>
+      <div class="layer-card">
+        <div class="layer-num">LAYER 04</div>
+        <h3>The Evolution Engine</h3>
+        <p>A memory system that captures corrections and observations, a skill that auto-triggers when you correct Claude, and a periodic review command that graduates learned patterns into permanent rules. This is the layer that makes the system genuinely self-improving rather than static.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ TOC ═════ -->
+<section style="padding: 40px 0;">
+  <div class="wide">
+    <nav class="toc">
+      <div class="toc-label">Table of Contents</div>
+      <div class="toc-grid">
+        <a href="#s1"><span class="num">01</span> Folder Structure</a>
+        <a href="#s2"><span class="num">02</span> CLAUDE.md &mdash; Cognitive Core</a>
+        <a href="#s3"><span class="num">03</span> Settings &mdash; Permissions</a>
+        <a href="#s4"><span class="num">04</span> Rules &mdash; Path-Scoped</a>
+        <a href="#s5"><span class="num">05</span> Agents &mdash; Subagents</a>
+        <a href="#s6"><span class="num">06</span> Commands &mdash; Workflows</a>
+        <a href="#s7"><span class="num">07</span> Evolution Engine</a>
+        <a href="#s8"><span class="num">08</span> Memory System</a>
+        <a href="#loop"><span class="num">09</span> The Evolution Loop</a>
+        <a href="#hooks"><span class="num">10</span> Automation Hooks</a>
+        <a href="#script"><span class="num">11</span> One-Command Setup</a>
+        <a href="#custom"><span class="num">12</span> What to Customize</a>
+        <a href="#test"><span class="num">13</span> Testing Your Setup</a>
+        <a href="#faq"><span class="num">14</span> FAQ</a>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<!-- ═════ STEP 1 ═════ -->
+<section id="s1">
+  <div class="container">
+    <div class="step-badge">Step 01</div>
+    <h2>Create the Folder Structure</h2>
+    <p>Run this from your project root to create all directories:</p>
+    <div class="code-block">
+      <div class="code-head">
+        <span class="code-path">Terminal</span>
+        <button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      </div>
+      <pre>mkdir -p .claude/rules
+mkdir -p .claude/agents
+mkdir -p .claude/skills/evolution
+mkdir -p .claude/skills/evolve
+mkdir -p .claude/skills/review
+mkdir -p .claude/skills/boot
+mkdir -p .claude/skills/fix-issue
+mkdir -p .claude/memory</pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">What You're Creating</span></div>
+      <pre><span class="tl">your-project/</span>
+<span class="t">├──</span> <span class="tl">CLAUDE.md</span>                        <span class="tc"># The cognitive core</span>
+<span class="t">└──</span> <span class="tl">.claude/</span>
+    <span class="t">├──</span> <span class="tl">settings.json</span>                <span class="tc"># Permissions, safety, hooks</span>
+    <span class="t">├──</span> <span class="tl">rules/</span>
+    <span class="t">│   ├──</span> <span class="tl">core-invariants.md</span>       <span class="tc"># Loads on every file</span>
+    <span class="t">│   ├──</span> <span class="tl">security.md</span>              <span class="tc"># Auth, validation, data</span>
+    <span class="t">│   ├──</span> <span class="tl">api-design.md</span>            <span class="tc"># Handler patterns</span>
+    <span class="t">│   └──</span> <span class="tl">performance.md</span>           <span class="tc"># N+1, indexes, queries</span>
+    <span class="t">├──</span> <span class="tl">agents/</span>
+    <span class="t">│   ├──</span> <span class="tl">architect.md</span>             <span class="tc"># Plans complex features</span>
+    <span class="t">│   └──</span> <span class="tl">reviewer.md</span>              <span class="tc"># Validates before commits</span>
+    <span class="t">├──</span> <span class="tl">skills/</span>
+    <span class="t">│   ├──</span> <span class="tl">evolve/SKILL.md</span>          <span class="tc"># Self-improvement audit</span>
+    <span class="t">│   ├──</span> <span class="tl">review/SKILL.md</span>          <span class="tc"># Pre-commit pipeline</span>
+    <span class="t">│   ├──</span> <span class="tl">boot/SKILL.md</span>            <span class="tc"># Session primer</span>
+    <span class="t">│   ├──</span> <span class="tl">fix-issue/SKILL.md</span>       <span class="tc"># Bug fix from GitHub</span>
+    <span class="t">│   └──</span> <span class="tl">evolution/SKILL.md</span>       <span class="tc"># Verification engine</span>
+    <span class="t">└──</span> <span class="tl">memory/</span>
+        <span class="t">├──</span> <span class="tl">README.md</span>                <span class="tc"># Memory protocol</span>
+        <span class="t">├──</span> <span class="tl">learned-rules.md</span>         <span class="tc"># Graduated patterns</span>
+        <span class="t">├──</span> <span class="tl">evolution-log.md</span>         <span class="tc"># Audit trail</span>
+        <span class="t">├──</span> <span class="tl">corrections.jsonl</span>        <span class="tc"># Auto-created</span>
+        <span class="t">├──</span> <span class="tl">observations.jsonl</span>       <span class="tc"># Auto-created</span>
+        <span class="t">├──</span> <span class="tl">violations.jsonl</span>         <span class="tc"># Auto-created</span>
+        <span class="t">└──</span> <span class="tl">sessions.jsonl</span>           <span class="tc"># Auto-created</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 2 ═════ -->
+<section id="s2">
+  <div class="container">
+    <div class="step-badge">Step 02</div>
+    <h2>CLAUDE.md &mdash; The Cognitive Core</h2>
+    <p>This is the most important file in the system. It's not documentation. It's behavioral programming. Everything here loads directly into Claude's system prompt and shapes how it thinks for the entire session.</p>
+    <p>Create <strong>CLAUDE.md</strong> in your project root (not inside .claude/):</p>
+
+    <div class="code-block">
+      <div class="code-head">
+        <span class="code-path">CLAUDE.md</span>
+        <button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      </div>
+      <pre><span class="h"># Self-Evolving Engineering System</span>
+
+You are a principal engineer that gets smarter every session. You ship
+working software, think in systems, and continuously improve how you operate.
+
+<span class="h">## Before You Write Any Code</span>
+
+Every time. No exceptions.
+
+1. <span class="k">**Grep first.**</span> Search for existing patterns before creating anything.
+   If a convention exists, follow it. `grep -r "similar_term" src/` before
+   writing a single line.
+2. <span class="k">**Blast radius.**</span> What depends on what you're changing? Check imports,
+   tests, consumers. Unknown blast radius = not ready to code.
+3. <span class="k">**Ask, don't assume.**</span> Ambiguous request? Ask ONE clarifying question.
+   Don't guess, don't ask five questions. One, then move.
+4. <span class="k">**Smallest change.**</span> Solve what was asked. No bonus refactors. No
+   unrequested features. Scope creep is a bug.
+5. <span class="k">**Verification plan.**</span> How will you prove this works? Answer this
+   before writing code.
+
+<span class="h">## Commands</span>
+
+npm run dev          <span class="c"># Start dev server</span>
+npm run test         <span class="c"># Run tests</span>
+npm run lint         <span class="c"># Lint check</span>
+npm run build        <span class="c"># Production build</span>
+npm run typecheck    <span class="c"># TypeScript type checking</span>
+
+<span class="h">## Architecture</span>
+
+src/
+  core/              <span class="c"># Pure business logic. No framework imports.</span>
+  api/               <span class="c"># HTTP layer. Thin handlers calling core/.</span>
+  services/          <span class="c"># External boundaries (DB, APIs, queues).</span>
+  types/             <span class="c"># Shared TypeScript types and schemas.</span>
+  utils/             <span class="c"># Pure stateless utility functions.</span>
+
+Dependency flow: api/ -> core/ -> types/ and api/ -> services/ -> types/.
+Core never imports from api/ or services/.
+
+<span class="h">## Conventions</span>
+
+- TypeScript strict. No `any`. No `@ts-ignore` without a linked issue.
+- Error pattern: `{ data: T | null, error: AppError | null }`.
+  Never throw across module boundaries.
+- Validation: zod on every external input before it touches logic.
+- Naming: camelCase functions, PascalCase types, SCREAMING_SNAKE constants.
+- Imports: @/ absolute paths.
+  Order: node > external > internal > relative > types.
+- No console.log. Structured logger with levels.
+- Functions: max 30 lines, max 3 nesting levels, max 4 params.
+- Comments: WHY, never WHAT. Delete dead code.
+
+<span class="h">## Testing</span>
+
+- Test names as specs: `should return 404 when user does not exist`.
+- Arrange-Act-Assert. Mock at the boundary only.
+- Edge cases: empty, null, single element, boundary, duplicates, malformed.
+
+<span class="h">## Security Non-Negotiables</span>
+
+- Deny-by-default on all endpoints. Parameterized queries only.
+- No secrets in code. Rate limit auth endpoints. Sanitize all rendered strings.
+- Never log PII, tokens, or secrets.
+
+<span class="h">## Completion Criteria</span>
+
+ALL must pass before any task is done:
+
+1. npm run typecheck - zero errors
+2. npm run lint - zero errors
+3. npm run test - all pass
+4. No orphan TODO/FIXME without tracking issue
+5. New modules have test files
+
+<span class="h">## Self-Evolution Protocol</span>
+
+You are an evolving system. During every session:
+
+1. <span class="k">**Observe.**</span> When you discover a non-obvious pattern, constraint, or
+   convention in the codebase that isn't documented here, log it to
+   .claude/memory/observations.jsonl.
+2. <span class="k">**Learn from corrections.**</span> When the user corrects you, log the
+   correction to .claude/memory/corrections.jsonl. This is your most
+   valuable signal.
+3. <span class="k">**Consult memory.**</span> At the start of complex tasks, read
+   .claude/memory/learned-rules.md for patterns accumulated from
+   past sessions.
+4. <span class="k">**Never forget a mistake twice.**</span> If a correction matches a
+   previous correction in the log, it should already be a learned
+   rule. If it isn't, promote it immediately.
+
+Read .claude/memory/README.md for the full memory system protocol.
+
+<span class="h">## Things You Must Never Do</span>
+
+- Commit to main directly
+- Read or modify .env or secret files
+- Run destructive commands without confirmation
+- Install dependencies without justification
+- Leave dead code
+- Write tests that test mocks instead of behavior
+- Swallow errors silently
+- Skip validation
+- Modify .claude/memory/learned-rules.md without running /evolve</pre>
+    </div>
+
+    <div class="callout">
+      <p><strong>Customize:</strong> The Commands section (swap in your actual build/test/lint commands), the Architecture section (describe your real folder structure), and the Conventions section (adjust to match your stack). Everything else works universally.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 3 ═════ -->
+<section id="s3">
+  <div class="container">
+    <div class="step-badge">Step 03</div>
+    <h2>Settings &mdash; Permissions &amp; Safety</h2>
+    <p>Allowed commands run without Claude asking permission. Denied commands are blocked entirely. Anything not in either list triggers a confirmation prompt. This middle ground is intentional. You want Claude to run your test suite freely, never touch your secrets, and ask before doing anything unexpected.</p>
+
+    <div class="code-block">
+      <div class="code-head">
+        <span class="code-path">.claude/settings.json</span>
+        <button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      </div>
+      <pre>{
+  <span class="s">"$schema"</span>: <span class="s">"https://json.schemastore.org/claude-code-settings.json"</span>,
+  <span class="s">"permissions"</span>: {
+    <span class="s">"allow"</span>: [
+      <span class="s">"Bash(npm run *)"</span>,
+      <span class="s">"Bash(npx *)"</span>,
+      <span class="s">"Bash(node *)"</span>,
+      <span class="s">"Bash(git status)"</span>,
+      <span class="s">"Bash(git diff *)"</span>,
+      <span class="s">"Bash(git log *)"</span>,
+      <span class="s">"Bash(git branch *)"</span>,
+      <span class="s">"Bash(git show *)"</span>,
+      <span class="s">"Bash(git stash *)"</span>,
+      <span class="s">"Bash(gh issue *)"</span>,
+      <span class="s">"Bash(gh pr *)"</span>,
+      <span class="s">"Bash(cat *)"</span>,
+      <span class="s">"Bash(ls *)"</span>,
+      <span class="s">"Bash(find *)"</span>,
+      <span class="s">"Bash(head *)"</span>,
+      <span class="s">"Bash(tail *)"</span>,
+      <span class="s">"Bash(wc *)"</span>,
+      <span class="s">"Bash(grep *)"</span>,
+      <span class="s">"Read"</span>,
+      <span class="s">"Write"</span>,
+      <span class="s">"Edit"</span>,
+      <span class="s">"Glob"</span>,
+      <span class="s">"Grep"</span>
+    ],
+    <span class="s">"deny"</span>: [
+      <span class="s">"Bash(rm -rf *)"</span>,
+      <span class="s">"Bash(rm -r *)"</span>,
+      <span class="s">"Bash(sudo *)"</span>,
+      <span class="s">"Bash(eval *)"</span>,
+      <span class="s">"Bash(git push --force *)"</span>,
+      <span class="s">"Bash(git reset --hard *)"</span>,
+      <span class="s">"Bash(npm publish *)"</span>,
+      <span class="s">"Read(./.env)"</span>,
+      <span class="s">"Read(./.env.*)"</span>,
+      <span class="s">"Read(./**/*.pem)"</span>,
+      <span class="s">"Read(./**/*.key)"</span>
+    ]
+  }
+}</pre>
+    </div>
+
+    <div class="callout">
+      <p><strong>Customize:</strong> If you use <code>make</code> instead of npm, swap the bash patterns. If you use pnpm or bun, add those. If your project has specific directories that should be off-limits, add them to the deny list.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 4 ═════ -->
+<section id="s4">
+  <div class="container">
+    <div class="step-badge">Step 04</div>
+    <h2>Rules &mdash; Path-Scoped Intelligence</h2>
+    <p>Rules are modular instruction files that only load when Claude is working with matching files. This keeps context lean: Claude doesn't read 200 lines of security guidance when you're editing a CSS file.</p>
+
+    <h3>Security Rules</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/rules/security.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Security rules activated when working with API handlers,
+  auth, services, or middleware
+paths:
+  - "src/api/**/*"
+  - "src/services/**/*"
+  - "src/middleware/**/*"
+  - "src/auth/**/*"
+---
+
+<span class="h"># Security Rules</span>
+
+<span class="h">## Input Handling</span>
+Validate shape AND content. Zod validates the shape. You still need to check:
+- String lengths (prevent memory exhaustion)
+- Numeric ranges (prevent overflow)
+- URL/email format (prevent SSRF, injection)
+- File type AND content, not just extension
+Never trust Content-Type headers. Validate the actual payload.
+
+<span class="h">## Authorization</span>
+Auth check happens in middleware, never scattered through handlers. Every
+route denies by default. For any endpoint that takes a resource ID: verify
+the authenticated user has permission to access THAT specific resource.
+Not just "is logged in." IDOR is the most common vulnerability in web apps.
+Token validation: check expiry, issuer, audience, AND signature.
+
+<span class="h">## Database</span>
+Parameterized queries only. If you see string concatenation anywhere near
+a query, stop and fix it immediately. When building dynamic queries:
+whitelist allowed field names. Never pass user input as a column name.
+
+<span class="h">## Secrets and Data</span>
+If you encounter a hardcoded secret, flag it immediately and recommend
+rotation. PII in logs: mask to last 4 chars or hash it. API responses:
+return only fields the client needs. Never expose internal IDs or metadata.
+Error responses: return error code and safe message. Never expose stack
+traces, SQL errors, or file paths.
+
+<span class="h">## Dependencies</span>
+Before adding ANY new package:
+1. Check last publish date (stale > 2 years = red flag)
+2. Check open security advisories on GitHub
+3. Check weekly downloads (low = potential typosquatting)
+4. Verify the license is compatible
+5. Run npm audit after installation</pre>
+    </div>
+
+    <h3>API Design Rules</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/rules/api-design.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: API design patterns for HTTP handlers and route definitions
+paths:
+  - "src/api/**/*"
+  - "src/routes/**/*"
+  - "src/handlers/**/*"
+---
+
+<span class="h"># API Design Rules</span>
+
+<span class="h">## Handler Structure</span>
+Every handler follows this exact pattern:
+
+<span class="k">async function</span> <span class="f">handleSomething</span>(req, res) {
+  <span class="c">// 1. Validate input (zod schema)</span>
+  <span class="k">const</span> parsed = schema.<span class="f">safeParse</span>(req.body);
+  <span class="k">if</span> (!parsed.success) <span class="k">return</span> res.<span class="f">status</span>(<span class="n">400</span>).<span class="f">json</span>({
+    data: <span class="k">null</span>, error: <span class="f">formatZodError</span>(parsed.error)
+  });
+  <span class="c">// 2. Call business logic (from core/, never inline)</span>
+  <span class="k">const</span> result = <span class="k">await</span> <span class="f">doTheThing</span>(parsed.data);
+  <span class="c">// 3. Handle result</span>
+  <span class="k">if</span> (result.error) <span class="k">return</span> res.<span class="f">status</span>(result.error.status)
+    .<span class="f">json</span>({ data: <span class="k">null</span>, error: result.error });
+  <span class="k">return</span> res.<span class="f">status</span>(<span class="n">200</span>).<span class="f">json</span>({ data: result.data, error: <span class="k">null</span> });
+}
+
+No business logic in handlers. If your handler is longer than 20 lines,
+you're putting logic in the wrong place.
+
+<span class="h">## Response Shape</span>
+Every response, always, no exceptions:
+{ data: T | <span class="k">null</span>, error: { code: <span class="k">string</span>, message: <span class="k">string</span> } | <span class="k">null</span> }
+
+<span class="h">## Pagination</span>
+All list endpoints paginate. Default: <span class="n">20</span>. Max: <span class="n">100</span>.
+{ data: T[], meta: { total, limit, offset, hasMore }, error: <span class="k">null</span> }
+
+<span class="h">## Error Codes</span>
+NOT_FOUND, VALIDATION_ERROR, UNAUTHORIZED, FORBIDDEN,
+RATE_LIMITED, CONFLICT, INTERNAL_ERROR
+
+<span class="h">## Rate Limiting</span>
+- Authenticated: <span class="n">100</span> req/min
+- Unauthenticated: <span class="n">20</span> req/min
+- Auth endpoints: <span class="n">5</span> req/min per IP
+Return Retry-After header when rate limited.</pre>
+    </div>
+
+    <h3>Performance Rules</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/rules/performance.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Performance patterns to prevent common production issues
+paths:
+  - "src/**/*"
+---
+
+<span class="h"># Performance Rules</span>
+<span class="h">## The Three Things That Cause 90% of Production Issues</span>
+
+<span class="h">### 1. N+1 Queries</span>
+If you're querying inside a loop, you have an N+1. Batch it.
+
+<span class="c">// WRONG (hits DB once per user):</span>
+<span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> userIds) {
+  <span class="k">const</span> user = <span class="k">await</span> db.user.<span class="f">findUnique</span>({ where: { id } });
+}
+<span class="c">// RIGHT (single batch query):</span>
+<span class="k">const</span> users = <span class="k">await</span> db.user.<span class="f">findMany</span>({
+  where: { id: { in: userIds } }
+});
+
+<span class="h">### 2. Missing Indexes</span>
+Every new query pattern needs an index check. When writing a new
+query: immediately check if the queried fields have indexes. If
+not, write the migration in the same PR.
+
+<span class="h">### 3. Unbounded Queries</span>
+Never SELECT * without a LIMIT. Never fetch all records when you
+need a count. Never load an entire collection to filter in code.
+
+<span class="h">## Async Patterns</span>
+Set timeouts on every external call. Defaults: <span class="n">10</span>s APIs, <span class="n">30</span>s DB, <span class="n">5</span>s cache.
+Use <span class="f">Promise.all</span>() for independent concurrent operations.
+Never block the event loop in hot paths.
+
+<span class="h">## Caching</span>
+Cache at the service boundary, never inside core logic.
+Keys: namespaced and versioned (<span class="s">v1:users:{id}</span>). Always set a TTL.</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 5 ═════ -->
+<section id="s5">
+  <div class="container">
+    <div class="step-badge">Step 05</div>
+    <h2>Agents &mdash; Specialized Subagents</h2>
+    <p>Agents are subagent personas with their own system prompts, tool access, and model preferences. They spawn in isolated context windows, do focused work, and report back.</p>
+
+    <h3>Architect Agent</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/agents/architect.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+name: architect
+description: >
+  Task planner for complex changes. Use PROACTIVELY when a task touches
+  3+ files, involves a new feature (not a bug fix), or requires
+  understanding how components interact. Invoke BEFORE writing code.
+  If the task is a simple single-file change, skip this agent entirely.
+model: sonnet
+tools: Read, Grep, Glob, Bash
+---
+You are a systems architect. You PLAN. You never write implementation code.
+
+<span class="h">## Process</span>
+1. Restate the goal in one sentence. If you can't, ask.
+2. Grep the codebase for existing patterns. List what you found.
+3. Map every file that needs to change or be created.
+4. Identify what could break. Check imports and tests.
+5. Produce this exact output:
+
+PLAN: [one-line summary]
+CHANGE:
+- [path] - [what changes]
+CREATE:
+- [path] - [purpose]
+- [path.test.ts] - [what it tests]
+RISK:
+- [risk]: [mitigation]
+ORDER:
+1. [first step]
+2. [second step]
+VERIFY:
+- [how to confirm step 1 works]
+- [how to confirm the whole thing works]
+
+<span class="h">## Rules</span>
+- If the task needs &lt; 3 file changes: "This doesn't need a plan. Just do it."
+- Never suggest patterns you haven't verified exist in the codebase.
+- Flag when a task should be split into multiple PRs.
+- Estimate blast radius: how many existing tests might break.</pre>
+    </div>
+
+    <h3>Reviewer Agent</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/agents/reviewer.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+name: reviewer
+description: >
+  Code reviewer. Use before any git commit, when validating
+  implementations, or when asked to review a PR or diff.
+  Focuses on bugs and security, not style.
+model: sonnet
+tools: Read, Grep, Glob
+---
+You are a code reviewer who catches bugs that cause production incidents.
+
+<span class="h">## What You Check (priority order)</span>
+1. <span class="k">**Will this crash?**</span> Null access, undefined props, unhandled rejections,
+   off-by-one, division by zero, type coercion.
+2. <span class="k">**Is this exploitable?**</span> Unvalidated input, missing auth, IDOR, leaked
+   errors, hardcoded secrets.
+3. <span class="k">**Will this be slow?**</span> N+1 queries, missing indexes, unbounded fetches.
+4. <span class="k">**Is this tested?**</span> Critical paths covered? Tests assert behavior?
+5. <span class="k">**Will the next person understand?**</span> Only flag if it would cause a
+   real misunderstanding.
+
+<span class="h">## Output Format</span>
+VERDICT: SHIP IT | NEEDS WORK | BLOCKED
+
+CRITICAL (must fix before merge):
+- [file:line] [issue] -> [specific fix]
+
+IMPORTANT (should fix):
+- [file:line] [issue] -> [suggestion]
+
+GAPS:
+- [untested scenario that should have a test]
+
+GOOD:
+- [specific things done well]
+
+<span class="h">## Rules</span>
+- Critical = will cause a bug, security hole, or data loss. Nothing else.
+- Every finding includes a specific fix.
+- If the code is good, say SHIP IT. Don't invent problems.</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 6 ═════ -->
+<section id="s6">
+  <div class="container">
+    <div class="step-badge">Step 06</div>
+    <h2>Commands &mdash; Explicit Workflows</h2>
+    <p>Skills you invoke manually with slash commands. Each lives in its own directory with a SKILL.md file. The <code>!</code> backtick syntax runs shell commands and injects the output into the prompt.</p>
+
+    <h3>Pre-Commit Review &mdash; <code>/project:review</code></h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/skills/review/SKILL.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Pre-commit review pipeline. Runs tests, types, lint,
+  then reviews the diff.
+---
+<span class="h">## Pre-flight</span>
+!`git diff --name-only main...HEAD 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || echo "No diff available"`
+!`npm run typecheck 2>&1 | tail -15`
+!`npm run lint 2>&1 | tail -15`
+!`npm run test -- --changedSince=main 2>&1 | tail -25`
+
+<span class="h">## Diff</span>
+!`git diff main...HEAD 2>/dev/null || git diff HEAD~1 2>/dev/null || git diff --cached`
+
+<span class="h">## Instructions</span>
+1. If any pre-flight check failed, list failures first with exact fixes.
+2. Review the diff for: bugs, security gaps, performance, test gaps.
+3. For each issue: file, line, what's wrong, how to fix it.
+4. Verdict: SHIP IT / NEEDS WORK / BLOCKED.
+5. If SHIP IT: suggest the commit message in conventional commits format.</pre>
+    </div>
+
+    <h3>Fix a GitHub Issue &mdash; <code>/project:fix-issue 42</code></h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/skills/fix-issue/SKILL.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: End-to-end bug fix from a GitHub issue number
+argument-hint: [issue-number]
+---
+!`gh issue view $ARGUMENTS 2>/dev/null || echo "Could not fetch issue #$ARGUMENTS."`
+
+<span class="h">## Workflow</span>
+1. <span class="k">**Root cause.**</span> Read the issue. Grep. Trace. State the root cause
+   in one sentence before writing any fix.
+2. <span class="k">**Fix.**</span> Minimal change. Don't refactor. Solve the bug.
+3. <span class="k">**Test.**</span> Write a test that fails without your fix, passes with it.
+4. <span class="k">**Verify.**</span> Run npm run typecheck && npm run lint && npm run test.
+5. <span class="k">**Commit.**</span> fix(scope): description (fixes #$ARGUMENTS)
+6. <span class="k">**Report.**</span> One paragraph: root cause, change, test added.</pre>
+    </div>
+
+    <h3>Evolution Audit &mdash; <code>/project:evolve</code></h3>
+    <p>Run weekly, or whenever Claude seems to repeat mistakes.</p>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/skills/evolve/SKILL.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Review the learning system and promote/prune rules.
+  Run weekly or when learned-rules.md gets full.
+---
+<span class="h">## Current State</span>
+<span class="h">### Learned Rules</span>
+!`cat .claude/memory/learned-rules.md 2>/dev/null || echo "No learned rules yet"`
+<span class="h">### Recent Corrections (last 20)</span>
+!`tail -20 .claude/memory/corrections.jsonl 2>/dev/null || echo "No corrections logged"`
+<span class="h">### Recent Observations (last 20)</span>
+!`tail -20 .claude/memory/observations.jsonl 2>/dev/null || echo "No observations logged"`
+<span class="h">### Previous Evolution Decisions</span>
+!`tail -40 .claude/memory/evolution-log.md 2>/dev/null || echo "No evolution history"`
+
+<span class="h">## Your Task</span>
+You are the meta-engineer. Improve the system that runs you.
+
+<span class="h">### Step 1: Analyze Corrections</span>
+Group by pattern. Look for: same correction 2+ times (promote now),
+correction clusters pointing to a missing rule, corrections that
+contradict existing rules (the rule is wrong, not the user).
+
+<span class="h">### Step 2: Analyze Observations</span>
+Group by type. Look for: high-confidence confirmed observations,
+observations that match corrections (convergent signals are strongest),
+architecture observations that could prevent future bugs.
+
+<span class="h">### Step 3: Audit Learned Rules</span>
+For each rule: Still relevant? Promotion candidate (10+ sessions)?
+Redundant (covered by linter)? Too vague?
+
+<span class="h">### Step 4: Check Evolution Log</span>
+Never re-propose a rejected rule unless the user explicitly asks.
+
+<span class="h">### Step 5: Propose Changes</span>
+PROPOSE: [action]
+Rule: [the rule text]
+Source: [corrections/observations/learned-rules]
+Evidence: [why this should change]
+Destination: [learned-rules.md | CLAUDE.md | rules/X.md | DELETE]
+
+Actions: PROMOTE | GRADUATE | PRUNE | UPDATE | ADD
+
+<span class="h">### Step 6: Wait for Approval</span>
+List all proposals. Do NOT apply any changes until approved.
+Log everything (approved AND rejected) to evolution-log.md.
+
+<span class="h">### Constraints</span>
+- Never remove security rules
+- Never weaken completion criteria
+- Max 50 lines in learned-rules.md
+- Every rule must be specific enough to test compliance
+- Bias toward specificity over abstraction</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 7 ═════ -->
+<section id="s7">
+  <div class="container">
+    <div class="step-badge">Step 07</div>
+    <h2>The Evolution Engine</h2>
+    <p>This is the core of the system. Most learning systems are journals. This one is an immune system.</p>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/skills/evolution/SKILL.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+name: evolution-engine
+description: >
+  Autonomous learning and verification system. Triggers on:
+  - Session start (runs verification sweep on all learned rules)
+  - User corrections ("no", "wrong", "I told you", "we don't do that")
+  - Task completion (session scoring)
+  - Discoveries during work (hypothesis verification)
+  - User explicit ("remember this", "add this as a rule")
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
+---
+<span class="h"># Evolution Engine</span>
+You are not a journal. You are an immune system.
+You verify, enforce, and learn autonomously.
+
+---
+<span class="h">## SECTION 1: VERIFICATION SWEEP (run at session start)</span>
+
+Read .claude/memory/learned-rules.md. Every rule with a verify: line
+gets executed as a grep/glob/check. Rules without verify: lines are
+technical debt. Add one.
+
+Example rule format in learned-rules.md:
+- Never use the spread pattern to merge options in fetchJSON.
+  verify: Grep("\.\.\.options", path="src/api/client.js") -> 0 matches
+  [source: corrected 2x, 2026-03-28]
+
+"The verify line isn't runnable code. It's an instruction Claude
+executes as a grep check during the verification sweep. Claude reads
+the pattern, runs the search, and checks the result matches."
+
+<span class="h">### Verification Protocol</span>
+1. For each rule with verify: line:
+   - Run the check. PASS: Silent. FAIL: Log to violations.jsonl
+   - Surface violations:
+     RULE VIOLATIONS DETECTED:
+     - [rule]: found [violation] in [file:line]
+       fix: [specific fix]
+2. If ALL checks pass, say nothing. The best immune system is invisible.
+
+Verification patterns:
+- Code pattern banned: Grep("[pattern]", path="[scope]") -> 0 matches
+- Code pattern required: Grep("[pattern]", path="[scope]") -> 1+ matches
+- File must exist: Glob("[pattern]") -> 1+ matches
+- File must not exist: Glob("[pattern]") -> 0 matches
+
+---
+<span class="h">## SECTION 2: HYPOTHESIS-DRIVEN OBSERVATIONS</span>
+
+Never log a guess. Verify it immediately or don't log it.
+
+1. Formulate as testable claim.
+2. Test immediately (grep for counter-examples, read files, count).
+3. Record with evidence to observations.jsonl.
+4. Auto-promote confirmed observations (0 counter-examples) directly
+   to learned-rules.md WITH a verify line.
+5. Low-confidence observations get flagged for recheck.
+
+---
+<span class="h">## SECTION 3: CORRECTION CAPTURE</span>
+
+When the user corrects you:
+1. Acknowledge naturally.
+2. Log to corrections.jsonl with auto-generated verify pattern.
+3. Promotion rules:
+   - 1st time: Log.
+   - 2nd time (same pattern): Auto-promote to learned-rules.md.
+   - Already in learned-rules: Ensure verification exists.
+4. Apply the correction immediately.
+
+---
+<span class="h">## SECTION 4: SESSION SCORING</span>
+
+When wrapping up, write scorecard to sessions.jsonl:
+{"date": "[today]", "session_number": "[N]",
+ "corrections_received": 2, "rules_checked": 8,
+ "rules_passed": 7, "rules_failed": 1,
+ "violations_found": [...], "violations_fixed": [...],
+ "observations_made": 1, "observations_verified": 1}
+
+<span class="h">### Trend Detection</span>
+If 5+ entries: corrections decreasing? System works. Flat/increasing?
+Rules aren't being consulted. Same violation recurring? Graduate it.
+Surface: "Session 12: 0 corrections (down from 3 avg). 8/8 passing."
+
+---
+<span class="h">## SECTION 5: EXPLICIT "REMEMBER THIS"</span>
+
+When the user asks you to remember something:
+1. Rewrite as testable rule.
+2. Generate verify pattern.
+3. Add to learned-rules.md.
+4. Confirm: "Added rule: [rule]. Verification: [check]."
+
+If you can't make it machine-checkable, say so.
+
+---
+<span class="h">## CAPACITY MANAGEMENT</span>
+
+Max 50 lines in learned-rules.md. Approaching 50? Check which rules
+have passed 10+ consecutive sessions (graduation candidates).
+
+---
+<span class="h">## THE PRINCIPLE</span>
+
+A rule without a verification check is a wish.
+A rule with a verification check is a guardrail.
+Only guardrails survive.</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STEP 8 ═════ -->
+<section id="s8">
+  <div class="container">
+    <div class="step-badge">Step 08</div>
+    <h2>The Memory System</h2>
+    <p>The memory directory bridges sessions by persisting observations and corrections as files that Claude reads on startup.</p>
+
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/memory/README.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre><span class="h"># Memory System</span>
+
+This directory is Claude's learning infrastructure.
+
+<span class="h">## Flow</span>
+
+  Session start -> VERIFICATION SWEEP -> Session activity
+       |
+       v
+  observations.jsonl   <span class="c"># Verified discoveries (not guesses)</span>
+  corrections.jsonl    <span class="c"># User corrections (with auto-checks)</span>
+  violations.jsonl     <span class="c"># Rule violations caught by sweep</span>
+  sessions.jsonl       <span class="c"># Session scorecards and trends</span>
+       |
+       v
+  /project:evolve      <span class="c"># Periodic review (run manually)</span>
+       |
+       v
+  learned-rules.md     <span class="c"># Graduated patterns WITH verify: checks</span>
+       |
+       v
+  CLAUDE.md / rules/   <span class="c"># Promoted to permanent config</span>
+
+<span class="h">## File Purposes</span>
+
+<span class="k">observations.jsonl</span> - Append-only. Verified discoveries.
+Types: convention, gotcha, dependency, architecture, performance, pattern
+Confidence: low, medium, high, confirmed
+
+<span class="k">corrections.jsonl</span> - Append-only. User corrections with categories:
+style, architecture, security, testing, naming, process, behavior
+times_corrected reaches 2 -> auto-promotes to learned-rules.md
+
+<span class="k">violations.jsonl</span> - Rule violations caught by verification sweep.
+Used by /evolve to identify rules needing escalation.
+
+<span class="k">sessions.jsonl</span> - Session scorecards for trend detection.
+
+<span class="k">learned-rules.md</span> - Curated graduated rules. Max 50 lines.
+
+<span class="k">evolution-log.md</span> - Audit trail. Prevents re-proposing rejected rules.
+
+<span class="h">## Promotion Ladder</span>
+
+| Signal                        | Destination         |
+|-------------------------------|---------------------|
+| Corrected once                | corrections.jsonl   |
+| Corrected twice, same pattern | learned-rules.md    |
+| Observed 3+ times             | learned-rules.md    |
+| In learned-rules 10+ sessions | CLAUDE.md or rules/ |
+| Rejected during evolve        | evolution-log.md    |
+
+<span class="h">## Rules for Writing to Memory</span>
+1. Observations are cheap. Log liberally.
+2. Corrections are gold. Every one gets logged. No exceptions.
+3. Learned rules are expensive. Must be actionable + testable.
+4. Never delete correction logs. They're provenance.
+5. Learned rules max at 50 lines.</pre>
+    </div>
+
+    <h3>Learned Rules (starts empty)</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/memory/learned-rules.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre><span class="h"># Learned Rules</span>
+
+Rules that graduated from observations and corrections. Loaded at
+session start. Max 50 lines.
+
+Each rule includes a source annotation AND a machine-checkable verify line.
+
+---
+
+<span class="c">&lt;!-- Example format:
+- Never use spread to merge options in fetchJSON.
+  verify: Grep("\.\.\.options", path="src/api/client.js") -> 0 matches
+  [source: corrected 2x, 2026-03-28]
+--&gt;</span></pre>
+    </div>
+
+    <h3>Evolution Log (starts empty)</h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/memory/evolution-log.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre><span class="h"># Evolution Log</span>
+
+Audit trail of /project:evolve runs. Records proposals, approvals,
+and rejections.</pre>
+    </div>
+
+    <div class="callout">
+      <p><strong>Add to .gitignore:</strong> <code>observations.jsonl</code>, <code>corrections.jsonl</code>, <code>violations.jsonl</code>, <code>sessions.jsonl</code> (personal session data). Commit <code>learned-rules.md</code> and <code>evolution-log.md</code> (curated team knowledge).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ THE LOOP ═════ -->
+<section id="loop">
+  <div class="container">
+    <h4>In Practice</h4>
+    <h2>How the Evolution Loop Actually Works</h2>
+    <p>Here's the system in practice, session by session.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-session">Session 1</div>
+        <p>You start using Claude Code with this setup. You're working on a handler and you tell Claude <strong>"we never use ternary operators here, always use if/else."</strong> The evolution skill fires. It logs the correction to corrections.jsonl AND generates a verify pattern: <code>Grep("? .* : ", path="src/") -> 0 matches</code>. It applies the fix. You continue working.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-session">Session 3</div>
+        <p>Different part of the codebase. Claude writes a ternary again. You correct it again. The evolution skill sees this is the <strong>second time</strong>. It auto-promotes to learned-rules.md with the verification check attached. Claude tells you it's learned this permanently and will auto-verify from now on.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-session">Session 5</div>
+        <p>Claude starts a complex task. Before writing anything, the <strong>verification sweep runs silently</strong>. It executes every verify: check in learned-rules.md. The ternary grep returns 0 matches. All clear. Claude writes if/else blocks because the rule is loaded. Correction + verification = double defense.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-session">Session 8</div>
+        <p>During normal work, Claude notices that every service function wraps its return in a <code>Result&lt;T&gt;</code> type. Instead of logging a guess, it <strong>immediately greps for counter-examples</strong>: functions in src/services/ that return something other than Result&lt;T&gt;. It finds 0 counter-examples across 15 functions. Confidence: confirmed. Auto-promotes with a verify check.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-session">Session 12</div>
+        <p>You run <code>/project:evolve</code>. It reads the sessions.jsonl trend data: <strong>corrections dropped from 3 per session to 0.5</strong> over the last 10 sessions. Two rules have passed verification for 10+ consecutive sessions. It proposes graduating those to CLAUDE.md. One rule has verify: manual, flagged for rewriting. You approve, reject, or modify each proposal.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-session">Session 20</div>
+        <p>The system has <strong>8 learned rules with verification checks, 3 rules graduated to permanent config, and 2 pruned</strong>. Every rule auto-enforces. Corrections are near zero. The verification sweep catches violations before you even describe the task. That's the immune system working.</p>
+      </div>
+    </div>
+
+    <p>That's the loop. Corrections generate checks. Observations verify themselves. Rules auto-enforce. <strong>The system gets fitter every generation.</strong></p>
+  </div>
+</section>
+
+<!-- ═════ HOOKS ═════ -->
+<section id="hooks">
+  <div class="container">
+    <h4>Bonus</h4>
+    <h2>Automation Hooks</h2>
+    <p>The base system above works. But without these additions, it relies on Claude remembering to run checks. This section makes it structural. Hooks that fire automatically, not instructions that might get skipped.</p>
+    <p>Replace your settings.json with this version that adds three hooks:</p>
+
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/settings.json (with hooks)</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>{
+  <span class="s">"$schema"</span>: <span class="s">"https://json.schemastore.org/claude-code-settings.json"</span>,
+  <span class="s">"permissions"</span>: {
+    <span class="s">"allow"</span>: [
+      <span class="s">"Bash(npm run *)"</span>, <span class="s">"Bash(npx *)"</span>, <span class="s">"Bash(node *)"</span>,
+      <span class="s">"Bash(git status)"</span>, <span class="s">"Bash(git diff *)"</span>, <span class="s">"Bash(git log *)"</span>,
+      <span class="s">"Bash(git branch *)"</span>, <span class="s">"Bash(git show *)"</span>, <span class="s">"Bash(git stash *)"</span>,
+      <span class="s">"Bash(gh issue *)"</span>, <span class="s">"Bash(gh pr *)"</span>,
+      <span class="s">"Bash(cat *)"</span>, <span class="s">"Bash(ls *)"</span>, <span class="s">"Bash(find *)"</span>,
+      <span class="s">"Bash(head *)"</span>, <span class="s">"Bash(tail *)"</span>, <span class="s">"Bash(wc *)"</span>, <span class="s">"Bash(grep *)"</span>,
+      <span class="s">"Read"</span>, <span class="s">"Write"</span>, <span class="s">"Edit"</span>, <span class="s">"Glob"</span>, <span class="s">"Grep"</span>
+    ],
+    <span class="s">"deny"</span>: [
+      <span class="s">"Bash(rm -rf *)"</span>, <span class="s">"Bash(rm -r *)"</span>, <span class="s">"Bash(sudo *)"</span>,
+      <span class="s">"Bash(eval *)"</span>, <span class="s">"Bash(git push --force *)"</span>,
+      <span class="s">"Bash(git reset --hard *)"</span>, <span class="s">"Bash(npm publish *)"</span>,
+      <span class="s">"Read(./.env)"</span>, <span class="s">"Read(./.env.*)"</span>,
+      <span class="s">"Read(./**/*.pem)"</span>, <span class="s">"Read(./**/*.key)"</span>
+    ]
+  },
+  <span class="s">"hooks"</span>: {
+    <span class="s">"SessionStart"</span>: [{
+      <span class="s">"matcher"</span>: <span class="s">"startup"</span>,
+      <span class="s">"hooks"</span>: [{
+        <span class="s">"type"</span>: <span class="s">"command"</span>,
+        <span class="s">"command"</span>: <span class="s">"echo \"[EVOLUTION BOOT] Session started. Learned rules: $(wc -l &lt; .claude/memory/learned-rules.md 2>/dev/null || echo 0) lines. Corrections logged: $(wc -l &lt; .claude/memory/corrections.jsonl 2>/dev/null || echo 0). READ .claude/memory/learned-rules.md BEFORE STARTING WORK. RUN VERIFICATION SWEEP ON ALL RULES WITH verify: LINES.\""</span>,
+        <span class="s">"timeout"</span>: <span class="n">5</span>,
+        <span class="s">"statusMessage"</span>: <span class="s">"Booting evolution engine..."</span>
+      }]
+    }],
+    <span class="s">"PreToolUse"</span>: [{
+      <span class="s">"matcher"</span>: <span class="s">"Edit|Write"</span>,
+      <span class="s">"hooks"</span>: [{
+        <span class="s">"type"</span>: <span class="s">"command"</span>,
+        <span class="s">"command"</span>: <span class="s">"echo \"[EVOLUTION] Before editing: check if this file has path-scoped rules in .claude/rules/. Check learned-rules.md for relevant patterns.\""</span>,
+        <span class="s">"timeout"</span>: <span class="n">3</span>
+      }]
+    }],
+    <span class="s">"Stop"</span>: [{
+      <span class="s">"matcher"</span>: <span class="s">""</span>,
+      <span class="s">"hooks"</span>: [{
+        <span class="s">"type"</span>: <span class="s">"command"</span>,
+        <span class="s">"command"</span>: <span class="s">"echo \"[EVOLUTION] Session ending. If corrections were received or observations made, ensure they are logged to .claude/memory/. Write session scorecard to sessions.jsonl.\""</span>,
+        <span class="s">"timeout"</span>: <span class="n">3</span>
+      }]
+    }]
+  }
+}</pre>
+    </div>
+
+    <table class="htable">
+      <thead><tr><th>Hook</th><th>When</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr><td><code>SessionStart</code></td><td>Every new session</td><td>Injects a message telling Claude to read learned-rules.md and run the verification sweep. Claude can't "forget" because the hook fires before it sees your first message.</td></tr>
+        <tr><td><code>PreToolUse</code></td><td>Before every file edit</td><td>Reminds Claude to check path-scoped rules and learned-rules for the file it's about to touch. Prevents violations before they happen.</td></tr>
+        <tr><td><code>Stop</code></td><td>Session ending</td><td>Tells Claude to log corrections, observations, and write the session scorecard. No more "forgot to log."</td></tr>
+      </tbody>
+    </table>
+
+    <p>This is the difference between "the instructions say to do it" and "the system makes it structurally difficult to skip."</p>
+
+    <h3>Boot Command &mdash; <code>/project:boot</code></h3>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/skills/boot/SKILL.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Session boot sequence. Run at the start of every session
+  to load memory and verify rules.
+---
+<span class="h">## Load Memory</span>
+<span class="h">### Learned Rules</span>
+!`cat .claude/memory/learned-rules.md 2>/dev/null || echo "No learned rules yet"`
+<span class="h">### Last Session Score</span>
+!`tail -1 .claude/memory/sessions.jsonl 2>/dev/null || echo "No session history"`
+<span class="h">### Unresolved Violations</span>
+!`tail -5 .claude/memory/violations.jsonl 2>/dev/null || echo "No violations logged"`
+
+<span class="h">## Instructions</span>
+1. Read every rule in learned-rules.md. For each with a verify: line,
+   run the check NOW.
+2. Report: All pass -> "All rules verified. Ready to work."
+   Any fail -> list violations with file:line and specific fix.
+3. Check session trend (if 5+ entries): report one-line trend.
+4. You are now primed. Proceed with the user's task.</pre>
+    </div>
+
+    <h3>Core Invariants &mdash; Compression-Proof Rules</h3>
+    <p>The <code>paths: ["**/*"]</code> means this file loads on every file touch. Even when conversation context gets long and compresses, these rules get re-injected fresh on every tool call. They're compression-proof.</p>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">.claude/rules/core-invariants.md</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>---
+description: Critical invariants that must survive context compression.
+  Rules that caused real bugs when violated.
+paths:
+  - "**/*"
+---
+<span class="h"># Core Invariants</span>
+
+These rules load on every file edit. They exist because violating
+them caused production bugs.
+
+Replace these with your own hard-won lessons:
+
+1. <span class="k">**[Your most painful bug].**</span> Describe the pattern that must never
+   happen, and the correct pattern.
+2. <span class="k">**[Your second most painful bug].**</span> Same format.
+3. <span class="k">**[Critical safety rule].**</span> Something that causes data loss,
+   security holes, or silent failures if violated.
+
+<span class="c">Customize with the 3-5 rules that caused the most pain. If you
+don't have any yet, leave a placeholder and let the evolution
+system fill it over time.</span></pre>
+    </div>
+
+    <div class="flow-visual">
+      <span class="node">Session starts</span> <span class="arrow">-></span> <span class="node">SessionStart hook fires</span> <span class="arrow">-></span> <span class="node">/boot loads memory + runs verify: checks</span><br>
+      <span class="arrow">-></span> <span class="node">Rules verified before any work begins</span><br><br>
+      <span class="node">During work</span> <span class="arrow">-></span> <span class="node">PreToolUse hook on every Edit/Write</span> <span class="arrow">-></span> <span class="node">core-invariants loads on every file</span><br>
+      <span class="arrow">-></span> <span class="node">Path-scoped rules load for matching files</span><br>
+      <span class="arrow">-></span> <span class="node">Observations auto-verified, corrections auto-logged</span><br><br>
+      <span class="node">Session ends</span> <span class="arrow">-></span> <span class="node">Stop hook fires</span> <span class="arrow">-></span> <span class="node">Scorecard written to sessions.jsonl</span>
+    </div>
+    <p style="text-align: center; color: var(--text); font-size: 17px; font-weight: 500;">No step depends on Claude remembering to do it. The hooks make it structural.</p>
+  </div>
+</section>
+
+<!-- ═════ ONE-COMMAND SETUP ═════ -->
+<section id="script">
+  <div class="container">
+    <h4>Quick Start</h4>
+    <h2>One-Command Setup</h2>
+    <p>If you want to create the entire folder structure in one shot, save this as <strong>setup-claude.sh</strong> and run it from your project root:</p>
+    <div class="code-block">
+      <div class="code-head"><span class="code-path">setup-claude.sh</span><button class="cp-btn" onclick="cc(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button></div>
+      <pre>#!/bin/bash
+echo "Creating .claude/ folder structure..."
+
+mkdir -p .claude/rules
+mkdir -p .claude/agents
+mkdir -p .claude/skills/evolution
+mkdir -p .claude/skills/evolve
+mkdir -p .claude/skills/review
+mkdir -p .claude/skills/boot
+mkdir -p .claude/skills/fix-issue
+mkdir -p .claude/memory
+
+echo "Structure created. Now create these files:"
+echo ""
+echo "  CLAUDE.md                         (copy from Step 2)"
+echo "  .claude/settings.json             (copy from Step 3 or Step 10)"
+echo "  .claude/rules/security.md         (copy from Step 4)"
+echo "  .claude/rules/api-design.md       (copy from Step 4)"
+echo "  .claude/rules/performance.md      (copy from Step 4)"
+echo "  .claude/rules/core-invariants.md  (copy from Step 10)"
+echo "  .claude/agents/architect.md       (copy from Step 5)"
+echo "  .claude/agents/reviewer.md        (copy from Step 5)"
+echo "  .claude/skills/review/SKILL.md    (copy from Step 6)"
+echo "  .claude/skills/fix-issue/SKILL.md (copy from Step 6)"
+echo "  .claude/skills/evolve/SKILL.md    (copy from Step 6)"
+echo "  .claude/skills/evolution/SKILL.md (copy from Step 7)"
+echo "  .claude/skills/boot/SKILL.md      (copy from Step 10)"
+echo "  .claude/memory/README.md          (copy from Step 8)"
+echo "  .claude/memory/learned-rules.md   (copy from Step 8)"
+echo "  .claude/memory/evolution-log.md   (copy from Step 8)"
+echo ""
+echo "Then customize CLAUDE.md with your actual commands and folder structure."
+echo ""
+echo "Add to .gitignore:"
+echo "  CLAUDE.local.md"
+echo "  .claude/settings.local.json"
+echo "  .claude/memory/observations.jsonl"
+echo "  .claude/memory/corrections.jsonl"
+echo "  .claude/memory/violations.jsonl"
+echo "  .claude/memory/sessions.jsonl"
+echo ""
+echo "Done. Launch 'claude' in this directory to start."</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ CUSTOMIZE ═════ -->
+<section id="custom">
+  <div class="container">
+    <h4>Reference</h4>
+    <h2>What to Customize vs. What to Keep</h2>
+
+    <div class="cust-grid">
+      <div class="cust-row"><span class="cust-tag must">Must</span><p><strong>CLAUDE.md: Commands section</strong> &mdash; your actual build, test, and lint commands</p></div>
+      <div class="cust-row"><span class="cust-tag must">Must</span><p><strong>CLAUDE.md: Architecture section</strong> &mdash; your real folder structure</p></div>
+      <div class="cust-row"><span class="cust-tag must">Must</span><p><strong>settings.json: allow/deny patterns</strong> &mdash; swap npm for pnpm, make, bun, etc.</p></div>
+      <div class="cust-row"><span class="cust-tag should">Should</span><p><strong>CLAUDE.md: Conventions</strong> &mdash; adjust to match your style guide</p></div>
+      <div class="cust-row"><span class="cust-tag should">Should</span><p><strong>Rules path patterns</strong> &mdash; adjust to match your actual directory structure</p></div>
+      <div class="cust-row"><span class="cust-tag should">Should</span><p><strong>API design rules</strong> &mdash; adjust response shape, pagination format</p></div>
+      <div class="cust-row"><span class="cust-tag keep">Keep</span><p><strong>The decision framework</strong> &mdash; grep first, blast radius, smallest change</p></div>
+      <div class="cust-row"><span class="cust-tag keep">Keep</span><p><strong>The memory system and evolution loop</strong> &mdash; works universally</p></div>
+      <div class="cust-row"><span class="cust-tag keep">Keep</span><p><strong>Agent definitions</strong> &mdash; architect and reviewer work for any project</p></div>
+      <div class="cust-row"><span class="cust-tag keep">Keep</span><p><strong>The commands</strong> &mdash; review and fix-issue work with any git/npm project</p></div>
+      <div class="cust-row"><span class="cust-tag keep">Keep</span><p><strong>settings.json deny list</strong> &mdash; blocking rm -rf and force push is always correct</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ TEST ═════ -->
+<section id="test">
+  <div class="container">
+    <h4>Verification</h4>
+    <h2>Testing Your Setup</h2>
+    <p>After creating all the files, launch Claude Code and run these tests:</p>
+
+    <ul class="checklist">
+      <li><strong>Cognitive core.</strong> Ask "What are your completion criteria?" Claude should list the 5 checks from CLAUDE.md.</li>
+      <li><strong>Decision framework.</strong> Ask Claude to add a utility function. It should grep for existing patterns first, not just start writing code.</li>
+      <li><strong>Path-scoped rules.</strong> Ask Claude to create an API endpoint. Security and API design rules should activate. You'll see it mention input validation, response shapes, auth checks.</li>
+      <li><strong>Review command.</strong> Type <code>/project:review</code>. It should run your test suite, linter, and type checker, then review the diff.</li>
+      <li><strong>Correction capture.</strong> Correct Claude on something ("we don't do it that way, we always X"). It should acknowledge and log it. Correct it a second time on the same pattern. It should auto-promote to learned-rules.md.</li>
+      <li><strong>Evolve command.</strong> After a few sessions with corrections and observations, run <code>/project:evolve</code>. It should analyze logs and propose concrete rule changes.</li>
+      <li><strong>Verification engine.</strong> Add a learned rule with a verify: line that you know will fail. Start a new session. Claude should detect the violation and surface it before you ask for anything. Fix the violation, start another session. The sweep should pass silently. That's the immune system working.</li>
+      <li><strong>Session scoring.</strong> After a session with corrections, check <code>.claude/memory/sessions.jsonl</code>. It should have correction counts and pass/fail rates.</li>
+      <li><strong>Hypothesis verification.</strong> Tell Claude to "look at how we handle errors in this file." It should grep for patterns, count occurrences, check for counter-examples, and offer to add it as a verified rule with a check. Not a vague observation. A verified fact.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═════ FAQ ═════ -->
+<section id="faq">
+  <div class="container">
+    <h4>Questions</h4>
+    <h2>FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Does this affect all my Claude projects?</div>
+      <div class="faq-a">No. The .claude/ folder and CLAUDE.md are project-scoped. They only affect Claude Code sessions running inside that specific project directory. Other projects, Claude.ai chat, and the API are completely unaffected.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if I want some rules across all projects?</div>
+      <div class="faq-a">Create <code>~/.claude/CLAUDE.md</code> in your home directory. That loads into every Claude Code session regardless of project. Good for personal preferences like "I prefer early returns" or "always use conventional commits."</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How big should CLAUDE.md be?</div>
+      <div class="faq-a">Under 150 lines. Beyond that, Claude's instruction adherence drops because the context gets noisy. Move domain-specific rules to <code>.claude/rules/</code> files instead of growing CLAUDE.md.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Won't the memory files grow forever?</div>
+      <div class="faq-a">observations.jsonl and corrections.jsonl grow slowly (maybe 5-10 entries per session). The /project:evolve command processes them by promoting patterns. You can archive old entries after processing. learned-rules.md is capped at 50 lines by design, forcing graduation or pruning.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I version control the memory files?</div>
+      <div class="faq-a">Gitignore observations.jsonl, corrections.jsonl, violations.jsonl, and sessions.jsonl (personal session data). Commit learned-rules.md and evolution-log.md. They're curated team knowledge.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if Claude doesn't follow the rules?</div>
+      <div class="faq-a">Three causes: (1) CLAUDE.md is too long. Shorten below 150 lines. (2) The rule is too vague. "Write good code" is useless. "Functions max 30 lines, max 3 nesting levels" is actionable. Make every rule specific enough to test compliance. (3) The rule has no verify: line. Rules with machine-checkable tests get enforced automatically. Rules without them rely on Claude remembering. Add a verify: line to every rule.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I use this with Python, Go, Rust, or other stacks?</div>
+      <div class="faq-a">Yes. The architecture is stack-agnostic. Swap the npm commands for your equivalents (pytest, go test, cargo test), adjust the folder structure, and update the conventions. The decision framework, evolution loop, agents, and memory system work identically regardless of language.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What's the difference between this and Claude Code's built-in memory?</div>
+      <div class="faq-a">Claude Code already has /memory for auto-generated notes. That's useful but unstructured. It's a scratchpad. This system adds three things: verification checks that enforce rules mechanically, a promotion ladder that moves knowledge through confidence tiers, and session scoring that measures whether the system is actually improving. Auto-memory remembers things. This system enforces them.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ WHAT THIS GIVES YOU ═════ -->
+<section>
+  <div class="container">
+    <h4>The Result</h4>
+    <h2>What This Actually Gives You</h2>
+    <p>Every learned rule has a machine-checkable verification test. The system doesn't hope Claude remembers. It runs the grep, confirms compliance, and only surfaces failures.</p>
+    <p><strong>The best immune system is invisible.</strong> You only notice it when something gets through.</p>
+    <p>The gap between session 1 and session 20 is where the real value lives. Session 1 might feel similar to a well-written CLAUDE.md. But the more sessions you do with this system, the more it evolves. The correction rate drops. The rules sharpen. The system gets fitter.</p>
+    <p>80% of the self-evolution happens automatically. Use the <code>/project:evolve</code> command every 10+ sessions to trigger the rest and make patterns permanent in your project's DNA.</p>
+  </div>
+</section>
+
+<!-- ═════ CTA ═════ -->
+<div class="cta-section">
+  <div class="container">
+    <h2>Want More Systems Like This?</h2>
+    <p>If you want more systems like this, or want help building one for your project, reach out.</p>
+    <a href="mailto:ghiles@muditek.com" class="cta-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      ghiles@muditek.com
+    </a>
+    <p class="cta-sub">Ghiles Moussaoui &mdash; AI RevOps at Muditek</p>
+  </div>
+</div>
+
+<!-- ═════ FOOTER ═════ -->
+<footer class="footer">
+  <div class="container">
+    <p>&copy; Ghiles Moussaoui &mdash; Muditek</p>
+  </div>
+</footer>
+
+<script>
+function cc(b){const p=b.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(p.innerText).then(()=>{b.classList.add('ok');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copied';setTimeout(()=>{b.classList.remove('ok');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy'},2e3)})}
+document.querySelectorAll('.toc-grid a').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'})})});
+</script>
+</body>
+</html>

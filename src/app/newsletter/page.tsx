@@ -93,7 +93,7 @@ export default async function NewsletterPage() {
 
           <ScrollReveal delay={160}>
             <p className="text-lg text-foreground/70 leading-relaxed max-w-xl mx-auto mb-10">
-              AI automation systems, workflows, and revenue operations, delivered to your inbox. No fluff. Every edition ships a system you can use.
+              Every edition ships a system you can deploy. Last one: an autonomous outbound system that books 153 calls for $1,200/month. Full architecture, code, and walkthrough.
             </p>
           </ScrollReveal>
 
@@ -147,7 +147,7 @@ export default async function NewsletterPage() {
                     href={post.web_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group block h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
+                    className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
                   >
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
 
@@ -165,7 +165,7 @@ export default async function NewsletterPage() {
                       </div>
                     )}
 
-                    <div className="p-6">
+                    <div className="p-6 flex flex-col flex-1">
                       <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
                         {formatDate(post.publish_date || post.created)}
                       </div>
@@ -177,7 +177,7 @@ export default async function NewsletterPage() {
                           {post.subtitle}
                         </p>
                       )}
-                      <div className="text-sm font-black uppercase tracking-[0.15em] text-primary group-hover:text-primary transition-colors flex items-center gap-2">
+                      <div className="mt-auto pt-4 text-sm font-black uppercase tracking-[0.15em] text-primary group-hover:text-primary transition-colors flex items-center gap-2">
                         Read
                         <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </div>
@@ -191,7 +191,7 @@ export default async function NewsletterPage() {
               <div className="text-center py-20 border border-white/[0.08] bg-card/[0.2] rounded-[4px]">
                 <h4 className="text-lg font-black text-foreground/80 mb-4">Read past editions on beehiiv</h4>
                 <p className="text-base text-foreground/60 mb-8 max-w-md mx-auto">
-                  Every edition ships a system you can use. AI automation blueprints, n8n workflows, and revenue operations playbooks.
+                  Every edition ships a deployable system. Outbound machines, AI agents, revenue ops — full build, architecture, and code.
                 </p>
                 <a
                   href="https://b2bagents.beehiiv.com"
@@ -216,7 +216,7 @@ export default async function NewsletterPage() {
               Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              AI automation blueprints, n8n workflows, revenue operations systems, and the exact tools I use to run Muditek. Free. No pitch.
+              153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build — every week, free.
             </p>
             <a
               href="https://b2bagents.beehiiv.com/subscribe"

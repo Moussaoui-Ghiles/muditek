@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { EmailCapture } from "@/components/email-capture";
 
 const BOOKING_URL =
   "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
@@ -39,6 +40,7 @@ export default function RevenueLeakCalculatorPage() {
   const [outboundEmails, setOutboundEmails] = useState("");
   const [outboundMeetingRate, setOutboundMeetingRate] = useState("");
   const [results, setResults] = useState<LeakResult[] | null>(null);
+  const [resultsUnlocked, setResultsUnlocked] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
   const hasAnyInput = [mrr, leads, responseTime, closeRate, churnRate, acv, channelSpend, channelRevenue, outboundEmails, outboundMeetingRate].some(v => v !== "");
@@ -295,7 +297,7 @@ export default function RevenueLeakCalculatorPage() {
                 </div>
               ) : (
                 <>
-                  {/* Total */}
+                  {/* Total — always visible */}
                   <div className="text-center mb-12 pb-10 border-b border-white/[0.05]">
                     <span className="text-sm font-black uppercase tracking-[0.25em] text-emerald-400/80 block mb-3">Estimated Annual Revenue Leakage</span>
                     <span className="text-5xl md:text-7xl font-black text-foreground font-mono tracking-tight stat-glow">
@@ -304,77 +306,119 @@ export default function RevenueLeakCalculatorPage() {
                     <span className="text-base text-foreground/50 font-light block mt-3">/year across {results.length} leak {results.length === 1 ? "category" : "categories"}</span>
                   </div>
 
-                  {/* Per-category breakdown */}
-                  <h4 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-6">Breakdown by Category</h4>
-                  <div className="space-y-6">
-                    {results.map((leak) => {
-                      const pct = totalLeak > 0 ? (leak.amount / totalLeak) * 100 : 0;
-                      return (
-                        <div key={leak.name} className="border border-white/[0.05] bg-white/[0.01] p-6 md:p-8 rounded-[4px]">
-                          <div className="flex items-start justify-between gap-4 mb-4">
-                            <h5 className="text-base font-black tracking-[0.1em] uppercase text-foreground">{leak.name}</h5>
-                            <span className="text-xl font-black font-mono text-emerald-400 shrink-0">
-                              €{leak.amount.toLocaleString()}/yr
-                            </span>
-                          </div>
+                  {/* Teaser — always visible: leak names + amounts only */}
+                  <h4 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-6">
+                    {resultsUnlocked ? "Breakdown by Category" : "Leaks Detected"}
+                  </h4>
 
-                          {/* Contribution bar */}
-                          <div className="mb-5">
-                            <div className="flex justify-between text-sm text-foreground/50 mb-1.5">
-                              <span>Share of total leakage</span>
-                              <span className="font-mono font-bold text-emerald-400/70">{pct.toFixed(0)}%</span>
-                            </div>
-                            <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                              <div className="h-full bg-emerald-500/60 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
-                            </div>
+                  {!resultsUnlocked && (
+                    <>
+                      <div className="space-y-3 mb-10">
+                        {results.map((leak) => (
+                          <div key={leak.name} className="flex items-center justify-between border border-white/[0.05] bg-white/[0.01] px-6 py-4 rounded-[4px]">
+                            <span className="text-sm font-black tracking-[0.1em] uppercase text-foreground/70">{leak.name}</span>
+                            <span className="text-lg font-black font-mono text-emerald-400">€{leak.amount.toLocaleString()}/yr</span>
                           </div>
+                        ))}
+                      </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
-                            <div>
-                              <span className="text-foreground/50 block mb-1">Your number</span>
-                              <span className="text-foreground/80 font-medium">{leak.yourValue}</span>
-                            </div>
-                            <div>
-                              <span className="text-foreground/50 block mb-1">Benchmark</span>
-                              <span className="text-foreground/80 font-medium">{leak.benchmark}</span>
-                            </div>
-                            <div>
-                              <span className="text-foreground/50 block mb-1">Gap</span>
-                              <span className="text-emerald-400/80 font-medium">{leak.gap}</span>
-                            </div>
-                          </div>
-
-                          {/* Formula */}
-                          <div className="bg-white/[0.02] border border-white/[0.04] rounded-[2px] p-4 mb-3">
-                            <span className="text-sm text-foreground/50 font-mono block mb-1">Formula</span>
-                            <code className="text-sm text-foreground/60 font-mono block">{leak.formula}</code>
-                          </div>
-
-                          {/* Methodology */}
-                          <details className="group">
-                            <summary className="text-sm text-foreground/50 cursor-pointer hover:text-foreground/60 transition-colors flex items-center gap-2">
-                              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="group-open:rotate-90 transition-transform">
-                                <path d="M3 1.5L7 5L3 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                              How we calculated this
-                            </summary>
-                            <p className="text-sm text-foreground/50 font-light leading-relaxed mt-2 pl-5">{leak.methodology}</p>
-                          </details>
+                      {/* Email gate */}
+                      <div className="border border-emerald-500/[0.2] bg-emerald-500/[0.04] rounded-[4px] p-8 text-center">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-emerald-400">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="1.5" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                          <h4 className="text-lg font-black text-foreground">Unlock the Full Breakdown</h4>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <p className="text-sm text-foreground/60 font-light leading-relaxed mb-6 max-w-md mx-auto">
+                          Get the formulas, methodology, benchmark comparisons, and a prioritized fix roadmap for each leak category.
+                        </p>
+                        <EmailCapture
+                          tags={["source:calculator", "segment:saas", "calculator:qualified"]}
+                          accentColor="emerald"
+                          buttonText="Unlock Full Report"
+                          successMessage="Unlocked! Scroll down for details."
+                          onSuccess={() => setResultsUnlocked(true)}
+                          className="max-w-md mx-auto"
+                        />
+                        <p className="text-xs text-foreground/30 mt-3 font-mono tracking-wider">
+                          No spam. We&apos;ll also send a copy to your inbox.
+                        </p>
+                      </div>
+                    </>
+                  )}
 
-                  {/* Recalculate */}
-                  <div className="mt-8 text-center">
-                    <button onClick={recalculate} className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-[0.15em]">
-                      Adjust Numbers
-                    </button>
-                  </div>
+                  {/* Full breakdown — only after email */}
+                  {resultsUnlocked && (
+                    <>
+                      <div className="space-y-6">
+                        {results.map((leak) => {
+                          const pct = totalLeak > 0 ? (leak.amount / totalLeak) * 100 : 0;
+                          return (
+                            <div key={leak.name} className="border border-white/[0.05] bg-white/[0.01] p-6 md:p-8 rounded-[4px]">
+                              <div className="flex items-start justify-between gap-4 mb-4">
+                                <h5 className="text-base font-black tracking-[0.1em] uppercase text-foreground">{leak.name}</h5>
+                                <span className="text-xl font-black font-mono text-emerald-400 shrink-0">
+                                  €{leak.amount.toLocaleString()}/yr
+                                </span>
+                              </div>
+
+                              <div className="mb-5">
+                                <div className="flex justify-between text-sm text-foreground/50 mb-1.5">
+                                  <span>Share of total leakage</span>
+                                  <span className="font-mono font-bold text-emerald-400/70">{pct.toFixed(0)}%</span>
+                                </div>
+                                <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+                                  <div className="h-full bg-emerald-500/60 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                                <div>
+                                  <span className="text-foreground/50 block mb-1">Your number</span>
+                                  <span className="text-foreground/80 font-medium">{leak.yourValue}</span>
+                                </div>
+                                <div>
+                                  <span className="text-foreground/50 block mb-1">Benchmark</span>
+                                  <span className="text-foreground/80 font-medium">{leak.benchmark}</span>
+                                </div>
+                                <div>
+                                  <span className="text-foreground/50 block mb-1">Gap</span>
+                                  <span className="text-emerald-400/80 font-medium">{leak.gap}</span>
+                                </div>
+                              </div>
+
+                              <div className="bg-white/[0.02] border border-white/[0.04] rounded-[2px] p-4 mb-3">
+                                <span className="text-sm text-foreground/50 font-mono block mb-1">Formula</span>
+                                <code className="text-sm text-foreground/60 font-mono block">{leak.formula}</code>
+                              </div>
+
+                              <details className="group">
+                                <summary className="text-sm text-foreground/50 cursor-pointer hover:text-foreground/60 transition-colors flex items-center gap-2">
+                                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="group-open:rotate-90 transition-transform">
+                                    <path d="M3 1.5L7 5L3 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                  How we calculated this
+                                </summary>
+                                <p className="text-sm text-foreground/50 font-light leading-relaxed mt-2 pl-5">{leak.methodology}</p>
+                              </details>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-8 text-center">
+                        <button onClick={recalculate} className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-[0.15em]">
+                          Adjust Numbers
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
 
-              {/* CTA */}
+              {/* CTA — always visible */}
               <div className="mt-12 pt-10 border-t border-white/[0.05]">
                 <p className="text-base text-foreground/60 font-light leading-relaxed mb-2">
                   This is an estimate based on published industry benchmarks. The full diagnostic uses your actual CRM and Stripe data to find every leak with exact euro amounts and formulas — including leaks this calculator can&apos;t detect.
@@ -393,7 +437,7 @@ export default function RevenueLeakCalculatorPage() {
                     Book Your Diagnostic
                   </a>
                   <a
-                    href="https://muditek.beehiiv.com"
+                    href="https://b2bagents.beehiiv.com/subscribe"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press"

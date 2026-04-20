@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { WhatsAppBubble } from "@/components/whatsapp-bubble";
+import { ExitIntent } from "@/components/exit-intent";
 import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
@@ -54,6 +55,7 @@ export default function RootLayout({
         />
         {children}
         <WhatsAppBubble />
+        <ExitIntent />
       </body>
     </html>
   );

@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Chief of Staff Blueprint — Replace a $75K EA with 8 markdown files, 4 skills, and 3 cron jobs</title>
+<meta name="description" content="A full end-to-end build guide for turning OpenClaw into an autonomous chief of staff. Extracted verbatim from snarktank/clawchief.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
+
+  .playbook-scaler {
+    --bg: #0a0a0a;
+    --bg-code: #0f0f0f;
+    --red: #e8392a;
+    --text: #f5f4f1;
+    --text-mid: #a8a6a0;
+    --text-dim: #6a6864;
+    --line: rgba(245,244,241,0.09);
+    --sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.55;
+    font-size: 22px;
+    letter-spacing: -0.005em;
+    padding: 0 !important;
+  }
+  .playbook-scaler *,
+  .playbook-scaler *::before,
+  .playbook-scaler *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .playbook-scaler ::selection { background: var(--red); color: #fff; }
+
+  .playbook-scaler a:focus-visible {
+    outline: 1px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  .playbook-scaler .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  .playbook-scaler section {
+    padding: 120px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .playbook-scaler section:last-of-type { border-bottom: none; }
+
+  /* Hero */
+  .hero {
+    padding: 140px 0 120px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 48px;
+  }
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(56px, 9vw, 108px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 56px;
+    max-width: 14ch;
+  }
+  .hero h1 .accent { color: var(--red); }
+  .hero-sub {
+    font-size: 30px;
+    line-height: 1.4;
+    color: var(--text-mid);
+    max-width: 32ch;
+    font-weight: 400;
+    letter-spacing: -0.012em;
+    margin-bottom: 72px;
+  }
+  .hero-meta {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 2;
+    color: var(--text-dim);
+    letter-spacing: -0.005em;
+  }
+  .hero-meta a {
+    color: var(--red);
+    text-decoration: none;
+    border-bottom: 1px solid var(--red);
+  }
+  .hero-meta a:hover { color: var(--text); border-bottom-color: var(--text); }
+  .hero-meta .label {
+    color: var(--text-dim);
+    display: inline-block;
+    width: 180px;
+  }
+  .hero-meta .value {
+    color: var(--text);
+  }
+
+  /* Section */
+  .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    display: block;
+  }
+  .section-num .accent { color: var(--red); margin-right: 10px; }
+
+  .playbook-scaler h2 {
+    font-family: var(--sans);
+    font-size: clamp(42px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    margin-bottom: 44px;
+    max-width: 20ch;
+    color: var(--text);
+  }
+  .playbook-scaler h3 {
+    font-family: var(--sans);
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin: 64px 0 22px;
+    color: var(--text);
+  }
+  .playbook-scaler h3:first-of-type { margin-top: 0; }
+  .playbook-scaler h3 .num {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--red);
+    margin-right: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    vertical-align: baseline;
+  }
+  .playbook-scaler h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin: 48px 0 18px;
+  }
+
+  .playbook-scaler p {
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    margin-bottom: 26px;
+    max-width: 62ch;
+  }
+  .playbook-scaler p strong { color: var(--text); font-weight: 600; }
+  .playbook-scaler p a {
+    color: var(--red);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    transition: border-color 0.15s;
+  }
+  .playbook-scaler p a:hover { border-bottom-color: var(--red); }
+  .playbook-scaler p code,
+  .playbook-scaler li code,
+  .playbook-scaler h3 code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    color: var(--red);
+    letter-spacing: -0.005em;
+  }
+
+  .lead {
+    font-size: 30px;
+    line-height: 1.4;
+    color: var(--text);
+    max-width: 28ch;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+  }
+
+  /* Lists */
+  .playbook-scaler ul.dot,
+  .playbook-scaler ol.num {
+    list-style: none;
+    padding: 0;
+    margin: 28px 0;
+  }
+  .playbook-scaler ul.dot li {
+    font-size: 21px;
+    line-height: 1.55;
+    color: var(--text-mid);
+    padding: 14px 0 14px 30px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .playbook-scaler ul.dot li:last-child { border-bottom: none; }
+  .playbook-scaler ul.dot li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    color: var(--red);
+    font-weight: 500;
+  }
+  .playbook-scaler ul.dot li strong { color: var(--text); font-weight: 600; }
+
+  .playbook-scaler ol.num { counter-reset: s; }
+  .playbook-scaler ol.num li {
+    counter-increment: s;
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--text);
+    padding: 20px 0 20px 56px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .playbook-scaler ol.num li:last-child { border-bottom: none; }
+  .playbook-scaler ol.num li::before {
+    content: counter(s, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 22px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--red);
+    letter-spacing: 0.05em;
+  }
+  .playbook-scaler ol.num li small {
+    display: block;
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-family: var(--mono);
+    letter-spacing: -0.005em;
+  }
+
+  /* Code */
+  .code {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    padding: 32px 36px;
+    margin: 28px 0;
+    font-family: var(--mono);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    letter-spacing: -0.005em;
+  }
+  .code .c { color: var(--text-dim); }
+  .code .h { color: var(--red); font-weight: 500; }
+  .code .k { color: var(--red); }
+  .code .s { color: #88c999; }
+  .code .n { color: #d4a060; }
+  .code .t { color: var(--text); }
+  .code .m { color: var(--text-mid); }
+  .code .b { color: #6b9eff; }
+
+  /* File block */
+  .file {
+    margin: 48px 0;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+  .file-name {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--red);
+    margin-bottom: 20px;
+    letter-spacing: -0.005em;
+  }
+  .file p { font-size: 20px; }
+
+  /* Priority rows (vertical, no cards) */
+  .pri {
+    margin: 40px 0 48px;
+    border-top: 1px solid var(--line);
+  }
+  .pri-row {
+    display: grid;
+    grid-template-columns: 80px 180px 1fr;
+    gap: 32px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .pri-lvl {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--red);
+    letter-spacing: 0.05em;
+  }
+  .pri-lvl.p0 { color: var(--red); }
+  .pri-lvl.p1 { color: #f0a030; }
+  .pri-lvl.p2 { color: #6b9eff; }
+  .pri-lvl.p3 { color: var(--text-dim); }
+  .pri-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .pri-desc {
+    font-size: 19px;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  /* Skill sections */
+  .skill {
+    margin: 56px 0;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .skill-tag {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .skill-name {
+    font-family: var(--mono);
+    font-size: 26px;
+    color: var(--red);
+    margin-bottom: 18px;
+    letter-spacing: -0.01em;
+  }
+  .skill-purpose {
+    font-size: 26px;
+    color: var(--text);
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    max-width: 28ch;
+  }
+
+  /* Cron */
+  .cron {
+    margin: 36px 0;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+  .cron:last-of-type { border-bottom: 1px solid var(--line); }
+  .cron-expr {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--red);
+    margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+  .cron-name {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  .cron-desc {
+    font-size: 19px;
+    color: var(--text-mid);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .cron-off .cron-expr, .cron-off .cron-name { color: var(--text-dim); }
+  .cron-tag {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Callout */
+  .playbook-scaler blockquote {
+    margin: 56px 0;
+    padding: 12px 0 12px 36px;
+    border-left: 2px solid var(--red);
+    font-size: 24px;
+    line-height: 1.45;
+    color: var(--text);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  .playbook-scaler blockquote cite {
+    display: block;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .playbook-scaler blockquote strong { color: var(--text); font-weight: 700; }
+  .playbook-scaler blockquote code { color: var(--red); font-family: var(--mono); font-size: 0.9em; }
+
+  /* Inline tag list (plain) */
+  .inline-list {
+    font-family: var(--mono);
+    font-size: 17px;
+    line-height: 2;
+    color: var(--text);
+    margin: 28px 0;
+    letter-spacing: -0.005em;
+  }
+  .inline-list .sep { color: var(--text-dim); padding: 0 10px; }
+
+  /* Replaces rows */
+  .replaces {
+    margin: 48px 0;
+    border-top: 1px solid var(--line);
+  }
+  .replaces-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr;
+    gap: 32px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .replaces-row.head > div {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .replaces-name {
+    font-size: 21px;
+    color: var(--text);
+    letter-spacing: -0.015em;
+  }
+  .replaces-cost {
+    font-family: var(--mono);
+    font-size: 19px;
+    color: var(--red);
+  }
+  .replaces-cost.dim { color: var(--text-mid); }
+
+  /* Architecture list */
+  .arch-group {
+    margin: 48px 0;
+  }
+  .arch-label {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+  .arch-item {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .arch-item:last-child { border-bottom: 1px solid var(--line); }
+  .arch-name {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--red);
+    letter-spacing: -0.005em;
+  }
+  .arch-desc {
+    font-size: 19px;
+    color: var(--text-mid);
+    line-height: 1.5;
+    max-width: 48ch;
+  }
+
+  /* Closing */
+  .closing {
+    padding: 120px 0 140px;
+    border-top: 1px solid var(--line);
+  }
+  .closing h2 {
+    margin-bottom: 32px;
+  }
+  .closing-links {
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 2.2;
+    color: var(--text-dim);
+    letter-spacing: -0.005em;
+  }
+  .closing-links a {
+    color: var(--red);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .closing-links a:hover { border-bottom-color: var(--red); }
+  .closing-links .label {
+    display: inline-block;
+    width: 180px;
+    color: var(--text-dim);
+  }
+
+  /* Colophon */
+  .colophon {
+    padding: 48px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    line-height: 2;
+  }
+  .colophon a { color: var(--red); text-decoration: none; }
+  .colophon a:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .playbook-scaler { font-size: 19px; }
+    .playbook-scaler .wrap { padding: 0 28px; }
+    .playbook-scaler section { padding: 80px 0; }
+    .playbook-scaler .hero { padding: 80px 0; }
+    .playbook-scaler .hero-meta .label { display: block; width: auto; margin-top: 18px; }
+    .playbook-scaler .pri-row,
+    .playbook-scaler .replaces-row,
+    .playbook-scaler .arch-item {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 20px 0;
+    }
+    .playbook-scaler .replaces-row.head { display: none; }
+    .playbook-scaler .closing-links .label { display: block; width: auto; }
+    .playbook-scaler .code { padding: 22px; font-size: 13.5px; }
+    .playbook-scaler ol.num li { padding-left: 40px; font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">OpenClaw blueprint — v1.0</div>
+    <h1>7 text files just replaced a <span class="accent">$75K/year</span> executive assistant.</h1>
+    <p class="hero-sub">A complete, copy-paste operating system that turns OpenClaw into an autonomous chief of staff. Inbox. Calendar. Outreach. Tasks. Meeting notes. Running on 3 cron jobs, 4 skills, and 8 markdown files — while you sleep.</p>
+
+    <div class="hero-meta">
+      <span class="label">Source repo</span>
+      <a href="https://github.com/snarktank/clawchief" target="_blank" rel="noopener">github.com/snarktank/clawchief</a><br>
+      <span class="label">Launch post</span>
+      <a href="https://x.com/ryancarson/status/2039786704731541903" target="_blank" rel="noopener">@ryancarson on X</a><br>
+      <span class="label">Setup time</span>
+      <span class="value">~45 minutes</span><br>
+      <span class="label">Replaces</span>
+      <span class="value">$6,250/month of tooling + human EA</span><br>
+      <span class="label">Author of this guide</span>
+      <a href="https://muditek.com" target="_blank" rel="noopener">Ghiles Moussaoui · Muditek</a>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — PREMISE -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">01</span>The mental model</span>
+    <h2>Most AI assistants are passive. A chief of staff wakes up.</h2>
+
+    <p class="lead">A real chief of staff doesn't wait for prompts. They check your inbox at 8:15am. Your calendar at 8:30. Your CRM at 9. And only interrupt you when something actually needs you.</p>
+
+    <p>Every AI tutorial stops at "give it tools." That's where this one starts. The 8 files, 4 skills, and 3 cron jobs below define the missing operating system — who matters, what's urgent, when to act alone, when to escalate, and what to check every 15 minutes from 8am to 9pm.</p>
+
+    <p>Everything on this page is extracted verbatim from <a href="https://github.com/snarktank/clawchief" target="_blank" rel="noopener">github.com/snarktank/clawchief</a> — the public starter kit Ryan Carson released for his own chief-of-staff setup. The patterns below are the ones he runs in production.</p>
+
+    <blockquote>
+      <cite>The 3-layer rule</cite>
+      <strong>Skills</strong> tell the agent <em>how to act</em>. <strong>Files</strong> tell the agent <em>who to act for</em>. <strong>Crons</strong> tell the agent <em>when to wake up</em>. Without all three, you have a chatbot. With all three, you have an operator.
+    </blockquote>
+
+    <h3>Why separation matters</h3>
+    <p>The entire value of the repo is the separation boundary between files. Each layer owns exactly one thing. Swap any one without breaking the others.</p>
+
+    <ul class="dot">
+      <li><strong>Prioritization</strong> lives in <code>priority-map.md</code>. Nowhere else.</li>
+      <li><strong>Resolution policy</strong> lives in <code>auto-resolver.md</code>. Nowhere else.</li>
+      <li><strong>Meeting-note ingestion</strong> lives in <code>meeting-notes.md</code>. Nowhere else.</li>
+      <li><strong>Live task state</strong> lives in <code>tasks.md</code>. Nowhere else.</li>
+      <li><strong>Archive state</strong> lives in <code>tasks-completed.md</code>. Nowhere else.</li>
+      <li><strong>Local secrets</strong> live in <code>TOOLS.md</code>. Nowhere else.</li>
+      <li><strong>Recurring orchestration</strong> lives in <code>HEARTBEAT.md</code> plus the cron jobs. Nowhere else.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 02 — ARCHITECTURE -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">02</span>Architecture map</span>
+    <h2>8 files. 4 skills. 3 crons. One operator.</h2>
+
+    <p>Three layers. Each layer is portable. Each file does one thing.</p>
+
+    <div class="arch-group">
+      <div class="arch-label">Layer 1 — state files (policy + memory)</div>
+      <div class="arch-item">
+        <div class="arch-name">priority-map.md</div>
+        <div class="arch-desc">Who matters. What programs. P0–P3 urgency ranking. Who is allowed to interrupt you.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">auto-resolver.md</div>
+        <div class="arch-desc">When to act alone, draft, escalate, or archive. The judgment layer.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">HEARTBEAT.md</div>
+        <div class="arch-desc">The 11-step sequence the agent runs every time it wakes up.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">tasks.md</div>
+        <div class="arch-desc">Live task list. Owner plus program sections. Source of truth across sessions.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">tasks-completed.md</div>
+        <div class="arch-desc">Completed tasks, auto-archived overnight. Your activity log.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">meeting-notes.md</div>
+        <div class="arch-desc">Ingestion rules. Turns meeting docs into tasks plus auto-resolved actions.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">TOOLS.md</div>
+        <div class="arch-desc">Your inbox, calendars, CRM ID, time zone, target market. The only file with secrets.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">location-awareness.md</div>
+        <div class="arch-desc">Travel-aware task filtering. Suppress home-only tasks when you're on the road.</div>
+      </div>
+    </div>
+
+    <div class="arch-group">
+      <div class="arch-label">Layer 2 — skills (workflow specs loaded by the runtime)</div>
+      <div class="arch-item">
+        <div class="arch-name">executive-assistant</div>
+        <div class="arch-desc">Inbox, calendar, scheduling, meeting-note ingestion.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">business-development</div>
+        <div class="arch-desc">Outreach tracker, reply cadence, sourcing batches.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">daily-task-manager</div>
+        <div class="arch-desc">Add, complete, defer, reprioritize tasks.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">daily-task-prep</div>
+        <div class="arch-desc">Runs at 2am. Builds tomorrow's Today list.</div>
+      </div>
+    </div>
+
+    <div class="arch-group">
+      <div class="arch-label">Layer 3 — cron jobs (the heartbeat)</div>
+      <div class="arch-item">
+        <div class="arch-name">*/15 8-21 * * *</div>
+        <div class="arch-desc">Executive-assistant sweep. Every 15 min, 8am–9pm. Inbox plus calendar plus meeting notes. Silent unless something needs you.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">0 2 * * *</div>
+        <div class="arch-desc">Daily task prep. Builds today's task list at 2am. Pulls calendar. Archives yesterday.</div>
+      </div>
+      <div class="arch-item">
+        <div class="arch-name">0 2 * * *</div>
+        <div class="arch-desc">Business-development sourcing. Pulls 10 verified leads matching your target market into your CRM.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — PRIORITY MAP -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">03</span>File 01 — priority-map.md</span>
+    <h2>Who is allowed to interrupt your day.</h2>
+
+    <p class="lead">Without this file, the agent treats every email like an emergency. With it, only revenue-blocking signals from named people reach you.</p>
+
+    <h3>The four urgency levels</h3>
+    <div class="pri">
+      <div class="pri-row">
+        <div class="pri-lvl p0">P0</div>
+        <div class="pri-name">Interrupt now</div>
+        <div class="pri-desc">Time-sensitive, blocking, high-stakes. Reaches you in your primary channel within 60 seconds.</div>
+      </div>
+      <div class="pri-row">
+        <div class="pri-lvl p1">P1</div>
+        <div class="pri-name">Same day</div>
+        <div class="pri-desc">Important enough to surface today. Acted on by the agent or queued for you.</div>
+      </div>
+      <div class="pri-row">
+        <div class="pri-lvl p2">P2</div>
+        <div class="pri-name">Digest</div>
+        <div class="pri-desc">Worth tracking but not worth interrupting. Bundled into a structured summary.</div>
+      </div>
+      <div class="pri-row">
+        <div class="pri-lvl p3">P3</div>
+        <div class="pri-name">Archive</div>
+        <div class="pri-desc">Low-value noise. Never seen by you.</div>
+      </div>
+    </div>
+
+    <h3>The four action modes</h3>
+    <ul class="dot">
+      <li><strong>Interrupt now.</strong> Surface directly in your primary channel as a short, clear alert.</li>
+      <li><strong>Handle and summarize.</strong> The agent acts, then sends a one-line update if useful.</li>
+      <li><strong>Queue for digest.</strong> Hold for the next structured summary or heartbeat if still relevant.</li>
+      <li><strong>Ignore.</strong> No user-facing message needed.</li>
+    </ul>
+
+    <h3>How to use this file</h3>
+    <p>When a new signal arrives from Slack, email, calendar, tasks, meeting notes, docs, or notes:</p>
+    <ol class="num">
+      <li>Map it to zero or more <strong>people</strong>.</li>
+      <li>Map it to zero or more <strong>programs</strong>.</li>
+      <li>Assign an urgency level.</li>
+      <li>Choose the action mode.</li>
+    </ol>
+    <p>If a signal maps to no important people and no important programs, it should usually be ignored or batched and archived.</p>
+
+    <div class="file">
+      <div class="file-name">priority-map.md — person block template</div>
+      <div class="code">
+<span class="c"># Copy this block for every person who can interrupt your day</span>
+
+<span class="h">### </span><span class="t">Person Name</span>
+<span class="h">- </span><span class="k">Why they matter:</span>
+  <span class="h">- </span><span class="m">why this person should override the noise filter</span>
+<span class="h">- </span><span class="k">Watch for:</span>
+  <span class="h">- </span><span class="m">direct asks</span>
+  <span class="h">- </span><span class="m">approvals needed</span>
+  <span class="h">- </span><span class="m">decisions only this person can make</span>
+  <span class="h">- </span><span class="m">anything that affects their calendar, travel, or revenue priorities</span>
+<span class="h">- </span><span class="k">Escalate to P0 when:</span>
+  <span class="h">- </span><span class="m">there is a hard deadline within 24 hours</span>
+  <span class="h">- </span><span class="m">a prospect, partner, or investor item is blocked on them</span>
+<span class="h">- </span><span class="k">Default action:</span>
+  <span class="h">- </span><span class="m">handle and summarize, or interrupt if required</span>
+      </div>
+      <p>Add one block per person. Family. Co-founders. Lead investors. Top customers. Lawyers. Anyone who outranks the noise filter gets a row. Everyone else gets archived by default.</p>
+    </div>
+
+    <div class="file">
+      <div class="file-name">priority-map.md — program block template</div>
+      <div class="code">
+<span class="h">### </span><span class="t">First 10 paying customers</span>
+<span class="h">- </span><span class="k">Why it matters:</span>
+  <span class="h">- </span><span class="m">this is the immediate top company priority</span>
+<span class="h">- </span><span class="k">Q2 target ladder:</span>
+  <span class="h">- </span><span class="n">2026-04-30</span><span class="m">: 10 total customers</span>
+  <span class="h">- </span><span class="n">2026-05-31</span><span class="m">: 20 total customers</span>
+  <span class="h">- </span><span class="n">2026-06-30</span><span class="m">: 30 total customers</span>
+<span class="h">- </span><span class="k">Watch for:</span>
+  <span class="h">- </span><span class="m">anything that can create customers, learn from prospects, or unblock acquisition</span>
+<span class="h">- </span><span class="k">Examples:</span>
+  <span class="h">- </span><span class="m">partner introductions</span>
+  <span class="h">- </span><span class="m">prospect replies</span>
+  <span class="h">- </span><span class="m">customer objections</span>
+  <span class="h">- </span><span class="m">pilots, pricing reactions, conversion bottlenecks</span>
+<span class="h">- </span><span class="k">Escalate to P0 when:</span>
+  <span class="h">- </span><span class="m">a near-term revenue opportunity is blocked on the principal</span>
+<span class="h">- </span><span class="k">Default action:</span>
+  <span class="h">- </span><span class="m">handle and summarize, or interrupt if principal action is required today</span>
+<span class="h">- </span><span class="k">Ignore / downgrade:</span>
+  <span class="h">- </span><span class="m">vague marketing ideas with no clear next step</span>
+      </div>
+      <p>One block per active program. Revenue. Hiring. Fundraising. Each paid ad channel. Each strategic partnership. The agent uses these blocks to decide whether a signal is worth your attention.</p>
+    </div>
+
+    <h3>Default routing rules</h3>
+    <p>These deterministic routes tell the agent which skill owns which class of signal:</p>
+    <ul class="dot">
+      <li>General inbox, scheduling, travel, calendar integrity, operational coordination → <strong>executive-assistant</strong>.</li>
+      <li>Partner, referral, prospect pipeline, outreach tracker, lead verification, prospecting batches → <strong>business-development</strong>.</li>
+      <li>Direct task CRUD, reprioritization, completion, current-task review → <strong>daily-task-manager</strong>.</li>
+      <li>Morning due-date retuning and daily actionability prep → <strong>daily-task-prep</strong>.</li>
+      <li>Meeting notes enter through <strong>executive-assistant</strong>, then route into <strong>business-development</strong> too if the note changes outreach or partner state.</li>
+    </ul>
+
+    <h3>Things that should usually be ignored</h3>
+    <ul class="dot">
+      <li>Casual chatter with no action.</li>
+      <li>Repeated notifications that add no new information.</li>
+      <li>Documents or messages with no connection to a priority person or program.</li>
+      <li>Speculative ideas without owner, deadline, or next step.</li>
+      <li>Low-stakes activity already captured in the task list.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 04 — AUTO-RESOLVER -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">04</span>File 02 — auto-resolver.md</span>
+    <h2>When to act alone vs. ask first.</h2>
+
+    <p class="lead">The hardest problem with AI assistants: they either ask permission for everything or act on things they shouldn't. This file makes that decision deterministic.</p>
+
+    <p>After classifying a signal, the agent prefers to <strong>resolve the obvious next step</strong> instead of merely summarizing it. That means: do low-risk operational work in the same turn when authority is clear. Update the source of truth as part of doing the work. Interrupt the principal only when judgment, approval, ambiguity, or sensitivity requires it.</p>
+
+    <h3><span class="num">01</span>Auto-resolve now</h3>
+    <p>Low-risk, operationally clear, reversible or easy to audit. The agent does the work and updates the source of truth in the same turn.</p>
+
+    <h3><span class="num">02</span>Draft and ask the principal</h3>
+    <p>The next step is visible, but the principal should approve the wording or decision first. Legal, policy, investor, pricing, press, emotional.</p>
+
+    <h3><span class="num">03</span>Escalate without acting</h3>
+    <p>Too much ambiguity, risk, or missing authority to safely draft or send. One-line summary with the blocker and the recommendation.</p>
+
+    <h3><span class="num">04</span>No action or archive</h3>
+    <p>Noise, duplicative, already handled, or not worth surfacing. Marked read and gone.</p>
+
+    <h3>The five-condition safe-auto-resolve checklist</h3>
+    <p>The agent only acts alone when <strong>all five</strong> are true. If any condition fails, it falls back to draft-and-ask.</p>
+    <ul class="dot">
+      <li>The signal is <strong>clearly understood</strong>.</li>
+      <li>The correct <strong>source of truth is known</strong>.</li>
+      <li>The action is <strong>operational rather than strategic</strong>.</li>
+      <li><strong>Authority is already clear</strong>.</li>
+      <li>A mistake would be <strong>low-cost and recoverable</strong>.</li>
+    </ul>
+
+    <h4>Safe auto-resolve lane</h4>
+    <ul class="dot">
+      <li>Update <code>tasks.md</code>.</li>
+      <li>Turn meeting-note action items into tasks.</li>
+      <li>Add reminders or follow-up tasks.</li>
+      <li>Update a tracker after a reply or booking.</li>
+      <li>Send low-risk scheduling messages when authority is clear.</li>
+      <li>Create, update, or cancel calendar events.</li>
+      <li>Send a short factual follow-up on a known thread.</li>
+      <li>Archive email after it's truly handled.</li>
+    </ul>
+
+    <h4>Draft-first lane</h4>
+    <ul class="dot">
+      <li>Legal or policy answers.</li>
+      <li>Investor, board, or fundraising messaging.</li>
+      <li>Pricing-sensitive replies.</li>
+      <li>Press, podcast, or speaking responses.</li>
+      <li>Emotionally sensitive personal or family communication.</li>
+      <li>Messages where wording matters more than logistics.</li>
+    </ul>
+
+    <h4>Escalate-without-acting lane</h4>
+    <ul class="dot">
+      <li>Authority is unclear.</li>
+      <li>The signal is contradictory or incomplete.</li>
+      <li>There is reputational, legal, or financial risk without enough context.</li>
+      <li>The action would expose private context the principal would not want disclosed.</li>
+      <li>There is no reliable source of truth to ground the response.</li>
+    </ul>
+
+    <blockquote>
+      <cite>Source-of-truth rule</cite>
+      Do not auto-resolve from memory alone. Always ground the action in the relevant live source of truth before acting. Tasks → <code>tasks.md</code>. Outreach → CRM. Scheduling → live calendar. Priority → <code>priority-map.md</code>.
+    </blockquote>
+
+    <h3>Good auto-resolve output examples</h3>
+    <ul class="dot">
+      <li>"Booked it. Invite sent."</li>
+      <li>"Updated the tracker and replied with the next step."</li>
+      <li>"Turned the meeting-note follow-ups into tasks and handled the ones I could resolve."</li>
+      <li>"Rescheduled for Tuesday at 2pm; nothing else needed from you."</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 05 — HEARTBEAT -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">05</span>File 03 — HEARTBEAT.md</span>
+    <h2>The 11-step sequence the agent runs every 15 minutes.</h2>
+
+    <p class="lead">This is the file that turns a passive chatbot into a proactive operator. Every cron firing, every wake-up, every check-in runs this exact sequence top to bottom.</p>
+
+    <ol class="num">
+      <li>Read the priority map.<small>clawchief/priority-map.md</small></li>
+      <li>Read the auto-resolver policy.<small>clawchief/auto-resolver.md</small></li>
+      <li>Read the meeting-notes policy and ledger.<small>clawchief/meeting-notes.md plus workspace/memory/meeting-notes-state.json</small></li>
+      <li>Read the live task file.<small>clawchief/tasks.md</small></li>
+      <li>Run the executive-assistant workflow for meeting-notes ingestion plus inbox, calendar, and scheduling triage.</li>
+      <li>If the signal is really about outreach tracker state, lead status, prospect pipeline, or partner follow-up — use the business-development workflow instead.</li>
+      <li>Auto-resolve low-risk operational items when the next step is obvious and authority is clear.</li>
+      <li>If meeting notes create principal tasks, add them to <code>clawchief/tasks.md</code>.</li>
+      <li>If the principal needs to know or act, send one short, direct update.</li>
+      <li>If there is no EA or biz-dev issue, use the remaining heartbeat value for at most one priority nudge anchored in a live program or open task.</li>
+      <li>If there is nothing useful to say, reply <strong>HEARTBEAT_OK</strong>.</li>
+    </ol>
+
+    <h3>The 8 governing rules</h3>
+    <ul class="dot">
+      <li>Be proactive, but do not create noise.</li>
+      <li>Keep this file as an orchestrator, not a duplicate workflow spec.</li>
+      <li>Let the skills own their detailed procedures.</li>
+      <li>Let <code>priority-map.md</code> own people and program priority.</li>
+      <li>Let <code>auto-resolver.md</code> own auto-resolution policy.</li>
+      <li>Let <code>meeting-notes.md</code> own meeting-notes ingestion policy.</li>
+      <li>Let <code>tasks.md</code> own the live task state.</li>
+      <li>Do not send repeated or near-identical nudges unless there is materially new information, a changed recommendation, or a concrete trigger.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 06 — TASKS -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">06</span>File 04 + 05 — tasks.md + tasks-completed.md</span>
+    <h2>The live task file and its overnight archive.</h2>
+
+    <p class="lead">The agent reads <code>tasks.md</code> at the start of every heartbeat. Updates it in the same turn it changes anything. Treats it as the single source of truth across sessions, devices, and crons.</p>
+
+    <div class="file">
+      <div class="file-name">tasks.md — required structure</div>
+      <div class="code">
+<span class="h"># </span><span class="t">Current Tasks</span>
+
+<span class="t">Last updated: </span><span class="n">YYYY-MM-DD HH:MM TZ</span>
+<span class="t">Canonical file: use this file as the source of truth across sessions</span>
+
+<span class="h">## </span><span class="t">Today</span>
+
+<span class="h">### </span><span class="t">Principal</span>
+
+<span class="h">#### </span><span class="t">Revenue / customer growth</span>
+<span class="h">- [ ] </span><span class="m">Highest-priority principal task</span>
+
+<span class="h">#### </span><span class="t">Executive assistant</span>
+<span class="h">- [ ] </span><span class="m">Principal decision or review task</span>
+
+<span class="h">### </span><span class="t">Assistant</span>
+
+<span class="h">#### </span><span class="t">Executive assistant</span>
+<span class="h">- [ ] </span><span class="m">Follow up on scheduling — due </span><span class="n">YYYY-MM-DD</span>
+
+<span class="h">#### </span><span class="t">Business development</span>
+<span class="h">- [ ] </span><span class="m">Process partner replies — due </span><span class="n">YYYY-MM-DD</span>
+
+<span class="h">## </span><span class="t">Every weekday</span>
+<span class="h">- </span><span class="m">Ship one concrete growth action</span>
+<span class="h">- </span><span class="m">Clear priority inboxes</span>
+
+<span class="h">## </span><span class="t">Backlog with due date</span>
+<span class="h">- </span><span class="m">Assistant follow-up — due </span><span class="n">YYYY-MM-DD</span>
+<span class="h">- </span><span class="m">Important task — due </span><span class="n">YYYY-MM-DD</span>
+
+<span class="h">## </span><span class="t">Recurring reminders</span>
+<span class="h">- [ ] </span><span class="m">Reminder — due </span><span class="n">YYYY-MM-DD HH:MM TZ</span><span class="m"> — recurs weekly every 1</span>
+
+<span class="h">## </span><span class="t">Backlog</span>
+<span class="h">- </span><span class="m">Task with no immediate date</span>
+
+<span class="h">## </span><span class="t">To research</span>
+<span class="h">- </span><span class="m">Topic, tool, or workflow to investigate later</span>
+
+<span class="h">## </span><span class="t">Weekly / Monthly / Quarterly</span>
+<span class="h">- </span><span class="m">Cadence review task</span>
+
+<span class="h">## </span><span class="t">Rules</span>
+<span class="h">- </span><span class="m">Update this file when task state changes.</span>
+<span class="h">- </span><span class="m">Heartbeats read from this file, not from memory.</span>
+<span class="h">- </span><span class="m">Prior-day completions move to tasks-completed.md during daily prep.</span>
+      </div>
+    </div>
+
+    <h3>The 9 task-file rules (non-negotiable)</h3>
+    <ol class="num">
+      <li>Read <code>tasks.md</code> before answering any question about current tasks or composing a check-in.</li>
+      <li>Treat it as the source of truth across all sessions.</li>
+      <li>When task state changes, update it <strong>in the same turn</strong> whenever practical.</li>
+      <li>When the assistant gets a task with a due date, add an assistant-owned task using the canonical due-date format.</li>
+      <li>When a task depends on an outside reply or future check-in, add a <strong>separate follow-up task with its own due date</strong>.</li>
+      <li>Scan for overdue and due-today assistant tasks before deciding what needs attention.</li>
+      <li>Keep long-term preferences in memory files, live state in <code>tasks.md</code>, and completed history in <code>tasks-completed.md</code>.</li>
+      <li>If a task change materially affects heartbeat behavior, ensure the heartbeat still points at <code>tasks.md</code>.</li>
+      <li>Use <code>YYYY-MM-DD</code> for all-day due dates and <code>YYYY-MM-DD HH:MM TZ</code> for timed due dates.</li>
+    </ol>
+
+    <div class="file">
+      <div class="file-name">tasks-completed.md — archive structure</div>
+      <div class="code">
+<span class="h"># </span><span class="t">Completed Tasks</span>
+
+<span class="t">Last updated: </span><span class="n">YYYY-MM-DD HH:MM TZ</span>
+<span class="t">Archive file: completed tasks moved out of clawchief/tasks.md</span>
+
+<span class="h">## </span><span class="n">YYYY-MM-DD</span>
+
+<span class="h">### </span><span class="t">Principal</span>
+<span class="h">- [x] </span><span class="m">Completed task — completed </span><span class="n">YYYY-MM-DD HH:MM TZ</span>
+
+<span class="h">### </span><span class="t">Assistant</span>
+<span class="h">- [x] </span><span class="m">Completed task — completed </span><span class="n">YYYY-MM-DD HH:MM TZ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — MEETING NOTES -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">07</span>File 06 — meeting-notes.md</span>
+    <h2>Turn every call into tasks automatically.</h2>
+
+    <p class="lead">Most meeting notes die in a Google Doc nobody reopens. This file makes the agent treat notes as a live signal source — it reads them, extracts action items, and creates tasks before you even leave the meeting.</p>
+
+    <h3>What the agent extracts from every note</h3>
+    <ul class="dot">
+      <li>Explicit action items.</li>
+      <li>Implied follow-ups.</li>
+      <li>Deadlines and commitments.</li>
+      <li>Promises the principal made.</li>
+      <li>Introductions to send.</li>
+      <li>Materials, links, or docs to share.</li>
+      <li>Scheduling next steps.</li>
+      <li>Outreach or partnership next steps.</li>
+      <li>GTM or content tasks.</li>
+      <li>Legal or policy questions that need review.</li>
+      <li>Anything that should become a task, reminder, draft, or auto-resolve action.</li>
+    </ul>
+
+    <h3>The 7-step processing workflow</h3>
+    <ol class="num">
+      <li>Search the configured source (Google Docs, AI notetaker output, shared folder) for recently shared or updated notes.</li>
+      <li>Compare candidate docs against <code>workspace/memory/meeting-notes-state.json</code>.</li>
+      <li>For each unprocessed note: read the note text, identify principal action items, assistant action items, follow-ups waiting on others, decisions and commitments, and auto-resolvable items.</li>
+      <li>Classify each extracted item through the priority map.</li>
+      <li>Run the auto-resolver policy.</li>
+      <li>Update <code>tasks.md</code> and any other live source of truth in the same turn.</li>
+      <li>Record the note as processed with timestamp and a short summary of what was extracted.</li>
+    </ol>
+
+    <h3>What counts as successful ingestion</h3>
+    <p>A note is not handled just because it was read. It is only handled when:</p>
+    <ul class="dot">
+      <li>Tasks are added or updated in <code>tasks.md</code>.</li>
+      <li>Follow-ups are created with their own due dates.</li>
+      <li>Tracker, calendar, or inbox state is updated when appropriate.</li>
+      <li>Auto-resolved actions are completed when safe.</li>
+      <li>The processed-doc ledger is updated to prevent reprocessing.</li>
+    </ul>
+
+    <div class="file">
+      <div class="file-name">meeting-notes-state.json — ledger format</div>
+      <div class="code">
+<span class="t">{</span>
+  <span class="s">"version"</span><span class="t">: </span><span class="n">1</span><span class="t">,</span>
+  <span class="s">"notes"</span><span class="t">: [</span>
+    <span class="t">{</span>
+      <span class="s">"docId"</span><span class="t">: </span><span class="s">"1ABC..."</span><span class="t">,</span>
+      <span class="s">"title"</span><span class="t">: </span><span class="s">"Call with Linda — 2026-04-12"</span><span class="t">,</span>
+      <span class="s">"processedAt"</span><span class="t">: </span><span class="s">"2026-04-12T19:04:00-04:00"</span><span class="t">,</span>
+      <span class="s">"meetingDate"</span><span class="t">: </span><span class="s">"2026-04-12"</span><span class="t">,</span>
+      <span class="s">"status"</span><span class="t">: </span><span class="s">"processed"</span><span class="t">,</span>
+      <span class="s">"summary"</span><span class="t">: </span><span class="s">"3 principal tasks added, 2 follow-ups, 1 tracker update"</span>
+    <span class="t">}</span>
+  <span class="t">],</span>
+  <span class="s">"updatedAt"</span><span class="t">: </span><span class="s">"2026-04-12T19:04:00-04:00"</span>
+<span class="t">}</span>
+      </div>
+      <p>The ledger prevents the agent from reprocessing the same doc on the next heartbeat. Every processed record keeps a timestamp and a short summary.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — SKILLS -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">08</span>The 4 skills</span>
+    <h2>Files are policy. Skills are procedure.</h2>
+
+    <p>Each skill reads the relevant files, then runs a deterministic workflow. Skills live in <code>~/.openclaw/skills/</code> and are auto-loaded by the runtime.</p>
+
+    <!-- EA -->
+    <div class="skill">
+      <div class="skill-tag">Skill 01</div>
+      <div class="skill-name">executive-assistant</div>
+      <div class="skill-purpose">Inbox triage, scheduling, calendar integrity, meeting-note ingestion.</div>
+
+      <p>The skill reads <code>priority-map.md</code>, <code>auto-resolver.md</code>, <code>meeting-notes.md</code>, <code>tasks.md</code>, and <code>TOOLS.md</code> at the start of every run.</p>
+
+      <h4>Operating standard</h4>
+      <ul class="dot">
+        <li>Be decisive, brief, and useful.</li>
+        <li>Clear low-risk operational work instead of escalating everything.</li>
+        <li>Check <strong>all relevant calendars</strong>, not just the default write calendar.</li>
+        <li>Treat out-of-office, travel, offsite, and similar blocks as real conflicts.</li>
+        <li>Use <code>gog gmail send --reply-to-message-id=...</code> instead of a fresh send with <code>Re:</code> in the subject.</li>
+        <li>Preserve real To and CC recipients before replying and add <code>--reply-all</code> when the thread recipients should stay copied.</li>
+        <li>When the work creates a future dependency, add a follow-up task in <code>tasks.md</code> before ending the turn.</li>
+        <li>Never imply the assistant personally met, spoke with, or saw someone.</li>
+      </ul>
+
+      <h4>Handle without asking — when authority is clear</h4>
+      <ul class="dot">
+        <li>Meeting scheduling, rescheduling, cancellations.</li>
+        <li>Invite creation, update, or cancellation.</li>
+        <li>Short acknowledgments for scheduling or ops.</li>
+        <li>Confirming receipt with next-step mention.</li>
+        <li>Routine admin or vendor notices.</li>
+        <li>Newsletters and non-actionable notifications.</li>
+        <li>Straightforward factual replies from thread context.</li>
+        <li>Direct business follow-up that needs a brief factual answer.</li>
+      </ul>
+
+      <h4>Ask first — when the thread is</h4>
+      <ul class="dot">
+        <li>Legal, regulatory, or conflict-heavy.</li>
+        <li>Financial, pricing, investor, fundraising, or contract.</li>
+        <li>Press, podcast, speaking, or public-facing.</li>
+        <li>Emotionally sensitive or reputationally risky.</li>
+        <li>Strategically important and likely to change priorities.</li>
+        <li>Unclear enough that a wrong reply would create confusion.</li>
+      </ul>
+
+      <h4>The bounded sweep workflow</h4>
+      <ol class="num">
+        <li>Review due tasks first. Read <code>tasks.md</code>. Check for overdue or due-today assistant tasks before starting inbox or calendar work.</li>
+        <li>Search the inbox by message, not thread. Start narrow (<code>newer_than:3d</code>, unread or important) and expand only if needed.</li>
+        <li>Inspect full thread context before classifying. Place each message into one of: schedule-now, reply-and-clear, clear-without-reply, waiting-on-external, follow-up-due-now, principal-decision-needed.</li>
+        <li>Handle scheduling directly. Use the booking link first. Inspect all relevant calendars before acting. Send a short acknowledgment instead of acting silently.</li>
+      </ol>
+
+      <div class="file">
+        <div class="file-name">Canonical EA queries via gog</div>
+        <div class="code">
+<span class="c"># Unread / important inbox, last 3 days</span>
+<span class="t">gog gmail messages search </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} \
+  </span><span class="s">'in:inbox newer_than:3d (is:unread OR is:important)'</span><span class="t"> \
+  </span><span class="k">--max</span><span class="t">=10 </span><span class="k">--json --results-only</span>
+
+<span class="c"># All recent inbox, last 7 days</span>
+<span class="t">gog gmail messages search </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} \
+  </span><span class="s">'in:inbox newer_than:7d'</span><span class="t"> </span><span class="k">--max</span><span class="t">=15 </span><span class="k">--json --results-only</span>
+
+<span class="c"># Sweep sent mail for unanswered threads</span>
+<span class="t">gog gmail messages search </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} \
+  </span><span class="s">'in:sent newer_than:14d'</span><span class="t"> </span><span class="k">--max</span><span class="t">=25 </span><span class="k">--json --results-only</span>
+
+<span class="c"># All calendars in scope</span>
+<span class="t">gog calendar calendars </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} </span><span class="k">--json --results-only</span>
+
+<span class="c"># Next 2 days of events across all calendars</span>
+<span class="t">gog calendar events --all </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} \
+  </span><span class="k">--days</span><span class="t">=2 </span><span class="k">--max</span><span class="t">=50 </span><span class="k">--json --results-only</span>
+
+<span class="c"># Create an event with Meet link</span>
+<span class="t">gog calendar create {{PRIMARY_WORK_EMAIL}} </span><span class="k">-a</span><span class="t"> {{ASSISTANT_EMAIL}} \
+  </span><span class="k">--summary</span><span class="t">=</span><span class="s">'Intro call'</span><span class="t"> </span><span class="k">--from</span><span class="t">=</span><span class="s">'RFC3339'</span><span class="t"> </span><span class="k">--to</span><span class="t">=</span><span class="s">'RFC3339'</span><span class="t"> \
+  </span><span class="k">--attendees</span><span class="t">=</span><span class="s">'a@example.com,b@example.com'</span><span class="t"> \
+  </span><span class="k">--description</span><span class="t">=</span><span class="s">'CONTEXT'</span><span class="t"> </span><span class="k">--with-meet --send-updates all</span>
+        </div>
+      </div>
+
+      <div class="file">
+        <div class="file-name">templates.md — 6 canonical replies</div>
+        <div class="code">
+<span class="c">## Offer times</span>
+
+Hi NAME,
+
+Here are a few times that work for {{OWNER_NAME}}:
+- OPTION 1
+- OPTION 2
+- OPTION 3
+
+If one of those works, reply with your preference and I'll send the invite.
+If not, send a couple of windows that do work for you.
+
+— {{ASSISTANT_NAME}}
+
+<span class="c">## Acknowledge and schedule now</span>
+
+Thanks, NAME — I'll go ahead and schedule it for OPTION and send the calendar invite now.
+
+<span class="c">## Short follow-up</span>
+
+Hi NAME,
+
+Following up on the note below in case it got buried.
+
+If you'd like to move this forward, just reply here and I'll take care of the next step.
+
+— {{ASSISTANT_NAME}}
+
+<span class="c">## Holding reply</span>
+
+Thanks — got it. I'm checking this and will get back to you shortly.
+
+<span class="c">## Cancellation</span>
+
+Hi NAME,
+
+We need to cancel this meeting. I've canceled the calendar invite.
+
+— {{ASSISTANT_NAME}}
+
+<span class="c">## Principal update</span>
+
+You have a message from NAME about TOPIC. My take: RECOMMENDATION. Deadline / urgency: TIMEFRAME.
+        </div>
+      </div>
+    </div>
+
+    <!-- BD -->
+    <div class="skill">
+      <div class="skill-tag">Skill 02</div>
+      <div class="skill-name">business-development</div>
+      <div class="skill-purpose">Outreach replies, tracker updates, follow-up cadence, sourcing batches.</div>
+
+      <p>The outreach sheet or CRM is the <strong>live source of truth</strong>. Local prospect files are never treated as current state.</p>
+
+      <h4>Core rules</h4>
+      <ul class="dot">
+        <li>The outreach sheet, tracker, or CRM is the live source of truth.</li>
+        <li>Do not silently broaden default prospecting beyond the configured target market or geography without explicit direction.</li>
+        <li>Verify a working website and a real public email before adding a new lead.</li>
+        <li>Ignore placeholder or junk addresses from site code.</li>
+        <li>Sweep sent mail so unanswered outreach does not disappear.</li>
+        <li>If the work touches lead status or tracker state, this skill owns it — even when scheduling is part of the job.</li>
+      </ul>
+
+      <h4>When to update the tracker</h4>
+      <ul class="dot">
+        <li>When the initial outreach email is sent.</li>
+        <li>When any meaningful reply comes back.</li>
+        <li>When a meeting is asked for.</li>
+        <li>When a meeting is booked, confirmed, rescheduled, or cancelled.</li>
+        <li>When a decline or not-a-fit outcome is recorded.</li>
+        <li>When a follow-up or next-step detail worth preserving is learned.</li>
+      </ul>
+      <p><strong>Rule:</strong> update the tracker <em>before</em> marking the thread handled. Not after.</p>
+
+      <h4>Default follow-up cadence</h4>
+      <ul class="dot">
+        <li><strong>First follow-up.</strong> Around 2 days after the last unanswered outbound.</li>
+        <li><strong>Second follow-up.</strong> Around 5 days after the previous follow-up.</li>
+        <li><strong>Third follow-up.</strong> Around 7 days after the previous follow-up.</li>
+        <li><strong>After the third.</strong> Stop the automatic sequence. Surface the lead only if it still matters.</li>
+        <li>Reset the clock after each new outbound follow-up. Record each follow-up in the tracker notes.</li>
+      </ul>
+
+      <h4>Default outbound workflow</h4>
+      <ol class="num">
+        <li>Verify the lead is not already in the tracker.</li>
+        <li>Verify the lead matches the configured target market and geography.</li>
+        <li>Verify a working website unless explicitly waived.</li>
+        <li>Inspect the website for a real public email before leaving email blank.</li>
+        <li>Send the initial outreach email using the template from <code>resources/partners.md</code>.</li>
+        <li>Update the tracker immediately after each action.</li>
+        <li>Sweep sent mail for unanswered outreach and follow up on cadence.</li>
+      </ol>
+
+      <div class="file">
+        <div class="file-name">partners.md — initial outreach template</div>
+        <div class="code">
+<span class="c">## Subject</span>
+
+the founder asked me to reach out
+
+<span class="c">## Body</span>
+
+Hi {first-name},
+
+I'm the assistant to {{OWNER_NAME}}, the founder of {{BUSINESS_NAME}}.
+I was researching professionals in {{TARGET_MARKET}} in {{TARGET_GEOGRAPHY}},
+came across your work, and passed your information along.
+{{OWNER_NAME}} asked me to reach out to see if you might be open to a
+brief introductory conversation.
+
+{{BUSINESS_NAME}} helps people navigate a difficult process with clearer
+guidance and practical support. In some cases, our customers also want help
+from an experienced human professional, and we may be able to refer people
+your way when there's a fit.
+
+If you'd be open to a 20–30 minute video call or coffee, I'd be happy to
+help set it up. No sales pitch — {{OWNER_NAME}} would simply love to connect,
+learn more about your work, and see whether there could be a mutual fit.
+
+All the best,
+{{ASSISTANT_NAME}}
+
+Assistant to {{OWNER_NAME}}
+{{BUSINESS_NAME}}
+{{BUSINESS_URL}}
+        </div>
+        <p>This is the exact template shipped in the repo. The subject line intentionally breaks the professional-cold-email pattern — it reads like a forwarded intro, not a campaign.</p>
+      </div>
+    </div>
+
+    <!-- Task manager -->
+    <div class="skill">
+      <div class="skill-tag">Skill 03</div>
+      <div class="skill-name">daily-task-manager</div>
+      <div class="skill-purpose">Add, complete, defer, reprioritize tasks. Owns the live task file.</div>
+
+      <p>Triggered by any task CRUD request. Reads <code>tasks.md</code> first. Updates in the same turn. When a task creates a future dependency, adds a follow-up task immediately so nothing falls through inbox memory. Never relies on memory between sessions.</p>
+    </div>
+
+    <!-- Task prep -->
+    <div class="skill">
+      <div class="skill-tag">Skill 04</div>
+      <div class="skill-name">daily-task-prep</div>
+      <div class="skill-purpose">Builds today's task list before you wake up.</div>
+
+      <p>Triggered by the 02:00 cron. Preserves manually-added open tasks. On weekdays, seeds from <code>Every weekday</code>. Promotes due-today backlog items. Adds principal-owned meetings. Archives yesterday's completed tasks. Stays silent unless something needs human attention.</p>
+
+      <h4>The 10-step preparation workflow</h4>
+      <ol class="num">
+        <li>Read <code>tasks.md</code>.</li>
+        <li>Read <code>priority-map.md</code>.</li>
+        <li>Read <code>tasks-completed.md</code> if it exists.</li>
+        <li>Determine whether today is a weekday.</li>
+        <li>Archive tasks completed yesterday from <code>tasks.md</code> into <code>tasks-completed.md</code>.</li>
+        <li>Build the candidate <code>## Today</code> list from current open tasks plus weekday recurrences plus due-today backlog plus recurring reminders plus today's principal meetings.</li>
+        <li>Remove duplicates by normalized task text, keeping the most specific wording already present.</li>
+        <li>Assign each task to its owner section plus program or person grouping header.</li>
+        <li>Reorder open tasks in priority-first order within each owner section.</li>
+        <li>Write back only the minimal necessary edits. Do not wipe <code>## Today</code> just to rebuild it.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 09 — CRONS -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">09</span>The 3 cron jobs</span>
+    <h2>Without crons, it's a chatbot. With them, it's an operator.</h2>
+
+    <p>Three required jobs plus two optional ones. Each runs in its own session target. Each has a deliberately short prompt — the skill does the heavy lifting.</p>
+
+    <div class="cron">
+      <div class="cron-expr">*/15 8-21 * * *</div>
+      <div class="cron-name">Executive-assistant sweep</div>
+      <p class="cron-desc">Every 15 minutes, 8am to 9pm. Fires a heartbeat. Inbox scan plus calendar check plus meeting-note ingestion. Stays silent unless something needs you. Session target: main. Around 52 sweeps per day.</p>
+    </div>
+
+    <div class="cron">
+      <div class="cron-expr">0 2 * * *</div>
+      <div class="cron-name">Daily task prep</div>
+      <p class="cron-desc">Runs at 02:00 in your timezone. Promotes due-today items into Today, adds calendar meetings, archives yesterday's completions. Your task list is ready before your alarm goes off. Session target: isolated. Silent delivery.</p>
+    </div>
+
+    <div class="cron">
+      <div class="cron-expr">0 2 * * *</div>
+      <div class="cron-name">Daily business-development sourcing</div>
+      <p class="cron-desc">Runs at 02:00. Pulls 10 verified leads matching your geography and segment, drops them into your CRM with verified email and website. Announces completion to your primary update channel.</p>
+    </div>
+
+    <div class="cron cron-off">
+      <div class="cron-expr">0 3 * * * <span class="cron-tag">— optional, disabled by default</span></div>
+      <div class="cron-name">Nightly OpenClaw backup</div>
+      <p class="cron-desc">Performs the nightly backup to the configured Git remote using a deterministic allowlisted git flow. Never adds secrets, runtime state, logs, media, or ignored files. Keep disabled until the remote repo and allowlist are correct.</p>
+    </div>
+
+    <div class="cron cron-off">
+      <div class="cron-expr">0 2 * * * <span class="cron-tag">— optional, disabled by default</span></div>
+      <div class="cron-name">Optional OpenClaw self-update</div>
+      <p class="cron-desc">Checks whether an OpenClaw update is available and installs it via the gateway update tool. Silent unless a meaningful problem needs human attention. Enable only if you explicitly want automatic updates.</p>
+    </div>
+
+    <div class="file">
+      <div class="file-name">cron/jobs.template.json — full config</div>
+      <div class="code">
+<span class="t">{</span>
+  <span class="s">"version"</span><span class="t">: </span><span class="n">1</span><span class="t">,</span>
+  <span class="s">"note"</span><span class="t">: </span><span class="s">"Template only. Create fresh jobs in the target environment."</span><span class="t">,</span>
+  <span class="s">"jobs"</span><span class="t">: [</span>
+    <span class="t">{</span>
+      <span class="s">"name"</span><span class="t">: </span><span class="s">"Executive assistant sweep"</span><span class="t">,</span>
+      <span class="s">"enabled"</span><span class="t">: </span><span class="b">true</span><span class="t">,</span>
+      <span class="s">"schedule"</span><span class="t">: { </span><span class="s">"kind"</span><span class="t">: </span><span class="s">"cron"</span><span class="t">, </span><span class="s">"expr"</span><span class="t">: </span><span class="s">"*/15 8-21 * * *"</span><span class="t">, </span><span class="s">"tz"</span><span class="t">: </span><span class="s">"{{TIMEZONE}}"</span><span class="t"> },</span>
+      <span class="s">"sessionTarget"</span><span class="t">: </span><span class="s">"main"</span><span class="t">,</span>
+      <span class="s">"wakeMode"</span><span class="t">: </span><span class="s">"now"</span><span class="t">,</span>
+      <span class="s">"payload"</span><span class="t">: {</span>
+        <span class="s">"kind"</span><span class="t">: </span><span class="s">"systemEvent"</span><span class="t">,</span>
+        <span class="s">"text"</span><span class="t">: </span><span class="s">"Executive assistant sweep. Use the executive-assistant skill. Handle internally; only message principal if there is new actionable information."</span>
+      <span class="t">}</span>
+    <span class="t">},</span>
+    <span class="t">{</span>
+      <span class="s">"name"</span><span class="t">: </span><span class="s">"Daily task prep"</span><span class="t">,</span>
+      <span class="s">"enabled"</span><span class="t">: </span><span class="b">true</span><span class="t">,</span>
+      <span class="s">"schedule"</span><span class="t">: { </span><span class="s">"kind"</span><span class="t">: </span><span class="s">"cron"</span><span class="t">, </span><span class="s">"expr"</span><span class="t">: </span><span class="s">"0 2 * * *"</span><span class="t">, </span><span class="s">"tz"</span><span class="t">: </span><span class="s">"{{TIMEZONE}}"</span><span class="t"> },</span>
+      <span class="s">"sessionTarget"</span><span class="t">: </span><span class="s">"isolated"</span><span class="t">,</span>
+      <span class="s">"wakeMode"</span><span class="t">: </span><span class="s">"now"</span><span class="t">,</span>
+      <span class="s">"payload"</span><span class="t">: {</span>
+        <span class="s">"kind"</span><span class="t">: </span><span class="s">"agentTurn"</span><span class="t">,</span>
+        <span class="s">"message"</span><span class="t">: </span><span class="s">"Use the daily-task-prep skill."</span><span class="t">,</span>
+        <span class="s">"timeoutSeconds"</span><span class="t">: </span><span class="n">900</span>
+      <span class="t">},</span>
+      <span class="s">"delivery"</span><span class="t">: { </span><span class="s">"mode"</span><span class="t">: </span><span class="s">"none"</span><span class="t"> }</span>
+    <span class="t">},</span>
+    <span class="t">{</span>
+      <span class="s">"name"</span><span class="t">: </span><span class="s">"Daily business-development sourcing"</span><span class="t">,</span>
+      <span class="s">"enabled"</span><span class="t">: </span><span class="b">true</span><span class="t">,</span>
+      <span class="s">"schedule"</span><span class="t">: { </span><span class="s">"kind"</span><span class="t">: </span><span class="s">"cron"</span><span class="t">, </span><span class="s">"expr"</span><span class="t">: </span><span class="s">"0 2 * * *"</span><span class="t">, </span><span class="s">"tz"</span><span class="t">: </span><span class="s">"{{TIMEZONE}}"</span><span class="t"> },</span>
+      <span class="s">"sessionTarget"</span><span class="t">: </span><span class="s">"isolated"</span><span class="t">,</span>
+      <span class="s">"payload"</span><span class="t">: {</span>
+        <span class="s">"kind"</span><span class="t">: </span><span class="s">"agentTurn"</span><span class="t">,</span>
+        <span class="s">"message"</span><span class="t">: </span><span class="s">"Use the business-development skill. Run the default daily prospecting batch."</span><span class="t">,</span>
+        <span class="s">"timeoutSeconds"</span><span class="t">: </span><span class="n">1800</span>
+      <span class="t">},</span>
+      <span class="s">"delivery"</span><span class="t">: {</span>
+        <span class="s">"mode"</span><span class="t">: </span><span class="s">"announce"</span><span class="t">,</span>
+        <span class="s">"channel"</span><span class="t">: </span><span class="s">"{{PRIMARY_UPDATE_CHANNEL}}"</span><span class="t">,</span>
+        <span class="s">"to"</span><span class="t">: </span><span class="s">"{{PRIMARY_UPDATE_TARGET}}"</span>
+      <span class="t">}</span>
+    <span class="t">}</span>
+  <span class="t">]</span>
+<span class="t">}</span>
+      </div>
+    </div>
+
+    <h3>Channel adaptation</h3>
+    <p>The repo is explicitly designed to run on whatever messaging surface you prefer. Keep workflows generic; only the delivery route changes.</p>
+    <p class="inline-list">Slack <span class="sep">/</span> Telegram <span class="sep">/</span> Signal <span class="sep">/</span> Discord <span class="sep">/</span> Google Chat</p>
+    <p>Use <code>{{PRIMARY_UPDATE_CHANNEL}}</code> and <code>{{PRIMARY_UPDATE_TARGET}}</code> in cron delivery blocks. Don't hardcode Slack unless you're explicitly Slack-only. Use one primary route — founder DM, private ops channel, or dedicated assistant thread. Don't spray updates across multiple surfaces.</p>
+  </div>
+</section>
+
+<!-- 10 — INSTALL -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">10</span>Install guide</span>
+    <h2>Clone to first heartbeat in about 45 minutes.</h2>
+
+    <p class="lead">Assumes OpenClaw is installed locally. GOG — the Google Workspace CLI — is a hard prerequisite. Set it up first.</p>
+
+    <h3>Prerequisite — install GOG</h3>
+    <ol class="num">
+      <li>Install GOG.<small>brew install steipete/tap/gogcli</small></li>
+      <li>Create a Google OAuth desktop-client in Google Cloud Console.<small>Enable: Gmail, Calendar, Sheets, Drive, Docs, People</small></li>
+      <li>Configure the OAuth consent screen and add the operating account as a test user.</li>
+      <li>Download the OAuth client credentials JSON.</li>
+      <li>Load credentials.<small>gog auth credentials /path/to/client_secret.json</small></li>
+      <li>Add the operating account.<small>gog auth add &lt;email&gt; --services gmail,calendar,drive,contacts,docs,sheets</small></li>
+      <li>Verify the account.<small>gog auth list</small></li>
+      <li>Verify that Gmail message search, Calendar, and Sheets metadata all work.</li>
+    </ol>
+
+    <h3>The 13 install values to gather</h3>
+    <p>Collect these before editing files. Every template placeholder maps to one of these.</p>
+    <p class="inline-list">
+      {{OWNER_NAME}} <span class="sep">·</span> {{ASSISTANT_NAME}} <span class="sep">·</span> {{ASSISTANT_EMAIL}} <span class="sep">·</span> {{PRIMARY_WORK_EMAIL}} <span class="sep">·</span> {{PERSONAL_EMAIL}} <span class="sep">·</span> {{BUSINESS_NAME}} <span class="sep">·</span> {{BUSINESS_URL}} <span class="sep">·</span> {{TIMEZONE}} <span class="sep">·</span> {{PRIMARY_UPDATE_CHANNEL}} <span class="sep">·</span> {{PRIMARY_UPDATE_TARGET}} <span class="sep">·</span> {{GOOGLE_SHEET_ID}} <span class="sep">·</span> {{TARGET_MARKET}} <span class="sep">·</span> {{TARGET_GEOGRAPHY}}
+    </p>
+
+    <h3>The 7-step install flow</h3>
+    <ol class="num">
+      <li>Clone the repo. Pull <code>snarktank/clawchief</code> into your OpenClaw workspace as a starter. Use it as a template, not a final config.</li>
+      <li>Install the 4 skills. Copy <code>skills/executive-assistant</code>, <code>business-development</code>, <code>daily-task-manager</code>, <code>daily-task-prep</code> into <code>~/.openclaw/skills/</code>.</li>
+      <li>Install the workspace files. Copy <code>clawchief/</code>, <code>workspace/HEARTBEAT.md</code>, <code>workspace/TOOLS.md</code>, and <code>workspace/memory/meeting-notes-state.json</code> into <code>~/.openclaw/workspace/</code>.</li>
+      <li>Replace all placeholders. Grep for <code>{{</code> across the whole workspace. Replace each token with the real value from your 13-item list.</li>
+      <li>Customize priority-map + TOOLS. Strip the example people and programs. Add your real ones. Be specific about who escalates to P0. Be ruthless about what gets ignored.</li>
+      <li>Customize the BD outreach template. Edit <code>skills/business-development/resources/partners.md</code>. Change the subject and body to match your offer.</li>
+      <li>Create the 3 cron jobs. Copy <code>cron/jobs.template.json</code> into your runtime. Replace <code>{{TIMEZONE}}</code>, <code>{{PRIMARY_UPDATE_CHANNEL}}</code>, <code>{{PRIMARY_UPDATE_TARGET}}</code>. Enable the EA sweep first. Enable the two 2am crons after a week of tuning.</li>
+    </ol>
+
+    <blockquote>
+      <cite>Common mistake</cite>
+      Most people enable all 3 crons before customizing the priority map. You'll get 52 useless sweeps per day. Customize <code>priority-map.md</code> and <code>TOOLS.md</code> <strong>first</strong>, then enable the EA sweep, then the daily crons after a week of tuning.
+    </blockquote>
+
+    <h3>Private files not shipped by the repo</h3>
+    <p>The public starter kit intentionally does not ship these. Author your own if your setup depends on them:</p>
+    <p class="inline-list">
+      AGENTS.md <span class="sep">·</span> SOUL.md <span class="sep">·</span> USER.md <span class="sep">·</span> IDENTITY.md <span class="sep">·</span> MEMORY.md <span class="sep">·</span> memory/
+    </p>
+  </div>
+</section>
+
+<!-- 11 — CHECKLIST -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">11</span>Install checklist</span>
+    <h2>The install is good only if every item below passes.</h2>
+
+    <p>This is the verbatim install-validation checklist from the repo. Walk it after the 7-step install.</p>
+
+    <h4>GOG</h4>
+    <ul class="dot">
+      <li><code>gog auth list</code> shows the correct operating account.</li>
+      <li>Gmail <strong>message search</strong> works.</li>
+      <li>Calendar list and read works.</li>
+      <li>Sheets metadata read works.</li>
+      <li>Google Docs read works if meeting-notes ingestion is enabled.</li>
+    </ul>
+
+    <h4>Skills</h4>
+    <ul class="dot">
+      <li><code>executive-assistant</code> installed.</li>
+      <li><code>business-development</code> installed.</li>
+      <li><code>daily-task-manager</code> installed.</li>
+      <li><code>daily-task-prep</code> installed.</li>
+    </ul>
+
+    <h4>Workspace files</h4>
+    <ul class="dot">
+      <li><code>priority-map.md</code> installed.</li>
+      <li><code>auto-resolver.md</code> installed.</li>
+      <li><code>meeting-notes.md</code> installed.</li>
+      <li><code>tasks.md</code> installed.</li>
+      <li><code>tasks-completed.md</code> installed.</li>
+      <li><code>HEARTBEAT.md</code> installed.</li>
+      <li><code>TOOLS.md</code> installed.</li>
+      <li><code>meeting-notes-state.json</code> installed.</li>
+      <li>All placeholders replaced.</li>
+    </ul>
+
+    <h4>Behavior verification</h4>
+    <ul class="dot">
+      <li>Heartbeat reads source-of-truth files, not duplicated logic.</li>
+      <li>Proactive updates route to the intended channel and target.</li>
+      <li>Inbox sweeps use <strong>message-level</strong> Gmail search.</li>
+      <li>Scheduling checks all relevant calendars before booking.</li>
+      <li>Task system uses <code>tasks.md</code> as live source of truth.</li>
+      <li>Prior-day completions archive to <code>tasks-completed.md</code>.</li>
+      <li>Meeting notes are treated as a live signal source if enabled.</li>
+      <li>BD work treats the outreach sheet as the live source of truth.</li>
+      <li>Daily task prep promotes due-today items into <code>## Today</code>.</li>
+    </ul>
+
+    <h4>Cron jobs</h4>
+    <ul class="dot">
+      <li>Executive-assistant sweep exists.</li>
+      <li>Daily task prep exists.</li>
+      <li>Daily business-development sourcing exists.</li>
+      <li>Optional nightly backup configured only if desired.</li>
+      <li>Optional self-update enabled only if desired.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 12 — OPERATING LESSONS -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">12</span>Operating lessons</span>
+    <h2>The 13 lessons baked into this repo.</h2>
+
+    <p class="lead">These are the lessons the author learned from running this setup in production — documented in the repo's README and REVIEW-NOTES. Every one is a tested pattern, not a hypothesis.</p>
+
+    <ul class="dot">
+      <li>Keep a separate <strong>source-of-truth layer</strong> instead of burying everything in heartbeat text.</li>
+      <li>Use Gmail <strong>message search</strong>, not thread-only search — unanswered outbound disappears from thread view.</li>
+      <li>Check <strong>all relevant calendars</strong> before offering or booking time, including family and shared conflict calendars.</li>
+      <li>Keep <strong>one canonical live task file</strong> and a separate completed-task archive.</li>
+      <li>Separate <strong>task management</strong> (live CRUD) from <strong>daily task prep</strong> (morning restructure).</li>
+      <li>Treat the outreach tracker as a <strong>live source of truth</strong>, not a reporting artifact. Update it in the same turn you act.</li>
+      <li>Treat <strong>meeting notes as an operational signal source</strong>, not passive documents.</li>
+      <li>Use a <strong>priority map</strong> to decide what matters — separate people, programs, and urgency.</li>
+      <li>Use an <strong>auto-resolver policy</strong> to decide whether to act, draft, escalate, or ignore.</li>
+      <li>Keep proactive <strong>update transport configurable</strong> instead of hardcoding one surface.</li>
+      <li>Keep cron prompts <strong>DRY</strong> and let skills hold the workflow logic.</li>
+      <li>Keep optional backup and self-update as <strong>explicit choices, not assumptions</strong>.</li>
+      <li>When a task depends on an outside reply, <strong>add a follow-up task before ending the turn</strong> — don't rely on inbox memory.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 — WHAT IT REPLACES -->
+<section>
+  <div class="wrap">
+    <span class="section-num"><span class="accent">13</span>What it replaces</span>
+    <h2>The math — what this actually substitutes for.</h2>
+
+    <p>Comparing apples to apples. The named tools and roles a fractional founder typically pays for to get the same coverage.</p>
+
+    <div class="replaces">
+      <div class="replaces-row head">
+        <div>What it replaces</div>
+        <div>Typical cost</div>
+        <div>This stack</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">Junior executive assistant (US, full-time)</div>
+        <div class="replaces-cost dim">$65–85K / yr</div>
+        <div class="replaces-cost">$0</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">SDR or BDR with CRM hygiene</div>
+        <div class="replaces-cost dim">$50–70K / yr</div>
+        <div class="replaces-cost">$0</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">Calendly Premium + Motion + Reclaim</div>
+        <div class="replaces-cost dim">~$60 / mo</div>
+        <div class="replaces-cost">$0</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">Apollo / Clay / Lemlist baseline plans</div>
+        <div class="replaces-cost dim">~$300 / mo</div>
+        <div class="replaces-cost">Optional</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">Meeting-note ingestion + CRM routing</div>
+        <div class="replaces-cost dim">~$200 / mo</div>
+        <div class="replaces-cost">$0</div>
+      </div>
+      <div class="replaces-row">
+        <div class="replaces-name">OpenClaw subscription (you already pay)</div>
+        <div class="replaces-cost dim">flat monthly</div>
+        <div class="replaces-cost">incl.</div>
+      </div>
+    </div>
+
+    <p>This is not AI replaces humans. This is: the boring 80% of an EA's day is now files and crons. The strategic 20% — judgment, taste, relationships — is still yours.</p>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="closing">
+  <div class="wrap">
+    <span class="section-num"><span class="accent">End</span>Credits and links</span>
+    <h2>Where this came from.</h2>
+
+    <p>None of this is original work by me. The blueprint above is a faithful distillation of two specific public artifacts. Credit lives with the authors.</p>
+
+    <p>Ryan Carson released <a href="https://github.com/snarktank/clawchief" target="_blank" rel="noopener">snarktank/clawchief</a> as the public starter kit for his own chief-of-staff setup. Every template, command, and rule on this page is copied verbatim from that repo. His <a href="https://x.com/ryancarson/status/2039786704731541903" target="_blank" rel="noopener">launch post</a> is the original public context for the design decisions.</p>
+
+    <p>The evolution of the setup was influenced by <a href="https://github.com/pedrofranceschi" target="_blank" rel="noopener">Pedro Franceschi's</a> OpenClaw setup, which he explained during his <a href="https://www.youtube.com/watch?v=9ZbbxSgrjhw&t=3847s" target="_blank" rel="noopener">Core Memory podcast segment with Ashlee Vance</a>. In particular, his setup helped inspire the priority map, the auto-resolver layer, and the ingestion-pipeline mindset that turns passive context into active operational state.</p>
+
+    <p>This page was compiled by <a href="https://muditek.com" target="_blank" rel="noopener">Ghiles Moussaoui at Muditek</a> — AI RevOps for B2B SaaS. If you want this exact architecture wired into your real business with your real priorities, customers, and offers, that's what I do.</p>
+
+    <div class="closing-links">
+      <span class="label">Source repo</span><a href="https://github.com/snarktank/clawchief" target="_blank" rel="noopener">github.com/snarktank/clawchief</a><br>
+      <span class="label">Launch post</span><a href="https://x.com/ryancarson/status/2039786704731541903" target="_blank" rel="noopener">x.com/ryancarson</a><br>
+      <span class="label">Design influence</span><a href="https://github.com/pedrofranceschi" target="_blank" rel="noopener">github.com/pedrofranceschi</a><br>
+      <span class="label">Podcast segment</span><a href="https://www.youtube.com/watch?v=9ZbbxSgrjhw&t=3847s" target="_blank" rel="noopener">Core Memory with Ashlee Vance</a><br>
+      <span class="label">This guide</span><a href="https://muditek.com" target="_blank" rel="noopener">muditek.com</a> <span style="color:var(--text-dim);">— Ghiles Moussaoui</span><br>
+      <span class="label">LinkedIn</span><a href="https://www.linkedin.com/in/ghilesmoussaoui" target="_blank" rel="noopener">linkedin.com/in/ghilesmoussaoui</a>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  The Chief of Staff Blueprint — v1.0<br>
+  Compiled by <a href="https://muditek.com">Ghiles Moussaoui</a> · Source: <a href="https://github.com/snarktank/clawchief">snarktank/clawchief</a>
+</footer>
+
+</body>
+</html>

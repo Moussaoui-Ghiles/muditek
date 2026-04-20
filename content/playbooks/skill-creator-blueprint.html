@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Skill-creator Blueprint: How to Build Claude Skills That Actually Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #FDFCF8;
+    --bg-warm: #F5F2EC;
+    --bg-dark: #1C1917;
+    --bg-dark-surface: #252220;
+    --text: #1A1A1A;
+    --text-body: #3D3D3D;
+    --text-secondary: #6B6B6B;
+    --text-muted: #9A9A9A;
+    --accent: #C8693C;
+    --accent-light: #D4845A;
+    --accent-soft: rgba(200, 105, 60, 0.07);
+    --accent-border: rgba(200, 105, 60, 0.22);
+    --border: #E5E1DA;
+    --border-light: #EEEAE3;
+    --green: #2D8A56;
+    --green-soft: rgba(45, 138, 86, 0.06);
+    --red: #C44040;
+    --red-soft: rgba(196, 64, 64, 0.06);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.75;
+    font-size: 16.5px;
+  }
+
+  ::selection {
+    background: rgba(200, 105, 60, 0.15);
+    color: var(--text);
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 32px; }
+  .wide { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+
+  section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  /* ═══════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════ */
+  h1 {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    color: var(--text);
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text);
+    margin: 40px 0 14px;
+  }
+
+  h3:first-child { margin-top: 0; }
+
+  p { margin-bottom: 18px; }
+  p strong { color: var(--text); font-weight: 600; }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .lead {
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+  }
+
+  .mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9em;
+    background: var(--bg-warm);
+    padding: 2px 7px;
+    border-radius: 5px;
+    color: var(--accent);
+  }
+
+  /* ═══════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════ */
+  .hero {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #F8F5EE 0%, var(--bg) 100%);
+  }
+
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    padding: 8px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .hero .badge .dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .hero h1 { margin-bottom: 20px; max-width: 640px; }
+
+  .hero .subtitle {
+    font-size: 19px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 580px;
+    margin-bottom: 40px;
+  }
+
+  .hero .credits {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .hero .credits .by {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .hero .credits .email {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .hero .credits .source {
+    color: var(--text-muted);
+  }
+
+  .hero-img {
+    margin-top: 48px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  }
+
+  .hero-img img { width: 100%; height: auto; display: block; }
+
+  /* ═══════════════════════════════════════
+     TABLE OF CONTENTS
+     ═══════════════════════════════════════ */
+  .toc {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin: 48px 0;
+  }
+
+  .toc-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    columns: 2;
+    column-gap: 32px;
+  }
+
+  .toc ol li {
+    padding: 5px 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    break-inside: avoid;
+  }
+
+  .toc ol li a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .toc ol li a:hover { color: var(--accent); }
+
+  .toc ol li .toc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-right: 8px;
+  }
+
+  /* ═══════════════════════════════════════
+     FIGURES
+     ═══════════════════════════════════════ */
+  figure {
+    margin: 32px 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-warm);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+
+  figure img { width: 100%; height: auto; display: block; }
+
+  figure figcaption {
+    padding: 14px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-light);
+    line-height: 1.5;
+  }
+
+  figure.dark {
+    background: #0F0F0F;
+    border-color: #2A2A2A;
+  }
+
+  figure.dark figcaption {
+    border-color: #2A2A2A;
+    color: #666;
+  }
+
+  /* ═══════════════════════════════════════
+     CODE
+     ═══════════════════════════════════════ */
+  .code {
+    background: var(--bg-dark);
+    border-radius: 14px;
+    margin: 24px 0;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .code-bar {
+    padding: 11px 20px;
+    border-bottom: 1px solid #2C2825;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .code-bar .d { width: 10px; height: 10px; border-radius: 50%; background: #3A3632; }
+  .code-bar .d:first-child { background: #E05252; }
+  .code-bar .d:nth-child(2) { background: #E0B952; }
+  .code-bar .d:nth-child(3) { background: #52C05A; }
+  .code-bar span {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #6B6762;
+    margin-left: 10px;
+  }
+
+  .code pre {
+    padding: 22px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #CCCAC5;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0;
+  }
+
+  .code pre .c { color: #5C5955; font-style: italic; }
+  .code pre .k { color: var(--accent-light); }
+  .code pre .s { color: #7EC699; }
+  .code pre .v { color: #C4A7E7; }
+  .code pre .n { color: #E0B952; }
+
+  /* ═══════════════════════════════════════
+     CALLOUT
+     ═══════════════════════════════════════ */
+  .callout {
+    border-left: 3px solid var(--accent);
+    padding: 22px 28px;
+    margin: 28px 0;
+    background: var(--accent-soft);
+    border-radius: 0 14px 14px 0;
+  }
+
+  .callout .cl {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+  }
+
+  .callout p { margin-bottom: 0; font-size: 15.5px; color: var(--text); line-height: 1.7; }
+  .callout p:not(:last-child) { margin-bottom: 10px; }
+
+  .callout.green {
+    border-color: var(--green);
+    background: var(--green-soft);
+  }
+  .callout.green .cl { color: var(--green); }
+
+  /* ═══════════════════════════════════════
+     STEPS
+     ═══════════════════════════════════════ */
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0;
+    counter-reset: s;
+  }
+
+  .steps li {
+    counter-increment: s;
+    display: flex;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border-light);
+    align-items: flex-start;
+  }
+
+  .steps li:last-child { border-bottom: none; }
+
+  .steps li::before {
+    content: counter(s);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    min-width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .steps li div { flex: 1; }
+  .steps li .st { font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: 17px; }
+  .steps li p { margin: 0; font-size: 15px; }
+
+  /* ═══════════════════════════════════════
+     ARROW LIST
+     ═══════════════════════════════════════ */
+  .al { list-style: none; padding: 0; margin: 16px 0 20px; }
+
+  .al li {
+    padding: 7px 0 7px 28px;
+    position: relative;
+    line-height: 1.65;
+  }
+
+  .al li::before {
+    content: '\2192';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .al li strong { color: var(--text); font-weight: 600; }
+
+  /* ═══════════════════════════════════════
+     COMPARE
+     ═══════════════════════════════════════ */
+  .cmp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .cmp .c {
+    padding: 24px 28px;
+    border-radius: 14px;
+    border: 1px solid;
+  }
+
+  .cmp .c.g { background: var(--green-soft); border-color: rgba(45,138,86,0.18); }
+  .cmp .c.r { background: var(--red-soft); border-color: rgba(196,64,64,0.18); }
+
+  .cmp .c .lb {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .cmp .c.g .lb { color: var(--green); }
+  .cmp .c.r .lb { color: var(--red); }
+  .cmp .c p { font-size: 14.5px; margin-bottom: 8px; line-height: 1.6; }
+  .cmp .c p:last-child { margin-bottom: 0; }
+
+  /* ═══════════════════════════════════════
+     GRID
+     ═══════════════════════════════════════ */
+  .g3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin: 24px 0;
+  }
+
+  .g3 .gc {
+    padding: 22px 24px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+  }
+
+  .g3 .gc .gl {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .g3 .gc p { font-size: 14px; line-height: 1.6; margin: 0; }
+
+  .g2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 24px 0;
+  }
+
+  .g2 .gc { padding: 22px 24px; border: 1px solid var(--border); border-radius: 14px; }
+  .g2 .gc .gl {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .g2 .gc p { font-size: 14.5px; line-height: 1.6; margin: 0; }
+
+  /* ═══════════════════════════════════════
+     PAIN POINTS
+     ═══════════════════════════════════════ */
+  .pain {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+
+  .pain .pi {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .pain .pi:last-child { border-bottom: none; }
+
+  /* ═══════════════════════════════════════
+     STAT BAR
+     ═══════════════════════════════════════ */
+  .stats {
+    display: flex;
+    gap: 0;
+    margin: 28px 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .stats .stat {
+    flex: 1;
+    padding: 20px 24px;
+    text-align: center;
+    border-right: 1px solid var(--border-light);
+  }
+
+  .stats .stat:last-child { border-right: none; }
+
+  .stats .stat .sv {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stats .stat .sl {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ═══════════════════════════════════════
+     USE CASE BOX
+     ═══════════════════════════════════════ */
+  .usecase {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 28px 0;
+  }
+
+  .usecase .uc-title {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+
+  .usecase p { font-size: 15px; margin-bottom: 10px; }
+  .usecase p:last-child { margin-bottom: 0; }
+
+  /* ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ */
+  .foot {
+    padding: 56px 0;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    background: var(--bg-warm);
+  }
+
+  .foot .fn { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .foot .fe { font-size: 15px; color: var(--accent); text-decoration: none; font-weight: 500; }
+  .foot .ft { font-size: 13px; color: var(--text-muted); margin-top: 12px; line-height: 1.5; }
+
+  /* ═══════════════════════════════════════
+     PRINT
+     ═══════════════════════════════════════ */
+  @media print {
+    body { font-size: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hero { background: var(--bg) !important; }
+    section { page-break-inside: auto; }
+    h2, h3 { page-break-after: avoid; }
+    figure, .code, .callout, .usecase, .pain, .stats, .cmp, .g3, .g2, .steps li, .toc {
+      page-break-inside: avoid;
+    }
+    figure { box-shadow: none; }
+    .hero-img { box-shadow: none; }
+    .code { box-shadow: none; }
+    .toc ol { columns: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════
+     HERO
+     ═══════════════════════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span> Free Guide</div>
+    <h1>How to Build Claude Skills 2.0 Better Than 99% of People</h1>
+    <p class="subtitle">The complete blueprint for building reusable AI workflows that remember your business rules, eliminate repeated instructions, and scale across your team. Every technique extracted from Anthropic's Skills 2.0 upgrade.</p>
+
+    <div class="credits">
+      <span class="by">Ghiles Moussaoui</span>
+      <a class="email" href="mailto:ghiles@muditek.com">ghiles@muditek.com</a>
+    </div>
+  </div>
+
+  <div class="wide">
+    <div class="hero-img">
+      <img src="https://pbs.twimg.com/media/HEDMqzwWYAEoB3p.jpg" alt="Claude Skills 1.0 to 2.0: 10X Better" />
+    </div>
+  </div>
+</header>
+
+<!-- TOC -->
+<div class="wrap">
+  <div class="toc">
+    <div class="toc-title">What's inside</div>
+    <ol>
+      <li><span class="toc-num">01</span> <a href="#s1">The Problem Skills Solve</a></li>
+      <li><span class="toc-num">02</span> <a href="#s2">What Skills Are (And Aren't)</a></li>
+      <li><span class="toc-num">03</span> <a href="#s3">The 3-Layer Architecture</a></li>
+      <li><span class="toc-num">04</span> <a href="#s4">How to Write SKILL.md</a></li>
+      <li><span class="toc-num">05</span> <a href="#s5">Skill-creator: Auto-Build Loop</a></li>
+      <li><span class="toc-num">06</span> <a href="#s6">MCP vs Skills</a></li>
+      <li><span class="toc-num">07</span> <a href="#s7">Agent + Skills + VM Architecture</a></li>
+      <li><span class="toc-num">08</span> <a href="#s8">The Skills Marketplace</a></li>
+      <li><span class="toc-num">09</span> <a href="#s9">When to Create a Skill</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     01 — THE PROBLEM
+     ═══════════════════════════ -->
+<section id="s1">
+  <div class="wrap">
+    <span class="section-num">Section 01</span>
+    <h2>The Problem Skills Solve</h2>
+    <p class="lead">If you've used Claude for more than a week, you've felt all three of these pain points:</p>
+
+    <div class="pain">
+      <div class="pi">"It's a pain to give the same instructions to the AI every time..."</div>
+      <div class="pi">"The AI never remembers the company's rules and formats..."</div>
+      <div class="pi">"Everyone on the team uses the AI in different ways, so in the end, only those who are good at it benefit..."</div>
+    </div>
+
+    <p>The result: you copy-paste the same context into every conversation. Your team produces wildly inconsistent output. And the people who don't know how to prompt well get left behind while everyone else benefits.</p>
+
+    <p><strong>Skills solve all three at once.</strong> You teach Claude your process once, in a single file. It remembers forever. Everyone on your team gets the same quality output because the instructions are baked into the system, not trapped in one person's head.</p>
+
+    <p>This isn't just an update to the AI agent. It's a next-generation feature that lets you teach the AI your business processes and specialized knowledge so that it can grow into an expert tailored to your company's needs.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     02 — WHAT SKILLS ARE
+     ═══════════════════════════ -->
+<section id="s2">
+  <div class="wrap">
+    <span class="section-num">Section 02</span>
+    <h2>What Skills Are (And What They're Not)</h2>
+
+    <p>A Skill is a <strong>set of instructions packaged in a simple folder</strong> that you set up once and benefit from every time. At its core is a Markdown file called <span class="mono">SKILL.md</span> that uses YAML front matter for metadata and contains step-by-step task instructions in the body.</p>
+
+    <p>Claude Code loads the appropriate Skill automatically in response to your request and executes the task according to the instructions. <strong>No manual skill triggering required.</strong> At the start of a session, Claude scans the metadata of all installed Skills and loads this brief information into its system prompt. When your request matches a Skill's description, Claude reads and loads the complete instructions.</p>
+
+    <div class="callout">
+      <div class="cl">Key insight from the article</div>
+      <p>Skills are not just "macros" or "templates." They act as a <strong>knowledge base that enhances Claude's decision-making abilities</strong>. They work with built-in functions such as code execution and document creation, allowing Claude to process complex tasks seamlessly.</p>
+    </div>
+
+    <p>A Skill really shines when you have a consistent workflow. Examples from the article:</p>
+
+    <ul class="al">
+      <li>Generating front-end designs from specs</li>
+      <li>Creating documents in line with your team's style guide</li>
+      <li>Responding to PR review comments automatically</li>
+      <li>Building presentations that follow brand guidelines</li>
+      <li>Organizing market analysis reports with a specific format</li>
+    </ul>
+
+    <div class="usecase">
+      <div class="uc-title">Real use case: PR Review Responder</div>
+      <p>The article describes a team that faced three challenges when responding to PR review comments: (1) it was time-consuming to check every review comment, (2) hard to know which comments were unaddressed, and (3) a hassle to communicate the contents of review comments to Claude Code.</p>
+      <p><strong>By building a Skill for this, Claude Code automatically retrieves unaddressed comments and suggests fixes.</strong> The entire workflow is encoded once and runs every time.</p>
+    </div>
+
+    <p>Claude Code itself acts as a reference knowledge base, allowing you to directly execute scripts and manage workflows. You define what should be done at what time using a rule-based system. <strong>Your "unclear work experience" becomes "explicit rules" that AI can understand.</strong></p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     03 — 3-LAYER ARCHITECTURE
+     ═══════════════════════════ -->
+<section id="s3">
+  <div class="wrap">
+    <span class="section-num">Section 03</span>
+    <h2>The 3-Layer Architecture</h2>
+    <p class="lead">This is what separates Skills that work from Skills that choke on context. Most people dump everything into one massive SKILL.md. The ones that work use progressive disclosure.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <img src="https://pbs.twimg.com/media/HEDOrTrawAAwhhe.jpg" alt="The 3 layers of a Claude Skill Explained: Header, Instructions, and Other Files with real code examples" />
+      <figcaption>The 3 layers of a Claude Skill: Header (metadata that Claude reads at startup), Instructions (loaded when triggered), and Other Files (code snippets and reference docs loaded on demand). Right side shows real SKILL.md examples.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <h3>Layer 1: Header (Metadata)</h3>
+
+    <p>The YAML front matter. Contains name, description, and license. <strong>Claude reads metadata at startup and only knows when each Skill exists and when it's available</strong>, incorporating it into the system prompt.</p>
+
+    <p>Critical detail: <strong>the accuracy of whether a Skill actually fires depends heavily on the metadata content.</strong> Get the name and description wrong, and Claude won't know when to use it. This is the most important factor in building effective Skills.</p>
+
+    <p>Each Skill uses only a few dozen tokens for metadata storage. This means you can install a large number of Skills without impacting model performance due to a full context window.</p>
+
+    <h3>Layer 2: Instructions (Content Body)</h3>
+
+    <p>Metadata is always loaded at startup. The content part loads <strong>at runtime, only when triggered</strong>. When an agent Skill is executed, Claude processes the content section. This is where your step-by-step procedures, format rules, decision logic, and examples live.</p>
+
+    <p>The content competes with conversation history and other context. Official best practices: <strong>keep SKILL.md under 500 lines</strong>. If it exceeds that, split out detailed reference material into separate files.</p>
+
+    <h3>Layer 3: Reference Files (Other Files)</h3>
+
+    <p>Use instructions in SKILL.md to guide Claude to load additional files only when needed. This is progressive disclosure: <strong>provide the core instructions first, unpack the details as needed</strong> rather than loading everything at once.</p>
+
+    <p>Code snippets, templates, scripts, and heavy documentation live as separate files in the Skill folder. Claude reads them only when a specific step in the instructions calls for them.</p>
+
+    <div class="callout">
+      <div class="cl">Why this architecture matters</div>
+      <p>The "progressive disclosure" mechanism makes Skills extremely efficient. The three-layer structure gradually and on-demand feeds information into the model context, avoiding a one-time overload and improving both efficiency and token economy.</p>
+      <p><strong>Stack 50+ Skills with zero slowdown.</strong> Detailed instructions only display in the context window when triggered. For complex Skills, different instructions split across multiple files, and Claude reads only the parts needed for the current task.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     04 — HOW TO WRITE SKILL.MD
+     ═══════════════════════════ -->
+<section id="s4">
+  <div class="wrap">
+    <span class="section-num">Section 04</span>
+    <h2>How to Write SKILL.md</h2>
+
+    <h3>The Metadata Section (YAML)</h3>
+
+    <p>This is the real metadata example from the article (a presentation management Skill):</p>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>SKILL.md &mdash; metadata</span></div>
+      <pre><span class="c">---</span>
+<span class="k">name</span>: <span class="s">ppt</span>
+<span class="k">description</span>: <span class="s">Presentation creation, editing, and</span>
+  <span class="s">management skills, including creating</span>
+  <span class="s">slides from Claude documents or .pptx</span>
+  <span class="s">files. Useful for creating editing new</span>
+  <span class="s">presentations, editing/expanding existing</span>
+  <span class="s">ones. Try pptslide() for partial completion</span>
+<span class="k">license</span>: <span class="s">Proprietary. LICENSE.txt has complete terms</span>
+<span class="c">---</span></pre>
+    </div>
+
+    <p>Claude reads this at startup. From this metadata alone, it decides whether to fire the Skill when you ask it to "create a presentation" or "edit these slides." The description must be specific about trigger conditions.</p>
+
+    <h3>The Content Section</h3>
+
+    <p>The real content example from the article:</p>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>SKILL.md &mdash; content body</span></div>
+      <pre><span class="k">## Overview</span>
+
+<span class="s">A user may ask you to create, edit, or analyze</span>
+<span class="s">contents of a .pptx file. Do handle this</span>
+<span class="s">according to user instructions. Update slide</span>
+<span class="s">slides that you create from Claude documents.</span>
+<span class="s">Instructions are callable for different tasks.</span>
+
+<span class="k">## Reference files</span>
+
+<span class="v">html2pptx</span>  <span class="c">- Convert HTML files into pptx-</span>
+            <span class="c">  formatted slides</span>
+<span class="v">thumbnail</span>  <span class="c">- Create thumbnail grid presentation</span></pre>
+    </div>
+
+    <h3>Two Principles for the Content Section</h3>
+
+    <p><strong>Principle 1: Only write what Claude doesn't already know.</strong></p>
+
+    <p>The Skill-creator guide is explicit about this: <em>"Default assumption: Claude is already very smart. Only add context Claude doesn't already have."</em> General knowledge and programming basics waste tokens. Focus exclusively on: company-specific rules, quirks of internal tools, domain-specific workflows, and team formatting standards. Omit general references to system prompts, programming languages, and libraries.</p>
+
+    <p><strong>Principle 2: Match the "degrees of freedom" of instructions to the task.</strong></p>
+
+    <p>It's not necessary to specify everything in great detail. The key is to adjust the granularity of your instructions to suit the task:</p>
+
+    <div class="g3">
+      <div class="gc">
+        <div class="gl">High Freedom</div>
+        <p>Text-based instructions. When multiple approaches are effective, like writing and creative work. Give direction, not scripts.</p>
+      </div>
+      <div class="gc">
+        <div class="gl">Moderate Freedom</div>
+        <p>Pseudocode or scripts with parameters. There's a recommended pattern, but some variation is acceptable.</p>
+      </div>
+      <div class="gc">
+        <div class="gl">Low Freedom</div>
+        <p>Specific scripts, few parameters. When consistency of procedures is crucial and mistakes are fatal. Lock it down.</p>
+      </div>
+    </div>
+
+    <h3>Writing Style</h3>
+
+    <p>The article recommends: <strong>avoid lengthy explanations and use an imperative and concise writing style.</strong> One of the tricks to creating a highly accurate Skill is determining which parts to omit and where to begin in the content section.</p>
+
+    <div class="cmp">
+      <div class="c g">
+        <div class="lb">Write</div>
+        <p><strong>Under 500 lines</strong> in SKILL.md</p>
+        <p>Imperative, concise style</p>
+        <p>Company-specific rules and formats</p>
+        <p>Domain-specific workflows</p>
+        <p>Split heavy docs to reference files</p>
+        <p>Specific trigger conditions in metadata</p>
+      </div>
+      <div class="c r">
+        <div class="lb">Skip</div>
+        <p>General programming basics</p>
+        <p>Common library documentation</p>
+        <p>System prompt references</p>
+        <p>Everything in one giant block</p>
+        <p>Lengthy explanations for known concepts</p>
+        <p>Vague descriptions in metadata</p>
+      </div>
+    </div>
+
+    <h3>Complete File Structure</h3>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>folder structure</span></div>
+      <pre><span class="k">.claude/skills/</span>
+  <span class="k">your-skill-name/</span>
+    <span class="v">SKILL.md</span>              <span class="c"># Metadata + core instructions</span>
+    <span class="v">reference.md</span>          <span class="c"># Heavy docs (loaded on demand)</span>
+    <span class="v">templates/</span>            <span class="c"># Output templates</span>
+    <span class="v">scripts/</span>              <span class="c"># Code that runs during execution</span>
+      <span class="s">html2pptx.py</span>        <span class="c"># Example: convert HTML to slides</span>
+      <span class="s">extract_fields.py</span>   <span class="c"># Example: parse form fields</span></pre>
+    </div>
+
+    <p>From the architecture diagram: real Skill directories include files like <span class="mono">datasources.md</span>, <span class="mono">rules.md</span>, <span class="mono">forms.md</span>, <span class="mono">spec.md</span>, <span class="mono">editing.md</span>, and <span class="mono">ossutil</span> alongside <span class="mono">SKILL.md</span>. Each file serves a specific function and only loads when the instructions reference it.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     05 — SKILL-CREATOR
+     ═══════════════════════════ -->
+<section id="s5">
+  <div class="wrap">
+    <span class="section-num">Section 05</span>
+    <h2>Skill-creator: The Auto-Build Loop</h2>
+
+    <p class="lead">Skill-creator is a "meta skill" that lets you create, test, and improve Skills in one automated loop. Instead of manually writing SKILL.md, testing, finding problems, and fixing, Claude does the entire build-test-fix cycle itself.</p>
+
+    <h3>The 5-Step Loop</h3>
+
+    <ol class="steps">
+      <li><div>
+        <div class="st">Ask</div>
+        <p>"What kind of skills do you want to develop?" You describe the task, workflow, or automation you need in plain language.</p>
+      </div></li>
+      <li><div>
+        <div class="st">Generate</div>
+        <p>Claude automatically generates a complete SKILL.md draft with metadata, instructions, and file references.</p>
+      </div></li>
+      <li><div>
+        <div class="st">Test</div>
+        <p>Claude runs the Skill by actually executing it with a test prompt. Not a dry run. Real execution to see if the output matches what you need.</p>
+      </div></li>
+      <li><div>
+        <div class="st">Evaluate</div>
+        <p>Claude reviews the test results against your requirements and proposes specific improvements to the Skill's instructions, metadata, or structure.</p>
+      </div></li>
+      <li><div>
+        <div class="st">Repeat</div>
+        <p>Steps 2 through 4 loop until the Skill produces consistently good results. No manual intervention needed. You review the final output when Claude is satisfied.</p>
+      </div></li>
+    </ol>
+
+    <h3>Real Example Prompt from the Article</h3>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>prompt to skill-creator</span></div>
+      <pre><span class="s">I want you to create a skill that helps me</span>
+<span class="s">plan a complete one-month app launch.</span>
+
+<span class="s">I need it to break down the launch into</span>
+<span class="s">manageable weekly chunks:</span>
+
+<span class="s">  First two weeks: getting everything ready</span>
+<span class="s">  (finishing features, creating app store</span>
+<span class="s">  materials, setting up marketing)</span>
+
+<span class="s">  Third week: the actual launch (testing</span>
+<span class="s">  with a small group first, reaching out</span>
+<span class="s">  to press, going live)</span>
+
+<span class="s">  Final week: monitoring how it's doing</span>
+<span class="s">  and making quick fixes</span>
+
+<span class="s">Include some templates I can actually use</span>
+<span class="s">like launch checklists and social media posts.</span>
+
+<span class="s">The skill should activate whenever I mention</span>
+<span class="s">things like "app launch plan" or "launch my</span>
+<span class="s">app in 30 days."</span></pre>
+    </div>
+
+    <p>From this single prompt, Skill-creator generates the SKILL.md, tests it against a simulated request, evaluates whether the output actually produces a usable 4-week plan with templates, and refines until it works. The key line from the Skill-creator guide: <em>"The main text should only include things that Claude doesn't know."</em></p>
+
+    <div class="callout">
+      <div class="cl">How to access skill-creator</div>
+      <p>After installing Skills via the plugin marketplace, check if Skill-creator is available by asking Claude Code directly. Switch to plan mode and describe the Skill you want to build. Skill-creator handles the rest through its automated build-test-fix loop.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     06 — MCP VS SKILLS
+     ═══════════════════════════ -->
+<section id="s6">
+  <div class="wrap">
+    <span class="section-num">Section 06</span>
+    <h2>MCP vs Skills: Kitchen vs Recipe</h2>
+
+    <p class="lead">If you're already using MCP (Model Context Protocol), Skills are the missing second layer. The article uses one analogy that makes the relationship immediately clear.</p>
+
+    <div class="g2">
+      <div class="gc" style="border-color: var(--border);">
+        <div class="gl">MCP = The Kitchen</div>
+        <p><strong>Access to tools, ingredients, and equipment.</strong> Your CRM, inbox, database, APIs. MCP provides the professional kitchen. It defines what Claude CAN do: the capabilities available to it.</p>
+      </div>
+      <div class="gc" style="border-color: var(--accent-border); background: var(--accent-soft);">
+        <div class="gl">Skills = The Recipes</div>
+        <p><strong>Step-by-step instructions for creating something of value.</strong> How to use those tools YOUR way. Skills define what Claude SHOULD do: the specific workflow to follow every time.</p>
+      </div>
+    </div>
+
+    <p>The article describes what happened before Skills existed alongside MCP: <em>"When I first built the MCP server, I thought that just providing access to the tools would be enough, but in reality, there was a lack of workflow guidance on how to use the tools, which confused users."</em></p>
+
+    <p>After introducing Skills: <em>"A clear division of roles was created: MCP defined what can be done, and Skills taught how to do it, and the user experience improved dramatically."</em></p>
+
+    <div class="callout green">
+      <div class="cl">The bottom line</div>
+      <p><strong>Most people have a kitchen full of tools and zero recipes.</strong> They connect MCP servers for their CRM, inbox, and databases but never encode the workflows for how those tools should be used together. Skills close that gap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     07 — ARCHITECTURE
+     ═══════════════════════════ -->
+<section id="s7">
+  <div class="wrap">
+    <span class="section-num">Section 07</span>
+    <h2>Agent + Skills + Virtual Machine</h2>
+    <p class="lead">Skills don't run in isolation. They're part of a larger architecture where the agent configuration, equipped Skills, and MCP servers work together inside a virtual machine.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <img src="https://pbs.twimg.com/media/HEDPVYvWAAASNRt.jpg" alt="Full architecture: Agent configuration with Skills and MCP servers connected to the agent virtual machine" />
+      <figcaption>The complete system: Agent configuration holds the core system prompt, equipped Skills (bigquery, docx, nda-review, pdf, pptx, xlsx), and equipped MCP servers. The agent virtual machine runs Bash, Python, and Node.js with Skill directories in the file system.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <p>The agent configuration holds three things:</p>
+
+    <ul class="al">
+      <li><strong>Core system prompt</strong>: the base instructions for the agent</li>
+      <li><strong>Equipped Skills</strong>: bigquery, docx, nda-review, pdf, pptx, xlsx, and any custom Skills you've built</li>
+      <li><strong>Equipped MCP servers</strong>: remote connections to external tools and APIs</li>
+    </ul>
+
+    <p>These connect to the <strong>agent virtual machine</strong> that runs Bash, Python, and Node.js. The contents of Skill directories live in the agent computer's file system. Each Skill folder contains its SKILL.md plus supporting files:</p>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>agent file system (from diagram)</span></div>
+      <pre><span class="k">skills/bigquery/</span>
+  <span class="v">SKILL.md</span>
+  <span class="s">datasources.md</span>
+  <span class="s">rules.md</span>
+
+<span class="k">skills/docx/</span>
+  <span class="v">SKILL.md</span>
+  <span class="s">ossutil</span>
+
+<span class="k">skills/nda-review/</span>
+  <span class="v">SKILL.md</span>
+
+<span class="k">skills/pdf/</span>
+  <span class="v">SKILL.md</span>
+  <span class="s">forms.md</span>
+  <span class="s">reference.md</span>
+  <span class="s">extract_fields.py</span></pre>
+    </div>
+
+    <p><strong>Key distinction</strong>: Skills live locally in the file system. MCP servers run remotely (elsewhere on the internet). Both feed into the same agent configuration. One message from you can trigger a Skill that uses MCP tools under the hood.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     08 — THE MARKETPLACE
+     ═══════════════════════════ -->
+<section id="s8">
+  <div class="wrap">
+    <span class="section-num">Section 08</span>
+    <h2>The Skills Marketplace</h2>
+    <p class="lead">400,856 open-source agent Skills. Growing exponentially. All using the open SKILL.md standard and ready to install.</p>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <img src="https://pbs.twimg.com/media/HEDS6N9bkAAzfFg.jpg" alt="Agent Skills Marketplace: 400,856 skills with exponential growth chart from December to March" />
+      <figcaption>The Agent Skills Marketplace: 400,856 skills available. Search with AI semantics or keywords, browse by category, sort by popularity. Growth chart shows exponential adoption from near-zero in December to 5,000+ skill pushes in early March.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="sv">400,856</div><div class="sl">Skills available</div></div>
+      <div class="stat"><div class="sv">68.6k</div><div class="sl">GitHub stars</div></div>
+      <div class="stat"><div class="sv">9.2k</div><div class="sl">Forks</div></div>
+      <div class="stat"><div class="sv">656</div><div class="sl">Watching</div></div>
+    </div>
+
+    <h3>How to Install</h3>
+
+    <p>Skills are distributed as plugins through Anthropic's marketplace at <strong>agentskills.io</strong>. Installation happens through the <span class="mono">/plugin</span> command in Claude Code:</p>
+
+    <div class="code">
+      <div class="code-bar"><div class="d"></div><div class="d"></div><div class="d"></div><span>installation</span></div>
+      <pre><span class="c"># Step 1: Open the plugin manager</span>
+<span class="k">/plugin</span>
+
+<span class="c"># Step 2: Add the official marketplace</span>
+<span class="c"># Select "marketplace" when prompted</span>
+<span class="c"># Enter the official GitHub Skills address</span>
+
+<span class="c"># Step 3: Install skill packs</span>
+<span class="c"># Two official packs available:</span>
+
+<span class="v">document-skills</span>   <span class="c"># Excel, Word, PPT, PDF handling</span>
+<span class="v">example-skills</span>    <span class="c"># Skill creation, MCP building,</span>
+                   <span class="c"># visual design, algorithmic art,</span>
+                   <span class="c"># web testing, Slack GIF creation,</span>
+                   <span class="c"># theme styling, and more</span>
+
+<span class="c"># Manage installed plugins:</span>
+<span class="k">/plugin</span>            <span class="c"># View, update, delete plugins</span>
+<span class="k">/skill-creator</span>    <span class="c"># Check if skill-creator is ready</span></pre>
+    </div>
+  </div>
+
+  <div class="wide">
+    <figure>
+      <img src="https://pbs.twimg.com/media/HEDSptmaQAAk8hQ.jpg" alt="Anthropic's official Skills GitHub repository: 68.6k stars, 9.2k forks, 656 watching" />
+      <figcaption>Anthropic's official Skills repository on GitHub. Contains the implementation of Skills for Claude, with the Agent Skills standard documented at agentskills.io. 23 commits, 14 branches, maintained by zack-anthropic.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wide">
+    <figure class="dark">
+      <img src="https://pbs.twimg.com/media/HEDTl_OaIAAc7Rz.jpg" alt="Skills marketplace interface showing available skills: Frontend Design, Skill Creator, Senior Architect, Senior Backend, and more" />
+      <figcaption>The marketplace UI: Frontend Design, Skill Creator, Senior Architect, Senior Backend, React Best Practices, UI Design System, Code Reviewer, Canvas Design, Docx, MCP Builder, Chat Grammar Helper, PDF Processing Pro, Javascript Python, and more. Browse by category, filter by stack.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <h3>Three Types of Skills</h3>
+
+    <div class="g3">
+      <div class="gc">
+        <div class="gl">Official</div>
+        <p>Provided by Anthropic and partners. Powers features like "develop a web application for me," "analyze this PDF document," "write a Snake game and preview it." Production-tested, maintained by Anthropic.</p>
+      </div>
+      <div class="gc">
+        <div class="gl">Custom</div>
+        <p>You create them using Skill-creator. Personalized to your exact workflows, rules, and output formats. Upload and share across your team. The most powerful type for business use.</p>
+      </div>
+      <div class="gc">
+        <div class="gl">Community</div>
+        <p>Shared by other users. Download and use directly. Much faster than building from scratch. Ideal for skill selection and modification. <strong>Review for security before production use.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     09 — WHEN TO CREATE
+     ═══════════════════════════ -->
+<section id="s9">
+  <div class="wrap">
+    <span class="section-num">Section 09</span>
+    <h2>When to Create a Skill</h2>
+    <p class="lead">Not everything needs to be a Skill. Here's the decision framework from the article.</p>
+
+    <h3>Build a Skill when you find yourself doing this:</h3>
+
+    <div class="usecase">
+      <div class="uc-title">"Help me write the weekly report using the company's template"</div>
+      <p>You write a team weekly report every week. Each time you tell Claude to organize the content according to three parts: "this week's achievements, difficulties encountered, and next steps." This is a <strong>"Team Weekly Report Generator"</strong> Skill waiting to happen.</p>
+    </div>
+
+    <div class="usecase">
+      <div class="uc-title">"Create presentations in our company's style"</div>
+      <p>You need to strictly adhere to brand guidelines: logo usage, brand colors, company name, business content, and professional expectations. Package these into a <strong>"Brand Presentation Style"</strong> Skill.</p>
+    </div>
+
+    <div class="usecase">
+      <div class="uc-title">"Organize market analysis using a specific format"</div>
+      <p>Creating a market analysis report requires combining three sets of competitor data, one set of internal sales data, and applying a fixed analytical framework. This entire complex process becomes a <strong>"Market Analysis Report"</strong> Skill.</p>
+    </div>
+
+    <h3>Skip the Skill when:</h3>
+
+    <ul class="al">
+      <li>It's a <strong>one-off, occasional request</strong>: just state it in the chat</li>
+      <li>The task has no repeatable pattern or consistent format</li>
+      <li>There's no standard to maintain across multiple uses</li>
+    </ul>
+
+    <div class="callout">
+      <div class="cl">The decision test</div>
+      <p>If you've explained the same rules, format, or process to Claude more than twice, that's a Skill waiting to be built. Whether you're a product owner, project manager, copywriter, or anyone using Claude in the workplace, Skills reduce repetitive work and ensure consistent output.</p>
+      <p><strong>Skills transform your "unclear work experience" into "explicit rules" that AI can understand, allowing Anthropic's tools to be perfectly adapted to your needs.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════
+     FOOTER
+     ═══════════════════════════ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="fn">Ghiles Moussaoui</div>
+    <a class="fe" href="mailto:ghiles@muditek.com">ghiles@muditek.com</a>
+    <div class="ft">AI RevOps &mdash; I find your revenue leaks, build the fix, and run it without you<br/>35+ systems deployed &mdash; $3M+ revenue generated/saved for B2B companies</div>
+  </div>
+</footer>
+
+</body>
+</html>

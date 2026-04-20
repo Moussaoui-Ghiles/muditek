@@ -5,6 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 
 export const metadata: Metadata = {
   title: "mudiAgent | Digital Employees for Telecom & Enterprise | Muditek",
@@ -177,6 +179,9 @@ export default function MudiAgentPage() {
         </div>
       </section>
 
+      {/* ══════ NEWSLETTER ══════ */}
+      <NewsletterInline tags={["source:mudiagent", "segment:telecom"]} />
+
       {/* ══════ CHATGPT COMPARISON — Marketing Psychology: contrast effect + loss aversion ══════ */}
       <section className="py-32 md:py-48 w-full flex justify-center relative overflow-hidden border-t border-white/[0.02] bg-card/[0.15]">
         <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-[100px] pointer-events-none" />
@@ -254,6 +259,14 @@ export default function MudiAgentPage() {
           </div>
         </div>
       </section>
+
+      {/* ══════ LEAD MAGNET ══════ */}
+      <LeadMagnetGate
+        title="3 Workflows Every Telecom Can Automate This Quarter"
+        description="A free guide to the highest-ROI automation targets for telecom and enterprise operations — with time savings estimates and implementation complexity ratings."
+        tags={["source:mudiagent", "segment:telecom", "lead-magnet:telecom-workflows"]}
+        accentColor="primary"
+      />
 
       {/* ══════ PRICING — Anchoring + Mental Accounting + Loss Aversion ══════ */}
       <section className="py-32 md:py-48 w-full flex justify-center relative border-t border-white/[0.02]">

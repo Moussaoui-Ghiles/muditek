@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { NewsletterInline } from "@/components/newsletter-inline";
 
 const BOOKING_URL =
   "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
@@ -264,6 +265,9 @@ export default function Home() {
             </div>
          </div>
       </section>
+
+      {/* NEWSLETTER */}
+      <NewsletterInline tags={["source:homepage"]} />
 
       {/* GUARANTEE */}
       <section className="py-32 w-full relative border-t border-b border-white/[0.04] bg-card/[0.2] flex justify-center mesh-subtle">

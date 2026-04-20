@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Claude Code 45-Tip Power User Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #141413;
+    --surface: #1A1A19;
+    --border: rgba(61, 61, 58, 0.4);
+    --text: #FAF9F5;
+    --text-secondary: #87867F;
+    --text-dim: #5E5D59;
+    --clay: #D97757;
+    --clay-hover: #C6613F;
+    --terminal-bg: #111110;
+    --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font-display);
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 400;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 48px 100px;
+    position: relative;
+  }
+
+  /* -- Muditek logo -- */
+  .muditek-logo {
+    margin-bottom: 40px;
+  }
+  .muditek-logo img {
+    height: 80px;
+    width: auto;
+    opacity: 1;
+  }
+
+  /* -- Cover -- */
+  .cover {
+    padding-bottom: 72px;
+    position: relative;
+  }
+
+  .cover-layout {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .spark-icon-wrap {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .spark-icon-wrap svg {
+    width: 72px;
+    height: 72px;
+  }
+
+  .cover-text h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .cover-text h1 span {
+    color: var(--clay);
+  }
+
+  .cover-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 400;
+    margin-bottom: 24px;
+    max-width: 540px;
+  }
+
+  .cover-byline {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cover-byline strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  /* -- Section separator -- */
+  .sep {
+    height: 1px;
+    background: var(--clay);
+    opacity: 0.3;
+    margin: 48px 0;
+  }
+
+  /* -- Why This Playbook -- */
+  .why-section {
+    padding-bottom: 16px;
+  }
+
+  .why-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--clay);
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .why-section p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 720px;
+  }
+
+  /* -- Tip cards -- */
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: border-color 0.2s ease;
+  }
+
+  .tip-card:hover {
+    border-color: rgba(217, 119, 87, 0.25);
+  }
+
+  .tip-number {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--clay);
+    background: rgba(217, 119, 87, 0.1);
+    padding: 3px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .tip-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+
+  .tip-card h4 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .tip-card p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+
+  .tip-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .tip-card ul {
+    margin: 12px 0;
+    padding-left: 20px;
+  }
+
+  .tip-card ul li {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 6px;
+  }
+
+  .tip-card ol {
+    margin: 12px 0;
+    padding-left: 20px;
+  }
+
+  .tip-card ol li {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 6px;
+  }
+
+  .tip-card a {
+    color: var(--clay);
+    text-decoration: none;
+  }
+
+  .tip-card a:hover {
+    text-decoration: underline;
+    color: var(--clay-hover);
+  }
+
+  .tip-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+
+  .tip-card table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .tip-card table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .why-it-matters {
+    font-size: 14px;
+    color: var(--clay);
+    font-weight: 500;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .why-it-matters strong {
+    color: var(--clay);
+    font-weight: 600;
+  }
+
+  /* -- My take callout -- */
+  .my-take {
+    border-left: 3px solid var(--clay);
+    padding: 14px 20px;
+    margin-top: 18px;
+    background: rgba(217, 119, 87, 0.04);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .my-take-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--clay);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .my-take p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 0;
+  }
+
+  /* -- Terminal code blocks -- */
+  .terminal {
+    background: var(--terminal-bg);
+    border-radius: 10px;
+    margin: 16px 0;
+    overflow-x: auto;
+    border: 1px solid rgba(61, 61, 58, 0.3);
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(61, 61, 58, 0.2);
+  }
+
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .terminal-dot.red { background: #FF5F57; }
+  .terminal-dot.yellow { background: #FEBC2E; }
+  .terminal-dot.green { background: #28C840; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: 8px;
+  }
+
+  .terminal pre {
+    padding: 18px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: #C4C3BE;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .terminal pre .cmd { color: var(--clay); }
+  .terminal pre .comment { color: var(--text-dim); }
+  .terminal pre .flag { color: #7DAEA3; }
+  .terminal pre .string { color: #A9B665; }
+
+  /* -- Cheat sheet -- */
+  .cheat-sheet {
+    background: var(--terminal-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(61, 61, 58, 0.3);
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .cheat-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(61, 61, 58, 0.2);
+  }
+
+  .cheat-header-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 10px;
+  }
+
+  .cheat-body {
+    padding: 24px;
+  }
+
+  .cheat-row {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(61, 61, 58, 0.15);
+    align-items: baseline;
+  }
+
+  .cheat-row:last-child { border-bottom: none; }
+
+  .cheat-cmd {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--clay);
+    font-weight: 500;
+  }
+
+  .cheat-desc {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* -- CTA Section -- */
+  .cta-section {
+    border-left: 4px solid var(--clay);
+    background: rgba(217, 119, 87, 0.04);
+    border-radius: 0 12px 12px 0;
+    padding: 40px 36px;
+    margin-top: 16px;
+  }
+
+  .cta-section h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .cta-section p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .cta-section ul {
+    margin: 16px 0 24px;
+    padding-left: 20px;
+  }
+
+  .cta-section ul li {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 8px;
+  }
+
+  .cta-email {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--clay);
+    margin-bottom: 8px;
+  }
+
+  .cta-email a {
+    color: var(--clay);
+    text-decoration: none;
+  }
+
+  .cta-email a:hover {
+    text-decoration: underline;
+    color: var(--clay-hover);
+  }
+
+  .cta-secondary {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+
+  /* -- Footer -- */
+  .footer {
+    text-align: left;
+    padding-top: 24px;
+  }
+
+  .footer-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .footer-tagline {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    max-width: 560px;
+  }
+
+  .footer-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .footer-link a {
+    color: var(--clay);
+    text-decoration: none;
+  }
+
+  .footer-link a:hover {
+    color: var(--clay-hover);
+    text-decoration: underline;
+  }
+
+  /* -- Print styles -- */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body::after { display: none !important; }
+    .tip-card:hover { border-color: var(--border) !important; }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      background: var(--bg) !important;
+    }
+
+    .page-wrapper {
+      padding: 60px 48px 50px !important;
+      max-width: 100% !important;
+    }
+
+    /* Cover still gets its own page */
+    .cover {
+      page-break-after: always;
+      padding: 40px 0;
+    }
+
+    .why-section {
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+
+    /* Tips flow naturally — long tips can break across pages */
+    .tip-card {
+      margin-bottom: 20px;
+    }
+
+    /* ORPHAN PREVENTION: headings must stick to next content */
+    /* Use both legacy and modern properties for Chromium coverage */
+    .tip-number {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .tip-card h3 {
+      page-break-after: avoid;
+      break-after: avoid;
+      margin-bottom: 0;
+      padding-bottom: 14px;
+    }
+    .tip-card h3 + p,
+    .tip-card h3 + div,
+    .tip-card h3 + ul,
+    .tip-card h3 + ol {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+    .tip-card h4 {
+      page-break-after: avoid;
+      break-after: avoid;
+      margin-bottom: 0;
+      padding-bottom: 10px;
+    }
+    .tip-card h4 + p,
+    .tip-card h4 + div,
+    .tip-card h4 + ul {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+
+    /* Orphans/widows: never leave fewer than 3 lines alone on a page */
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* Protect small blocks from splitting */
+    .terminal {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .my-take {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .why-it-matters {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Don't split short lists */
+    ul, ol {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .cheat-sheet {
+      padding: 20px 0;
+    }
+
+    .cta-section {
+      padding: 20px 0;
+    }
+
+    .footer {
+      padding: 0 0 20px;
+    }
+
+    /* Remove separators in print — use tip-card margin for spacing */
+    .sep {
+      display: none;
+    }
+
+    /* Hide tip-card pseudo-element in print */
+    .tip-card::after {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- COVER SECTION -->
+  <section class="cover">
+    <div class="muditek-logo">
+      <img src="data:image/png;base64,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" alt="Muditek" />
+    </div>
+    <div class="cover-layout">
+      <div class="spark-icon-wrap">
+        <svg viewBox="-30 250 1150 1310" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#D97757" d="M489.8,1506.7l15.8-69.8,18-90.1,14.6-72.1,13.5-88.9,7.9-29.3-1.1-2.3-5.6,1.1-67.6,92.3-102.5,138.5-81.1,85.6-19.1,7.9-33.8-16.9,3.4-31.5,19.1-27,111.5-143,67.6-88.9,43.9-50.7-1.1-6.8h-2.3l-297.2,193.7-52.9,6.8-23.6-21.4,3.4-34.9,11.3-11.3,88.9-61.9,221.8-123.8,3.4-11.3-3.4-5.6h-11.3l-37.2-2.3-126.1-3.4-109.2-4.5-107-5.6-27-5.6L0,989.9l2.3-16.9,22.5-14.6,32.7,2.3,70.9,5.6,107,6.8,77.7,4.5,114.8,12.4h18l2.3-7.9-5.6-4.5-4.5-4.5-111.5-74.3-119.3-78.8-63.1-46.2-33.8-23.6-16.9-21.4-6.8-47.3,30.4-33.8,41.7,3.4,10.1,2.3,41.7,32.7,88.9,68.7,117.1,86.7,16.9,13.5,7.9-4.5v-3.4l-7.9-12.4-63.1-114.8-67.6-117.1-30.4-48.4-7.9-29.3c-3-10.1-4.5-21.4-4.5-33.8l34.9-47.3,19.1-6.8,47.3,6.8,19.1,16.9,29.3,66.4,46.2,104.7,73.2,141.9,21.4,42.8,11.3,38.3,4.5,12.4h7.9v-6.8l5.6-81.1,11.3-98,11.3-126.1,3.4-36,18-42.8,34.9-22.5,27,12.4,22.5,32.7-3.4,20.3-12.4,86.7-27,136.2-16.9,92.3h10.1l11.3-12.4,46.2-60.8,77.7-96.8,33.8-38.3,40.5-42.8,25.9-20.3h48.4l34.9,52.9-15.8,55.2-49.5,63.1-41.7,52.9-59.7,79.9-36,64.2,3.4,4.5h7.9l134-29.3,73.2-12.4,85.6-14.6,39.4,18,4.5,18-15.8,38.3-92.3,22.5-108.1,21.4-161,38.3-2.3,1.1,2.3,3.4,72.1,6.8,31.5,2.3h76.6l141.9,10.1,37.2,24.8,21.4,29.3-3.4,23.6-57.4,28.1-76.6-18-180.1-42.8-60.8-14.6h-9v4.5l51.8,50.7,93.4,84.4,118.2,109.2,5.6,27-14.6,22.5-15.8-2.3-103.6-78.8-40.5-34.9-90.1-75.4h-5.6v7.9l20.3,30.4,110.3,165.5,5.6,50.7-7.9,15.8-29.3,10.1-30.4-5.6-65.3-90.1-66.4-102.5-54-91.2-5.6,4.5-32.7,340-14.6,16.9-33.8,13.5-28.1-21.4-15.8-34.9Z"/>
+        </svg>
+      </div>
+      <div class="cover-text">
+        <h1>The Claude Code<br><span>45-Tip</span> Power User Playbook</h1>
+        <p class="cover-subtitle">From basics to running 3 AI agents in parallel from your phone.</p>
+        <p class="cover-byline">By <strong>Ghiles Moussaoui</strong> &mdash; Muditek</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- WHY THIS PLAYBOOK -->
+  <section class="why-section">
+    <h2>Why This Playbook</h2>
+    <p>
+      Most people use Claude Code at 10% of its power. This playbook walks through all 46 tips (Tip 0 through Tip 45) in order, with full verbatim content and every code example ready to paste. Curated by someone who runs their entire business through Claude Code skills and subagents.
+    </p>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- TIP 0 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 00</span>
+    <h3>Customize Your Status Line</h3>
+    <p>You can customize the status line at the bottom of Claude Code to show useful info. I set mine up to show the model, current directory, git branch (if any), uncommitted file count, sync status with origin, and a visual progress bar for token usage. It also shows a second line with my last message so I can see what the conversation was about:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">status line preview</span>
+      </div>
+      <pre>Opus 4.5 | my-project | main (scripts/context-bar.sh uncommitted, synced 12m ago) | <span class="cmd">██░░░░░░░░</span> 18% of 200k tokens
+Last message: This is good. I don't think we need to change the documentation as long as we don't say that the default color is orange el...</pre>
+    </div>
+    <p>This is especially helpful for keeping an eye on your context usage and remembering what you were working on. The script also supports 10 color themes (orange, blue, teal, green, lavender, rose, gold, slate, cyan, or gray).</p>
+    <p>To set this up, you can use <a href="https://github.com/ykdojo/claude-code-tips/blob/main/scripts/context-bar.sh" target="_blank" rel="noopener">this sample script</a> and check the <a href="https://github.com/ykdojo/claude-code-tips/blob/main/scripts/README.md" target="_blank" rel="noopener">setup instructions</a>.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Knowing your token usage at a glance prevents surprise compaction. Knowing your branch prevents wrong-branch commits.</div>
+  </div>
+
+  <!-- TIP 1 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 01</span>
+    <h3>Learn a Few Essential Slash Commands</h3>
+    <p>There are a bunch of built-in slash commands (type <code>/</code> to see them all). Here are a few worth knowing:</p>
+    <h4>/usage</h4>
+    <p>Check your rate limits:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">/usage output</span>
+      </div>
+      <pre> Current session
+ █████████▌                                         19% used
+ Resets 12:59am (America/Vancouver)
+
+ Current week (all models)
+ █████████████████████▌                             43% used
+ Resets Feb 3 at 1:59pm (America/Vancouver)
+
+ Current week (Sonnet only)
+ ███████████████████▌                               39% used
+ Resets 8:59am (America/Vancouver)</pre>
+    </div>
+    <p>If you want to watch your usage closely, keep it open in a tab and use Tab then Shift+Tab or &larr; then &rarr; to refresh.</p>
+    <h4>/chrome</h4>
+    <p>Toggle Claude's native browser integration:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">/chrome</span>
+      </div>
+      <pre>&gt; /chrome
+Chrome integration enabled</pre>
+    </div>
+    <h4>/mcp</h4>
+    <p>Manage MCP (Model Context Protocol) servers:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">/mcp</span>
+      </div>
+      <pre> Manage MCP servers
+ 1 server
+
+ &gt; 1. playwright  connected - Enter to view details
+
+ MCP Config locations (by scope):
+  - User config (available in all your projects):
+    - /Users/yk/.claude.json</pre>
+    </div>
+    <h4>/stats</h4>
+    <p>View your usage statistics with a GitHub-style activity graph:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">/stats output</span>
+      </div>
+      <pre>      Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec Jan
+      ........................................... .  .
+  Mon ........................................... .  .
+      ........................................... .  .
+  Wed .......................................... .  .
+      .......................................... .  .
+  Fri .......................................... .  .
+      .......................................... .  .
+
+      Less . . . . More
+
+  Favorite model: Opus 4.5        Total tokens: 17.6m
+
+  Sessions: 4.1k                  Longest session: 20h 40m 45s
+  Active days: 79/80              Longest streak: 75 days
+  Most active day: Jan 26         Current streak: 74 days
+
+  You've used ~24x more tokens than War and Peace</pre>
+    </div>
+    <h4>/clear</h4>
+    <p>Clear the conversation and start fresh.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> These five commands give you visibility into usage, connected tools, session history, and a clean slate. Know your limits before you hit them.</div>
+  </div>
+
+  <!-- TIP 2 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 02</span>
+    <h3>Talk to Claude Code with Your Voice</h3>
+    <p>I found that you can communicate much faster with your voice than typing with your hands. Using a voice transcription system on your local machine is really helpful for this.</p>
+    <p>On my Mac, I've tried a few different options:</p>
+    <ul>
+      <li><a href="https://superwhisper.com/" target="_blank" rel="noopener">superwhisper</a></li>
+      <li><a href="https://goodsnooze.gumroad.com/l/macwhisper" target="_blank" rel="noopener">MacWhisper</a></li>
+      <li><a href="https://github.com/ykdojo/super-voice-assistant" target="_blank" rel="noopener">Super Voice Assistant</a> (open source, supports Parakeet v2/v3)</li>
+    </ul>
+    <p>You can get more accuracy by using a hosted service, but I found that a local model is strong enough for this purpose. Even when there are mistakes or typos in the transcription, Claude is smart enough to understand what you're trying to say. Sometimes you need to say certain things extra clearly, but overall local models work well enough.</p>
+    <p>For example, in this screenshot you can see that Claude was able to interpret mistranscribed words like "ExcelElanishMark" and "advast" correctly as "exclamation mark" and "Advanced".</p>
+    <p>I think the best way to think about this is like you're trying to communicate with your friend. Of course, you can communicate through texts. That might be easier for some people, or emails, right? That's totally fine. That's what most people seem to do with Claude Code. But if you want to communicate faster, why wouldn't you get on a quick phone call? You can just send voice messages. You don't need to literally have a phone call with Claude Code. Just send a bunch of voice messages. It's faster, at least for me, as someone who's practiced the art of speaking a lot over the past number of years. But I think for a majority of people, it's going to be faster too.</p>
+    <p>A common objection is "what if you're in a room with other people?" I just whisper using earphones - I personally like Apple EarPods (not AirPods). They're affordable, high quality enough, and you just whisper into them quietly. I've done it in front of other people and it works well. In offices, people talk anyway - instead of talking to coworkers, you're talking quietly to your voice transcription system. I don't think there's any problem with that. This method works so well that it even works on a plane. It's loud enough that other people won't hear you, but if you speak close enough to the mic, your local model can still understand what you're saying. (In fact, I'm writing this very paragraph using that method on a flight.)</p>
+    <p><strong>Update:</strong> Claude Code now has a <a href="https://x.com/bcherny/status/2032238378389840018" target="_blank" rel="noopener">built-in voice mode</a>. I tested it and it works well, but I still personally use a local model because I find it faster.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Voice is 3-5x faster than typing for most people, and it lets you interact with Claude Code while walking, cooking, or commuting.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>I run my entire business through voice to Claude Code. From my phone, walking, on planes. This single tip 10x'd my output.</p>
+    </div>
+  </div>
+
+  <!-- TIP 3 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 03</span>
+    <h3>Break Down Large Problems into Smaller Ones</h3>
+    <p>This is one of the most important concepts to master. It's exactly the same as traditional software engineering - the best software engineers already know how to do this, and it applies to Claude Code too.</p>
+    <p>If you find that Claude Code isn't able to one-shot a difficult problem or coding task, ask it to break it down into multiple smaller issues. See if it can solve an individual part of that problem. If it's still too hard, see if it can solve an even smaller sub-problem. Keep going until everything is solvable.</p>
+    <p>Essentially, instead of going from A to B, you can go from A to A1 to A2 to A3, then to B.</p>
+    <p>A good example of this is when I was building my own voice transcription system. I needed to build a system that could let the user select and download a model, take keyboard shortcuts, start transcribing, put the transcribed text at the user's cursor, and wrap all of this in a nice UI. That's a lot. So I broke it down into smaller tasks. First, I created an executable that would just download a model, nothing else. Then I created another one that would just record voice, nothing else. Then another one that would just transcribe pre-recorded audio. I completed them one by one like that before combining them at the end.</p>
+    <p>Highly related to this: your problem-solving skills and software engineering skills are still highly relevant in the world of agentic coding and Claude Code. It's able to solve a lot of problems on its own, but when you apply your general problem-solving and software engineering skills to it, it becomes a lot more powerful.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Decomposition is the master skill. A problem Claude can't solve in one shot often becomes trivial when broken into 3-4 sub-problems.</div>
+  </div>
+
+  <!-- TIP 4 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 04</span>
+    <h3>Using Git and GitHub CLI Like a Pro</h3>
+    <p>Just ask Claude to handle your Git and GitHub CLI tasks. This includes committing (so you don't have to write commit messages manually), branching, pulling, and pushing.</p>
+    <p>I personally allow pull automatically but not push, because push is riskier - it doesn't contaminate the origin if something goes wrong with a pull.</p>
+    <p>For GitHub CLI (<code>gh</code>), there's a lot you can do. One thing I started doing more after using Claude Code is creating draft PRs. This lets Claude Code handle the PR creation process with low risk - you can review everything before marking it ready for review.</p>
+    <p>And it turns out, <code>gh</code> is pretty powerful. You can even send arbitrary GraphQL queries through it. For example, you can even find the exact times at which GitHub PR descriptions were edited:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">gh GraphQL</span>
+      </div>
+      <pre>Bash(gh api graphql -f query='
+      query {
+        repository(owner: "...", name: "...") {
+          pullRequest(number: ...) {
+            userContentEdits(first: 100) {
+              nodes { editedAt editor { login } }
+            }
+          }
+        }
+      }')
+
+Here's the full edit history for your PR description:
+
+  | #  | Edited At (UTC)     | Editor |
+  |----|---------------------|--------|
+  | 1  | 2025-12-01 00:08:34 | ykdojo |
+  | 2  | 2025-12-01 15:57:21 | ykdojo |
+  | 3  | 2025-12-01 16:24:33 | ykdojo |
+  | 4  | 2025-12-01 16:27:00 | ykdojo |
+  | 5  | 2025-12-04 00:40:02 | ykdojo |
+  ...</pre>
+    </div>
+    <h4>Disable commit/PR attribution</h4>
+    <p>By default, Claude Code adds a <code>Co-Authored-By</code> trailer to commits and an attribution footer to PRs. You can disable both by adding this to <code>~/.claude/settings.json</code>:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/.claude/settings.json</span>
+      </div>
+      <pre>{
+  <span class="string">"attribution"</span>: {
+    <span class="string">"commit"</span>: <span class="string">""</span>,
+    <span class="string">"pr"</span>: <span class="string">""</span>
+  }
+}</pre>
+    </div>
+    <p>Setting both to empty strings removes the attribution entirely. This replaces the older <code>includeCoAuthoredBy</code> setting, which is now deprecated.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Never write a commit message manually again. Draft PRs give you a review checkpoint before anything goes public.</div>
+  </div>
+
+  <!-- TIP 5 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 05</span>
+    <h3>AI Context is Like Milk; It's Best Served Fresh and Condensed!</h3>
+    <p>When you start a new conversation with Claude Code, it performs the best because it doesn't have all the added complexity of having to process the previous context from earlier parts of the conversation. But as you talk to it longer and longer, the context gets longer and the performance tends to go down.</p>
+    <p>So it's best to start a new conversation for every new topic, or if the performance starts to go down.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Stale, bloated context is the single biggest reason Claude gives bad or confused answers. Fresh sessions fix this instantly.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>Every new task gets a new session. No exceptions. Stale context is the #1 reason Claude gives bad answers.</p>
+    </div>
+  </div>
+
+  <!-- TIP 6 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 06</span>
+    <h3>Getting Output Out of Your Terminal</h3>
+    <p>Sometimes you want to copy and paste Claude Code's output, but copying directly from the terminal isn't always clean. Here are a few ways to get content out more easily:</p>
+    <ul>
+      <li><strong><code>/copy</code> command</strong>: The simplest option - just type <code>/copy</code> to copy Claude's last response to your clipboard as markdown</li>
+      <li><strong>Clipboard directly</strong>: On Mac or Linux, ask Claude to use <code>pbcopy</code> to send output straight to your clipboard</li>
+      <li><strong>Write to a file</strong>: Have Claude put the content in a file, then ask it to open it in VS Code (or your favorite editor) so you can copy from there. You can also specify a line number, so you can ask Claude to open the specific line it just edited. For markdown files, once it's open in VS Code, you can use Cmd+Shift+P (or Ctrl+Shift+P on Linux/Windows) and select "Markdown: Open Preview" to see the rendered version</li>
+      <li><strong>Opening URLs</strong>: If there's a URL you want to examine yourself, ask Claude to open it in your browser. On Mac, you can ask it to use the <code>open</code> command, but in general asking to open in your favorite browser should work on any platform</li>
+      <li><strong>GitHub Desktop</strong>: You can ask Claude to open the current repo in GitHub Desktop. This is particularly useful when it's working in a non-root directory - for example, if you asked it to create a git worktree in a different directory and you haven't opened Claude Code from there yet</li>
+    </ul>
+    <p>You can combine some of these together too. For example, if you want to edit a GitHub PR description, instead of having Claude edit it directly (which it might mess up), you can have it copy the content into a local file first. Let it edit that, check the result yourself, and once it looks good, have it copy and paste it back into the GitHub PR. That works really well. Or if you want to do that yourself, you can just ask it to open it in VS Code or give it to you via pbcopy so you can copy and paste it manually.</p>
+    <p>Of course, you can run these commands yourself, but if you find yourself doing it repetitively, it's helpful to let Claude run them for you.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Getting output out of the terminal cleanly is the bottleneck between Claude's work and your other tools. These methods eliminate that friction.</div>
+  </div>
+
+  <!-- TIP 7 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 07</span>
+    <h3>Set Up Terminal Aliases for Quick Access</h3>
+    <p>Since I use the terminal more because of Claude Code, I found it helpful to set up short aliases so I can launch things quickly. Here are the ones I use:</p>
+    <ul>
+      <li><code>c</code> for Claude Code (this is the one I use the most)</li>
+      <li><code>ch</code> for Claude Code with Chrome integration</li>
+      <li><code>gb</code> for GitHub Desktop</li>
+      <li><code>co</code> for VS Code</li>
+      <li><code>q</code> for going to the project directory where I have most projects. From there I can manually cd into an individual folder to work on that project, or I can just launch Claude Code with <code>c</code> to let it basically have access to any project it needs to access.</li>
+    </ul>
+    <p>To set these up, add lines like this to your shell config file (<code>~/.zshrc</code> or <code>~/.bashrc</code>):</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/.zshrc</span>
+      </div>
+      <pre><span class="cmd">alias</span> c=<span class="string">'claude'</span>
+<span class="cmd">alias</span> ch=<span class="string">'claude --chrome'</span>
+<span class="cmd">alias</span> gb=<span class="string">'github'</span>
+<span class="cmd">alias</span> co=<span class="string">'code'</span>
+<span class="cmd">alias</span> q=<span class="string">'cd ~/Desktop/projects'</span></pre>
+    </div>
+    <p>Once you have these aliases, you can combine them with flags: <code>c -c</code> continues your last conversation, and <code>c -r</code> shows a list of recent conversations to resume. These work with <code>ch</code> too (<code>ch -c</code>, <code>ch -r</code>) for Chrome sessions.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Typing <code>c</code> instead of <code>claude</code> saves keystrokes, but more importantly it lowers the activation energy to start a session.</div>
+  </div>
+
+  <!-- TIP 8 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 08</span>
+    <h3>Proactively Compact Your Context</h3>
+    <p>There's a <code>/compact</code> command in Claude Code that summarizes your conversation to free up context space. Automatic compaction also happens when the full available context is filled. The total available context window for Opus 4.5 is currently 200k, and 45k of that is reserved for automatic compaction. About 10% of the total 200k is automatically filled with the system prompt, tools, memory, and dynamic context. But I found that it's better to proactively do it and manually tune it. I turned off auto-compact with <code>/config</code> so I have more context available for the main conversation and more control over when and how compaction happens.</p>
+    <p>The way I do this is to ask Claude to write a handoff document before starting fresh. Something like:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">handoff pattern</span>
+      </div>
+      <pre>&gt; Put the rest of the plan in the system-prompt-extraction folder as HANDOFF.md.
+  Explain what you have tried, what worked, what didn't work, so that the next
+  agent with fresh context is able to just load that file and nothing else to
+  get started on this task and finish it up.</pre>
+    </div>
+    <p>Claude will create a file summarizing the current state of work:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">handoff output</span>
+      </div>
+      <pre>Write(experiments/system-prompt-extraction/HANDOFF.md)
+  Wrote 129 lines to experiments/system-prompt-extraction/HANDOFF.md
+     # System Prompt Slimming - Handoff Document
+     ## Goal
+     Reduce Claude Code's system prompt by ~45% (currently at 11%, need ~34% more).
+     ## Current Progress
+     ### What's Been Done
+     - **Backup/restore system**: backup-cli.sh and restore-cli.sh with SHA256 verification
+     - **Patch system**: patch-cli.js that restores from backup then applies patches
+     ...</pre>
+    </div>
+    <p>After Claude writes it, review it quickly. If something's missing, ask for edits:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">review</span>
+      </div>
+      <pre>&gt; Did you add a note about iteratively testing instead of trying to do
+  everything all at once?</pre>
+    </div>
+    <p>Then start a fresh conversation. For the fresh agent, you can just give the path of the file and nothing else like this, and it should work just fine:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">fresh session</span>
+      </div>
+      <pre>&gt; experiments/system-prompt-extraction/HANDOFF.md</pre>
+    </div>
+    <p>In subsequent conversations, you can ask the agent to update the document for the next agent.</p>
+    <p>I've also created a <code>/handoff</code> slash command that automates this - it checks for an existing HANDOFF.md, reads it if present, then creates or updates it with the goal, progress, what worked, what didn't, and next steps. You can find it in the <a href="https://github.com/ykdojo/claude-code-tips/blob/main/skills/handoff/SKILL.md" target="_blank" rel="noopener">skills folder</a>, or install it via the dx plugin.</p>
+    <p><strong>Alternative: Use plan mode</strong></p>
+    <p>Another option is to use plan mode. Enter it with <code>/plan</code> or Shift+Tab. Ask Claude to gather all the relevant context and create a comprehensive plan for the next agent:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">plan mode</span>
+      </div>
+      <pre>&gt; I just enabled plan mode. Bring over all of the context that you need for
+  the next agent. The next agent will not have any other context, so you'll
+  need to be pretty comprehensive.
+
+Would you like to proceed?
+
+&gt; 1. Yes, clear context and auto-accept edits (shift+tab)
+  2. Yes, auto-accept edits
+  3. Yes, manually approve edits
+  4. Type here to tell Claude what to change</pre>
+    </div>
+    <p>Option 1 clears the previous context and starts fresh with the plan. The new Claude instance sees only the plan, so it can focus without the baggage of the old conversation. It also gets a link to the old transcript file in case it needs to look up specific details.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Manual handoffs preserve the important context while dumping the noise. The next agent starts sharp instead of wading through a 200k history of dead ends.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>I never let context fill up on its own. HANDOFF.md is my most-used pattern. Write it, review it, start fresh. Clean handoffs are the difference between a productive agent and a confused one.</p>
+    </div>
+  </div>
+
+  <!-- TIP 9 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 09</span>
+    <h3>Complete the Write-Test Cycle for Autonomous Tasks</h3>
+    <p>If you want Claude Code to run something autonomously, like <code>git bisect</code>, you need to give it a way to verify results. The key is completing the write-test cycle: write code, run it, check the output, and repeat.</p>
+    <p>For example, let's say you're working on Claude Code itself and you notice <code>/compact</code> stopped working and started throwing a 400 error. A classic tool to find the exact commit that caused this is <code>git bisect</code>. The nice thing is you can let Claude Code run bisect on itself, but it needs a way to test each commit.</p>
+    <p>For tasks that involve interactive terminals like Claude Code, you can use tmux. The pattern is:</p>
+    <ol>
+      <li>Start a tmux session</li>
+      <li>Send commands to it</li>
+      <li>Capture the output</li>
+      <li>Verify it's what you expect</li>
+    </ol>
+    <p>Here's a simple example of testing if <code>/context</code> works:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">tmux test pattern</span>
+      </div>
+      <pre><span class="cmd">tmux kill-session</span> <span class="flag">-t</span> test-session 2&gt;/dev/null
+<span class="cmd">tmux new-session</span> <span class="flag">-d -s</span> test-session
+<span class="cmd">tmux send-keys</span> <span class="flag">-t</span> test-session <span class="string">'claude'</span> Enter
+sleep 2
+<span class="cmd">tmux send-keys</span> <span class="flag">-t</span> test-session <span class="string">'/context'</span> Enter
+sleep 1
+<span class="cmd">tmux capture-pane</span> <span class="flag">-t</span> test-session <span class="flag">-p</span></pre>
+    </div>
+    <p>Once you have a test like this, Claude Code can run <code>git bisect</code> and automatically test each commit until it finds the one that broke things.</p>
+    <p>This is also an example of why your software engineering skills still matter. If you're a software engineer, you probably know about tools like <code>git bisect</code>. That knowledge is still really valuable when working with AI - you just apply it in new ways.</p>
+    <p>Another example is simply writing tests. After you let Claude Code write some code, if you want to test it, you can just let it write tests for itself too. And let it run on its own and fix things if it can. Of course, it doesn't always go in the right direction and you need to supervise it sometimes, but it's able to do a surprising amount of coding tasks on its own.</p>
+    <h4>Creative testing strategies</h4>
+    <p>Sometimes you need to be creative with how you complete the write-test cycle. For example, if you're building a web app, you could use Playwright MCP, Chrome DevTools MCP, or Claude's native browser integration (through <code>/chrome</code>). I haven't tried Chrome DevTools yet, but I've tried Playwright and Claude's native integration. Overall, Playwright generally works better. It does use a lot of context, but the 200k context window is normally enough for a single task or a few smaller tasks.</p>
+    <p>The main difference between these two seems to be that Playwright focuses on the accessibility tree (structured data about page elements) rather than taking screenshots. It does have the ability to take screenshots, but it doesn't normally use them to take actions. On the other hand, Claude's native browser integration focuses more on taking screenshots and clicking on elements by specific coordinates. It can click on random things sometimes, and the whole process can be slow.</p>
+    <p>This might improve over time, but by default I would go with Playwright for most tasks that aren't visually intensive. I'd only use Claude's native browser integration if I need to use a logged-in state without having to provide credentials (since it runs in your own browser profile), or if it specifically needs to click on things visually using their coordinates.</p>
+    <p>This is why I disable Claude's native browser integration by default and use it through the <code>ch</code> shortcut I defined previously. That way Playwright handles most browser tasks, and I only enable Claude's native integration when I specifically need it.</p>
+    <p>Additionally, you can ask it to use accessibility tree refs instead of coordinates. Here's what I put in my CLAUDE.md for this:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">CLAUDE.md for Chrome</span>
+      </div>
+      <pre># Claude for Chrome
+
+- Use `read_page` to get element refs from the accessibility tree
+- Use `find` to locate elements by description
+- Click/interact using `ref`, not coordinates
+- NEVER take screenshots unless explicitly requested by the user</pre>
+    </div>
+    <p>In my personal experience, I've also had a situation where I was working on a Python library (<a href="https://github.com/Eventual-Inc/Daft" target="_blank" rel="noopener">Daft</a>) and needed to test a version I built locally on Google Colab. The trouble is it's hard to build a Python library with a Rust backend on Google Colab - it doesn't seem to work that well. So I needed to actually build a wheel locally and then upload it manually so that I could run it on Google Colab. I also tried monkey patching, which worked well in the short term before I had to wait for the whole wheel to build locally. I came up with these testing strategies and executed them by going back and forth with Claude Code.</p>
+    <p>Another situation I encountered is I needed to test something on Windows but I'm not running a Windows machine. My CI tests on the same repo were failing because we had some issues with Rust on Windows, and I had no way of testing locally. So I needed to create a draft PR with all the changes, and another draft PR with the same changes plus enabling Windows CI runs on non-main branches. I instructed Claude Code to do all of that, and then I tested the CI directly in that new branch.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Without a test loop, autonomous tasks are blind. With one, Claude can run git bisect, fix CI, or iterate on code without you approving every step.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>The tmux pattern is what separates vibe-coding from real agentic workflows. Once Claude can test its own output, you can walk away and come back to results.</p>
+    </div>
+  </div>
+
+  <!-- TIP 10 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 10</span>
+    <h3>Cmd+A and Ctrl+A Are Your Friends</h3>
+    <p>I've been saying this for a few years now: Cmd+A and Ctrl+A are friends in the world of AI. This applies to Claude Code too.</p>
+    <p>Sometimes you want to give Claude Code a URL, but it can't access it directly. Maybe it's a private page (not sensitive data, just not publicly accessible), or something like a Reddit post that Claude Code has trouble fetching. In those cases, you can just select all the content you see (Cmd+A on Mac, Ctrl+A on other platforms), copy it, and paste it directly into Claude Code. It's a pretty powerful method.</p>
+    <p>This works great for terminal output too. When I have output from Claude Code itself or any other CLI application, I can use the same trick: select all, copy, and paste it back to CC. Pretty helpful.</p>
+    <p>Some pages don't lend themselves well to select all by default - but there are tricks to get them into a better state first. For example, with Gmail threads, click Print All to get the print preview (but cancel the actual print). That page shows all emails in the thread expanded, so you can Cmd+A the entire conversation cleanly. For asking questions about a YouTube video or summarizing it, you can click "Show transcript" on a YouTube video and then do Cmd+A or Ctrl+A.</p>
+    <p>This applies to any AI, not just Claude Code.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> When Claude can't access a URL, Cmd+A is the fastest workaround. No MCP setup, no browser integration, just copy-paste.</div>
+  </div>
+
+  <!-- TIP 11 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 11</span>
+    <h3>Use Gemini CLI as a Fallback for Blocked Sites</h3>
+    <p>Claude Code's WebFetch tool can't access certain sites, like Reddit. But you can work around this by creating a skill that tells Claude to use Gemini CLI as a fallback. Gemini has web access and can fetch content from sites that Claude can't reach directly.</p>
+    <p>This uses the same tmux pattern from Tip 9 - start a session, send commands, capture output. The skill file goes in <code>~/.claude/skills/reddit-fetch/SKILL.md</code>. See <a href="https://github.com/ykdojo/claude-code-tips/blob/main/skills/reddit-fetch/SKILL.md" target="_blank" rel="noopener">skills/reddit-fetch/SKILL.md</a> for the full content.</p>
+    <p>Skills are more token-efficient because Claude Code only loads them when needed. If you want something simpler, you can put a condensed version in <code>~/.claude/CLAUDE.md</code> instead, but that gets loaded into every conversation whether you need it or not.</p>
+    <p>I tested this by asking Claude Code to check how Claude Code skills are regarded on Reddit - a bit meta. It goes back and forth with Gemini for a while, so it's not fast, but the report quality was surprisingly good. Obviously, you'll need to have Gemini CLI installed for this to work. You can also install this skill via the dx plugin.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Reddit, paywalled sites, and other blocked URLs become accessible through Gemini as a proxy. One skill unlocks a whole category of previously inaccessible content.</div>
+  </div>
+
+  <!-- TIP 12 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 12</span>
+    <h3>Invest in Your Own Workflow</h3>
+    <p>Personally, I've created my own voice transcription app from scratch with Swift. I created my own custom status line from scratch using Claude Code, this one with bash. And I created my own system for simplifying the system prompt in Claude Code's minified JavaScript file.</p>
+    <p>But you don't have to go overboard like that. Just taking care of your own CLAUDE.md, making sure it's as concise as possible while being able to help you achieve your goals - stuff like that is helpful. And of course, learning these tips, learning these tools, and some of the most important features.</p>
+    <p>All of these are investments in the tools you use to build whatever you want to build. I think it's important to spend at least a little bit of time on that.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Small workflow investments compound daily. A 30-minute setup saves 5 minutes per session across hundreds of sessions.</div>
+  </div>
+
+  <!-- TIP 13 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 13</span>
+    <h3>Search Through Your Conversation History</h3>
+    <p>You can ask Claude Code about your past conversations, and it'll help you find and search through them. Your conversation history is stored locally in <code>~/.claude/projects/</code>, with folder names based on the project path (slashes become dashes).</p>
+    <p>For example, conversations for a project at <code>/Users/yk/Desktop/projects/claude-code-tips</code> would be stored in:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">conversation history path</span>
+      </div>
+      <pre>~/.claude/projects/-Users-yk-Desktop-projects-claude-code-tips/</pre>
+    </div>
+    <p>Each conversation is a <code>.jsonl</code> file. You can search through them with basic bash commands:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">search history</span>
+      </div>
+      <pre><span class="comment"># Find all conversations mentioning "Reddit"</span>
+<span class="cmd">grep</span> <span class="flag">-l -i</span> <span class="string">"reddit"</span> ~/.claude/projects/-Users-yk-Desktop-projects-*/*.jsonl
+
+<span class="comment"># Find today's conversations about a topic</span>
+<span class="cmd">find</span> ~/.claude/projects/-Users-yk-Desktop-projects-*/*.jsonl <span class="flag">-mtime 0</span> <span class="flag">-exec</span> grep -l -i "keyword" {} \;
+
+<span class="comment"># Extract just the user messages from a conversation (requires jq)</span>
+<span class="cmd">cat</span> ~/.claude/projects/.../conversation-id.jsonl | <span class="cmd">jq</span> <span class="flag">-r</span> <span class="string">'select(.type=="user") | .message.content'</span></pre>
+    </div>
+    <p>Or just ask Claude Code directly: "What did we talk about regarding X today?" and it'll search through the history for you.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Past conversations contain solutions you've already found. Searching history is faster than re-solving the same problem.</div>
+  </div>
+
+  <!-- TIP 14 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 14</span>
+    <h3>Multitasking with Terminal Tabs</h3>
+    <p>When running multiple Claude Code instances, staying organized is more important than any specific technical setup like Git worktrees. I recommend focusing on at most three or four tasks at a time.</p>
+    <p>My personal method is what I would call a "cascade" - whenever I start a new task, I just open a new tab on the right. Then I sweep left to right, left to right, going from oldest tasks to newest. The general direction stays consistent, except when I need to check on certain tasks, get notifications, etc.</p>
+    <p>Here's what my setup typically looks like:</p>
+    <p>In this example:</p>
+    <ol>
+      <li><strong>Leftmost tab</strong> - A persistent tab running my voice transcription system (always stays here)</li>
+      <li><strong>Second tab</strong> - Setting up a Docker container</li>
+      <li><strong>Third tab</strong> - Checking disk usage on my local machine</li>
+      <li><strong>Fourth tab</strong> - Working on an engineering project</li>
+      <li><strong>Fifth tab (current)</strong> - Writing this very tip</li>
+    </ol>
+    <div class="why-it-matters"><strong>Why it matters:</strong> When you can see all your active tasks as tabs, you know your capacity at a glance. The cascade pattern prevents tab chaos.</div>
+  </div>
+
+  <!-- TIP 15 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 15</span>
+    <h3>Slim Down the System Prompt</h3>
+    <p>Claude Code's system prompt and tool definitions take up about 19k tokens (~10% of your 200k context) before you even start working. I created a patch system that reduces this to about 9k tokens - saving around 10,000 tokens (~50% of the overhead).</p>
+    <table>
+      <tr><th>Component</th><th>Before</th><th>After</th><th>Savings</th></tr>
+      <tr><td>System prompt</td><td>3.0k</td><td>1.8k</td><td>1,200 tokens</td></tr>
+      <tr><td>System tools</td><td>15.6k</td><td>7.4k</td><td>8,200 tokens</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>~19k</strong></td><td><strong>~9k</strong></td><td><strong>~10k tokens (~50%)</strong></td></tr>
+    </table>
+    <p>The patches work by trimming verbose examples and redundant text from the minified CLI bundle while keeping all the essential instructions.</p>
+    <p>I've tested this extensively and it works well. It feels more raw - more powerful, but maybe a little less regulated, which makes sense because the system instruction is shorter. It feels more like a pro tool when you use it this way. I really enjoy starting with lower context because you have more room before it fills up, which gives you the option to continue conversations a bit longer. That's definitely the best part of this strategy.</p>
+    <p>Check out the <a href="https://github.com/ykdojo/claude-code-tips/tree/main/system-prompt" target="_blank" rel="noopener">system-prompt folder</a> for the patch scripts and full details on what gets trimmed.</p>
+    <p><strong>Why patching?</strong> Claude Code has flags that let you provide a simplified system prompt from a file (<code>--system-prompt</code> or <code>--system-prompt-file</code>), so that's another way to go about it. But for the tool descriptions, there's no official option to customize them. Patching the CLI bundle is the only way. Since my patch system handles everything in one unified approach, I'm keeping it this way for now. I might re-implement the system prompt portion using the flag in the future.</p>
+    <p><strong>Supported installations:</strong> npm and native binary (macOS and Linux).</p>
+    <p><strong>Important</strong>: If you want to keep your patched system prompt, disable auto-updates by adding this to <code>~/.claude/settings.json</code>:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/.claude/settings.json</span>
+      </div>
+      <pre>{
+  <span class="string">"env"</span>: {
+    <span class="string">"DISABLE_AUTOUPDATER"</span>: <span class="string">"1"</span>
+  }
+}</pre>
+    </div>
+    <p>This applies to all Claude Code sessions regardless of shell type (interactive, non-interactive, tmux). You can manually update later when you're ready to re-apply patches to a new version.</p>
+    <h4>Lazy-load MCP tools</h4>
+    <p>If you use MCP servers, their tool definitions are loaded into every conversation by default - even if you don't use them. This can add significant overhead, especially with multiple servers configured.</p>
+    <p>Enable lazy-loading so MCP tools are only loaded when needed:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">lazy-load MCP</span>
+      </div>
+      <pre>{
+  <span class="string">"env"</span>: {
+    <span class="string">"ENABLE_TOOL_SEARCH"</span>: <span class="string">"true"</span>
+  }
+}</pre>
+    </div>
+    <p>Add this to <code>~/.claude/settings.json</code>. Claude will search for and load MCP tools on-demand rather than having them all present from the start. As of version 2.1.7, this happens automatically when MCP tool descriptions exceed 10% of the context window.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> 10k saved tokens means longer conversations before compaction kicks in. More room = more useful work per session.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>Starting at 5% instead of 10% system overhead sounds small, but it compounds across every session. You get noticeably more productive turns before context starts degrading.</p>
+    </div>
+  </div>
+
+  <!-- TIP 16 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 16</span>
+    <h3>Git Worktrees for Parallel Branch Work</h3>
+    <p>If you're working on multiple things at the same time in the same project and you don't want them to get conflicted, Git worktrees are a great way to do that. You can just ask Claude Code to create a git worktree and start working on it there - you don't have to worry about the specific syntax.</p>
+    <p>The basic idea is that you can work on a different branch in a different directory. It's essentially a branch + a directory.</p>
+    <p>You can add this layer of Git worktrees on top of the cascade method I discussed in the multitasking tip.</p>
+    <h4>What are git worktrees?</h4>
+    <p>A git worktree is just like any other git branch, but with a new directory specifically assigned to it.</p>
+    <p>So if you're working on, let's say, the main branch and feature-branch-1, then without git worktrees, you can only work on them one at a time because your project folder can only be set to one branch at a time.</p>
+    <p>However, with a git worktree, you can keep working on the main branch (or any other branch for that matter) in the original project folder, and at the same time work on feature-branch-1 in a new folder.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">worktrees</span>
+      </div>
+      <pre><span class="comment"># Create a worktree for a feature branch</span>
+<span class="cmd">git worktree add</span> ../my-project-feature-1 feature-1
+
+<span class="comment"># Each worktree gets its own Claude Code session</span>
+<span class="cmd">cd</span> ../my-project-feature-1 && <span class="cmd">claude</span>
+
+<span class="comment"># List all active worktrees</span>
+<span class="cmd">git worktree list</span>
+
+<span class="comment"># Clean up when done</span>
+<span class="cmd">git worktree remove</span> ../my-project-feature-1</pre>
+    </div>
+    <div class="why-it-matters"><strong>Why it matters:</strong> 3 worktrees = 3 independent Claude Code agents = 3 features shipping simultaneously from a single repo.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>3 worktrees running in parallel = 3 features shipping simultaneously. This is how I run agents from my phone.</p>
+    </div>
+  </div>
+
+  <!-- TIP 17 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 17</span>
+    <h3>Manual Exponential Backoff for Long-Running Jobs</h3>
+    <p>When waiting on long-running jobs like Docker builds or GitHub CI, you can ask Claude Code to do manual exponential backoff. Exponential backoff is a common technique in software engineering, but you can apply it here too. Ask Claude Code to check the status with increasing sleep intervals - one minute, then two minutes, then four minutes, and so on. It's not programmatically doing it in the traditional sense - the AI is doing it manually - but it works pretty well.</p>
+    <p>This way the agent can continuously check the status and let you know once it's done.</p>
+    <p>(For GitHub CI specifically, <code>gh run watch</code> exists but outputs many lines continuously, which wastes tokens. Manual exponential backoff with <code>gh run view &lt;run-id&gt; | grep &lt;job-name&gt;</code> is actually more token-efficient. This is also a general technique that works well even when you don't have a dedicated wait command handy.)</p>
+    <p>For example, if you have a Docker build running in the background, it keeps going until the job completes.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Token-efficient monitoring means Claude can watch a 30-minute CI run without burning through your context window.</div>
+  </div>
+
+  <!-- TIP 18 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 18</span>
+    <h3>Claude Code as a Writing Assistant</h3>
+    <p>Claude Code is an excellent writing assistant and partner. The way I use it for writing is I first give it all the context about what I'm trying to write, and then I give it detailed instructions by speaking to it using my voice. That gives me the first draft. If it's not good enough, I try a few times.</p>
+    <p>Then I go through it line by line, pretty much. I say okay, let's take a look at it together. I like this line for these reasons. I feel like this line needs to move over there. This line needs to change in this particular way. I might ask about reference materials as well.</p>
+    <p>So it's this sort of back-and-forth process, maybe with the terminal on the left and your code editor on the right.</p>
+    <p>That tends to work really well.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Voice input + line-by-line review produces better writing than any one-shot prompt. The iterative loop is the key.</div>
+  </div>
+
+  <!-- TIP 19 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 19</span>
+    <h3>Markdown is the S**t</h3>
+    <p>Typically when people write a new document, they might use something like Google Docs or maybe Notion. But now I honestly think the most efficient way to go about it is markdown.</p>
+    <p>Markdown was already pretty good even before AI, but with Claude Code in particular, because it's so efficient as I mentioned with regards to writing, it makes the value of markdown higher in my opinion. Whenever you want to write a blog post or even a LinkedIn post, you can just talk to Claude Code, have it be saved as markdown, and then go from there.</p>
+    <p>A quick tip for this one: if you want to copy and paste markdown content into a platform that doesn't accept it easily, you can paste it into a fresh Notion file first, then copy from Notion into the other platform. Notion converts it to a format that other platforms can accept. If regular pasting doesn't work, try Command + Shift + V to paste without formatting.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Markdown is the native format of Claude Code. Writing in markdown means zero conversion friction between you, Claude, and your publishing platform.</div>
+  </div>
+
+  <!-- TIP 20 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 20</span>
+    <h3>Use Notion to Preserve Links When Pasting</h3>
+    <p>It turns out the reverse also works. If you have text with links from other places, let's say from Slack, you can copy it. If you paste it directly into Claude Code, it doesn't show the links. But if you put it in a Notion document first, then copy from there, you get it in markdown, which of course Claude Code can read.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Links carry context. Losing them when pasting into Claude means it can't follow references. Notion as a middleman preserves that context.</div>
+  </div>
+
+  <!-- TIP 21 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 21</span>
+    <h3>Containers for Long-Running Risky Tasks</h3>
+    <p>Regular sessions are more for methodical work where you control the permissions you give and review output more carefully. Containerized environments are great for <code>--dangerously-skip-permissions</code> sessions where you don't have to give permission for each little thing. You can just let it run on its own for a while.</p>
+    <p>This is useful for research or experimentation, things that take a long time and maybe could be risky. A good example is the Reddit research workflow from Tip 11, where the reddit-fetch skill goes back and forth with Gemini CLI through tmux. Running that unsupervised is risky on your main system, but in a container, if something goes wrong, it's contained.</p>
+    <p>Another example is how I created the <a href="https://github.com/ykdojo/claude-code-tips/tree/main/system-prompt" target="_blank" rel="noopener">system prompt patching scripts</a> in this repo. When a new version of Claude Code comes out, I need to update the patches for the minified CLI bundle. Instead of running Claude Code with <code>--dangerously-skip-permissions</code> on my host machine (where it has access to everything), I run it in a container. Claude Code can explore the minified JavaScript, find the variable mappings, and create new patch files without me approving every little thing that way.</p>
+    <p>In fact, it was able to complete the migration pretty much on its own. It tried applying the patches, found that some didn't work with the new version, iterated to fix them, and even improved the <a href="https://github.com/ykdojo/claude-code-tips/blob/main/system-prompt/UPGRADING.md" target="_blank" rel="noopener">instruction document</a> for future instances based on what it learned.</p>
+    <p>I even created <a href="https://github.com/ykdojo/safeclaw" target="_blank" rel="noopener">SafeClaw</a> to make running containerized Claude Code sessions easy. It lets you spin up multiple isolated sessions, each with a web terminal, and manage them all from a dashboard. It uses several customizations from this repo, including the optimized system prompt, dx plugin, and status line.</p>
+    <h4>Advanced: Orchestrating a worker Claude Code in a container</h4>
+    <p>You can take this further by having your local Claude Code control another Claude Code instance running inside a container. The trick is using tmux as the control layer:</p>
+    <ol>
+      <li>Your local Claude Code starts a tmux session</li>
+      <li>In that tmux session, it runs or connects to the container</li>
+      <li>Inside the container, Claude Code runs with <code>--dangerously-skip-permissions</code></li>
+      <li>Your outer Claude Code uses <code>tmux send-keys</code> to send prompts and <code>capture-pane</code> to read output</li>
+    </ol>
+    <p>This gives you a fully autonomous "worker" Claude Code that can run experimental or long-running tasks without you approving every action. When it's done, your local Claude Code can pull the results back. If something goes wrong, it's all sandboxed in the container.</p>
+    <h4>Advanced: Multi-model orchestration</h4>
+    <p>Beyond just Claude Code, you can run different AI CLIs in containers - Codex, Gemini CLI, or others. I tried OpenAI Codex for code review, and it works well. The point isn't that you can't run these CLIs directly on your host machine - you obviously can. The value is that Claude Code's UI/UX is smooth enough that you can just talk to it and let it handle the orchestration: spinning up different models, sending data between containers and your host. Instead of manually switching between terminals and copy-pasting, Claude Code becomes the central interface that coordinates everything.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Containers let you give Claude full autonomy without risking your system. The worker pattern is how you get true unattended agentic workflows.</div>
+  </div>
+
+  <!-- TIP 22 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 22</span>
+    <h3>The Best Way to Get Better at Using Claude Code Is by Using It</h3>
+    <p>Recently I saw a world-class rock climber being interviewed by another rock climber. She was asked, "How do you get better at rock climbing?" She simply said, "By rock climbing."</p>
+    <p>That's how I feel about this too. Of course, there are supplementary things you can do, like watching videos, reading books, learning about tips. But using Claude Code is the best way to learn how to use it. Using AI in general is the best way to learn how to use AI.</p>
+    <p>I like to think of it like a billion token rule instead of the 10,000 hour rule. If you want to get better at AI and truly get a good intuition about how it works, the best way is to consume a lot of tokens. And nowadays it's possible. I found that especially with Opus 4.5, it's powerful enough but affordable enough that you can run multiple sessions at the same time. You don't have to worry as much about token usage, which frees you up a lot.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Intuition for AI comes from token-hours, not reading hours. The billion token rule: use it until the patterns become instinctive.</div>
+  </div>
+
+  <!-- TIP 23 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 23</span>
+    <h3>Clone/Fork and Half-Clone Conversations</h3>
+    <p>Sometimes you want to try a different approach from a specific point in a conversation without losing your original thread. The <a href="https://github.com/ykdojo/claude-code-tips/blob/main/scripts/clone-conversation.sh" target="_blank" rel="noopener">clone-conversation script</a> lets you duplicate a conversation with new UUIDs so you can branch off.</p>
+    <p><strong>Built-in alternatives (recent versions):</strong> Claude Code now has native forking:</p>
+    <ul>
+      <li><code>/fork</code> - forks the current session from within a conversation</li>
+      <li><code>--fork-session</code> - use with <code>--resume</code> or <code>--continue</code> (e.g., <code>claude -c --fork-session</code>)</li>
+    </ul>
+    <p>Since <code>--fork-session</code> has no short form, you can add this function to your <code>~/.zshrc</code> or <code>~/.bashrc</code> to use <code>--fs</code> as a shortcut:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">fork shortcuts</span>
+      </div>
+      <pre>claude() {
+  local args=()
+  for arg in "$@"; do
+    if [[ "$arg" == "--fs" ]]; then
+      args+=("--fork-session")
+    else
+      args+=("$arg")
+    fi
+  done
+  command claude "${args[@]}"
+}</pre>
+    </div>
+    <p>This intercepts all <code>claude</code> commands, expands <code>--fs</code> to <code>--fork-session</code>, and passes everything else through unchanged. Works with aliases too (see Tip 7): <code>c -c --fs</code>, <code>ch -c --fs</code>, etc.</p>
+    <p>The clone script below predates these built-in options, but the half-clone script below that remains unique for reducing context.</p>
+    <p>The first message is tagged with <code>[CLONED &lt;timestamp&gt;]</code> (e.g., <code>[CLONED Jan 7 14:30]</code>), which shows up both in the <code>claude -r</code> list and inside the conversation.</p>
+    <p>To set it up manually, symlink both files:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">clone setup</span>
+      </div>
+      <pre><span class="cmd">ln -s</span> /path/to/this/repo/scripts/clone-conversation.sh ~/.claude/scripts/clone-conversation.sh
+<span class="cmd">ln -s</span> /path/to/this/repo/skills/clone ~/.claude/skills/clone</pre>
+    </div>
+    <p>Or install via the dx plugin - no symlinks needed.</p>
+    <p>Then just type <code>/clone</code> (or <code>/dx:clone</code> if using the plugin) in any conversation and Claude will handle finding the session ID and running the script.</p>
+    <p>I've tested this extensively and the cloning works really well.</p>
+    <h4>Half-clone to reduce context</h4>
+    <p>When a conversation gets too long, the <a href="https://github.com/ykdojo/claude-code-tips/blob/main/scripts/half-clone-conversation.sh" target="_blank" rel="noopener">half-clone-conversation script</a> keeps only the later half. This reduces token usage while preserving your recent work. The first message is tagged with <code>[HALF-CLONE &lt;timestamp&gt;]</code> (e.g., <code>[HALF-CLONE Jan 7 14:30]</code>).</p>
+    <p>To set it up manually, symlink both files:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">half-clone setup</span>
+      </div>
+      <pre><span class="cmd">ln -s</span> /path/to/this/repo/scripts/half-clone-conversation.sh ~/.claude/scripts/half-clone-conversation.sh
+<span class="cmd">ln -s</span> /path/to/this/repo/skills/half-clone ~/.claude/skills/half-clone</pre>
+    </div>
+    <p>Or install via the dx plugin - no symlinks needed.</p>
+    <h4>Auto-suggest half-clone with a hook</h4>
+    <p>Optionally, you can use a <a href="https://docs.anthropic.com/en/docs/claude-code/hooks" target="_blank" rel="noopener">hook</a> to automatically trigger <code>/half-clone</code> when your context gets too long. The <a href="https://github.com/ykdojo/claude-code-tips/blob/main/scripts/check-context.sh" target="_blank" rel="noopener">check-context script</a> runs after every Claude response and checks context usage. If it's over 85%, it tells Claude to run <code>/half-clone</code>, which creates a new conversation with only the later half so a new agent can continue there.</p>
+    <p>To set it up, first copy the script:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">hook setup</span>
+      </div>
+      <pre><span class="cmd">cp</span> /path/to/this/repo/scripts/check-context.sh ~/.claude/scripts/check-context.sh
+<span class="cmd">chmod +x</span> ~/.claude/scripts/check-context.sh</pre>
+    </div>
+    <p>Then add the hook to your <code>~/.claude/settings.json</code>:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/.claude/settings.json</span>
+      </div>
+      <pre>{
+  <span class="string">"hooks"</span>: {
+    <span class="string">"Stop"</span>: [
+      {
+        <span class="string">"hooks"</span>: [
+          {
+            <span class="string">"type"</span>: <span class="string">"command"</span>,
+            <span class="string">"command"</span>: <span class="string">"~/.claude/scripts/check-context.sh"</span>
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+    </div>
+    <p>This requires auto-compact to be disabled (<code>/config</code> &gt; Auto-compact &gt; false), otherwise Claude Code may compact the context before the hook gets a chance to fire. When triggered, the hook blocks Claude from stopping and tells it to run <code>/half-clone</code>. The advantage over auto-compact is that half-clone is deterministic and fast - it keeps your actual messages intact instead of summarizing them.</p>
+    <h4>Recommended permission for clone scripts</h4>
+    <p>Both clone scripts need to read <code>~/.claude</code> (for conversation files and history). To avoid permission prompts from any project, add this to your global settings (<code>~/.claude/settings.json</code>):</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">permissions</span>
+      </div>
+      <pre>{
+  <span class="string">"permissions"</span>: {
+    <span class="string">"allow"</span>: [<span class="string">"Read(~/.claude)"</span>]
+  }
+}</pre>
+    </div>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Forking lets you explore different solutions without losing progress. Half-cloning keeps conversations lean without losing recent context.</div>
+  </div>
+
+  <!-- TIP 24 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 24</span>
+    <h3>Use realpath to Get Absolute Paths</h3>
+    <p>When you need to tell Claude Code about files in a different folder, use <code>realpath</code> to get the full absolute path:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">absolute paths</span>
+      </div>
+      <pre><span class="cmd">realpath</span> some/relative/path</pre>
+    </div>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Relative paths fail when Claude's working directory isn't what you expect. Absolute paths are unambiguous.</div>
+  </div>
+
+  <!-- TIP 25 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 25</span>
+    <h3>Understanding CLAUDE.md vs Skills vs Slash Commands vs Plugins</h3>
+    <p>These are somewhat similar features and I initially found them pretty confusing. I've been unpacking them and trying my best to wrap my head around them, so I wanted to share what I learned.</p>
+    <p><strong>CLAUDE.md</strong> is the simplest one. It's a bunch of files that get treated as the default prompt, loaded into the beginning of every conversation no matter what. The nice thing about it is the simplicity. You can explain what the project is about in a particular project (<code>./CLAUDE.md</code>) or globally (<code>~/.claude/CLAUDE.md</code>).</p>
+    <p><strong>Skills</strong> are like better-structured CLAUDE.md files. They can be invoked by Claude automatically when relevant, or manually by the user with a slash (e.g., <code>/my-skill</code>). For example, you could have a skill that opens a Google Translate link with proper formatting when you ask how to pronounce a word in a certain language. If those instructions are in a skill, they only load when needed. If they were in CLAUDE.md, they'd already be there taking up space. So skills are more token-efficient in theory.</p>
+    <p><strong>Slash Commands</strong> are similar to skills in that they're ways of packaging instructions separately. They can be invoked manually by the user, or by Claude itself. If you need something more precise, to invoke at the right time at your own pace, slash commands are the tool to use.</p>
+    <p>Skills and slash commands are pretty similar in the way they function. The difference is the intention of the design - skills are primarily designed for Claude to use, and slash commands are primarily designed for the user to use. However, they have ended up <a href="https://www.reddit.com/r/ClaudeAI/comments/1q92wwv/merged_commands_and_skills_in_213_update/" target="_blank" rel="noopener">merging them</a>, as I had <a href="https://github.com/anthropics/claude-code/issues/13115" target="_blank" rel="noopener">suggested this change</a>.</p>
+    <p><strong>Plugins</strong> are a way to package skills, slash commands, agents, hooks, and MCP servers together. But a plugin doesn't have to use all of them. Anthropic's official <code>frontend-design</code> plugin is essentially just a skill and nothing else. It could be distributed as a standalone skill, but the plugin format makes it easier to install.</p>
+    <p>For example, I built a plugin called <code>dx</code> that bundles slash commands and a skill from this repo together. You can see how it works in the Install the dx plugin section (Tip 44).</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Understanding this hierarchy lets you put instructions in the right place. CLAUDE.md for always-on defaults, skills for on-demand expertise, plugins for distribution.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>I keep CLAUDE.md minimal and move specialized knowledge into skills. Every token in CLAUDE.md is a tax on every conversation. Skills only load when needed.</p>
+    </div>
+  </div>
+
+  <!-- TIP 26 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 26</span>
+    <h3>Interactive PR Reviews</h3>
+    <p>Claude Code is great for PR reviews. The procedure is pretty simple: you ask it to retrieve PR information using the <code>gh</code> command, and then you can go through the review however you want.</p>
+    <p>You can do a general review, or go file by file, step by step. You control the pace. You control how much detail you want to look into and the level of complexity you want to work at. Maybe you just want to understand the general structure, or maybe you want to have it run tests too.</p>
+    <p>The key difference is that Claude Code acts as an interactive PR reviewer, not just a one-shot machine. Some AI tools are good at one-shot reviews (including the latest GPT models), but with Claude Code you can have a conversation.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Interactive review means you can go as deep or as shallow as you want. One-shot tools give you one perspective; Claude gives you a conversation partner.</div>
+  </div>
+
+  <!-- TIP 27 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 27</span>
+    <h3>Claude Code as a Research Tool</h3>
+    <p>Claude Code is amazing for any sort of research. It's essentially a Google replacement or deep research replacement, but more advanced in a few different ways. Whether you're researching why certain GitHub Actions failed (which I've been doing a lot recently), doing sentiment or market analysis on Reddit, exploring your codebase, or exploring public information to find something - it's able to do that.</p>
+    <p>The key is giving it the right pieces of information and instructions about how to access those pieces of information. It might be <code>gh</code> terminal command access, or the container approach (Tip 21), or Reddit through Gemini CLI (Tip 11), or private information through an MCP like Slack MCP, or the Cmd+A / Ctrl+A method (Tip 10) - whatever it is. Additionally, if Claude Code has trouble loading certain URLs, you can try using Playwright MCP or Claude's native browser integration (see Tip 9). For scientific research, I created a <a href="https://github.com/ykdojo/paper-search" target="_blank" rel="noopener">paper-search</a> plugin for searching academic papers.</p>
+    <p>In fact, I was even able to <a href="https://github.com/ykdojo/claude-code-tips/blob/main/content/how-i-saved-10k-with-claude-code.md" target="_blank" rel="noopener">save $10,000 by using Claude Code for research</a>.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Research is about connecting information from multiple sources. Claude Code can access GitHub, Reddit, Slack, the web, and your codebase in a single session.</div>
+  </div>
+
+  <!-- TIP 28 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 28</span>
+    <h3>Mastering Different Ways of Verifying Its Output</h3>
+    <p>One way to verify its output if it's code is to have it write tests and make sure the tests look good in general. That's one way, but you can of course check the code it generates as it goes, just on the Claude Code UI. Another thing is you can use a visual Git client like GitHub Desktop for example. I personally use it. It's not a perfect product, but it's good enough for checking changes quickly. And having it generate a PR as I probably mentioned earlier in this post is a great way as well. Have it create a draft PR, check the content before turning it into a real PR.</p>
+    <p>Another one is letting it check itself, its own work. If it gives you some sort of output, let's say from some research, you can say "are you sure about this? Can you double check?" One of my favorite prompts is to say "double check everything, every single claim in what you produced and at the end make a table of what you were able to verify" - and that seems to work really well.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Trust but verify. Multiple verification methods catch different types of errors. The self-check prompt is surprisingly effective at catching hallucinations.</div>
+  </div>
+
+  <!-- TIP 29 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 29</span>
+    <h3>Claude Code as a DevOps Engineer</h3>
+    <p>I wanted to specifically create a separate tip for this because it's been really amazing for me. Whenever there are GitHub Actions CI failures, I just give it to Claude Code and say "dig into this issue, try to find the root cause." Sometimes it gives you surface level answers, but if you just keep asking - was it caused by a particular commit, a particular PR, or is it a flaky issue? - it really helps you dig into these nasty issues that are hard to dig into by hand. You would need to wade through a bunch of logs and that would be super painful to do manually, but Claude Code is able to handle a lot of that.</p>
+    <p>I've packaged this workflow as a <code>/gha</code> slash command - just run <code>/gha &lt;url&gt;</code> with any GitHub Actions URL and it will automatically investigate the failure, check for flakiness, identify breaking commits, and suggest fixes. You can find it in the <a href="https://github.com/ykdojo/claude-code-tips/blob/main/skills/gha/SKILL.md" target="_blank" rel="noopener">skills folder</a>, or install it via the dx plugin.</p>
+    <p>Once you identify what the particular problem was, you can just create a draft PR and go through some of the tips I mentioned earlier - check the output, make sure it looks good, let it verify its own outputs, and then turn it into a real PR to actually fix the issue. It's been working really well for me personally.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> CI failure investigation is tedious, log-heavy work that Claude excels at. The /gha command turns a 30-minute debugging session into a 5-minute review.</div>
+  </div>
+
+  <!-- TIP 30 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 30</span>
+    <h3>Keep CLAUDE.md Simple and Review It Periodically</h3>
+    <p>It's important to keep CLAUDE.md simple and as concise as possible. You can just start with no CLAUDE.md at all. And if you find that you keep telling Claude Code the same thing over and over again, then you can just add it to CLAUDE.md. I know there is an option to do that through the <code>#</code> symbol, but I prefer to just ask Claude Code to either add it to the project level CLAUDE.md or the global CLAUDE.md and it'll know what to edit exactly.</p>
+    <p>It's also important to periodically review your CLAUDE.md files because they can get outdated over time. Instructions that made sense some time ago might no longer be relevant, or you might have new patterns that should be documented. I created a skill for this called <a href="https://github.com/ykdojo/claude-code-tips/blob/main/skills/review-claudemd/SKILL.md" target="_blank" rel="noopener"><code>review-claudemd</code></a> that analyzes your recent conversations and suggests improvements for your CLAUDE.md files.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> A bloated CLAUDE.md wastes tokens and confuses Claude with contradictory instructions. Lean and current beats comprehensive and stale.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>My CLAUDE.md has been rewritten 4 times. Each time it gets shorter and sharper. The best version is the one that says only what Claude keeps getting wrong without it.</p>
+    </div>
+  </div>
+
+  <!-- TIP 31 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 31</span>
+    <h3>Claude Code as the Universal Interface</h3>
+    <p>I used to think with Claude Code, CLI is like the new IDE, and it's still true in a way. I think it's a great first place to open your project whenever you want to make quick edits and stuff like that. But depending on the severity of your project, you want to be more careful about the outputs than just staying at the vibe coding level.</p>
+    <p>But what's also true, the more general case of that, is that Claude Code is really the universal interface to your computer, the digital world, any sort of digital problem that you have. You can let it figure it out in many cases. For example, if you need to do a quick edit of your video, you can just ask it to do that - it'll probably figure out how to do that through ffmpeg or something similar. If you want to transcribe a bunch of audio files or video files that you have locally, you can just ask it to do that - it might suggest to use Whisper through Python. If you want to analyze some data that you have in a CSV file, it might suggest to use Python or JavaScript to visualize that. And of course with internet access - Reddit, GitHub, MCPs - the possibilities are endless.</p>
+    <p>It's also great for any operations you want to perform on your local computer. For example, if you're running out of storage, you can just ask it to give you some advice on how to clean that up. It'll look through your local folders and files, try to find what's taking up a lot of space, and then give you advice on how to clean them up - maybe delete particularly large files. In my case, I had some Final Cut Pro files that were really large that I should have cleaned up. Claude Code told me about it. Maybe it'll tell you to clean up unused Docker images and containers using <code>docker system prune</code>. Or maybe it'll tell you to clean up some cache that you never realized was still there. No matter what you want to do on your computer, Claude Code is the first place I go to now.</p>
+    <p>I think it's kind of interesting because the computer started with a text interface. And we're, in a way, coming back to this text interface that you can spin up three or four tabs at a time, as I mentioned earlier. To me, that's really exciting. It feels like you have a second brain, in a way. But because of the way it's structured, because it's just a terminal tab, you can open up a third brain, a fourth brain, a fifth brain, a sixth brain. And as the models become more powerful, the proportion of the thinking that you can delegate to these things - not the important things, but things that you don't want to do or that you find boring or too tedious - you can just let them take care of it. As I mentioned, a good example of that is looking into GitHub Actions. Who wants to do that? But it turns out these agents are really good at those boring tasks.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Claude Code isn't just for coding. It's the first tool to try for any digital task. Video editing, data analysis, system cleanup, research -- all from one interface.</div>
+  </div>
+
+  <!-- TIP 32 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 32</span>
+    <h3>It's All About Choosing the Right Level of Abstraction</h3>
+    <p>As I mentioned earlier, sometimes it's okay to stay at the vibe coding level. You don't necessarily have to worry about every single line of code if you're working on one-time projects or non-critical parts of the codebase. But other times, you want to dig in a little deeper - look at the file structure and functions, individual lines of code, even checking dependencies.</p>
+    <p>The key is that it's not binary. Some people say vibe coding is bad because you don't know what you're doing, but sometimes it's totally fine. But other times, it is helpful to dig deeper, use your software engineering skills, understand code at a granular level, or copy and paste parts of the codebase or specific error logs to ask Claude Code specific questions about them.</p>
+    <p>It's sort of like you're exploring a giant iceberg. If you want to stay at the vibe coding level, you can just fly over the top and check it from far away. Then you can go a little bit closer. You can go into diving mode. You can go deeper and deeper, with Claude Code as your guide.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Knowing when to vibe-code and when to deep-dive is the meta-skill. Both have their place. The best engineers use the full spectrum.</div>
+  </div>
+
+  <!-- TIP 33 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 33</span>
+    <h3>Audit Your Approved Commands</h3>
+    <p>I recently saw <a href="https://www.reddit.com/r/ClaudeAI/comments/1pgxckk/claude_cli_deleted_my_entire_home_directory_wiped/" target="_blank" rel="noopener">this post</a> where someone's Claude Code ran <code>rm -rf tests/ patches/ plan/ ~/</code> and wiped their home directory. It's easy to dismiss as a vibe coder mistake, but this kind of mistake could happen to anyone. So it's important to audit your approved commands from time to time. To make it easier, I built <strong>cc-safe</strong> - a CLI that scans your <code>.claude/settings.json</code> files for risky approved commands.</p>
+    <p>It detects patterns like:</p>
+    <ul>
+      <li><code>sudo</code>, <code>rm -rf</code>, <code>Bash</code>, <code>chmod 777</code>, <code>curl | sh</code></li>
+      <li><code>git reset --hard</code>, <code>npm publish</code>, <code>docker run --privileged</code></li>
+      <li>And more - it's container-aware so <code>docker exec</code> commands are skipped</li>
+    </ul>
+    <p>It recursively scans all subdirectories, so you can point it at your projects folder to check everything at once. You can run it manually or ask Claude Code to run it for you:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">security audit</span>
+      </div>
+      <pre><span class="cmd">npm install -g cc-safe</span>
+<span class="cmd">cc-safe</span> ~/projects</pre>
+    </div>
+    <p>Or just run it directly with npx:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">npx</span>
+      </div>
+      <pre><span class="cmd">npx cc-safe</span> .</pre>
+    </div>
+    <p>GitHub: <a href="https://github.com/ykdojo/cc-safe" target="_blank" rel="noopener">cc-safe</a></p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> One bad approved command can wipe your home directory. A 10-second audit prevents catastrophic data loss.</div>
+  </div>
+
+  <!-- TIP 34 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 34</span>
+    <h3>Write Lots of Tests (and Use TDD)</h3>
+    <p>As you write more code with Claude Code, it becomes easier to make mistakes. PR reviews and visual Git clients help catch issues (as I mentioned earlier), but writing tests is crucial as your codebase grows larger.</p>
+    <p>You can have Claude Code write tests for its own code. Some people say AI can't test its own work, but it turns out it can - similar to how the human brain works. When you write tests, you're thinking about the same problem in a different way. The same applies to AI.</p>
+    <p>I've found that TDD (Test-Driven Development) works really well with Claude Code:</p>
+    <ol>
+      <li>Write tests first</li>
+      <li>Make sure they fail</li>
+      <li>Commit the tests</li>
+      <li>Write the code to make them pass</li>
+    </ol>
+    <p>This is actually how I built <a href="https://github.com/ykdojo/cc-safe" target="_blank" rel="noopener">cc-safe</a>. By writing failing tests first and committing them before implementation, you create a clear contract for what the code should do. Claude Code then has a concrete target to hit, and you can verify the implementation is correct by running the tests.</p>
+    <p>If you want to be extra sure, review the tests yourself to make sure they don't do anything stupid like just returning true.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Tests give Claude a concrete target. Instead of generating "looks right" code, it generates "passes the tests" code. That's a measurable difference.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>TDD + Claude Code is the most underrated combo. Writing failing tests first creates a contract. Claude hits the target instead of drifting.</p>
+    </div>
+  </div>
+
+  <!-- TIP 35 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 35</span>
+    <h3>Be Braver in the Unknown; Iterative Problem Solving</h3>
+    <p>Since I started using Claude Code more intensely, I've noticed that I became more and more brave in the unknown.</p>
+    <p>For example, when I started working at <a href="https://github.com/Eventual-Inc/Daft" target="_blank" rel="noopener">Daft</a>, I noticed a problem with our frontend code. I'm not an expert in React, but I decided to dig into it anyway. I just started asking questions about the codebase and about the problem. Eventually I was able to solve it because I knew how to iteratively solve problems with Claude Code.</p>
+    <p>A similar thing happened recently. I was building a guide for users of Daft and ran into some very specific issues: cloudpickle not working with Google Colab with Pydantic, and a separate issue with Python and a bit of Rust where things weren't printing correctly in JupyterLab even though they worked fine in the terminal. I had never worked with Rust before.</p>
+    <p>I could have just created an issue and let other engineers handle it. But I thought, let me dig into the codebase. Claude Code came up with an initial solution, but it wasn't that good. So I slowed down. A colleague suggested we just disable that part, but I didn't want any regression. Can we find a better solution?</p>
+    <p>What followed was a collaborative and iterative process. Claude Code suggested potential root causes and solutions. I experimented with those. Some turned out to be dead ends, so we went in a different direction. Throughout this, I controlled my pace. Sometimes I went faster, like when letting it explore different solution spaces or parts of the codebase. Sometimes I went slower, asking "what does this line mean exactly?" Controlling the level of abstraction, controlling the speed.</p>
+    <p>Eventually I found a pretty elegant solution. The lesson: even in the world of the unknown, you can do a lot more with Claude Code than you might think.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Claude Code expands your capability frontier. Problems in unfamiliar languages or frameworks become solvable through iterative collaboration.</div>
+  </div>
+
+  <!-- TIP 36 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 36</span>
+    <h3>Running Bash Commands and Subagents in the Background</h3>
+    <p>When you have a long-running bash command in Claude Code, you can press Ctrl+B to move it to run in the background. Claude Code knows how to manage background processes - it can check on them later using the BashOutput tool.</p>
+    <p>This is useful when you realize a command is taking longer than expected and you want Claude to do something else in the meantime. You can then either have it use the exponential backoff method I mentioned in Tip 17 to check on progress, or just let it work on something else entirely while the process runs.</p>
+    <p>Claude Code also has the ability to run subagents in the background. If you need to do long-running research or have an agent check on something periodically, you don't have to keep it running in the foreground. Just ask Claude Code to run an agent or task in the background, and it'll handle it while you continue with other work.</p>
+    <h4>Using subagents strategically</h4>
+    <p>Beyond just running things in the background, subagents are useful when you have a large task to break down. For example, if you have a huge codebase that you need to analyze, you can have subagents analyze it in different ways or look at different parts of the codebase in parallel. Just ask Claude to spawn multiple subagents to handle different pieces.</p>
+    <p>You can customize subagents by just asking:</p>
+    <ul>
+      <li><strong>How many</strong> - ask Claude to spawn the number you want</li>
+      <li><strong>Background vs foreground</strong> - ask to run them in the background, or press Ctrl+B</li>
+      <li><strong>Which model</strong> - ask for Opus, Sonnet, or Haiku depending on the complexity of each task (subagents default to Sonnet)</li>
+    </ul>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Background subagents let you run 2-3 analysis or coding tasks simultaneously from a single terminal. Parallel execution, not sequential waiting.</div>
+    <div class="my-take">
+      <div class="my-take-label">My take</div>
+      <p>Combined with worktrees and voice, this is the "run 3 agents from your phone" workflow.</p>
+    </div>
+  </div>
+
+  <!-- TIP 37 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 37</span>
+    <h3>The Era of Personalized Software Is Here</h3>
+    <p>We're entering an era of personalized, custom software. Since AI came out - ChatGPT in general, but especially Claude Code - I've noticed that I'm able to create a lot more software, sometimes just for myself, sometimes for small projects.</p>
+    <p>As I mentioned earlier in this document, I've created a custom transcription tool that I use every day to talk to Claude Code. I've created ways to customize Claude Code itself. I've also done a bunch of data visualization and data analysis tasks using Python much faster than I could otherwise.</p>
+    <p>Here's another example: <a href="https://github.com/korotovsky/slack-mcp-server" target="_blank" rel="noopener">korotovsky/slack-mcp-server</a>, a popular Slack MCP with almost 1,000 stars, is designed to run as a Docker container. I had trouble using it smoothly inside my own Docker container (Docker-in-Docker complications). Instead of fighting with that setup, I just asked Claude Code to write a CLI using Slack's Node SDK directly. It worked really well.</p>
+    <p>This is an exciting time. Whatever you want to get done, you can ask Claude Code to do it. If it's small enough, you can build it in an hour or two. I even created a <a href="https://ykdojo.github.io/claude-code-tips/content/spectrum-slides.html" target="_blank" rel="noopener">slide deck template</a> - a single HTML file with CSS and JavaScript that lets you embed an interactive, persistent terminal process inside.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> The cost of custom software dropped to near-zero. Instead of adapting to tools, build tools that adapt to you.</div>
+  </div>
+
+  <!-- TIP 38 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 38</span>
+    <h3>Navigating and Editing Your Input Box</h3>
+    <p>Claude Code's input box is designed to emulate common terminal/readline shortcuts, which makes it feel natural if you're used to working in the terminal. Here are some useful ones:</p>
+    <p><strong>Navigation:</strong></p>
+    <ul>
+      <li><code>Ctrl+A</code> - Jump to the beginning of the line</li>
+      <li><code>Ctrl+E</code> - Jump to the end of the line</li>
+      <li><code>Option+Left/Right</code> (Mac) or <code>Alt+Left/Right</code> - Jump backward/forward by word</li>
+    </ul>
+    <p><strong>Editing:</strong></p>
+    <ul>
+      <li><code>Ctrl+W</code> - Delete the previous word</li>
+      <li><code>Ctrl+U</code> - Delete from cursor to beginning of line</li>
+      <li><code>Ctrl+K</code> - Delete from cursor to end of line</li>
+      <li><code>Ctrl+C</code> / <code>Ctrl+L</code> - Clear the current input</li>
+      <li><code>Ctrl+G</code> - Open your prompt in an external editor (useful for pasting long text, since pasting directly into the terminal can be slow)</li>
+    </ul>
+    <p>If you're familiar with bash, zsh, or other shells, you'll feel right at home.</p>
+    <p>For <code>Ctrl+G</code>, the editor is determined by your <code>EDITOR</code> environment variable. You can set it in your shell config (<code>~/.zshrc</code> or <code>~/.bashrc</code>):</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">editor setup</span>
+      </div>
+      <pre><span class="cmd">export</span> EDITOR=vim      <span class="comment"># or nano, code, nvim, etc.</span></pre>
+    </div>
+    <p>Or in <code>~/.claude/settings.json</code> (requires restart):</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/.claude/settings.json</span>
+      </div>
+      <pre>{
+  <span class="string">"env"</span>: {
+    <span class="string">"EDITOR"</span>: <span class="string">"vim"</span>
+  }
+}</pre>
+    </div>
+    <p><strong>Entering newlines (multi-line input):</strong></p>
+    <p>The quickest method works everywhere without any setup: type <code>\</code> followed by Enter to create a newline. For keyboard shortcuts, run <code>/terminal-setup</code> in Claude Code. On Mac Terminal.app, I use Option+Enter.</p>
+    <p><strong>Pasting images:</strong></p>
+    <ul>
+      <li><code>Ctrl+V</code> (Mac/Linux) or <code>Alt+V</code> (Windows) - Paste an image from your clipboard</li>
+    </ul>
+    <p>Note: On Mac, it's <code>Ctrl+V</code>, not <code>Cmd+V</code>.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> These shortcuts eliminate the friction of editing long prompts. Ctrl+G alone is worth learning for complex multi-line inputs.</div>
+  </div>
+
+  <!-- TIP 39 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 39</span>
+    <h3>Spend Some Time Planning, but Also Prototype Quickly</h3>
+    <p>You want to spend enough time planning so that Claude Code knows what to build and how to build it. This means making high-level decisions early: what technology to use, how the project should be structured, where each functionality should live, which files things should go in. It's important to make good decisions as early as you can.</p>
+    <p>Sometimes prototyping helps with that. Just by making a simple prototype quickly, you might be able to say "okay, this technology works for this particular purpose" or "this other technology works better."</p>
+    <p>For example, I was recently experimenting with creating a diff viewer. I first tried a simple bash prototype with tmux and lazygit, then tried making my own git viewer with Ink and Node. I had a lot of trouble with different things and ended up not publishing any of these results. But what I got reminded of through this project is the importance of planning and prototyping. I found that just by planning a little bit better at the beginning before you let it write code, you're able to guide it better. You still need to guide it throughout the process of coding, but letting it plan a little first is really helpful.</p>
+    <p>You can use plan mode for this by pressing Shift+Tab to switch to it. Or you can just ask Claude Code to make a plan before writing any code.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> 10 minutes of planning saves hours of wrong-direction coding. Prototypes validate tech choices before you commit to a full implementation.</div>
+  </div>
+
+  <!-- TIP 40 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 40</span>
+    <h3>Simplify Overcomplicated Code</h3>
+    <p>I've found that Claude Code sometimes overcomplicates things and writes too much code. It makes changes you didn't ask for. It just seems to have a bias for writing more code. The code might work correctly if you've followed the other tips in this guide, but it's going to be hard to maintain and hard to check. It can be kind of a nightmare if you don't review it enough.</p>
+    <p>So sometimes you want to check the code and ask it to simplify things. You could fix things yourself, but you could also just ask it to simplify. You can ask questions like "why did you make this particular change?" or "why did you add this line?"</p>
+    <p>Some people say if you write code only through AI, you'll never understand it. But that's only true if you don't ask enough questions. If you make sure you understand every single thing, you can actually understand code faster than otherwise because you can ask AI about it. Especially when you're working on a large project.</p>
+    <p>Note that this applies to prose as well. Claude Code often tries to summarize previous paragraphs in the last paragraph, or previous sentences in the last sentence. It can get pretty repetitive. Sometimes it's helpful, but most of the time you'll need to ask it to remove or simplify it.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Code you don't understand is a liability. Asking "why?" forces Claude to justify every line and surfaces unnecessary complexity.</div>
+  </div>
+
+  <!-- TIP 41 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 41</span>
+    <h3>Automation of Automation</h3>
+    <p>At the end of the day, it's all about automation of automation. What I mean by that is I've found it's the best way to not just become more productive, but also make the process more fun. At least to me, this whole process of automation of automation is really fun.</p>
+    <p>I personally started with ChatGPT and wanted to automate the process of copy-pasting and running commands that ChatGPT gave me in the terminal. I automated that whole process by building a ChatGPT plugin called <a href="https://github.com/ykdojo/kaguya" target="_blank" rel="noopener">Kaguya</a>. I've consistently worked towards more and more automation since then.</p>
+    <p>Nowadays, luckily, we don't even have to build a tool like that because tools like Claude Code exist and they work really well. And as I've used it more and more, I found myself thinking, well, what if I could automate the process of typing? So I used Claude Code itself to build my voice transcription app, as I mentioned earlier.</p>
+    <p>Then I started to think, I find myself repeating myself sometimes. So I would put those things in CLAUDE.md. Then I would think, okay, sometimes I go through running the same command over and over again. How can I automate that? Maybe I can ask Claude Code to do it. Or maybe I can put them in skills. Or maybe I can even have it create a script so I don't have to repeat the same process over and over again.</p>
+    <p>I think ultimately that's where we're heading. Whenever you find yourself repeating the same task or the same command over and over again, a couple of times is okay, but if you repeat it over and over again, then think about a way to automate that whole process.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Each layer of automation compounds. Voice replaces typing. CLAUDE.md replaces repeated instructions. Skills replace repeated workflows. The end state is near-zero friction.</div>
+  </div>
+
+  <!-- TIP 42 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 42</span>
+    <h3>Share Your Knowledge and Contribute Where You Can</h3>
+    <p>This tip is a bit different from the others. I found that by learning as much as you can, you're able to share your knowledge with people around you. Maybe through posts like these, maybe even books, courses, videos. I also recently had an <a href="https://www.daft.ai/blog/how-we-use-ai-coding-agents" target="_blank" rel="noopener">internal session for my colleagues at Daft</a>. It's been very rewarding.</p>
+    <p>And whenever I share tips, I often get information back. For example, when I shared my trick for shortening the system prompt and tool descriptions (Tip 15), some people told me about the <code>--system-prompt</code> flag that you can use as an alternative. Another time, I shared about the difference between slash commands and skills (Tip 25), and I learned new things from comments on that Reddit post.</p>
+    <p>So sharing your knowledge isn't just about establishing your brand or solidifying your learning. It's also about learning new things through that process. It's not always a one-way street.</p>
+    <p>When it comes to contributing, I've been sending issues to the Claude Code repo. I thought, okay, if they listen, cool. If they don't, that's totally fine. I didn't have any expectations. But in version 2.0.67, I noticed they took multiple suggestions from reports I made:</p>
+    <ul>
+      <li>Fixed scroll position resetting after deleting a permission rule in <code>/permissions</code></li>
+      <li>Added search functionality to <code>/permissions</code> command</li>
+    </ul>
+    <p>It's kind of amazing how fast the team can react to feature requests and bug reports. But it makes sense because they're using Claude Code to build Claude Code itself.</p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Teaching is the fastest way to learn. Contributing is how tools get better. Both create a positive feedback loop.</div>
+  </div>
+
+  <!-- TIP 43 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 43</span>
+    <h3>Keep Learning!</h3>
+    <p>There are several effective ways to keep learning about Claude Code:</p>
+    <p><strong>Ask Claude Code itself</strong> - If you have a question about Claude Code, just ask it. Claude Code has a specialized subagent for answering questions about its own features, slash commands, settings, hooks, MCP servers, and more.</p>
+    <p><strong>Check the release notes</strong> - Type <code>/release-notes</code> to see what's new in your current version. This is the best way to learn about the latest features.</p>
+    <p><strong>Learn from the community</strong> - The <a href="https://www.reddit.com/r/ClaudeAI/" target="_blank" rel="noopener">r/ClaudeAI</a> subreddit is a great place to learn from other users and see what workflows people are using.</p>
+    <p><strong>Follow Ado for tips</strong> - Ado (<a href="https://x.com/adocomplete" target="_blank" rel="noopener">@adocomplete</a>) is a DevRel at Anthropic who posted daily Claude Code tips throughout December 2025 in his "Advent of Claude" series. While this particular series has already ended, he continues to share useful tips on X.</p>
+    <ul>
+      <li><a href="https://x.com/search?q=from%3Aadocomplete%20advent%20of%20claude&src=typed_query&f=live" target="_blank" rel="noopener">Twitter/X: Advent of Claude posts</a></li>
+      <li><a href="https://www.linkedin.com/search/results/content/?fromMember=%5B%22ACoAAAFdD3IBYHwKSh6FsyGqOh1SpbrZ9ZHTjnI%22%5D&keywords=advent%20of%20claude&origin=FACETED_SEARCH&sid=zDV&sortBy=%22date_posted%22" target="_blank" rel="noopener">LinkedIn: Advent of Claude posts</a></li>
+    </ul>
+    <div class="why-it-matters"><strong>Why it matters:</strong> Claude Code evolves weekly. Features from a month ago may already be outdated. Staying current is a competitive advantage.</div>
+  </div>
+
+  <!-- TIP 44 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 44</span>
+    <h3>Install the dx Plugin</h3>
+    <p>This repo is also a Claude Code plugin called <code>dx</code> (developer experience). It bundles several tools from the tips above into a single install:</p>
+    <table>
+      <tr><th>Skill</th><th>Description</th></tr>
+      <tr><td><code>/dx:gha &lt;url&gt;</code></td><td>Analyze GitHub Actions failures (Tip 29)</td></tr>
+      <tr><td><code>/dx:handoff</code></td><td>Create handoff documents for context continuity (Tip 8)</td></tr>
+      <tr><td><code>/dx:clone</code></td><td>Clone conversations to branch off (Tip 23)</td></tr>
+      <tr><td><code>/dx:half-clone</code></td><td>Half-clone to reduce context (Tip 23)</td></tr>
+      <tr><td><code>/dx:reddit-fetch</code></td><td>Fetch Reddit content via Gemini CLI (Tip 11)</td></tr>
+      <tr><td><code>/dx:review-claudemd</code></td><td>Review conversations to improve CLAUDE.md files (Tip 30)</td></tr>
+    </table>
+    <p><strong>Install with two commands:</strong></p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">install</span>
+      </div>
+      <pre><span class="cmd">claude plugin marketplace add</span> ykdojo/claude-code-tips
+<span class="cmd">claude plugin install</span> dx@ykdojo</pre>
+    </div>
+    <p>After installing, the commands are available as <code>/dx:clone</code>, <code>/dx:half-clone</code>, <code>/dx:handoff</code>, and <code>/dx:gha</code>. The <code>reddit-fetch</code> skill is invoked automatically when you ask about Reddit URLs. The <code>review-claudemd</code> skill analyzes your recent conversations and suggests improvements for your CLAUDE.md files. For the clone commands, see the recommended permission.</p>
+    <p><strong>Recommended companion:</strong> <a href="https://github.com/microsoft/playwright-mcp" target="_blank" rel="noopener">Playwright MCP</a> for browser automation - add with <code>claude mcp add -s user playwright npx @playwright/mcp@latest</code></p>
+    <div class="why-it-matters"><strong>Why it matters:</strong> One install gives you 6 tools that would otherwise require manual setup. Plugins are the distribution mechanism for Claude Code workflows.</div>
+  </div>
+
+  <!-- TIP 45 -->
+  <div class="tip-card">
+    <span class="tip-number">TIP 45</span>
+    <h3>Quick Setup Script</h3>
+    <p>If you want to set up multiple recommendations from this repo at once, there's a setup script that handles many of them:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">one-liner setup</span>
+      </div>
+      <pre><span class="cmd">bash</span> &lt;(<span class="cmd">curl</span> <span class="flag">-s</span> <span class="string">https://raw.githubusercontent.com/ykdojo/claude-code-tips/main/scripts/setup.sh</span>)</pre>
+    </div>
+    <p>The script shows you everything it will configure and lets you skip any items:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">setup options</span>
+      </div>
+      <pre>INSTALLS:
+  1. DX plugin - slash commands (/dx:gha, /dx:clone, /dx:handoff) and skills (reddit-fetch)
+  2. cc-safe - scans your settings for risky approved commands like 'rm -rf' or 'sudo'
+
+SETTINGS (~/.claude/settings.json):
+  3. Status line - shows model, git branch, uncommitted files, token usage at bottom of screen
+  4. Disable auto-updates - prevents Claude Code from auto-updating (useful for system prompt patches)
+  5. Lazy-load MCP tools - only loads MCP tool definitions when needed, saves context
+  6. Read(~/.claude) permission - allows clone/half-clone commands to read conversation history
+  7. Read(//tmp/**) permission - allows reading temporary files without prompts
+  8. Disable attribution - removes Co-Authored-By from commits and attribution from PRs
+
+SHELL CONFIG (~/.zshrc or ~/.bashrc):
+  9. Aliases: c=claude, ch=claude --chrome, cs=claude --dangerously-skip-permissions
+ 10. Fork shortcut: --fs expands to --fork-session (e.g., claude -c --fs)
+
+Skip any? [e.g., 1 4 7 or Enter for all]:</pre>
+    </div>
+    <div class="why-it-matters"><strong>Why it matters:</strong> One command configures 10 optimizations. Skip what you don't want, keep what you do. Zero manual editing of config files.</div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- QUICK REFERENCE CHEAT SHEET -->
+  <section>
+    <h2 style="font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 20px;">Quick Reference Cheat Sheet</h2>
+
+    <div class="cheat-sheet">
+      <div class="cheat-header">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="cheat-header-title">claude-code-cheatsheet</span>
+      </div>
+      <div class="cheat-body">
+        <div class="cheat-row">
+          <span class="cheat-cmd">alias c='claude'</span>
+          <span class="cheat-desc">Quick launch from any terminal</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">claude -c</span>
+          <span class="cheat-desc">Continue last conversation</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">claude -r</span>
+          <span class="cheat-desc">Resume a recent conversation</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">/compact</span>
+          <span class="cheat-desc">Summarize context to free tokens</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">/fork</span>
+          <span class="cheat-desc">Fork conversation from current point</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">/copy</span>
+          <span class="cheat-desc">Copy last response to clipboard as markdown</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">/usage</span>
+          <span class="cheat-desc">Check rate limits and token usage</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">/chrome</span>
+          <span class="cheat-desc">Toggle native browser integration</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">Ctrl+B</span>
+          <span class="cheat-desc">Move running command to background</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">Shift+Tab</span>
+          <span class="cheat-desc">Toggle plan mode</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">Ctrl+G</span>
+          <span class="cheat-desc">Open prompt in external editor</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">git worktree add ../feat feature</span>
+          <span class="cheat-desc">Create parallel branch workspace</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">npx cc-safe ~/projects</span>
+          <span class="cheat-desc">Audit approved commands for danger</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">claude plugin install dx@ykdojo</span>
+          <span class="cheat-desc">Install the dx plugin bundle</span>
+        </div>
+        <div class="cheat-row">
+          <span class="cheat-cmd">ENABLE_TOOL_SEARCH: "true"</span>
+          <span class="cheat-desc">Lazy-load MCP tools (settings.json)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <h2>Need someone to build this for you?</h2>
+    <p>Most teams read the tips but never implement them. I build the systems -- AI agents, skills, automated workflows -- and run them for you. 35+ systems deployed. $3M+ revenue generated for B2B companies.</p>
+    <ul>
+      <li>Revenue diagnostics that find $50K+ in annual leakage</li>
+      <li>Custom AI agent systems that run autonomously</li>
+      <li>Full RevOps infrastructure -- pipeline to close</li>
+    </ul>
+    <p class="cta-email"><a href="mailto:ghiles@muditek.com">Email me: ghiles@muditek.com</a></p>
+    <p class="cta-secondary">Or connect on LinkedIn -- I reply to every message.</p>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- FOOTER -->
+  <section class="footer">
+    <div class="footer-name">Curated by Ghiles Moussaoui &mdash; Muditek</div>
+    <p class="footer-tagline">AI RevOps &mdash; I find your revenue leaks, build the fix, and run it without you.</p>
+    <p class="footer-link">Source: <a href="https://github.com/ykdojo/claude-code-tips" target="_blank" rel="noopener">github.com/ykdojo/claude-code-tips</a></p>
+  </section>
+
+</div>
+<script>
+// Wrap tip-number + h3 + first sibling in a "keep-together" div
+// so Chromium PDF never orphans a heading at the bottom of a page
+document.querySelectorAll('.tip-card').forEach(card => {
+  const num = card.querySelector('.tip-number');
+  const h3 = card.querySelector('h3');
+  if (!num || !h3) return;
+  const next = h3.nextElementSibling;
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'page-break-inside:avoid;break-inside:avoid;';
+  card.insertBefore(wrapper, num);
+  wrapper.appendChild(num);
+  wrapper.appendChild(h3);
+  if (next) wrapper.appendChild(next);
+});
+</script>
+</body>
+</html>

@@ -5,6 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 
 export const metadata: Metadata = {
   title: "Operational Infrastructure for Investment Firms | Muditek",
@@ -134,6 +136,9 @@ export default function PEOpsPage() {
         </div>
       </section>
 
+      {/* ══════ NEWSLETTER ══════ */}
+      <NewsletterInline tags={["source:pe-ops", "segment:pe"]} accentColor="sky" />
+
       {/* ══════ IMAGE BREAK ══════ */}
       <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
         <Image src="/images/pe-office.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.3) saturate(1.3) brightness(0.65)' }} aria-hidden="true" />
@@ -255,6 +260,14 @@ export default function PEOpsPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ══════ LEAD MAGNET ══════ */}
+      <LeadMagnetGate
+        title="The PE Operations Maturity Checklist"
+        description="Score your firm's operational infrastructure across 12 dimensions — from LP onboarding to fee computation. See where you stand vs. firms with modern systems."
+        tags={["source:pe-ops", "segment:pe", "lead-magnet:pe-checklist"]}
+        accentColor="sky"
+      />
 
       {/* ══════ FAQ ══════ */}
       <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">

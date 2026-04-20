@@ -37,7 +37,11 @@ export default async function AdminGate({ forbidden }: { forbidden?: boolean }) 
               </Button>
             </SignOutButton>
           ) : (
-            <Button className="w-full" render={<Link href="/sign-in?redirect_url=/admin" />}>
+            <Button
+              className="w-full"
+              nativeButton={false}
+              render={<Link href="/sign-in?redirect_url=/admin" />}
+            >
               Sign in
             </Button>
           )}

@@ -18,7 +18,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
-    const source = String(body.source ?? body.utm_source ?? "homepage").slice(0, 50);
+    let source = String(body.source ?? body.utm_source ?? "").trim();
+    if (!source && Array.isArray(body.tags)) {
+      const match = body.tags.find(
+        (t: unknown) => typeof t === "string" && t.startsWith("source:"),
+      );
+      if (match) source = String(match).slice(7);
+    }
+    source = (source || "homepage").slice(0, 50);
 
     const fromTopics = coerceTopics(body.topics);
     const fromTags = coerceTopics(body.tags);

@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { UserButton, useUser } from "@clerk/nextjs";
+
+const ADMIN_EMAIL = "ghiles@muditek.com";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { isSignedIn, user, isLoaded } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
+  const isAdmin = email === ADMIN_EMAIL;
 
   useEffect(() => {
     setMobileOpen(false);
@@ -80,17 +86,46 @@ export function Navbar() {
           <Link href="/resources" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Resources
           </Link>
+
+          {isLoaded && !isSignedIn && (
+            <Link href="/sign-in?redirect_url=/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+              Sign in
+            </Link>
+          )}
+          {isLoaded && isSignedIn && (
+            <>
+              <Link href="/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+                Portal
+              </Link>
+              {isAdmin && (
+                <Link href="/admin" className="text-sm uppercase tracking-[0.2em] text-amber-400/80 hover:text-amber-300 transition-colors font-bold">
+                  Admin
+                </Link>
+              )}
+            </>
+          )}
         </div>
 
-        {/* Desktop CTA */}
-        <a
-          href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:flex px-6 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
-        >
-          Book a Call
-        </a>
+        {/* Desktop CTA + user */}
+        <div className="hidden md:flex items-center gap-4">
+          {isLoaded && isSignedIn && (
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8 ring-1 ring-white/[0.08]",
+                },
+              }}
+            />
+          )}
+          <a
+            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+          >
+            Book a Call
+          </a>
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -173,6 +208,42 @@ export function Navbar() {
             Resources
           </Link>
 
+          {isLoaded && !isSignedIn && (
+            <Link
+              href="/sign-in?redirect_url=/portal"
+              className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+              }`}
+              style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+            >
+              Sign in
+            </Link>
+          )}
+          {isLoaded && isSignedIn && (
+            <>
+              <Link
+                href="/portal"
+                className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+              >
+                Portal
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`text-2xl font-black uppercase tracking-[0.05em] text-amber-400/90 hover:text-amber-300 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                    mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                  }`}
+                  style={{ transitionDelay: mobileOpen ? "440ms" : "0ms" }}
+                >
+                  Admin
+                </Link>
+              )}
+            </>
+          )}
+
           <a
             href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
             target="_blank"
@@ -180,7 +251,7 @@ export function Navbar() {
             className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             }`}
-            style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+            style={{ transitionDelay: mobileOpen ? "500ms" : "0ms" }}
           >
             Book a Call
           </a>

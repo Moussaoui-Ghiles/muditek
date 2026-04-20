@@ -2,8 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 
+const VALID_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"] as const;
+type Topic = (typeof VALID_TOPICS)[number];
+
 interface EmailCaptureProps {
-  tags: string[];
+  tags?: string[];
+  source?: string;
+  topics?: Topic[];
   accentColor?: "primary" | "emerald" | "sky";
   heading?: string;
   description?: string;
@@ -38,8 +43,31 @@ const ACCENT_MAP = {
   },
 };
 
+function deriveSource(source: string | undefined, tags: string[] | undefined): string {
+  if (source) return source.slice(0, 50);
+  if (tags && tags.length > 0) {
+    for (const t of tags) {
+      if (t.startsWith("source:")) return t.slice(7).slice(0, 50);
+    }
+  }
+  return "homepage";
+}
+
+function deriveTopics(topics: Topic[] | undefined, tags: string[] | undefined): Topic[] {
+  if (topics && topics.length > 0) return topics;
+  if (tags && tags.length > 0) {
+    const matched = tags.filter((t): t is Topic =>
+      (VALID_TOPICS as readonly string[]).includes(t),
+    );
+    if (matched.length > 0) return matched;
+  }
+  return [...VALID_TOPICS];
+}
+
 export function EmailCapture({
   tags,
+  source,
+  topics,
   accentColor = "primary",
   heading,
   description,
@@ -65,7 +93,11 @@ export function EmailCapture({
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, tags }),
+        body: JSON.stringify({
+          email,
+          source: deriveSource(source, tags),
+          topics: deriveTopics(topics, tags),
+        }),
       });
 
       if (!res.ok) {

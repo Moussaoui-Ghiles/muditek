@@ -1,75 +1,60 @@
 import { NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
 
-const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
-const BEEHIIV_PUB_ID =
-  process.env.BEEHIIV_PUBLICATION_ID ||
-  "pub_2effd3a4-1768-4ed7-8c9b-ff764a036162";
+const VALID_TOPICS = new Set(["ai-agents", "gtm-systems", "solo-operator"]);
+
+function coerceTopics(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  return input
+    .map((v) => (typeof v === "string" ? v.toLowerCase().trim() : ""))
+    .filter((v) => VALID_TOPICS.has(v));
+}
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email, tags, utm_source, utm_medium, custom_fields } = body;
+    const body = await request.json().catch(() => ({}));
+    const email = String(body.email ?? "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { error: "Valid email is required." },
-        { status: 400 }
+    let source = String(body.source ?? body.utm_source ?? "").trim();
+    if (!source && Array.isArray(body.tags)) {
+      const match = body.tags.find(
+        (t: unknown) => typeof t === "string" && t.startsWith("source:"),
       );
+      if (match) source = String(match).slice(7);
+    }
+    source = (source || "homepage").slice(0, 50);
+
+    const fromTopics = coerceTopics(body.topics);
+    const fromTags = coerceTopics(body.tags);
+    const chosen = fromTopics.length > 0 ? fromTopics : fromTags;
+    const finalTopics = chosen.length > 0 ? chosen : Array.from(VALID_TOPICS);
+
+    const sql = getDb();
+
+    const existing = await sql`
+      SELECT id, status FROM newsletter_subscribers WHERE email = ${email}
+    `;
+
+    if (existing.length > 0) {
+      await sql`
+        UPDATE newsletter_subscribers
+        SET status = 'active', topics = ${finalTopics}, unsub_at = NULL
+        WHERE email = ${email}
+      `;
+      return NextResponse.json({ ok: true, resubscribed: true });
     }
 
-    if (!BEEHIIV_API_KEY) {
-      return NextResponse.json(
-        { error: "Email service not configured." },
-        { status: 500 }
-      );
-    }
+    await sql`
+      INSERT INTO newsletter_subscribers (email, source, topics)
+      VALUES (${email}, ${source}, ${finalTopics})
+    `;
 
-    const payload: Record<string, unknown> = {
-      email,
-      reactivate_existing: true,
-      send_welcome_email: true,
-    };
-
-    if (tags && Array.isArray(tags) && tags.length > 0) {
-      payload.custom_fields = [
-        ...(custom_fields || []),
-        ...tags.map((tag: string) => ({
-          name: "tags",
-          value: tag,
-        })),
-      ];
-    }
-
-    if (utm_source) payload.utm_source = utm_source;
-    if (utm_medium) payload.utm_medium = utm_medium;
-
-    const res = await fetch(
-      `https://api.beehiiv.com/v2/publications/${BEEHIIV_PUB_ID}/subscriptions`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${BEEHIIV_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      console.error("beehiiv API error:", res.status, errData);
-      return NextResponse.json(
-        { error: "Failed to subscribe. Please try again." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("Subscribe error:", err);
-    return NextResponse.json(
-      { error: "Something went wrong." },
-      { status: 500 }
-    );
+    console.error("subscribe error", err);
+    return NextResponse.json({ error: "Subscribe failed" }, { status: 500 });
   }
 }

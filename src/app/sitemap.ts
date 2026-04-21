@@ -15,7 +15,6 @@ const MARKETING: Array<{ path: string; priority: number; changeFrequency: Metada
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly" },
   { path: "/resources", priority: 0.8, changeFrequency: "weekly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/buy", priority: 0.7, changeFrequency: "monthly" },
 ];
 
 const RESOURCE_SLUGS = [

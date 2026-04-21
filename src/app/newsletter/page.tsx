@@ -1,45 +1,54 @@
-import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
-import { neon } from "@neondatabase/serverless";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { EmailCapture } from "@/components/email-capture";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Muditek Newsletter | AI Automation Systems & Revenue Operations",
-  description:
-    "AI automation systems, workflows, and revenue operations, delivered to your inbox. 4,000+ subscribers. Free.",
+  title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
+  description: "AI automation systems, workflows, and revenue operations, delivered to your inbox. 5,300+ subscribers. 40% open rate. Join free.",
 };
 
-interface Issue {
+const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
+const BEEHIIV_PUB_ID = process.env.BEEHIIV_PUBLICATION_ID || "pub_2effd3a4-1768-4ed7-8c9b-ff764a036162";
+
+interface BeehiivPost {
   id: string;
-  subject: string;
+  title: string;
+  subtitle: string | null;
   slug: string;
-  sent_at: string;
+  web_url: string;
+  thumbnail_url: string | null;
+  created: number;
+  publish_date: number;
+  displayed_date: string | null;
+  status: string;
 }
 
-async function getIssues(): Promise<Issue[]> {
+async function getPosts(): Promise<BeehiivPost[]> {
+  if (!BEEHIIV_API_KEY) {
+    return [];
+  }
+
   try {
-    const sql = neon(process.env.DATABASE_URL!);
-    const rows = await sql`
-      SELECT id, subject, slug, sent_at
-      FROM newsletter_issues
-      WHERE status = 'sent' AND slug IS NOT NULL
-      ORDER BY sent_at DESC
-      LIMIT 60
-    `;
-    return rows as Issue[];
+    const res = await fetch(
+      `https://api.beehiiv.com/v2/publications/${BEEHIIV_PUB_ID}/posts?status=confirmed&limit=30&direction=desc&order_by=publish_date`,
+      {
+        headers: { Authorization: `Bearer ${BEEHIIV_API_KEY}` },
+        next: { revalidate: 3600 },
+      }
+    );
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || [];
   } catch {
     return [];
   }
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
+function formatDate(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -47,7 +56,7 @@ function formatDate(iso: string): string {
 }
 
 export default async function NewsletterPage() {
-  const issues = await getIssues();
+  const posts = await getPosts();
 
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
@@ -67,8 +76,18 @@ export default async function NewsletterPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
+            <div className="flex items-center justify-center gap-5 mb-8">
+              <Image
+                src="https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/user/profile_picture/80b30549-1dbe-4e9f-8701-6a15f0d95db3/thumb_WhatsApp_Image_2025-05-23_at_00.49.13_a69bd58a.jpg"
+                alt="B2B Agents"
+                width={80}
+                height={80}
+                className="rounded-full border-2 border-white/[0.1]"
+                unoptimized
+              />
+            </div>
             <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-8 text-balance">
-              Muditek <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">Signals</span>
+              B2B <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">Agents</span>
             </h1>
           </ScrollReveal>
 
@@ -79,14 +98,18 @@ export default async function NewsletterPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={240}>
-            <div className="max-w-md mx-auto">
-              <EmailCapture
-                source="newsletter-hero"
-                buttonText="Subscribe Free"
-                successMessage="Check your inbox."
-                accentColor="primary"
-              />
-            </div>
+            <a
+              href="https://b2bagents.beehiiv.com/subscribe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-press group relative inline-flex items-center justify-center px-12 py-5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.02] duration-300"
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                Subscribe Free
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </span>
+              <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
+            </a>
           </ScrollReveal>
         </div>
       </section>
@@ -94,9 +117,9 @@ export default async function NewsletterPage() {
       {/* STATS BAR */}
       <section className="py-8 w-full flex justify-center border-t border-b border-white/[0.06] bg-card/[0.15]">
         <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-mono uppercase tracking-wider text-foreground/60">
-          <span>4,000+ subscribers</span>
+          <span>5,300+ subscribers</span>
           <span className="hidden md:inline text-foreground/20">|</span>
-          <span>Operators, founders, PE ops</span>
+          <span>40.7% open rate</span>
           <span className="hidden md:inline text-foreground/20">|</span>
           <span>Free forever</span>
         </div>
@@ -104,14 +127,7 @@ export default async function NewsletterPage() {
 
       {/* ARTICLES GRID */}
       <section className="py-32 md:py-40 w-full flex justify-center relative">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.015]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
             <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
@@ -123,49 +139,69 @@ export default async function NewsletterPage() {
             </h3>
           </ScrollReveal>
 
-          {issues.length > 0 ? (
+          {posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {issues.map((issue, i) => (
-                <ScrollReveal key={issue.id} delay={i * 40}>
-                  <Link
-                    href={`/newsletter/${issue.slug}`}
+              {posts.map((post, i) => (
+                <ScrollReveal key={post.id} delay={i * 40}>
+                  <a
+                    href={post.web_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
                   >
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
 
-                    <div className="p-8 flex flex-col flex-1">
-                      <div className="text-xs font-mono uppercase tracking-widest text-foreground/40 mb-3">
-                        {formatDate(issue.sent_at)}
+                    {/* Thumbnail */}
+                    {post.thumbnail_url && (
+                      <div className="relative w-full h-48 overflow-hidden">
+                        <Image
+                          src={post.thumbnail_url}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
                       </div>
-                      <h4 className="text-xl font-black tracking-tight leading-tight text-foreground mb-3 group-hover:text-primary transition-colors flex-1">
-                        {issue.subject}
+                    )}
+
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
+                        {formatDate(post.publish_date || post.created)}
+                      </div>
+                      <h4 className="text-base font-bold text-foreground/90 group-hover:text-foreground transition-colors leading-snug mb-3">
+                        {post.title}
                       </h4>
-                      <div className="mt-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary/80 group-hover:text-primary transition-colors">
-                        Read edition
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform">
-                          <path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                      {post.subtitle && (
+                        <p className="text-sm text-foreground/60 leading-relaxed line-clamp-2 mb-4">
+                          {post.subtitle}
+                        </p>
+                      )}
+                      <div className="mt-auto pt-4 text-sm font-black uppercase tracking-[0.15em] text-primary group-hover:text-primary transition-colors flex items-center gap-2">
+                        Read
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 </ScrollReveal>
               ))}
             </div>
           ) : (
             <ScrollReveal>
               <div className="text-center py-20 border border-white/[0.08] bg-card/[0.2] rounded-[4px]">
-                <h4 className="text-lg font-black text-foreground/80 mb-4">Next edition shipping soon</h4>
+                <h4 className="text-lg font-black text-foreground/80 mb-4">Read past editions on beehiiv</h4>
                 <p className="text-base text-foreground/60 mb-8 max-w-md mx-auto">
-                  Subscribe to get the next system — full build, architecture, and code — the moment it ships.
+                  Every edition ships a deployable system. Outbound machines, AI agents, revenue ops — full build, architecture, and code.
                 </p>
-                <div className="max-w-md mx-auto">
-                  <EmailCapture
-                    source="newsletter-empty"
-                    buttonText="Subscribe Free"
-                    successMessage="Check your inbox."
-                    accentColor="primary"
-                  />
-                </div>
+                <a
+                  href="https://b2bagents.beehiiv.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-press inline-flex items-center gap-3 px-10 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform"
+                >
+                  Browse All Editions
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </a>
               </div>
             </ScrollReveal>
           )}
@@ -182,14 +218,17 @@ export default async function NewsletterPage() {
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
               153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build — every week, free.
             </p>
-            <div className="max-w-md mx-auto">
-              <EmailCapture
-                source="newsletter-footer"
-                buttonText="Subscribe Free"
-                successMessage="Check your inbox."
-                accentColor="primary"
-              />
-            </div>
+            <a
+              href="https://b2bagents.beehiiv.com/subscribe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group"
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                Subscribe Free
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform stroke-current"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </span>
+            </a>
           </ScrollReveal>
         </div>
       </section>

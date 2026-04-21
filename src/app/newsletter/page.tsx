@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { EmailCapture } from "@/components/email-capture";
 
 export const metadata: Metadata = {
   title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
@@ -98,18 +99,14 @@ export default async function NewsletterPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={240}>
-            <a
-              href="https://b2bagents.beehiiv.com/subscribe"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-press group relative inline-flex items-center justify-center px-12 py-5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.02] duration-300"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                Subscribe Free
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </span>
-              <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
-            </a>
+            <div className="max-w-md mx-auto">
+              <EmailCapture
+                source="newsletter-hero"
+                buttonText="Subscribe Free"
+                successMessage="You're in. Check your inbox."
+                accentColor="primary"
+              />
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -218,17 +215,14 @@ export default async function NewsletterPage() {
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
               153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build — every week, free.
             </p>
-            <a
-              href="https://b2bagents.beehiiv.com/subscribe"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                Subscribe Free
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform stroke-current"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </span>
-            </a>
+            <div className="max-w-md mx-auto">
+              <EmailCapture
+                source="newsletter-footer"
+                buttonText="Subscribe Free"
+                successMessage="You're in. Check your inbox."
+                accentColor="primary"
+              />
+            </div>
           </ScrollReveal>
         </div>
       </section>

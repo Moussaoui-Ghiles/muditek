@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
   // Create a migration campaign if it doesn't exist
   const campaigns = await sql`
-    SELECT id FROM campaigns WHERE title = 'beehiiv-migration'
+    SELECT id FROM campaigns WHERE title = 'csv-import'
   `;
 
   let campaignId: string;
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   } else {
     const result = await sql`
       INSERT INTO campaigns (title, post_url, resource_url, keyword, is_active, ttl_days)
-      VALUES ('beehiiv-migration', 'https://beehiiv.com/import', 'https://import', 'import', false, 9999)
+      VALUES ('csv-import', 'https://import', 'https://import', 'import', false, 9999)
       RETURNING id
     `;
     campaignId = result[0].id;

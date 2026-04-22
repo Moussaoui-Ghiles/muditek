@@ -158,7 +158,7 @@ export default function PortalContent({
           </div>
           {issues.length === 0 ? (
             <div className="py-8 border border-dashed border-[#232326] rounded-lg text-center">
-              <p className="text-sm text-[#636366] mb-3">Past editions still live on beehiiv.</p>
+              <p className="text-sm text-[#636366] mb-3">Archive rebuilding. Subscribe for the next edition.</p>
               <Link
                 href="/newsletter"
                 className="inline-block text-sm font-medium text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors"

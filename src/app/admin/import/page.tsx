@@ -131,7 +131,7 @@ export default function ImportPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Import Email List</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Upload a CSV (e.g. a beehiiv export). Needs an <code className="font-mono text-foreground">email</code> column;{" "}
+          Upload a CSV. Needs an <code className="font-mono text-foreground">email</code> column;{" "}
           <code className="font-mono text-foreground">name</code> optional. Imported addresses auto-enroll in the nurture sequence.
         </p>
       </div>

@@ -186,11 +186,11 @@ export default function AboutPage() {
               Founder
             </h2>
             <div className="flex flex-col md:flex-row md:items-start gap-8">
-              <Image src="https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,format=auto,onerror=redirect,quality=80/uploads/user/profile_picture/80b30549-1dbe-4e9f-8701-6a15f0d95db3/thumb_WhatsApp_Image_2025-05-23_at_00.49.13_a69bd58a.jpg" alt="Ghiles Moussaoui" width={96} height={96} className="rounded-full border-2 border-white/[0.1]" unoptimized />
+              <Image src="/images/ghiles.jpg" alt="Ghiles Moussaoui" width={96} height={96} className="rounded-full border-2 border-white/[0.1]" />
               <div>
                 <h3 className="text-2xl font-black text-foreground mb-3">Ghiles Moussaoui</h3>
                 <p className="text-sm text-foreground/70 font-light leading-relaxed max-w-xl mb-4">
-                  I build AI systems that run business operations. 35+ systems in production across telecom, financial services, and B2B SaaS. $3M+ in revenue generated and saved for clients. I built mudiAgent to run my own company first. When clients saw the results, they asked me to deploy it for them. 35,000+ professionals follow what I build on LinkedIn. Every system I ship gets documented in the B2B Agents newsletter (5,300+ subscribers, 40.7% open rate).
+                  I build AI systems that run business operations. 35+ systems in production across telecom, financial services, and B2B SaaS. $3M+ in revenue generated and saved for clients. I built mudiAgent to run my own company first. When clients saw the results, they asked me to deploy it for them. Every system I ship gets documented in the B2B Agents newsletter.
                 </p>
                 <div className="flex items-center gap-4">
                   <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>

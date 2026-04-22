@@ -30,6 +30,7 @@ const isPublicRoute = createRouteMatcher([
   // APIs (public or self-authenticating)
   "/api/submit",
   "/api/subscribe",
+  "/api/account/ensure",
   "/api/admin/(.*)",
   "/api/newsletter/(.*)",
   "/api/checkout",

@@ -42,22 +42,24 @@ function SignUpFormInner() {
       const client = clerk.client;
       if (!client) throw new Error("Clerk not ready");
 
-      try {
-        await client.signUp.create({ emailAddress: email });
-        await client.signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-        setStep("code");
-      } catch (err: unknown) {
-        const clerkErr = (err as { errors?: Array<{ code?: string; longMessage?: string; message?: string }> })?.errors?.[0];
-        if (clerkErr?.code === "form_identifier_exists") {
-          const si = await client.signIn.create({ identifier: email });
-          const factor = si.supportedFirstFactors?.find((f) => f.strategy === "email_code") as { strategy: string; emailAddressId: string } | undefined;
-          if (!factor) throw new Error("Email code sign-in not supported.");
-          await si.prepareFirstFactor({ strategy: "email_code", emailAddressId: factor.emailAddressId });
-          setStep("code");
-        } else {
-          throw err;
-        }
+      const ensureRes = await fetch("/api/account/ensure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!ensureRes.ok) {
+        const body = (await ensureRes.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error || "Could not create account");
       }
+
+      const si = await client.signIn.create({ identifier: email });
+      const factor = si.supportedFirstFactors?.find((f) => f.strategy === "email_code") as
+        | { strategy: string; emailAddressId: string }
+        | undefined;
+      if (!factor) throw new Error("Email code sign-in not supported.");
+      await si.prepareFirstFactor({ strategy: "email_code", emailAddressId: factor.emailAddressId });
+
+      setStep("code");
       setSubmitting(false);
     } catch (err: unknown) {
       const clerkErr = (err as { errors?: Array<{ longMessage?: string; message?: string }> })?.errors?.[0];
@@ -75,27 +77,14 @@ function SignUpFormInner() {
     try {
       const client = clerk.client;
       if (!client) throw new Error("Clerk not ready");
-
-      if (client.signUp.status && client.signUp.status !== "complete") {
-        const res = await client.signUp.attemptEmailAddressVerification({ code });
-        if (res.status === "complete" && res.createdSessionId) {
-          await clerk.setActive({ session: res.createdSessionId });
-          await fetch("/api/account/link", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          }).catch(() => {});
-          window.location.href = redirectUrl;
-          return;
-        }
-        setError(`Unexpected state: ${res.status}`);
-        setSubmitting(false);
-        return;
-      }
-
       const res = await client.signIn.attemptFirstFactor({ strategy: "email_code", code });
       if (res.status === "complete" && res.createdSessionId) {
         await clerk.setActive({ session: res.createdSessionId });
+        fetch("/api/account/link", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }).catch(() => {});
         window.location.href = redirectUrl;
         return;
       }

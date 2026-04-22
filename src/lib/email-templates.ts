@@ -33,6 +33,46 @@ async function logEmail(
 }
 
 /**
+ * Welcome email sent to newsletter-only signups (free account, no Stripe).
+ */
+export async function sendFreeWelcomeEmail(
+  to: string,
+  name: string | null,
+  baseUrl: string
+): Promise<void> {
+  const portalUrl = `${baseUrl}/portal`;
+  const safeName = escapeHtml(name || "there");
+  const subject = "Welcome to Muditek";
+
+  const { data, error } = await getResend().emails.send({
+    from: FROM,
+    to,
+    subject,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">Welcome, ${safeName}.</h2>
+        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
+          You're in. Every edition of the newsletter ships a deployable system — outbound machines, AI agents, revenue ops. Full architecture, code, walkthrough.
+        </p>
+        <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
+          Your free portal has 14 playbooks and the full newsletter archive. One email / code to sign in. No password.
+        </p>
+        <a href="${escapeHtml(portalUrl)}"
+           style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">
+          Open your portal
+        </a>
+        <p style="margin: 24px 0 0; font-size: 14px; color: #666; line-height: 1.5;">
+          Unsubscribe any time from the footer of any email.
+        </p>
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Free welcome email failed: ${error.message}`);
+  await logEmail(to, "free-welcome", subject, data?.id ?? null);
+}
+
+/**
  * Welcome email sent after successful Stripe checkout.
  */
 export async function sendWelcomeEmail(

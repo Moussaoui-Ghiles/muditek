@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -16,32 +15,60 @@ interface ContentItem {
   created_at: string;
 }
 
-const CATS = ["all", "skill", "playbook", "automation", "template"] as const;
+interface NewsletterIssue {
+  slug: string;
+  title: string;
+  sent_at: Date | null;
+}
+
+const PLAYBOOKS: { slug: string; title: string; tag: string }[] = [
+  { slug: "clawchief-blueprint", title: "The Chief of Staff Blueprint", tag: "Blueprint" },
+  { slug: "claude-code-self-evolving", title: "Claude Code: Self-Evolving System", tag: "Guide" },
+  { slug: "openclaw-outbound", title: "The OpenClaw Outbound Playbook", tag: "Playbook" },
+  { slug: "judgment-moat", title: "The Judgment Moat", tag: "Playbook" },
+  { slug: "claude-code-tips", title: "Claude Code 45-Tip Playbook", tag: "Playbook" },
+  { slug: "google-maps-outbound", title: "Google Maps Outbound Playbook", tag: "Playbook" },
+  { slug: "skill-creator-blueprint", title: "The Skill Creator Blueprint", tag: "Playbook" },
+  { slug: "claude-dispatch-guide", title: "Claude Dispatch Setup Guide", tag: "Guide" },
+  { slug: "agentic-sdr-setup-guide", title: "Agentic SDR Setup Guide", tag: "Guide" },
+  { slug: "cowork-setup-guide", title: "Cowork Setup Guide", tag: "Guide" },
+  { slug: "gtm-skills-guide", title: "GTM Skills Guide", tag: "Guide" },
+  { slug: "sequoia-autopilot-playbook", title: "Sequoia Autopilot Playbook", tag: "Playbook" },
+  { slug: "ai-data-agent-guide", title: "AI Data Agent Guide", tag: "Guide" },
+  { slug: "ai-productivity-scorecard", title: "AI Productivity Scorecard", tag: "Tool" },
+];
+
+const CALLS = [
+  { title: "PE Ops Audit", desc: "For PE firms — operational infrastructure review.", href: "/pe-ops" },
+  { title: "Revenue Leak Audit", desc: "For SaaS / B2B — find the $ you're losing on ops gaps.", href: "/revenue-leak-audit" },
+  { title: "mudiAgent Demo", desc: "For telecom — autonomous ops agents.", href: "/mudiagent" },
+];
 
 export default function PortalContent({
-  items,
   displayName,
   email,
-  memberSince,
+  isPaid,
+  paidItems,
+  issues,
   stripeCustomerId,
 }: {
-  items: ContentItem[];
   displayName: string;
   email: string;
-  memberSince: string;
-  stripeCustomerId: string | null;
+  isPaid: boolean;
+  paidItems: ContentItem[];
+  issues: NewsletterIssue[];
+  stripeCustomerId?: string | null;
 }) {
-  const [cat, setCat] = useState<string>("all");
-  const filtered = cat === "all" ? items : items.filter((i) => i.category === cat);
-  const counts: Record<string, number> = {};
-  for (const i of items) counts[i.category] = (counts[i.category] || 0) + 1;
-
   return (
     <div className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec]">
-      {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-[#232326]" style={{ background: "rgba(12,12,14,0.88)" }}>
-        <div className="max-w-[900px] mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
-          <span className="text-sm font-bold tracking-wide">MudiKit</span>
+      <header
+        className="sticky top-0 z-40 backdrop-blur-xl border-b border-[#232326]"
+        style={{ background: "rgba(12,12,14,0.88)" }}
+      >
+        <div className="max-w-[960px] mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
+          <Link href="/" className="text-sm font-bold tracking-wide hover:text-white transition-colors">
+            Muditek
+          </Link>
           <div className="flex items-center gap-4">
             <span className="text-xs text-[#636366] hidden sm:block">{email}</span>
             <UserButton appearance={{ elements: { avatarBox: "w-7 h-7" } }} />
@@ -49,87 +76,149 @@ export default function PortalContent({
         </div>
       </header>
 
-      <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-10">
-        {/* Welcome */}
-        <div className="mb-10">
-          <h1 className="text-2xl font-bold tracking-tight mb-1">{displayName}</h1>
+      <div className="max-w-[960px] mx-auto px-6 sm:px-10 py-12">
+        <div className="mb-12">
+          <h1 className="text-[28px] font-bold tracking-tight mb-1">Welcome, {displayName}.</h1>
           <p className="text-sm text-[#a0a0a6]">
-            {items.length > 0
-              ? `${items.length} items${items.filter((i) => i.is_new).length > 0 ? ` \u00b7 ${items.filter((i) => i.is_new).length} new` : ""}`
-              : "Content is being prepared."}
+            Your free account. Playbooks, newsletter archive, and book a call — anytime.
           </p>
         </div>
 
-        {/* Filter */}
-        {items.length > 0 && (
-          <div className="flex gap-1 mb-8 border-b border-[#232326] overflow-x-auto">
-            {CATS.map((c) => {
-              const n = c === "all" ? items.length : counts[c] || 0;
-              const on = cat === c;
-              return (
-                <button
-                  key={c}
-                  onClick={() => setCat(c)}
-                  className={`px-4 py-2.5 text-sm font-medium capitalize transition-colors cursor-pointer whitespace-nowrap border-b-2 -mb-px ${
-                    on ? "border-[#e8e8ec] text-[#e8e8ec]" : "border-transparent text-[#636366] hover:text-[#a0a0a6]"
-                  }`}
-                >
-                  {c === "all" ? "All" : `${c}s`}
-                  <span className="ml-1.5 text-xs">{n}</span>
-                </button>
-              );
-            })}
-          </div>
+        {isPaid && paidItems.length > 0 && (
+          <section className="mb-14">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-[18px] font-semibold">MudiKit library</h2>
+              <span className="text-xs text-[#636366] font-mono uppercase tracking-wider">Paid</span>
+            </div>
+            <div className="border-t border-[#232326]">
+              {paidItems.map((item) => (
+                <div key={item.id} className="flex items-center gap-4 py-4 border-b border-[#232326] group">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-semibold group-hover:underline">{item.title}</span>
+                      {item.is_new && (
+                        <span className="text-[9px] px-1.5 py-px rounded bg-[#e8e8ec] text-[#0c0c0e] font-black uppercase tracking-wider">
+                          New
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-[#636366] font-mono">
+                      <span className="capitalize">{item.category}</span>
+                      <span>{item.file_type.toUpperCase()}</span>
+                    </div>
+                  </div>
+                  <a
+                    href={item.download_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 text-sm font-medium text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors"
+                  >
+                    Download ↓
+                  </a>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
 
-        {/* Items */}
-        {items.length === 0 ? (
-          <div className="py-24 text-center">
-            <p className="text-lg font-bold mb-2">Content is on the way</p>
-            <p className="text-[#a0a0a6] max-w-sm mx-auto">Your subscription is active. You&apos;ll get an email when the first drop lands.</p>
+        <section className="mb-14">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-[18px] font-semibold">Playbooks &amp; guides</h2>
+            <span className="text-xs text-[#636366] font-mono uppercase tracking-wider">{PLAYBOOKS.length} free</span>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="py-16 text-center">
-            <p className="text-[#a0a0a6]">No {cat}s yet.</p>
-          </div>
-        ) : (
           <div className="border-t border-[#232326]">
-            {filtered.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 py-4 border-b border-[#232326] group">
+            {PLAYBOOKS.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/resources/${p.slug}`}
+                className="flex items-center gap-4 py-3.5 border-b border-[#232326] group"
+              >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-semibold group-hover:underline">{item.title}</span>
-                    {item.is_new && (
-                      <span className="text-[9px] px-1.5 py-px rounded bg-[#e8e8ec] text-[#0c0c0e] font-black uppercase tracking-wider">New</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-[#636366] font-[family-name:var(--font-geist-mono)]">
-                    <span className="capitalize">{item.category}</span>
-                    <span>{item.file_type.toUpperCase()}</span>
-                    <span>{new Date(item.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
-                  </div>
+                  <span className="font-medium text-[15px] group-hover:text-white transition-colors">
+                    {p.title}
+                  </span>
                 </div>
-                <a
-                  href={item.download_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 text-sm font-medium text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors"
-                >
-                  Download &darr;
-                </a>
-              </div>
+                <span className="text-[11px] text-[#636366] font-mono uppercase tracking-wider">
+                  {p.tag}
+                </span>
+                <span className="text-sm text-[#a0a0a6] group-hover:text-[#e8e8ec] transition-colors">
+                  →
+                </span>
+              </Link>
             ))}
           </div>
-        )}
+        </section>
 
-        {/* Footer */}
-        <div className="mt-14 pt-6 border-t border-[#232326] flex items-center gap-6 text-sm text-[#636366]">
+        <section className="mb-14">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-[18px] font-semibold">Newsletter archive</h2>
+            <Link href="/newsletter" className="text-xs text-[#636366] hover:text-[#a0a0a6] font-mono uppercase tracking-wider">
+              All editions →
+            </Link>
+          </div>
+          {issues.length === 0 ? (
+            <div className="py-8 border border-dashed border-[#232326] rounded-lg text-center">
+              <p className="text-sm text-[#636366] mb-3">Past editions still live on beehiiv.</p>
+              <Link
+                href="/newsletter"
+                className="inline-block text-sm font-medium text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors"
+              >
+                Browse archive →
+              </Link>
+            </div>
+          ) : (
+            <div className="border-t border-[#232326]">
+              {issues.map((i) => (
+                <Link
+                  key={i.slug}
+                  href={`/newsletter/${i.slug}`}
+                  className="flex items-center gap-4 py-3.5 border-b border-[#232326] group"
+                >
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-[15px] group-hover:text-white transition-colors">
+                      {i.title}
+                    </span>
+                  </div>
+                  <span className="text-xs text-[#636366] font-mono whitespace-nowrap">
+                    {i.sent_at
+                      ? new Date(i.sent_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                      : ""}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mb-14">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-[18px] font-semibold">Book a call</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {CALLS.map((c) => (
+              <Link
+                key={c.title}
+                href={c.href}
+                className="block p-5 rounded-lg border border-[#232326] hover:border-[#3a3a3e] hover:bg-[#151517] transition-colors group"
+              >
+                <h3 className="font-semibold mb-1.5 group-hover:text-white">{c.title}</h3>
+                <p className="text-[13px] text-[#a0a0a6] leading-relaxed">{c.desc}</p>
+                <span className="inline-block mt-3 text-[11px] font-mono uppercase tracking-wider text-[#636366] group-hover:text-[#a0a0a6]">
+                  Learn more →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <div className="pt-8 border-t border-[#232326] flex items-center gap-6 text-sm text-[#636366]">
           {stripeCustomerId && (
             <Link href="/api/portal/billing" prefetch={false} className="hover:text-[#e8e8ec] transition-colors">
               Manage subscription
             </Link>
           )}
-          <span className="ml-auto">Since {new Date(memberSince).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
+          <Link href="/newsletter" className="hover:text-[#e8e8ec] transition-colors">Newsletter</Link>
+          <Link href="/resources" className="hover:text-[#e8e8ec] transition-colors">Resources</Link>
         </div>
       </div>
     </div>

@@ -7,13 +7,14 @@ import { useClerk } from "@clerk/nextjs";
 
 type Step = "email" | "code";
 
-function SignInFormInner() {
+function SignUpFormInner() {
   const clerk = useClerk();
   const params = useSearchParams();
   const redirectUrl = params.get("redirect_url") || "/portal";
+  const prefilledEmail = params.get("email") || "";
 
   const [step, setStep] = useState<Step>("email");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ function SignInFormInner() {
     if (step === "code") codeRef.current?.focus();
   }, [step]);
 
-  async function sendCode(e: React.FormEvent) {
+  async function startSignUp(e: React.FormEvent) {
     e.preventDefault();
     if (!clerk?.loaded) return;
     setSubmitting(true);
@@ -41,21 +42,26 @@ function SignInFormInner() {
       const client = clerk.client;
       if (!client) throw new Error("Clerk not ready");
 
-      const si = await client.signIn.create({ identifier: email });
-      const factor = si.supportedFirstFactors?.find((f) => f.strategy === "email_code") as
-        | { strategy: string; emailAddressId: string }
-        | undefined;
-      if (!factor) throw new Error("Email code sign-in not supported.");
-      await si.prepareFirstFactor({ strategy: "email_code", emailAddressId: factor.emailAddressId });
-      setStep("code");
+      try {
+        await client.signUp.create({ emailAddress: email });
+        await client.signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        setStep("code");
+      } catch (err: unknown) {
+        const clerkErr = (err as { errors?: Array<{ code?: string; longMessage?: string; message?: string }> })?.errors?.[0];
+        if (clerkErr?.code === "form_identifier_exists") {
+          const si = await client.signIn.create({ identifier: email });
+          const factor = si.supportedFirstFactors?.find((f) => f.strategy === "email_code") as { strategy: string; emailAddressId: string } | undefined;
+          if (!factor) throw new Error("Email code sign-in not supported.");
+          await si.prepareFirstFactor({ strategy: "email_code", emailAddressId: factor.emailAddressId });
+          setStep("code");
+        } else {
+          throw err;
+        }
+      }
       setSubmitting(false);
     } catch (err: unknown) {
-      const clerkErr = (err as { errors?: Array<{ code?: string; longMessage?: string; message?: string }> })?.errors?.[0];
+      const clerkErr = (err as { errors?: Array<{ longMessage?: string; message?: string }> })?.errors?.[0];
       const fallback = (err as Error)?.message;
-      if (clerkErr?.code === "form_identifier_not_found") {
-        window.location.href = `/sign-up?email=${encodeURIComponent(email)}&redirect_url=${encodeURIComponent(redirectUrl)}`;
-        return;
-      }
       setError(clerkErr?.longMessage || clerkErr?.message || fallback || "Could not send code.");
       setSubmitting(false);
     }
@@ -69,29 +75,25 @@ function SignInFormInner() {
     try {
       const client = clerk.client;
       if (!client) throw new Error("Clerk not ready");
-      const res = await client.signIn.attemptFirstFactor({ strategy: "email_code", code });
 
-      if (res.status === "needs_second_factor") {
-        const emailFactor = res.supportedSecondFactors?.find(
-          (f: { strategy: string; emailAddressId?: string }) => f.strategy === "email_code"
-        ) as { strategy: string; emailAddressId?: string } | undefined;
-        if (!emailFactor?.emailAddressId) {
-          setError("2FA configured but no email factor. Contact admin.");
-          setSubmitting(false);
-          return;
-        }
-        await res.prepareSecondFactor({ strategy: "email_code", emailAddressId: emailFactor.emailAddressId });
-        const res2 = await client.signIn.attemptSecondFactor({ strategy: "email_code", code });
-        if (res2.status === "complete" && res2.createdSessionId) {
-          await clerk.setActive({ session: res2.createdSessionId });
+      if (client.signUp.status && client.signUp.status !== "complete") {
+        const res = await client.signUp.attemptEmailAddressVerification({ code });
+        if (res.status === "complete" && res.createdSessionId) {
+          await clerk.setActive({ session: res.createdSessionId });
+          await fetch("/api/account/link", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          }).catch(() => {});
           window.location.href = redirectUrl;
           return;
         }
-        setError(`Unexpected 2FA state: ${res2.status}`);
+        setError(`Unexpected state: ${res.status}`);
         setSubmitting(false);
         return;
       }
 
+      const res = await client.signIn.attemptFirstFactor({ strategy: "email_code", code });
       if (res.status === "complete" && res.createdSessionId) {
         await clerk.setActive({ session: res.createdSessionId });
         window.location.href = redirectUrl;
@@ -107,8 +109,11 @@ function SignInFormInner() {
     }
   }
 
-  const headerTitle = step === "email" ? "Sign in" : "Verify it's you";
-  const headerSub = step === "email" ? "One email. 6-digit code." : `Code sent to ${email}.`;
+  const headerTitle = step === "email" ? "Create your free account" : "Verify it's you";
+  const headerSub =
+    step === "email"
+      ? "One email. 6-digit code. Free portal + newsletter."
+      : `Code sent to ${email}.`;
 
   return (
     <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6">
@@ -125,7 +130,7 @@ function SignInFormInner() {
         </div>
 
         {step === "email" ? (
-          <form onSubmit={sendCode} className="space-y-5">
+          <form onSubmit={startSignUp} className="space-y-5">
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-[13px] font-medium text-[#e8e8ec]">
                 Email
@@ -152,6 +157,10 @@ function SignInFormInner() {
 
             <div id="clerk-captcha" />
 
+            <p className="text-[12px] text-[#636366] leading-relaxed">
+              Creating your account subscribes you to the Muditek newsletter. One email/week. Unsubscribe anytime.
+            </p>
+
             <button
               type="submit"
               disabled={submitting || !email}
@@ -161,8 +170,8 @@ function SignInFormInner() {
             </button>
 
             <p className="text-[13px] text-[#a0a0a6] text-center pt-2">
-              No account?{" "}
-              <Link href="/sign-up" className="text-[#e8e8ec] hover:underline">Create one free</Link>
+              Already have an account?{" "}
+              <Link href="/sign-in" className="text-[#e8e8ec] hover:underline">Sign in</Link>
             </p>
           </form>
         ) : (
@@ -221,10 +230,10 @@ function SignInFormInner() {
   );
 }
 
-export default function SignInForm() {
+export default function SignUpForm() {
   return (
     <Suspense fallback={<main className="min-h-[100dvh] bg-[#0c0c0e]" />}>
-      <SignInFormInner />
+      <SignUpFormInner />
     </Suspense>
   );
 }

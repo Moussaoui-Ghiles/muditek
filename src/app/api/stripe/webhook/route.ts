@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { constructWebhookEvent } from "@/lib/stripe";
 import { getDb } from "@/lib/db";
 import { sendWelcomeEmail } from "@/lib/email-templates";
+import { ensureClerkUserByEmail } from "@/lib/clerk-admin";
 import type Stripe from "stripe";
 
 export async function POST(request: Request) {
@@ -36,19 +37,34 @@ export async function POST(request: Request) {
 
       if (!email) break;
 
-      // Upsert subscriber
+      let clerkUserId: string | null = null;
+      try {
+        clerkUserId = await ensureClerkUserByEmail(email, name);
+      } catch (err) {
+        console.error("stripe webhook: failed to ensure Clerk user", err);
+      }
+
       await sql`
-        INSERT INTO subscribers (email, name, stripe_customer_id, stripe_subscription_id, status)
-        VALUES (${email}, ${name}, ${customerId}, ${subscriptionId}, 'active')
+        INSERT INTO subscribers (email, name, stripe_customer_id, stripe_subscription_id, status, clerk_user_id)
+        VALUES (${email}, ${name}, ${customerId}, ${subscriptionId}, 'active', ${clerkUserId})
         ON CONFLICT (email) DO UPDATE
         SET stripe_customer_id = ${customerId},
             stripe_subscription_id = ${subscriptionId},
             status = 'active',
             name = COALESCE(${name}, subscribers.name),
+            clerk_user_id = COALESCE(${clerkUserId}, subscribers.clerk_user_id),
             cancelled_at = NULL
       `;
 
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://linkingin.vercel.app";
+      if (clerkUserId) {
+        await sql`
+          UPDATE newsletter_subscribers
+          SET clerk_user_id = ${clerkUserId}
+          WHERE email = ${email} AND clerk_user_id IS NULL
+        `;
+      }
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
       await sendWelcomeEmail(email, name || "there", baseUrl);
 
       break;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sendFreeWelcomeEmail } from "@/lib/email-templates";
 
 const VALID_TOPICS = new Set(["ai-agents", "gtm-systems", "solo-operator"]);
 
@@ -10,8 +11,34 @@ function coerceTopics(input: unknown): string[] {
     .filter((v) => VALID_TOPICS.has(v));
 }
 
+type Bucket = { count: number; resetAt: number };
+const buckets = new Map<string, Bucket>();
+const WINDOW_MS = 60_000;
+const MAX_REQUESTS = 8;
+
+function rateLimit(key: string): boolean {
+  const now = Date.now();
+  const bucket = buckets.get(key);
+  if (!bucket || bucket.resetAt < now) {
+    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  if (bucket.count >= MAX_REQUESTS) return false;
+  bucket.count++;
+  return true;
+}
+
 export async function POST(request: Request) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
+    if (!rateLimit(ip)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const email = String(body.email ?? "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -51,6 +78,13 @@ export async function POST(request: Request) {
       INSERT INTO newsletter_subscribers (email, source, topics)
       VALUES (${email}, ${source}, ${finalTopics})
     `;
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+    try {
+      await sendFreeWelcomeEmail(email, null, baseUrl);
+    } catch (err) {
+      console.error("subscribe: welcome email failed", err);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

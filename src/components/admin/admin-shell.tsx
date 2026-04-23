@@ -45,7 +45,7 @@ export function AdminShell({ children, email, method }: Props) {
           <SidebarTrigger className="-ml-1 size-7" />
           <Separator orientation="vertical" className="mr-1 h-3.5 bg-border/60" />
           <nav className="flex items-center gap-1.5 text-[12px]">
-            <span className="text-muted-foreground">MudiKit</span>
+            <span className="text-muted-foreground">Muditek</span>
             <span className="text-muted-foreground">/</span>
             <span className="font-medium text-foreground">{title}</span>
           </nav>

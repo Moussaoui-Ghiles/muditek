@@ -29,9 +29,9 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { slug } = await params;
   const issue = await getIssue(slug);
-  if (!issue) return { title: "Not found — MudiKit" };
+  if (!issue) return { title: "Not found — Muditek" };
   return {
-    title: `${issue.subject} — MudiKit`,
+    title: `${issue.subject} — Muditek Newsletter`,
     description: issue.subject,
     openGraph: {
       title: issue.subject,
@@ -64,7 +64,7 @@ export default async function IssuePage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <section className="max-w-[680px] mx-auto px-6 sm:px-10 py-16">
         <Link href="/newsletter" className="text-xs font-mono uppercase tracking-wider text-[#a0a0a6] hover:text-[#e8e8ec]">
-          ← MudiKit Newsletter
+          ← Muditek Newsletter
         </Link>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mt-6 mb-3">
           {issue.subject}

@@ -25,7 +25,7 @@ export default async function AdminGate({ forbidden }: { forbidden?: boolean }) 
           <div className="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground text-lg font-bold">
             M
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">MudiKit Admin</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Muditek Admin</h1>
           <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
         </div>
 

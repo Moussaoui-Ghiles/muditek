@@ -94,7 +94,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
     <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-2 uppercase">MudiKit</p>
+          <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-2 uppercase">Muditek</p>
           <h1 className="text-2xl font-bold tracking-tight">Email preferences</h1>
           {email && <p className="text-sm text-[#a0a0a6] mt-2">{email}</p>}
         </div>

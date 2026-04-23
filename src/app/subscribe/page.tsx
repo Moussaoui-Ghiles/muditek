@@ -57,7 +57,7 @@ export default function SubscribePage() {
       <div className="w-full max-w-md">
         <div className="mb-10 text-center">
           <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-3 uppercase">
-            MudiKit Newsletter
+            Muditek Newsletter
           </p>
           <h1 className="text-3xl font-bold tracking-tight mb-3">
             The playbook behind $3M+ in B2B.

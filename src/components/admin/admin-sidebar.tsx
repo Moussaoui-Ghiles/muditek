@@ -97,7 +97,7 @@ export function AdminSidebar({ email }: Props) {
           </div>
           <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
             <span className="truncate text-[13px] font-semibold tracking-tight leading-tight">
-              MudiKit
+              Muditek
             </span>
             <span className="truncate text-[10px] text-muted-foreground leading-tight">
               Admin · Production

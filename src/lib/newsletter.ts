@@ -80,7 +80,7 @@ function renderInline(text: string): string {
 export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string; webUrl: string }): string {
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 620px; margin: 0 auto; padding: 40px 20px; background: #fff;">
-      <div style="margin-bottom:24px;font-size:12px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">MudiKit Newsletter</div>
+      <div style="margin-bottom:24px;font-size:12px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Muditek Newsletter</div>
       ${bodyHtml}
       <hr style="border:none;border-top:1px solid #eee;margin:40px 0 20px;" />
       <p style="margin:0;font-size:12px;color:#999;line-height:1.6;">

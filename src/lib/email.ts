@@ -89,7 +89,7 @@ function buildEmailHtml(resourceTitle: string, resourceUrl: string): string {
         Download Resource
       </a>
       <p style="margin: 32px 0 0; font-size: 13px; color: #999;">
-        You're receiving this because you submitted your email on a MudiKit page.
+        You're receiving this because you submitted your email on Muditek.
       </p>
     </div>
   `;

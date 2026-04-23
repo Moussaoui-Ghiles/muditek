@@ -12,6 +12,7 @@ interface ContentItem {
   download_url: string;
   file_type: string;
   is_new: boolean;
+  is_free: boolean;
   created_at: string;
 }
 
@@ -49,10 +50,19 @@ export default async function PortalPage() {
 
   const isPaid = !!paidSub && paidSub.status === "active";
 
+  const freeItems = (await sql`
+    SELECT id, title, slug, description, category, download_url, file_type, is_new, is_free, created_at
+    FROM content_items
+    WHERE is_free = true
+    ORDER BY created_at DESC
+  `) as ContentItem[];
+
   const paidItems = isPaid
     ? ((await sql`
-        SELECT id, title, slug, description, category, download_url, file_type, is_new, created_at
-        FROM content_items ORDER BY created_at DESC
+        SELECT id, title, slug, description, category, download_url, file_type, is_new, is_free, created_at
+        FROM content_items
+        WHERE is_free = false
+        ORDER BY created_at DESC
       `) as ContentItem[])
     : [];
 
@@ -69,6 +79,7 @@ export default async function PortalPage() {
       displayName={user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0]}
       email={email}
       isPaid={isPaid}
+      freeItems={freeItems}
       paidItems={paidItems}
       issues={issues}
       stripeCustomerId={paidSub?.stripe_customer_id as string | null | undefined}

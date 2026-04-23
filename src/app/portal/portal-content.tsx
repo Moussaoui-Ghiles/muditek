@@ -12,6 +12,7 @@ interface ContentItem {
   download_url: string;
   file_type: string;
   is_new: boolean;
+  is_free: boolean;
   created_at: string;
 }
 
@@ -21,33 +22,21 @@ interface NewsletterIssue {
   sent_at: Date | null;
 }
 
-const PLAYBOOKS: { slug: string; title: string; tag: string }[] = [
-  { slug: "clawchief-blueprint", title: "The Chief of Staff Blueprint", tag: "Blueprint" },
-  { slug: "claude-code-self-evolving", title: "Claude Code: Self-Evolving System", tag: "Guide" },
-  { slug: "openclaw-outbound", title: "The OpenClaw Outbound Playbook", tag: "Playbook" },
-  { slug: "judgment-moat", title: "The Judgment Moat", tag: "Playbook" },
-  { slug: "claude-code-tips", title: "Claude Code 45-Tip Playbook", tag: "Playbook" },
-  { slug: "google-maps-outbound", title: "Google Maps Outbound Playbook", tag: "Playbook" },
-  { slug: "skill-creator-blueprint", title: "The Skill Creator Blueprint", tag: "Playbook" },
-  { slug: "claude-dispatch-guide", title: "Claude Dispatch Setup Guide", tag: "Guide" },
-  { slug: "agentic-sdr-setup-guide", title: "Agentic SDR Setup Guide", tag: "Guide" },
-  { slug: "cowork-setup-guide", title: "Cowork Setup Guide", tag: "Guide" },
-  { slug: "gtm-skills-guide", title: "GTM Skills Guide", tag: "Guide" },
-  { slug: "sequoia-autopilot-playbook", title: "Sequoia Autopilot Playbook", tag: "Playbook" },
-  { slug: "ai-data-agent-guide", title: "AI Data Agent Guide", tag: "Guide" },
-  { slug: "ai-productivity-scorecard", title: "AI Productivity Scorecard", tag: "Tool" },
-];
-
 const CALLS = [
   { title: "PE Ops Audit", desc: "For PE firms — operational infrastructure review.", href: "/pe-ops" },
   { title: "Revenue Leak Audit", desc: "For SaaS / B2B — find the $ you're losing on ops gaps.", href: "/revenue-leak-audit" },
   { title: "mudiAgent Demo", desc: "For telecom — autonomous ops agents.", href: "/mudiagent" },
 ];
 
+function isExternalOrPdf(url: string): boolean {
+  return url.startsWith("http") || url.endsWith(".pdf");
+}
+
 export default function PortalContent({
   displayName,
   email,
   isPaid,
+  freeItems,
   paidItems,
   issues,
   stripeCustomerId,
@@ -55,6 +44,7 @@ export default function PortalContent({
   displayName: string;
   email: string;
   isPaid: boolean;
+  freeItems: ContentItem[];
   paidItems: ContentItem[];
   issues: NewsletterIssue[];
   stripeCustomerId?: string | null;
@@ -124,28 +114,44 @@ export default function PortalContent({
         <section className="mb-14">
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-[18px] font-semibold">Playbooks &amp; guides</h2>
-            <span className="text-xs text-[#636366] font-mono uppercase tracking-wider">{PLAYBOOKS.length} free</span>
+            <span className="text-xs text-[#636366] font-mono uppercase tracking-wider">{freeItems.length} free</span>
           </div>
           <div className="border-t border-[#232326]">
-            {PLAYBOOKS.map((p) => (
-              <Link
-                key={p.slug}
-                href={`/resources/${p.slug}`}
-                className="flex items-center gap-4 py-3.5 border-b border-[#232326] group"
-              >
-                <div className="min-w-0 flex-1">
-                  <span className="font-medium text-[15px] group-hover:text-white transition-colors">
-                    {p.title}
+            {freeItems.map((p) => {
+              const external = isExternalOrPdf(p.download_url);
+              const readHref = external ? `/resources/${p.slug}` : p.download_url;
+              return (
+                <Link
+                  key={p.id}
+                  href={readHref}
+                  className="flex items-center gap-4 py-3.5 border-b border-[#232326] group"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-[15px] group-hover:text-white transition-colors truncate">
+                        {p.title}
+                      </span>
+                      {p.is_new && (
+                        <span className="text-[9px] px-1.5 py-px rounded bg-[#e8e8ec] text-[#0c0c0e] font-black uppercase tracking-wider">
+                          New
+                        </span>
+                      )}
+                    </div>
+                    {p.description && (
+                      <span className="block mt-0.5 text-[12px] text-[#636366] truncate">
+                        {p.description}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-[#636366] font-mono uppercase tracking-wider capitalize">
+                    {p.category}
                   </span>
-                </div>
-                <span className="text-[11px] text-[#636366] font-mono uppercase tracking-wider">
-                  {p.tag}
-                </span>
-                <span className="text-sm text-[#a0a0a6] group-hover:text-[#e8e8ec] transition-colors">
-                  →
-                </span>
-              </Link>
-            ))}
+                  <span className="text-sm text-[#a0a0a6] group-hover:text-[#e8e8ec] transition-colors">
+                    →
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </section>
 

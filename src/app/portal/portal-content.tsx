@@ -17,7 +17,7 @@ interface ContentItem {
 
 interface NewsletterIssue {
   slug: string;
-  title: string;
+  subject: string;
   sent_at: Date | null;
 }
 
@@ -176,7 +176,7 @@ export default function PortalContent({
                 >
                   <div className="min-w-0 flex-1">
                     <span className="font-medium text-[15px] group-hover:text-white transition-colors">
-                      {i.title}
+                      {i.subject}
                     </span>
                   </div>
                   <span className="text-xs text-[#636366] font-mono whitespace-nowrap">

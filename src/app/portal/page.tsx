@@ -17,7 +17,7 @@ interface ContentItem {
 
 interface NewsletterIssue {
   slug: string;
-  title: string;
+  subject: string;
   sent_at: Date | null;
 }
 
@@ -57,7 +57,7 @@ export default async function PortalPage() {
     : [];
 
   const issues = (await sql`
-    SELECT slug, title, sent_at
+    SELECT slug, subject, sent_at
     FROM newsletter_issues
     WHERE status = 'sent' AND slug IS NOT NULL
     ORDER BY sent_at DESC NULLS LAST

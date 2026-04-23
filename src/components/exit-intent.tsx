@@ -38,9 +38,24 @@ const DEFAULT_CONFIG = {
   accent: "primary" as const,
 };
 
+const SUPPRESSED_PATHS = [
+  "/sign-in",
+  "/sign-up",
+  "/portal",
+  "/admin",
+  "/welcome",
+  "/preferences",
+  "/buy",
+];
+
+function isSuppressed(pathname: string): boolean {
+  return SUPPRESSED_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
+
 export function ExitIntent() {
   const [visible, setVisible] = useState(false);
   const pathname = usePathname();
+  const suppressed = isSuppressed(pathname);
 
   const showPopup = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -50,12 +65,12 @@ export function ExitIntent() {
   }, []);
 
   useEffect(() => {
-    // Desktop: mouse leave
+    if (suppressed) return;
+
     function handleMouseLeave(e: MouseEvent) {
       if (e.clientY <= 0) showPopup();
     }
 
-    // Mobile fallback: 60s timeout
     const timeout = setTimeout(showPopup, 60000);
 
     document.addEventListener("mouseout", handleMouseLeave);
@@ -63,14 +78,14 @@ export function ExitIntent() {
       document.removeEventListener("mouseout", handleMouseLeave);
       clearTimeout(timeout);
     };
-  }, [showPopup]);
+  }, [showPopup, suppressed]);
 
   // Reset on navigation
   useEffect(() => {
     setVisible(false);
   }, [pathname]);
 
-  if (!visible) return null;
+  if (!visible || suppressed) return null;
 
   const config = PAGE_CONFIG[pathname] || DEFAULT_CONFIG;
 

@@ -1,6 +1,13 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
+const SUPPRESSED = ["/sign-in", "/sign-up", "/portal", "/admin", "/welcome", "/preferences", "/buy"];
+
 export function WhatsAppBubble() {
+  const pathname = usePathname();
+  if (SUPPRESSED.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
+
   const waUrl = "https://wa.me/491631134833?text=" + encodeURIComponent("Hi, I'd like to learn more about Muditek's services.");
 
   return (

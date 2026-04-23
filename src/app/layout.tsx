@@ -47,7 +47,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      localization={{
+        signIn: {
+          start: {
+            title: "Sign in to Muditek",
+            subtitle: "Welcome back. Access your portal, playbooks, and archive.",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Create your free Muditek account",
+            subtitle: "One email. Free portal + newsletter archive. Unsubscribe anytime.",
+          },
+        },
+      }}
+    >
       <html
         lang="en"
         className={`scroll-smooth ${inter.variable} ${geist.variable} ${geistMono.variable}`}

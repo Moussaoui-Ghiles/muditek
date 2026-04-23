@@ -27,14 +27,6 @@ export default function SignUpForm() {
           Free account. 14 playbooks + the newsletter archive inside. Creating an account subscribes you to the newsletter — one email/week, unsubscribe anytime.
         </p>
         <SignUp
-          localization={{
-            signUp: {
-              start: {
-                title: "Create your free Muditek account",
-                subtitle: "One email. Free portal + newsletter. Unsubscribe anytime.",
-              },
-            },
-          }}
           appearance={{
             baseTheme: dark,
             variables: {

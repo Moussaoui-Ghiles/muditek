@@ -17,13 +17,18 @@ export default function SignUpForm() {
 
   return (
     <AuthShell variant="sign-up">
+      <div className="mb-6">
+        <h1 className="text-[24px] font-semibold tracking-[-0.01em] text-white">Create your free Muditek account</h1>
+        <p className="mt-1.5 text-[13px] text-white/55">One email. Free portal + newsletter archive. Unsubscribe anytime.</p>
+      </div>
       <SignUp
         appearance={{
           elements: {
             rootBox: "w-full",
             card: "bg-[#101014] border border-white/[0.06] shadow-none rounded-[10px] p-8 w-full",
-            headerTitle: "text-[22px] font-semibold tracking-tight text-white",
-            headerSubtitle: "text-[13px] text-white/60",
+            header: "hidden",
+            headerTitle: "hidden",
+            headerSubtitle: "hidden",
             socialButtonsBlockButton:
               "border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] rounded-[6px] h-11 text-[14px] font-medium text-white",
             socialButtonsBlockButtonText: "text-[14px] font-medium text-white",

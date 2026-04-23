@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Muditek home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - generic [ref=e7]: MUDITEK
+      - generic [ref=e8]:
+        - generic [ref=e9]: Weekly drops
+        - heading "Ops systems shipped to 5,365 operators every week." [level=1] [ref=e11]
+        - paragraph [ref=e12]: Create a free account to access 14 deployable playbooks, the full newsletter archive, and book a call with a human.
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - generic [ref=e15]: 5,365
+            - generic [ref=e16]: Operators
+          - generic [ref=e17]:
+            - generic [ref=e18]: "29"
+            - generic [ref=e19]: Editions
+          - generic [ref=e20]:
+            - generic [ref=e21]: "14"
+            - generic [ref=e22]: Playbooks
+        - generic [ref=e23]:
+          - generic [ref=e24]: Latest drop
+          - paragraph [ref=e25]: "\"The only automation use case that pays you back.\""
+      - generic [ref=e26]:
+        - link "← muditek.com" [ref=e27] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e28]: ·
+        - link "Newsletter" [ref=e29] [cursor=pointer]:
+          - /url: /newsletter
+        - generic [ref=e30]: ·
+        - link "Resources" [ref=e31] [cursor=pointer]:
+          - /url: /resources
+    - main [ref=e32]
+  - link "Chat on WhatsApp" [ref=e34] [cursor=pointer]:
+    - /url: https://wa.me/491631134833?text=Hi%2C%20I'd%20like%20to%20learn%20more%20about%20Muditek's%20services.
+    - img [ref=e37]
+  - alert [ref=e39]

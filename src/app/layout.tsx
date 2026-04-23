@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/next";
 import { WhatsAppBubble } from "@/components/whatsapp-bubble";
 import { ExitIntent } from "@/components/exit-intent";
@@ -48,6 +49,21 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        logoImageUrl: "/icon.svg",
+        variables: {
+          colorPrimary: "#e8e8ec",
+          colorBackground: "#0a0a0c",
+          colorInputBackground: "#151517",
+          colorInputText: "#e8e8ec",
+          colorText: "#e8e8ec",
+          colorTextSecondary: "#a0a0a6",
+          colorDanger: "#f87171",
+          borderRadius: "6px",
+          fontFamily: "var(--font-geist), system-ui, sans-serif",
+        },
+      }}
       localization={{
         signIn: {
           start: {

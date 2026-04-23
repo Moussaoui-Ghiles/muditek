@@ -12,6 +12,14 @@ export default function SignInForm() {
           <span className="text-sm font-semibold tracking-tight">Muditek</span>
         </div>
         <SignIn
+          localization={{
+            signIn: {
+              start: {
+                title: "Sign in to Muditek",
+                subtitle: "Welcome back. Access your portal, playbooks, and archive.",
+              },
+            },
+          }}
           appearance={{
             baseTheme: dark,
             variables: {

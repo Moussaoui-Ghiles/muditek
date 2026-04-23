@@ -1,7 +1,8 @@
 import SignInForm from "./sign-in-form";
 
 export const metadata = {
-  title: "Admin Console — MudiKit",
+  title: "Sign in — Muditek",
+  description: "Sign in to your Muditek portal.",
 };
 
 export default function SignInPage() {

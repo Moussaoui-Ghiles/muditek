@@ -87,11 +87,6 @@ export function Navbar() {
             Resources
           </Link>
 
-          {isLoaded && !isSignedIn && (
-            <Link href="/sign-in?redirect_url=/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-              Sign in
-            </Link>
-          )}
           {isLoaded && isSignedIn && (
             <>
               <Link href="/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
@@ -107,7 +102,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop CTA + user */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           {isLoaded && isSignedIn && (
             <UserButton
               appearance={{
@@ -117,11 +112,27 @@ export function Navbar() {
               }}
             />
           )}
+          {isLoaded && !isSignedIn && (
+            <Link
+              href="/sign-in?redirect_url=/portal"
+              className="px-4 py-2.5 text-sm uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground transition-colors font-bold"
+            >
+              Sign in
+            </Link>
+          )}
+          {isLoaded && !isSignedIn && (
+            <Link
+              href="/sign-up"
+              className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-primary text-background hover:scale-[1.03] transition-transform btn-press"
+            >
+              Join Free
+            </Link>
+          )}
           <a
             href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.2em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+            className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
           >
             Book a Call
           </a>
@@ -209,15 +220,26 @@ export function Navbar() {
           </Link>
 
           {isLoaded && !isSignedIn && (
-            <Link
-              href="/sign-in?redirect_url=/portal"
-              className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-              }`}
-              style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
-            >
-              Sign in
-            </Link>
+            <>
+              <Link
+                href="/sign-up"
+                className={`text-2xl font-black uppercase tracking-[0.05em] text-primary hover:text-primary/80 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+              >
+                Join Free
+              </Link>
+              <Link
+                href="/sign-in?redirect_url=/portal"
+                className={`text-xl font-bold uppercase tracking-[0.05em] text-foreground/60 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: mobileOpen ? "420ms" : "0ms" }}
+              >
+                Sign in
+              </Link>
+            </>
           )}
           {isLoaded && isSignedIn && (
             <>

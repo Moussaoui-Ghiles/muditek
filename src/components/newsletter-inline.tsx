@@ -37,8 +37,7 @@ export function NewsletterInline({
           <p className="text-sm text-foreground/60 font-light leading-relaxed mb-8 max-w-lg mx-auto">
             Last edition: an outbound system that books 153 calls for
             $1,200/month. The one before: an AI agent that writes proposals
-            in 12 minutes. You get the full build. 5,300+ operators
-            already do.
+            in 12 minutes. You get the full build, every week.
           </p>
 
           <EmailCapture

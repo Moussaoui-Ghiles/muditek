@@ -1,14 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const STATS = [
-  { label: "Operators", value: "5,365" },
-  { label: "Editions", value: "29" },
-  { label: "Playbooks", value: "14" },
-];
-
-const LATEST_DROP = "The only automation use case that pays you back.";
-
 export function AuthBrandPanel() {
   return (
     <aside className="relative hidden md:flex flex-col justify-between overflow-hidden border-r border-white/[0.05] bg-[#08080a] p-10 lg:p-14 min-h-[100dvh]">
@@ -45,26 +37,12 @@ export function AuthBrandPanel() {
           Weekly drops
         </div>
         <h1 className="text-[clamp(2.2rem,4vw,3.2rem)] font-black leading-[1.02] tracking-[-0.03em] text-white">
-          Ops systems shipped to{" "}
-          <span className="italic font-medium text-white/70">5,365 operators</span> every week.
+          One deployable system.{" "}
+          <span className="italic font-medium text-white/70">Every week.</span>
         </h1>
         <p className="mt-6 text-[15px] leading-relaxed text-white/55 max-w-[400px]">
-          Create a free account to access 14 deployable playbooks, the full newsletter archive, and book a call with a human.
+          Create a free account to access the playbooks library, the newsletter archive, and book a call with a human.
         </p>
-
-        <div className="mt-10 grid grid-cols-3 gap-px rounded-[6px] overflow-hidden border border-white/[0.06] bg-white/[0.05]">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-[#08080a] p-4">
-              <div className="text-2xl lg:text-3xl font-black tracking-tight text-white">{s.value}</div>
-              <div className="mt-1 text-[10px] uppercase tracking-[0.22em] font-bold text-white/40">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 border-l-2 border-white/10 pl-4">
-          <div className="text-[10px] uppercase tracking-[0.22em] font-black text-white/40 mb-1.5">Latest drop</div>
-          <p className="text-[13px] text-white/70 leading-snug italic">&quot;{LATEST_DROP}&quot;</p>
-        </div>
       </div>
 
       <div className="relative z-10 flex items-center gap-4 text-[11px] text-white/40 font-mono uppercase tracking-[0.2em]">

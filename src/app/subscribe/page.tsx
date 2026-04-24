@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { Logo } from "@/components/logo/logo";
 
 const TOPICS = [
   { value: "ai-agents", label: "AI agents for enterprise" },
@@ -41,7 +43,12 @@ export default function SubscribePage() {
 
   if (done) {
     return (
-      <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6">
+      <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex flex-col items-center justify-center px-6">
+        <div className="absolute top-8 left-8">
+          <Link href="/" aria-label="Muditek home">
+            <Logo variant="mark+text" size={24} />
+          </Link>
+        </div>
         <div className="max-w-md text-center">
           <h1 className="text-3xl font-bold mb-4">You&apos;re in.</h1>
           <p className="text-[#a0a0a6]">
@@ -53,7 +60,12 @@ export default function SubscribePage() {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6 py-16">
+    <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex flex-col items-center justify-center px-6 py-16">
+      <div className="absolute top-8 left-8">
+        <Link href="/" aria-label="Muditek home">
+          <Logo variant="mark+text" size={24} />
+        </Link>
+      </div>
       <div className="w-full max-w-md">
         <div className="mb-10 text-center">
           <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-3 uppercase">
@@ -79,7 +91,7 @@ export default function SubscribePage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="w-full px-4 py-3 bg-[#151517] border border-[#232326] rounded-lg text-[#e8e8ec] placeholder:text-[#636366] focus:outline-none focus:border-[#e8e8ec] transition-colors"
+              className="w-full px-4 py-3 bg-[#151517] border border-white/[0.06] rounded-lg text-[#e8e8ec] placeholder:text-[#636366] focus:outline-none focus:border-[#e8e8ec] transition-colors"
             />
           </div>
 
@@ -89,7 +101,7 @@ export default function SubscribePage() {
               {TOPICS.map((t) => (
                 <label
                   key={t.value}
-                  className="flex items-center gap-3 p-3 bg-[#151517] border border-[#232326] rounded-lg cursor-pointer hover:border-[#3a3a3e] transition-colors"
+                  className="flex items-center gap-3 p-3 bg-[#151517] border border-white/[0.06] rounded-lg cursor-pointer hover:border-[#3a3a3e] transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -108,9 +120,9 @@ export default function SubscribePage() {
           <button
             type="submit"
             disabled={submitting || !email || topics.length === 0}
-            className="w-full px-6 py-3.5 bg-[#e8e8ec] text-[#0c0c0e] font-bold rounded-lg hover:bg-white active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full px-6 py-3.5 bg-[#e8e8ec] text-[#0a0a0c] font-bold rounded-lg hover:bg-white active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
           >
-            {submitting ? "Subscribing…" : "Subscribe — free"}
+            {submitting ? "Subscribing…" : "Get the newsletter"}
           </button>
 
           <p className="text-xs text-[#636366] text-center">

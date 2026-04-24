@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SignOutButton } from "@clerk/nextjs";
+import { Logo } from "@/components/logo/logo";
 import {
   LayoutDashboard,
   Users,
@@ -91,8 +92,8 @@ export function AdminSidebar({ email }: Props) {
     <Sidebar collapsible="icon" className="border-r border-border/60">
       <SidebarHeader>
         <div className="flex h-12 items-center gap-2.5 px-2">
-          <div className="relative flex size-7 items-center justify-center rounded-[7px] bg-foreground text-background text-[13px] font-bold tracking-tight">
-            M
+          <div className="relative flex size-7 items-center justify-center">
+            <Logo variant="mark" size={26} />
             <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-[var(--color-live)] shadow-[0_0_8px_var(--color-live)]" />
           </div>
           <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
@@ -100,7 +101,7 @@ export function AdminSidebar({ email }: Props) {
               Muditek
             </span>
             <span className="truncate text-[10px] text-muted-foreground leading-tight">
-              Admin · Production
+              Admin · Live
             </span>
           </div>
         </div>

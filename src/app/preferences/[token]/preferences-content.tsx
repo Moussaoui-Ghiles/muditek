@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Logo } from "@/components/logo/logo";
 
 const TOPICS = [
   { value: "ai-agents", label: "AI agents for enterprise" },
@@ -81,7 +83,12 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
 
   if (notFound) {
     return (
-      <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6">
+      <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex items-center justify-center px-6">
+        <div className="absolute top-8 left-8">
+          <Link href="/" aria-label="Muditek home">
+            <Logo variant="mark+text" size={24} />
+          </Link>
+        </div>
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-3">Preferences not found</h1>
           <p className="text-[#a0a0a6]">This link may be invalid or expired.</p>
@@ -91,16 +98,20 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec] flex items-center justify-center px-6 py-16">
+    <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex items-center justify-center px-6 py-16">
+      <div className="absolute top-8 left-8">
+        <Link href="/" aria-label="Muditek home">
+          <Logo variant="mark+text" size={24} />
+        </Link>
+      </div>
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-2 uppercase">Muditek</p>
           <h1 className="text-2xl font-bold tracking-tight">Email preferences</h1>
           {email && <p className="text-sm text-[#a0a0a6] mt-2">{email}</p>}
         </div>
 
         {unsubscribed && (
-          <div className="mb-6 p-4 bg-[#151517] border border-[#232326] rounded-lg text-sm">
+          <div className="mb-6 p-4 bg-[#151517] border border-white/[0.06] rounded-lg text-sm">
             You&apos;ve been unsubscribed. You can re-subscribe below anytime.
           </div>
         )}
@@ -108,7 +119,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
         {!loaded ? (
           <p className="text-sm text-[#a0a0a6]">Loading…</p>
         ) : status === "unsub" ? (
-          <div className="p-6 bg-[#151517] border border-[#232326] rounded-lg">
+          <div className="p-6 bg-[#151517] border border-white/[0.06] rounded-lg">
             <p className="text-sm mb-4">You are currently unsubscribed.</p>
             <button
               onClick={async () => {
@@ -119,7 +130,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                 });
                 if (res.ok) { setStatus("active"); setMsg("Resubscribed"); setTopics(TOPICS.map((t) => t.value)); }
               }}
-              className="px-5 py-2.5 bg-[#e8e8ec] text-[#0c0c0e] font-medium rounded-lg hover:bg-white text-sm"
+              className="px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white text-sm"
             >
               Resubscribe
             </button>
@@ -132,7 +143,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                 {TOPICS.map((t) => (
                   <label
                     key={t.value}
-                    className="flex items-center gap-3 p-3 bg-[#151517] border border-[#232326] rounded-lg cursor-pointer hover:border-[#3a3a3e]"
+                    className="flex items-center gap-3 p-3 bg-[#151517] border border-white/[0.06] rounded-lg cursor-pointer hover:border-[#3a3a3e]"
                   >
                     <input
                       type="checkbox"
@@ -152,14 +163,14 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
               <button
                 onClick={save}
                 disabled={saving || topics.length === 0}
-                className="flex-1 px-5 py-2.5 bg-[#e8e8ec] text-[#0c0c0e] font-medium rounded-lg hover:bg-white disabled:opacity-50"
+                className="flex-1 px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white disabled:opacity-50"
               >
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
                 onClick={unsub}
                 disabled={unsubbing}
-                className="px-5 py-2.5 border border-[#232326] text-[#a0a0a6] font-medium rounded-lg hover:border-[#3a3a3e] hover:text-[#e8e8ec] text-sm"
+                className="px-5 py-2.5 border border-white/[0.06] text-[#a0a0a6] font-medium rounded-lg hover:border-[#3a3a3e] hover:text-[#e8e8ec] text-sm"
               >
                 {unsubbing ? "…" : "Unsubscribe"}
               </button>

@@ -2,6 +2,7 @@
 
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { Logo } from "@/components/logo/logo";
 
 interface ContentItem {
   id: string;
@@ -68,8 +69,7 @@ export default function PortalContent({
       >
         <div className="max-w-[1200px] mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <div className="w-6 h-6 rounded-sm bg-[#e8e8ec] text-[#0a0a0c] text-[11px] font-black flex items-center justify-center">M</div>
-            <span className="text-sm font-bold tracking-wide">Muditek</span>
+            <Logo variant="mark+text" size={22} textClassName="text-[12px] font-black tracking-[0.2em] uppercase text-white" />
             <span className="text-[10px] px-1.5 py-0.5 rounded-sm font-mono uppercase tracking-wider bg-white/[0.04] text-foreground/60 border border-white/[0.08] ml-1">Portal</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -91,7 +91,7 @@ export default function PortalContent({
           <div className="flex items-center gap-3 mb-5">
             <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] font-black bg-primary/[0.1] text-primary border border-primary/20">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              {isPaid ? "MudiKit Active" : "Free Account"}
+              {isPaid ? "Pro" : "Free Account"}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.04em] leading-[1.05] text-balance">
@@ -107,7 +107,7 @@ export default function PortalContent({
               <div className="text-[11px] uppercase tracking-[0.2em] font-bold text-foreground/50 mt-1">Playbooks</div>
             </div>
             <div className="bg-[#0a0a0c] p-5">
-              <div className="text-2xl md:text-3xl font-black tracking-tight">{issues.length}+</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{issues.length}</div>
               <div className="text-[11px] uppercase tracking-[0.2em] font-bold text-foreground/50 mt-1">Editions</div>
             </div>
             <div className="bg-[#0a0a0c] p-5">
@@ -209,7 +209,7 @@ export default function PortalContent({
           </div>
           {issues.length === 0 ? (
             <div className="py-12 border border-dashed border-white/[0.08] rounded-[6px] text-center">
-              <p className="text-sm text-foreground/50 mb-3">Archive rebuilding. Subscribe for the next edition.</p>
+              <p className="text-sm text-foreground/50 mb-3">Next edition drops weekly.</p>
               <Link href="/newsletter" className="inline-block text-sm font-semibold text-primary hover:underline">Browse archive →</Link>
             </div>
           ) : (

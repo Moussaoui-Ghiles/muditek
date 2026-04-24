@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Logo } from "@/components/logo/logo";
+import Link from "next/link";
 
 export default function BuyPage() {
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function BuyPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#0c0c0e] text-[#e8e8ec]">
+    <div className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec]">
 
       {/* ── HERO ── */}
       <section className="px-6 sm:px-10 pt-24 sm:pt-40 pb-32 max-w-[900px] mx-auto">
@@ -43,16 +45,16 @@ export default function BuyPage() {
           <button
             onClick={go}
             disabled={loading}
-            className="px-8 py-4 bg-[#e8e8ec] text-[#0c0c0e] font-bold text-base rounded-lg hover:bg-white active:scale-[0.98] transition-all duration-150 disabled:opacity-50 cursor-pointer"
+            className="px-8 py-4 bg-[#e8e8ec] text-[#0a0a0c] font-bold text-base rounded-lg hover:bg-white active:scale-[0.98] transition-all duration-150 disabled:opacity-50 cursor-pointer"
           >
-            {loading ? "Loading..." : "Get the Kit"}
+            {loading ? "Loading..." : "Unlock the kit"}
           </button>
           <span className="text-sm text-[#a0a0a6] pl-1">$47/month &middot; cancel anytime</span>
         </div>
       </section>
 
       {/* ── NUMBERS ── */}
-      <section className="border-t border-[#232326]">
+      <section className="border-t border-white/[0.06]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-16 grid grid-cols-2 sm:grid-cols-4 gap-8">
           <N v="35K+" l="Followers" />
           <N v="35+" l="Systems deployed" />
@@ -62,12 +64,12 @@ export default function BuyPage() {
       </section>
 
       {/* ── WHAT'S INSIDE ── */}
-      <section className="border-t border-[#232326]">
+      <section className="border-t border-white/[0.06]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-24">
           <h2 className="text-3xl font-bold tracking-tight mb-4">What&apos;s inside</h2>
           <p className="text-[#a0a0a6] mb-14 max-w-[500px]">Everything I use to run outreach, content, and lead gen. Nothing held back.</p>
 
-          <div className="space-y-0 border-t border-[#232326]">
+          <div className="space-y-0 border-t border-white/[0.06]">
             <Row n="01" title="Operator Skills" detail="15+" desc="Outreach, cold email, content writing, lead gen, inbox SDR, offer creation, scraping." />
             <Row n="02" title="Playbooks" detail="6" desc="Google Maps outbound. OpenClaw. Agentic SDR. Claude Code tips. Step by step." />
             <Row n="03" title="Vault Template" detail="1" desc="Folder structure, CLAUDE.md files, decision frameworks, pipeline tracker." />
@@ -79,7 +81,7 @@ export default function BuyPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="border-t border-[#232326]">
+      <section className="border-t border-white/[0.06]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-24">
           <h2 className="text-3xl font-bold tracking-tight mb-14">How it works</h2>
 
@@ -104,7 +106,7 @@ export default function BuyPage() {
       </section>
 
       {/* ── FOR / NOT FOR ── */}
-      <section className="border-t border-[#232326]">
+      <section className="border-t border-white/[0.06]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-24 grid sm:grid-cols-2 gap-16">
           <div>
             <h3 className="text-lg font-bold mb-6">For you if</h3>
@@ -128,7 +130,7 @@ export default function BuyPage() {
       </section>
 
       {/* ── PRICING ── */}
-      <section className="border-t border-[#232326]">
+      <section className="border-t border-white/[0.06]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-24">
           <div className="max-w-[480px]">
             <div className="flex items-baseline gap-2 mb-2">
@@ -143,12 +145,12 @@ export default function BuyPage() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3.5 bg-[#151517] border border-[#232326] rounded-lg text-[#e8e8ec] placeholder:text-[#636366] focus:outline-none focus:border-[#e8e8ec] transition-colors"
+                className="flex-1 px-4 py-3.5 bg-[#151517] border border-white/[0.06] rounded-lg text-[#e8e8ec] placeholder:text-[#636366] focus:outline-none focus:border-[#e8e8ec] transition-colors"
               />
               <button
                 onClick={go}
                 disabled={loading}
-                className="px-8 py-3.5 bg-[#e8e8ec] text-[#0c0c0e] font-bold rounded-lg hover:bg-white active:scale-[0.98] transition-all duration-150 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+                className="px-8 py-3.5 bg-[#e8e8ec] text-[#0a0a0c] font-bold rounded-lg hover:bg-white active:scale-[0.98] transition-all duration-150 disabled:opacity-50 cursor-pointer whitespace-nowrap"
               >
                 {loading ? "..." : "Subscribe"}
               </button>
@@ -159,9 +161,11 @@ export default function BuyPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-[#232326] py-8 px-6 sm:px-10">
-        <div className="max-w-[900px] mx-auto flex flex-col sm:flex-row justify-between gap-4 text-sm text-[#636366]">
-          <span>Ghiles Moussaoui &middot; Muditek</span>
+      <footer className="border-t border-white/[0.06] py-8 px-6 sm:px-10">
+        <div className="max-w-[900px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-[#636366]">
+          <Link href="/" aria-label="Muditek home" className="opacity-70 hover:opacity-100 transition-opacity">
+            <Logo variant="mark+text" size={22} textClassName="text-[11px] font-black tracking-[0.2em] uppercase text-[#a0a0a6]" />
+          </Link>
           <div className="flex gap-6">
             <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="hover:text-[#e8e8ec] transition-colors">LinkedIn</a>
             <span>ghiles@muditek.com</span>
@@ -183,7 +187,7 @@ function N({ v, l }: { v: string; l: string }) {
 
 function Row({ n, title, detail, desc }: { n: string; title: string; detail: string; desc: string }) {
   return (
-    <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_200px_80px_1fr] items-baseline gap-x-4 py-5 border-b border-[#232326]">
+    <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_200px_80px_1fr] items-baseline gap-x-4 py-5 border-b border-white/[0.06]">
       <span className="text-sm font-[family-name:var(--font-geist-mono)] text-[#636366]">{n}</span>
       <span className="font-semibold">{title}</span>
       <span className="text-sm font-[family-name:var(--font-geist-mono)] text-[#a0a0a6] hidden sm:block">{detail}</span>

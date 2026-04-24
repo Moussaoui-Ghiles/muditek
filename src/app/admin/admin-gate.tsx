@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { SignOutButton } from "@clerk/nextjs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo/logo";
 
 export default async function AdminGate({ forbidden }: { forbidden?: boolean }) {
   const { userId } = await auth();
@@ -22,8 +23,8 @@ export default async function AdminGate({ forbidden }: { forbidden?: boolean }) 
     <main className="min-h-[100dvh] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground text-lg font-bold">
-            M
+          <div className="mx-auto mb-4 flex size-10 items-center justify-center">
+            <Logo variant="mark" size={40} />
           </div>
           <h1 className="text-xl font-semibold tracking-tight">Muditek Admin</h1>
           <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>

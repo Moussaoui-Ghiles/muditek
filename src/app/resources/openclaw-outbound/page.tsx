@@ -158,22 +158,41 @@ const BOOKING_URL =
 /* ─── Page ─── */
 
 export default function OpenClawOutboundPage() {
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline:
-      "The OpenClaw Outbound Playbook — Full Setup, Daily Ops & Infrastructure",
-    description:
-      "300K cold emails/month. 153 calls booked. $1,200 total cost. The complete autonomous outbound system.",
-    author: {
-      "@type": "Person",
-      name: "Ghiles Moussaoui",
-      url: "https://muditek.com/about",
+  const url = "https://muditek.com/resources/openclaw-outbound";
+  const schemaData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline:
+        "The OpenClaw Outbound Playbook — Full Setup, Daily Ops & Infrastructure",
+      description:
+        "300K cold emails/month. 153 calls booked. $1,200 total cost. The complete autonomous outbound system.",
+      author: {
+        "@type": "Person",
+        "@id": "https://muditek.com/#ghiles",
+        name: "Ghiles Moussaoui",
+        url: "https://muditek.com/about",
+      },
+      publisher: { "@id": "https://muditek.com/#organization" },
+      datePublished: "2026-03-27",
+      dateModified: "2026-05-03",
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      url,
+      isPartOf: { "@id": "https://muditek.com/#website" },
+      image: "https://muditek.com/images/ghiles.jpg",
+      inLanguage: "en",
+      articleSection: "Playbook",
     },
-    publisher: { "@type": "Organization", name: "Muditek" },
-    datePublished: "2026-03-27",
-    mainEntityOfPage: "https://muditek.com/resources/openclaw-outbound",
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
+        { "@type": "ListItem", position: 2, name: "Resources", item: "https://muditek.com/resources" },
+        { "@type": "ListItem", position: 3, name: "The OpenClaw Outbound Playbook", item: url },
+      ],
+    },
+  ];
 
   return (
     <>

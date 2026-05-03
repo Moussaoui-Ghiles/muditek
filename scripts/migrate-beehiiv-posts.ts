@@ -57,6 +57,30 @@ async function fetchAll(): Promise<BeehiivPost[]> {
   return out;
 }
 
+function extractTldr(html: string | null): string | null {
+  if (!html) return null;
+  const matches = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+  for (const m of matches) {
+    const text = m[1]
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!text) continue;
+    if (text.length < 60) continue;
+    if (/[{}]/.test(text)) continue;
+    if (/^Ghiles Moussaoui\b/i.test(text)) continue;
+    if (/^(hey|hi|hello)[,!\s]/i.test(text)) continue;
+    return text.length > 220 ? text.slice(0, 217).trimEnd() + "…" : text;
+  }
+  return null;
+}
+
 async function main() {
   const sql = neon(DB_URL!);
   const posts = await fetchAll();
@@ -68,6 +92,7 @@ async function main() {
   for (const p of posts) {
     const html = p.content?.free?.web ?? p.content?.free?.email ?? null;
     const sentAt = p.publish_date ? new Date(p.publish_date * 1000) : new Date(p.created * 1000);
+    const tldr = extractTldr(html);
 
     const result = await sql`
       INSERT INTO newsletter_issues (subject, slug, html, status, sent_at, stats)
@@ -77,7 +102,7 @@ async function main() {
         ${html},
         'sent',
         ${sentAt.toISOString()},
-        ${JSON.stringify({ source: "beehiiv", beehiiv_id: p.id, preview: p.subtitle })}::jsonb
+        ${JSON.stringify({ source: "beehiiv", beehiiv_id: p.id, preview: p.subtitle, tldr })}::jsonb
       )
       ON CONFLICT (slug) DO NOTHING
       RETURNING id

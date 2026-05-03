@@ -7,6 +7,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { StatStrip } from "@/components/stat-strip";
+import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Operational Infrastructure for Investment Firms | Muditek",
@@ -50,17 +52,6 @@ export default function PEOpsPage() {
           ],
         }}
       />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ.map((item) => ({
-            "@type": "Question",
-            name: item.q,
-            acceptedAnswer: { "@type": "Answer", text: item.a },
-          })),
-        }}
-      />
       <Navbar />
 
       {/* ══════ HERO — FULL NARRATIVE FROM PE PDF ══════ */}
@@ -78,9 +69,21 @@ export default function PEOpsPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance max-w-5xl">
+            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-10 text-balance max-w-5xl">
               Your team spends more time managing investor administration than managing <span className="text-sky-400 italic font-medium">investments.</span>
             </h1>
+          </ScrollReveal>
+
+          <ScrollReveal delay={120}>
+            <StatStrip
+              accentColor="sky"
+              className="mb-10 max-w-3xl"
+              stats={[
+                { value: "3-5 days", label: "LP onboarding in 2026" },
+                { value: "12+", label: "Jurisdictions handled" },
+                { value: "1/10th", label: "Cost vs Juniper Square" },
+              ]}
+            />
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
@@ -270,24 +273,7 @@ export default function PEOpsPage() {
       />
 
       {/* ══════ FAQ ══════ */}
-      <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Common Questions
-            </h2>
-          </ScrollReveal>
-          {FAQ.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 pl-5 border-l-2 border-sky-500/20 hover:border-sky-500/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
-                <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">{item.a}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
+      <FaqBlock items={FAQ} accentColor="sky" />
 
       {/* ══════ FINAL CTA ══════ */}
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

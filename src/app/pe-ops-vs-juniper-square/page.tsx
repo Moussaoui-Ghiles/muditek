@@ -4,13 +4,17 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
+import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Muditek vs Juniper Square | Custom Private Equity Operations Platform | Muditek",
-  description: "Compare custom-built operational infrastructure for private equity and investment banking vs Juniper Square. Own vs rent: €40-80K one-time vs $700K+/year subscription.",
+  description: "Muditek vs Juniper Square in 2026: own a custom PE ops platform for €40-80K one-time vs rent Juniper Square at $700K+/year. KYC, e-signatures, fee computation, full source.",
+  alternates: { canonical: "https://muditek.com/pe-ops-vs-juniper-square" },
   openGraph: {
-    title: "Muditek vs Juniper Square | Custom Private Equity Operations",
-    description: "Own vs rent. Pay once and own your operational infrastructure forever, or pay $700K+/year to rent Juniper Square. Side-by-side comparison.",
+    title: "Muditek vs Juniper Square in 2026 | Custom Private Equity Operations",
+    description: "Muditek vs Juniper Square in 2026: own custom PE ops infrastructure for €40-80K vs rent Juniper Square at $700K+/year. Side-by-side comparison.",
+    url: "https://muditek.com/pe-ops-vs-juniper-square",
+    type: "article",
   },
 };
 
@@ -41,13 +45,35 @@ export default function PEOpsVsJuniperSquarePage() {
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-sky-500/20 flex flex-col items-center">
       <Navbar />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: "Muditek vs Juniper Square",
-          description: "Detailed comparison between Muditek custom private equity operational infrastructure and Juniper Square SaaS platform.",
-          url: "https://muditek.com/pe-ops-vs-juniper-square",
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Muditek vs Juniper Square in 2026",
+            description: "Detailed comparison between Muditek custom private equity operational infrastructure and Juniper Square SaaS platform.",
+            url: "https://muditek.com/pe-ops-vs-juniper-square",
+            isPartOf: { "@id": "https://muditek.com/#website" },
+            datePublished: "2026-04-15",
+            dateModified: "2026-05-03",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Capability comparison: Muditek vs Juniper Square",
+            description: "Side-by-side comparison of Muditek custom-built private equity operational infrastructure and Juniper Square SaaS across 9 capabilities.",
+            itemListOrder: "https://schema.org/ItemListUnordered",
+            numberOfItems: COMPARISON.length,
+            itemListElement: COMPARISON.map((row, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "PropertyValue",
+                name: row.category,
+                value: `Muditek: ${row.muditek} | Juniper Square: ${row.juniper}`,
+              },
+            })),
+          },
+        ]}
       />
 
       {/* Hero */}
@@ -234,24 +260,7 @@ export default function PEOpsVsJuniperSquarePage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Common Questions
-            </h2>
-          </ScrollReveal>
-          {FAQ.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 pl-5 border-l-2 border-sky-500/20 hover:border-sky-500/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
-                <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">{item.a}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
+      <FaqBlock items={FAQ} accentColor="sky" />
 
       {/* Final CTA */}
       <section className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

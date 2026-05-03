@@ -7,6 +7,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { StatStrip } from "@/components/stat-strip";
+import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "mudiAgent | Digital Employees for Telecom & Enterprise | Muditek",
@@ -61,17 +63,6 @@ export default function MudiAgentPage() {
           ],
         }}
       />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ.map((item) => ({
-            "@type": "Question",
-            name: item.q,
-            acceptedAnswer: { "@type": "Answer", text: item.a },
-          })),
-        }}
-      />
       <Navbar />
 
       {/* ══════ HERO — NARRATIVE PROBLEM (PAS: Problem) ══════ */}
@@ -95,9 +86,21 @@ export default function MudiAgentPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance">
+            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-10 text-balance">
               Your best engineers are compiling <span className="text-primary italic font-medium">reports.</span>
             </h1>
+          </ScrollReveal>
+
+          <ScrollReveal delay={120}>
+            <StatStrip
+              accentColor="primary"
+              className="mb-10 max-w-3xl"
+              stats={[
+                { value: "40+ hrs", label: "Saved weekly in 2026" },
+                { value: "0", label: "Data leaves your building" },
+                { value: "8 weeks", label: "From kickoff to live" },
+              ]}
+            />
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
@@ -399,24 +402,7 @@ export default function MudiAgentPage() {
       </section>
 
       {/* ══════ FAQ — Objection Handling ══════ */}
-      <section className="py-24 md:py-32 w-full flex justify-center">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Common Questions
-            </h2>
-          </ScrollReveal>
-          {FAQ.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 pl-5 border-l-2 border-primary/20 hover:border-primary/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
-                <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">{item.a}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
+      <FaqBlock items={FAQ} accentColor="primary" />
 
       {/* ══════ FINAL CTA — Commitment/Consistency + Scarcity ══════ */}
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

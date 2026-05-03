@@ -255,20 +255,39 @@ export default async function ResourcePage({
   const meta = resources[slug];
   if (!meta) notFound();
 
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: meta.title,
-    description: meta.description,
-    author: {
-      "@type": "Person",
-      name: "Ghiles Moussaoui",
-      url: "https://muditek.com/about",
+  const resourceUrl = `https://muditek.com/resources/${slug}`;
+  const schemaData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: meta.title,
+      description: meta.description,
+      author: {
+        "@type": "Person",
+        "@id": "https://muditek.com/#ghiles",
+        name: "Ghiles Moussaoui",
+        url: "https://muditek.com/about",
+      },
+      publisher: { "@id": "https://muditek.com/#organization" },
+      datePublished: meta.date,
+      dateModified: meta.date,
+      mainEntityOfPage: { "@type": "WebPage", "@id": resourceUrl },
+      url: resourceUrl,
+      isPartOf: { "@id": "https://muditek.com/#website" },
+      image: "https://muditek.com/images/ghiles.jpg",
+      inLanguage: "en",
+      articleSection: meta.tag,
     },
-    publisher: { "@type": "Organization", name: "Muditek" },
-    datePublished: meta.date,
-    mainEntityOfPage: `https://muditek.com/resources/${slug}`,
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
+        { "@type": "ListItem", position: 2, name: "Resources", item: "https://muditek.com/resources" },
+        { "@type": "ListItem", position: 3, name: meta.title, item: resourceUrl },
+      ],
+    },
+  ];
 
   if (meta.type === "pdf") {
     const pageImages = getPdfPageImages(slug);

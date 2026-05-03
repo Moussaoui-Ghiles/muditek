@@ -4,6 +4,33 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { NewsletterInline } from "@/components/newsletter-inline";
+import { FaqBlock } from "@/components/faq-block";
+import { PullQuote } from "@/components/pull-quote";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { TestimonialBlock } from "@/components/testimonial-block";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
+
+const ABOUT_TESTIMONIALS: Parameters<typeof TestimonialBlock>[0]["items"] = [];
+
+const ABOUT_FAQ = [
+  {
+    q: "Who runs Muditek?",
+    a: "Ghiles Moussaoui — engineer turned operator. Started building automation systems for B2B founders in 2024, now runs Muditek full-time. Reaches 35K B2B operators and AI builders on LinkedIn weekly. Based in Europe, working with clients across telecom, B2B SaaS, and investment banking.",
+  },
+  {
+    q: "Where is Muditek based, and who can work with you?",
+    a: "Europe-based, fully remote engagements. Most clients are in Europe and North America. We take 1-2 build clients at a time so each gets full attention. Diagnostic offers (Revenue Leak Audit, mudiAgent discovery) have wider availability.",
+  },
+  {
+    q: "How do I get started?",
+    a: "Three doors. Start with the free newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the full skills library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
+  },
+  {
+    q: "Do you publish anything else?",
+    a: "Yes. Weekly newsletter (5,000+ subscribers), daily LinkedIn posts (35K followers), and the public archive of past issues at /newsletter. The newsletter is the source of truth — everything else mirrors it.",
+  },
+];
 
 export const metadata: Metadata = {
   title: "About Muditek | AI Systems That Eliminate Operational Waste",
@@ -54,6 +81,32 @@ export default function AboutPage() {
             <p className="text-base md:text-lg text-foreground/70 font-light leading-relaxed max-w-2xl">
               Muditek builds custom AI systems that eliminate operational waste for telecom operators, B2B SaaS companies, and investment firms. Every engagement starts with a diagnostic that quantifies the problem in euros. If we can&apos;t find the waste, you don&apos;t pay.
             </p>
+          </ScrollReveal>
+
+          <ScrollReveal delay={220}>
+            <p className="mt-6 text-sm text-foreground/50 font-light italic max-w-2xl">
+              From{" "}
+              <DataCitation
+                claim="5,000+ B2B operators in our newsletter"
+                source={DATA_POINTS.newsletterSubscribers.source}
+                n={DATA_POINTS.newsletterSubscribers.n}
+              />
+              {" "}and{" "}
+              <DataCitation
+                claim="35+ systems we've deployed in 2026"
+                source={DATA_POINTS.systemsDeployed.source}
+                n={DATA_POINTS.systemsDeployed.n}
+              />
+              , the patterns we ship here come from real engagements — not theory.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal delay={300}>
+            <PullQuote
+              quote="If we can't quantify the waste in euros before any system is built, we don't take the engagement."
+              source="Ghiles Moussaoui, Founder"
+              year={2026}
+            />
           </ScrollReveal>
         </div>
       </section>
@@ -112,9 +165,16 @@ export default function AboutPage() {
             <h2 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6">
               We built this for ourselves.<br /><span className="text-primary italic font-medium">Then clients asked.</span>
             </h2>
-            <p className="text-base text-foreground/70 font-light leading-relaxed mb-16 max-w-xl">
+            <p className="text-base text-foreground/70 font-light leading-relaxed mb-10 max-w-xl">
               Every number below comes from our own operations. We built mudiAgent to run Muditek. When clients saw the results, they asked us to deploy it for them.
             </p>
+
+            <PullQuote
+              quote="We built mudiAgent to run Muditek first. The clients came after the results did."
+              source="Ghiles Moussaoui, Founder"
+              year={2026}
+              className="mb-12"
+            />
           </ScrollReveal>
 
           <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
@@ -174,6 +234,13 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ══════ TESTIMONIALS ══════ */}
+      {/* TODO: replace with real LinkedIn DMs / newsletter replies */}
+      <TestimonialBlock
+        items={ABOUT_TESTIMONIALS}
+        emptyStateNote="Client and reader notes will publish here once we collect enough signed-off quotes. We don't fabricate testimonials."
+      />
+
       {/* ══════ NEWSLETTER ══════ */}
       <NewsletterInline tags={["source:about"]} />
 
@@ -201,6 +268,15 @@ export default function AboutPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ══════ FAQ ══════ */}
+      <FaqBlock items={ABOUT_FAQ} accentColor="primary" />
+
+      {/* ══════ MUDIKIT CTA ══════ */}
+      <MudikitCta
+        headline="Or skip the call. Subscribe to MudiKit · $47/mo"
+        body="Want the systems without the engagement? MudiKit is the operator library: 15+ Claude Code skills, 6 playbooks, the vault template that runs Muditek, 20+ outreach templates with A/B variants. Updated monthly."
+      />
 
       {/* ══════ CTA ══════ */}
       <section className="py-32 min-h-[40vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

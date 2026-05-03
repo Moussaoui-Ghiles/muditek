@@ -2,7 +2,34 @@
 
 import { useState } from "react";
 import { Logo } from "@/components/logo/logo";
+import { FaqBlock } from "@/components/faq-block";
+import { TestimonialBlock } from "@/components/testimonial-block";
 import Link from "next/link";
+
+const MUDIKIT_TESTIMONIALS: Parameters<typeof TestimonialBlock>[0]["items"] = [];
+
+const MUDIKIT_FAQ = [
+  {
+    q: "What exactly do I get for $47/month?",
+    a: "Access to a portal with 15+ Claude Code skills (outreach, lead gen, content writing, scraping, inbox SDR), 6 implementation playbooks, the vault template that runs my business, 20+ outreach templates with A/B variants, and the open-source lead capture system. New skills, playbooks, and templates drop every month — your subscription unlocks them automatically.",
+  },
+  {
+    q: "Do I need to be technical to use this?",
+    a: "You need to be comfortable with a terminal and have used Claude Code at least once. If you've never opened a terminal or want drag-and-drop no-code, MudiKit is not for you. Most subscribers ship something within their first weekend.",
+  },
+  {
+    q: "Can I cancel anytime?",
+    a: "Yes. Stripe handles billing — cancel from your customer portal in two clicks. No retention call, no friction. You keep access until the end of your current billing cycle.",
+  },
+  {
+    q: "How is this different from a course or community?",
+    a: "No live calls, no community chat, no homework. MudiKit is a working skills library you install and run. Each skill is a tested, deployable system — not lectures or theory. You get the actual prompts, configs, and code that I run in my own business.",
+  },
+  {
+    q: "Is the content updated?",
+    a: "Yes. New skill or playbook every month. Existing items get updated as Claude Code evolves and as I find better patterns. Active subscribers get notified by email when something drops.",
+  },
+];
 
 export default function BuyPage() {
   const [loading, setLoading] = useState(false);
@@ -159,6 +186,16 @@ export default function BuyPage() {
           </div>
         </div>
       </section>
+
+      {/* ── FAQ ── */}
+      <FaqBlock items={MUDIKIT_FAQ} accentColor="neutral" />
+
+      {/* ── TESTIMONIALS ── */}
+      {/* TODO: replace with real LinkedIn DMs / newsletter replies */}
+      <TestimonialBlock
+        items={MUDIKIT_TESTIMONIALS}
+        emptyStateNote="Reader replies and subscriber notes will publish here once we collect enough signed-off quotes. No fabricated testimonials in the meantime."
+      />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-white/[0.06] py-8 px-6 sm:px-10">

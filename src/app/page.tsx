@@ -4,6 +4,11 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { NewsletterInline } from "@/components/newsletter-inline";
+import { StatStrip } from "@/components/stat-strip";
+import { FaqBlock } from "@/components/faq-block";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
 
 const BOOKING_URL =
   "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
@@ -25,6 +30,29 @@ const TOOL_STACK = [
   { name: "Google Workspace", icon: "google" },
 ];
 
+const HOME_FAQ = [
+  {
+    q: "What does Muditek actually do?",
+    a: "We diagnose where companies lose money to manual operations, then build the AI systems that fix it. Three offers: mudiAgent (on-premises AI for telecom and enterprise), Revenue Leak Audit (B2B SaaS pipeline diagnostics), and operational infrastructure for investment firms. Every engagement starts with a paid or free diagnostic that quantifies the waste in euros before any code is written.",
+  },
+  {
+    q: "How is Muditek different from a regular dev shop or consultancy?",
+    a: "Dev shops bill hours. Consultancies bill decks. We bill outcomes — every engagement carries a guarantee in euros. mudiAgent guarantees 40 hours saved in 90 days. Revenue Leak Audit guarantees €50K in annual leakage found. PE Ops guarantees €150K+ in operational waste identified. If we miss, you pay nothing.",
+  },
+  {
+    q: "Do we own the system Muditek builds?",
+    a: "Yes. Source code, infrastructure, data — all yours. No SaaS subscriptions, no per-seat licensing, no vendor lock-in. After the build, you can extend, modify, or rebuild independently. Optional retainer if you want us to keep evolving it.",
+  },
+  {
+    q: "How long does a build take?",
+    a: "Diagnostics: 5 days to 4 weeks depending on offer. Builds: 4-8 weeks. We deliver in weeks what traditional dev shops take 12-18 months for, because the hard problems (multi-jurisdiction compliance, on-premises AI deployment, revenue ops automation) are already solved. We reuse the knowledge, not the code.",
+  },
+  {
+    q: "Who works with Muditek?",
+    a: "Telecom operators with 50+ employees, B2B SaaS founders at €800K-1.8M ARR, private equity and merchant banking firms managing investor operations across multiple jurisdictions. We take 1-2 build clients at a time so each engagement gets full attention.",
+  },
+];
+
 const PROOF_METRICS = [
   { label: "Proposal drafting", before: "4 hrs", after: "12 min" },
   { label: "Knowledge lookup", before: "30+ min", after: "10 sec" },
@@ -36,6 +64,7 @@ const PROOF_METRICS = [
 export default function Home() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
+      <link rel="preload" as="image" href="/images/documents-desk.png" fetchPriority="high" />
       <Navbar />
 
       {/* HERO */}
@@ -60,6 +89,21 @@ export default function Home() {
            </h1>
            <p className="mt-8 text-lg md:text-xl text-foreground/80 max-w-2xl leading-relaxed">
              We find where you&apos;re bleeding money, then build the AI systems that fix it.
+           </p>
+           <p className="mt-4 text-sm text-foreground/60 max-w-xl italic">
+             From{" "}
+             <DataCitation
+               claim="35+ systems deployed"
+               source={DATA_POINTS.systemsDeployed.source}
+               n={DATA_POINTS.systemsDeployed.n}
+             />
+             {" "}and{" "}
+             <DataCitation
+               claim="5,000+ B2B operators reading our weekly playbooks"
+               source={DATA_POINTS.newsletterSubscribers.source}
+               n={DATA_POINTS.newsletterSubscribers.n}
+             />
+             {" "}in 2026.
            </p>
 
            <div className="mt-14 flex flex-col sm:flex-row items-center gap-5">
@@ -94,6 +138,18 @@ export default function Home() {
               ))}
            </div>
         </div>
+      </div>
+
+      {/* STAT STRIP */}
+      <div className="w-full max-w-[1500px] px-6 md:px-12 -mt-px">
+        <StatStrip
+          accentColor="primary"
+          stats={[
+            { value: "5,000+", label: "B2B operators reading our newsletter" },
+            { value: "29", label: "Playbooks shipped in 2026" },
+            { value: "3", label: "Guarantees backed in euros" },
+          ]}
+        />
       </div>
 
       {/* SOLUTIONS */}
@@ -297,6 +353,15 @@ export default function Home() {
             </ScrollReveal>
          </div>
       </section>
+
+      {/* FAQ */}
+      <FaqBlock items={HOME_FAQ} accentColor="primary" />
+
+      {/* MUDIKIT CTA */}
+      <MudikitCta
+        headline="Ship a system this weekend with MudiKit · $47/mo"
+        body="The same library I run my own business on. 15+ Claude Code skills (outreach, lead gen, content, scrapers, inbox SDR), 6 implementation playbooks, the vault template, 20+ outreach templates. New drops every month."
+      />
 
       {/* FINAL CTA */}
       <section id="contact" className="py-48 min-h-[60vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

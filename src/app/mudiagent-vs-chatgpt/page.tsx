@@ -4,13 +4,17 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
+import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "mudiAgent vs ChatGPT Enterprise | On-Premises AI Comparison | Muditek",
-  description: "Compare mudiAgent and ChatGPT Enterprise for enterprise operations. On-premises AI with workflow automation vs cloud chatbox. No per-user fees. Full data sovereignty.",
+  description: "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee that automates workflows vs cloud chatbox. Data sovereignty, no per-user fees, scheduled autonomous operation.",
+  alternates: { canonical: "https://muditek.com/mudiagent-vs-chatgpt" },
   openGraph: {
-    title: "mudiAgent vs ChatGPT Enterprise | On-Premises AI Comparison",
-    description: "ChatGPT is a conversation tool. mudiAgent is a digital employee that automates real work. Compare data security, workflow automation, cost at scale, and deployment.",
+    title: "mudiAgent vs ChatGPT Enterprise in 2026 | On-Premises AI",
+    description: "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees.",
+    url: "https://muditek.com/mudiagent-vs-chatgpt",
+    type: "article",
   },
 };
 
@@ -39,13 +43,35 @@ export default function MudiAgentVsChatGPTPage() {
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <Navbar />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: "mudiAgent vs ChatGPT Enterprise",
-          description: "Detailed comparison between mudiAgent on-premises AI and ChatGPT Enterprise for enterprise operations.",
-          url: "https://muditek.com/mudiagent-vs-chatgpt",
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "mudiAgent vs ChatGPT Enterprise in 2026",
+            description: "Detailed comparison between mudiAgent on-premises AI and ChatGPT Enterprise for enterprise operations.",
+            url: "https://muditek.com/mudiagent-vs-chatgpt",
+            isPartOf: { "@id": "https://muditek.com/#website" },
+            datePublished: "2026-04-15",
+            dateModified: "2026-05-03",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Capability comparison: mudiAgent vs ChatGPT Enterprise",
+            description: "Side-by-side comparison of mudiAgent on-premises AI and ChatGPT Enterprise across 8 enterprise capabilities.",
+            itemListOrder: "https://schema.org/ItemListUnordered",
+            numberOfItems: COMPARISON.length,
+            itemListElement: COMPARISON.map((row, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "PropertyValue",
+                name: row.category,
+                value: `mudiAgent: ${row.mudiagent} | ChatGPT Enterprise: ${row.chatgpt}`,
+              },
+            })),
+          },
+        ]}
       />
 
       {/* Hero */}
@@ -208,24 +234,7 @@ export default function MudiAgentVsChatGPTPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Common Questions
-            </h2>
-          </ScrollReveal>
-          {FAQ.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 pl-5 border-l-2 border-primary/20 hover:border-primary/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
-                <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">{item.a}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
+      <FaqBlock items={FAQ} accentColor="primary" />
 
       {/* Final CTA */}
       <section className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

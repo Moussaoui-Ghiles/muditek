@@ -14,6 +14,13 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 
 - [Revenue Leak Calculator](https://muditek.com/tools/revenue-leak-calculator): Free calculator that estimates annual revenue leakage from speed-to-lead decay, pipeline conversion gaps, and excess churn.
 
+## Newsletter & Resources
+
+- [Muditek Newsletter](https://muditek.com/newsletter): Weekly playbooks for AI operators, B2B operators, and investment professionals. 5,000+ subscribers across telecom, SaaS, and finance. Archive of 29+ issues.
+- [About / Founder](https://muditek.com/about): Background on Ghiles Moussaoui, the methodology, and how to book a call.
+- [mudiAgent vs ChatGPT](https://muditek.com/mudiagent-vs-chatgpt): Comparison covering data sovereignty, workflow automation, and cost at scale.
+- [Muditek vs Juniper Square](https://muditek.com/pe-ops-vs-juniper-square): Operational infrastructure comparison for investment firms.
+
 ## Target Audiences
 
 - Telecom operators and traders with 50+ employees needing on-premises AI automation

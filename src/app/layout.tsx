@@ -85,22 +85,72 @@ export default function RootLayout({
       >
         <body className="font-sans noise">
           <JsonLd
-            data={{
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Muditek",
-              url: "https://muditek.com",
-              logo: "https://muditek.com/icon.svg",
-              description: "AI systems that eliminate operational waste. We diagnose where companies lose money to manual operations and build AI systems that fix it.",
-              founder: {
-                "@type": "Person",
-                name: "Ghiles Moussaoui",
-                url: "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
+            data={[
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "@id": "https://muditek.com/#organization",
+                name: "Muditek",
+                url: "https://muditek.com",
+                logo: {
+                  "@type": "ImageObject",
+                  url: "https://muditek.com/icon.svg",
+                  width: 512,
+                  height: 512,
+                },
+                description:
+                  "AI systems that eliminate operational waste. We diagnose where companies lose money to manual operations and build AI systems that fix it.",
+                founder: {
+                  "@type": "Person",
+                  "@id": "https://muditek.com/#ghiles",
+                  name: "Ghiles Moussaoui",
+                  url: "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
+                },
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  contactType: "sales",
+                  email: "biz@ghiless.com",
+                  url: "https://muditek.com/about",
+                  availableLanguage: ["en", "fr"],
+                },
+                sameAs: [
+                  "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
+                ],
               },
-              sameAs: [
-                "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
-              ],
-            }}
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "@id": "https://muditek.com/#website",
+                url: "https://muditek.com",
+                name: "Muditek",
+                description:
+                  "AI systems that eliminate operational waste. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
+                publisher: { "@id": "https://muditek.com/#organization" },
+                inLanguage: "en",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate:
+                      "https://muditek.com/newsletter?q={search_term_string}",
+                  },
+                  "query-input": "required name=search_term_string",
+                },
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "@id": "https://muditek.com/#ghiles",
+                name: "Ghiles Moussaoui",
+                url: "https://muditek.com/about",
+                image: "https://muditek.com/images/ghiles.jpg",
+                jobTitle: "Founder",
+                worksFor: { "@id": "https://muditek.com/#organization" },
+                sameAs: [
+                  "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
+                ],
+              },
+            ]}
           />
           {children}
           <WhatsAppBubble />

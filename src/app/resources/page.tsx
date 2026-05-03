@@ -5,12 +5,13 @@ import { Footer } from "@/components/footer";
 import { NewsletterInline } from "@/components/newsletter-inline";
 
 export const metadata: Metadata = {
-  title: "Resources | Muditek",
+  title: "Resources | Free B2B AI & Revenue Ops Playbooks | Muditek",
   description:
-    "Free playbooks, guides, and tools from Muditek. AI systems, revenue operations, and automation walkthroughs.",
+    "Free playbooks, guides, and tools for B2B operators. AI agent setups, n8n workflows, agentic SDR systems, lead generation playbooks, and revenue operations walkthroughs.",
   openGraph: {
-    title: "Resources | Muditek",
-    description: "Free playbooks, guides, and tools from Muditek.",
+    title: "Resources | Free B2B AI & Revenue Ops Playbooks | Muditek",
+    description:
+      "Free playbooks, guides, and tools for B2B operators. AI agents, n8n workflows, agentic SDR, and revenue operations.",
     url: "https://muditek.com/resources",
   },
   alternates: {

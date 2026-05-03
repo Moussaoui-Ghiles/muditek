@@ -7,6 +7,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { StatStrip } from "@/components/stat-strip";
+import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
@@ -54,17 +56,6 @@ export default function RevenueMachinePage() {
           ],
         }}
       />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ.map((item) => ({
-            "@type": "Question",
-            name: item.q,
-            acceptedAnswer: { "@type": "Answer", text: item.a },
-          })),
-        }}
-      />
       <Navbar />
 
       {/* ══════ HERO — NARRATIVE ══════ */}
@@ -83,9 +74,21 @@ export default function RevenueMachinePage() {
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance">
+            <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-10 text-balance">
               You&apos;re losing money you already paid to <span className="text-emerald-400 italic font-medium">generate.</span>
             </h1>
+          </ScrollReveal>
+
+          <ScrollReveal delay={120}>
+            <StatStrip
+              accentColor="emerald"
+              className="mb-10 max-w-3xl"
+              stats={[
+                { value: "€80-180K", label: "Found per audit in 2026" },
+                { value: "5", label: "Leak categories diagnosed" },
+                { value: "€50K", label: "Guarantee or you pay nothing" },
+              ]}
+            />
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
@@ -265,25 +268,162 @@ export default function RevenueMachinePage() {
         </div>
       </section>
 
-      {/* ══════ FAQ ══════ */}
-      <section className="py-24 md:py-32 w-full flex justify-center">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
+      {/* ══════ WHAT YOU GET — 3 DELIVERABLES ══════ */}
+      <section className="py-32 md:py-40 w-full flex justify-center relative border-t border-white/[0.02]">
+        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-emerald-500/[0.025] rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Common Questions
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-emerald-400 mb-6 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-emerald-400/50" />
+              What You Get
             </h2>
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6 max-w-3xl">
+              Three deliverables. One <span className="text-emerald-400 italic font-medium">€2,000 diagnostic.</span>
+            </h3>
+            <p className="text-base text-foreground/70 font-light leading-relaxed mb-16 max-w-2xl">
+              Day 5, you receive everything below. Use any single piece to recover the audit fee. Most clients use all three.
+            </p>
           </ScrollReveal>
-          {FAQ.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div className={`py-8 pl-5 border-l-2 border-emerald-500/20 hover:border-emerald-500/50 hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${i < FAQ.length - 1 ? "border-b border-b-white/[0.03]" : ""}`}>
-                <h3 className="text-base font-bold text-foreground/80 mb-3">&quot;{item.q}&quot;</h3>
-                <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">{item.a}</p>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* DELIVERABLE 1 — LEAK DIAGNOSTIC REPORT */}
+            <ScrollReveal delay={80}>
+              <div className="group h-full border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.4] backdrop-blur-md rounded-[4px] overflow-hidden transition-all duration-500 card-lift flex flex-col">
+                {/* CSS-art cover */}
+                <div className="relative h-[180px] bg-gradient-to-br from-emerald-950/50 via-card/40 to-background overflow-hidden border-b border-emerald-500/10">
+                  <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(rgba(52,211,153,1) 1px, transparent 1px)', backgroundSize: '100% 16px' }} />
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-emerald-400/60 uppercase">Diagnostic / 12pp</span>
+                    <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider text-emerald-400/80 border border-emerald-500/30 rounded-[2px]">PDF</span>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="font-mono text-[10px] text-emerald-400/40 mb-1 tracking-wider">// LEAK_REPORT.PDF</div>
+                    <div className="font-black text-xl text-foreground/90 leading-tight">Revenue Leak<br/>Diagnostic</div>
+                  </div>
+                  <div className="absolute top-1/2 right-6 -translate-y-1/2 flex flex-col gap-1.5">
+                    {[60, 80, 45, 90, 35].map((w, i) => (
+                      <div key={i} className="h-[3px] bg-emerald-400/40 rounded-full" style={{ width: `${w}px` }} />
+                    ))}
+                  </div>
+                </div>
+                <div className="p-7 flex-1 flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-3xl font-black text-foreground/[0.08]">01</span>
+                    <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-400/70 border border-emerald-500/20 rounded-[2px]">Sample preview</span>
+                  </div>
+                  <h4 className="text-lg font-black text-foreground mb-2 group-hover:text-emerald-400 transition-colors">Leak Diagnostic Report</h4>
+                  <p className="text-sm text-foreground/70 font-light leading-relaxed mb-4 flex-1">
+                    A 12-page PDF covering the 5 leak categories — speed-to-lead, pipeline conversion, lead-source ROI, churn, and outbound. Each leak gets euro impact, the formula behind it, and a fix priority ranking.
+                  </p>
+                  <div className="pt-4 border-t border-white/[0.05] text-xs font-mono text-foreground/50 tracking-wider uppercase">
+                    Format · 12pp PDF + spreadsheet
+                  </div>
+                </div>
               </div>
             </ScrollReveal>
-          ))}
+
+            {/* DELIVERABLE 2 — IMPLEMENTATION ROADMAP */}
+            <ScrollReveal delay={160}>
+              <div className="group h-full border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.4] backdrop-blur-md rounded-[4px] overflow-hidden transition-all duration-500 card-lift flex flex-col">
+                <div className="relative h-[180px] bg-gradient-to-br from-emerald-950/40 via-card/40 to-background overflow-hidden border-b border-emerald-500/10">
+                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(52,211,153,1) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,1) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-emerald-400/60 uppercase">Roadmap / 6 sprints</span>
+                    <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider text-emerald-400/80 border border-emerald-500/30 rounded-[2px]">MD</span>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="font-mono text-[10px] text-emerald-400/40 mb-1 tracking-wider">// SPRINT_PLAN.MD</div>
+                    <div className="font-black text-xl text-foreground/90 leading-tight">Implementation<br/>Roadmap</div>
+                  </div>
+                  <div className="absolute top-12 right-4 flex flex-col gap-1.5">
+                    {["S1", "S2", "S3", "S4", "S5"].map((s, i) => (
+                      <div key={s} className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${i < 2 ? "bg-emerald-400" : "bg-emerald-400/30"}`} />
+                        <span className="text-[8px] font-mono text-emerald-400/50 tracking-wider">{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-7 flex-1 flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-3xl font-black text-foreground/[0.08]">02</span>
+                    <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-400/70 border border-emerald-500/20 rounded-[2px]">Sample preview</span>
+                  </div>
+                  <h4 className="text-lg font-black text-foreground mb-2 group-hover:text-emerald-400 transition-colors">Implementation Roadmap</h4>
+                  <p className="text-sm text-foreground/70 font-light leading-relaxed mb-4 flex-1">
+                    A sprint-by-sprint plan to fix the leaks ranked #1-5 by euro impact. Includes the formulas, n8n workflows, scripts, integration points, and the order to ship in. Your dev can build it. We can build it.
+                  </p>
+                  <div className="pt-4 border-t border-white/[0.05] text-xs font-mono text-foreground/50 tracking-wider uppercase">
+                    Format · markdown + diagrams
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* DELIVERABLE 3 — RECOVERY CALCULATOR */}
+            <ScrollReveal delay={240}>
+              <div className="group h-full border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.4] backdrop-blur-md rounded-[4px] overflow-hidden transition-all duration-500 card-lift flex flex-col">
+                <div className="relative h-[180px] bg-gradient-to-br from-emerald-950/40 via-card/40 to-background overflow-hidden border-b border-emerald-500/10">
+                  <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 gap-px bg-emerald-500/[0.04]">
+                    {Array.from({ length: 24 }).map((_, i) => (
+                      <div key={i} className="bg-background/60" />
+                    ))}
+                  </div>
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-emerald-400/60 uppercase">Calc / 3yr ROI</span>
+                    <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider text-emerald-400/80 border border-emerald-500/30 rounded-[2px]">XLSX</span>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 z-10">
+                    <div className="font-mono text-[10px] text-emerald-400/40 mb-1 tracking-wider">// RECOVERY.XLSX</div>
+                    <div className="font-black text-xl text-foreground/90 leading-tight">Recovery<br/>Calculator</div>
+                  </div>
+                  <div className="absolute top-1/3 right-5 flex items-end gap-1 z-10">
+                    {[12, 24, 38, 56].map((h, i) => (
+                      <div key={i} className="w-2 bg-emerald-400/50 rounded-t-[1px]" style={{ height: `${h}px` }} />
+                    ))}
+                  </div>
+                </div>
+                <div className="p-7 flex-1 flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-3xl font-black text-foreground/[0.08]">03</span>
+                    <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-400/70 border border-emerald-500/20 rounded-[2px]">Sample preview</span>
+                  </div>
+                  <h4 className="text-lg font-black text-foreground mb-2 group-hover:text-emerald-400 transition-colors">Recovery Calculator</h4>
+                  <p className="text-sm text-foreground/70 font-light leading-relaxed mb-4 flex-1">
+                    A live spreadsheet that runs your actual numbers through each fix. Shows 3-year compounding ROI per leak. Adjust your CAC, ACV, churn, and watch the recovery curve update in real time.
+                  </p>
+                  <div className="pt-4 border-t border-white/[0.05] text-xs font-mono text-foreground/50 tracking-wider uppercase">
+                    Format · Google Sheets / xlsx
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* DOMINANT CTA */}
+          <ScrollReveal delay={320}>
+            <div className="mt-16 md:mt-20 text-center">
+              <a
+                href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-press group relative inline-flex items-center justify-center px-12 md:px-16 py-6 bg-emerald-500 text-background text-base font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_60px_rgba(52,211,153,0.18)]"
+              >
+                <span className="relative z-10 flex items-center gap-4">
+                  Book Your Diagnostic — €2,000
+                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
+              </a>
+              <p className="mt-6 text-sm font-mono uppercase tracking-[0.25em] text-emerald-400/70">
+                €50K guarantee · or you pay nothing
+              </p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
+
+      {/* ══════ FAQ ══════ */}
+      <FaqBlock items={FAQ} accentColor="emerald" />
 
       {/* ══════ FINAL CTA ══════ */}
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

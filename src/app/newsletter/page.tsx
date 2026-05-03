@@ -4,12 +4,43 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
+import { FaqBlock } from "@/components/faq-block";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
 import { getDb } from "@/lib/db";
+
+const NEWSLETTER_FAQ = [
+  {
+    q: "What does the Muditek newsletter cover?",
+    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype — only systems that have run in production.",
+  },
+  {
+    q: "How often does it send?",
+    a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
+  },
+  {
+    q: "Is it really free?",
+    a: "Yes. Free forever. The newsletter is the front door — paid options (MudiKit subscription, audits, builds) live separately. You will never be paywalled out of an issue.",
+  },
+  {
+    q: "Who reads it?",
+    a: "5,000+ B2B operators, AI builders, and founders across telecom, SaaS, agencies, and finance. Most subscribers run their own ops or sales teams and ship what they read here.",
+  },
+];
 
 export const metadata: Metadata = {
   title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
   description:
-    "AI automation systems, workflows, and revenue operations, delivered to your inbox. Join free.",
+    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Free, unsubscribe anytime.",
+  alternates: { canonical: "https://muditek.com/newsletter" },
+  openGraph: {
+    title: "B2B Agents Newsletter | Muditek",
+    description:
+      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy. Free.",
+    url: "https://muditek.com/newsletter",
+    type: "website",
+  },
 };
 
 export const revalidate = 300;
@@ -72,8 +103,23 @@ export default async function NewsletterPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
-            <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-12">
+            <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
               Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
+            </p>
+            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12 italic">
+              Read by{" "}
+              <DataCitation
+                claim="5,000+ B2B operators"
+                source={DATA_POINTS.newsletterSubscribers.source}
+                n={DATA_POINTS.newsletterSubscribers.n}
+              />
+              {" "}across telecom, SaaS, agencies, and finance.{" "}
+              <DataCitation
+                claim="29 issues shipped"
+                source={DATA_POINTS.issuesShipped.source}
+                n={DATA_POINTS.issuesShipped.n}
+              />
+              {" "}in 2026.
             </p>
           </ScrollReveal>
 
@@ -146,6 +192,15 @@ export default async function NewsletterPage() {
           )}
         </div>
       </section>
+
+      {/* FAQ */}
+      <FaqBlock items={NEWSLETTER_FAQ} accentColor="primary" />
+
+      {/* MUDIKIT CTA */}
+      <MudikitCta
+        headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
+        body="The newsletter is what I write publicly. MudiKit is what I install: 15+ Claude Code skills (outreach, lead gen, content, scrapers, inbox SDR), 6 implementation playbooks, the vault template, 20+ outreach templates. New skills drop every month."
+      />
 
       {/* BOTTOM CTA */}
       <section className="py-32 w-full flex justify-center relative border-t border-white/[0.04] bg-card/[0.15] mesh-subtle">

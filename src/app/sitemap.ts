@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
+import { INDUSTRY_SLUGS } from "@/lib/industries";
+import { CASE_STUDY_SLUGS } from "@/lib/case-studies";
 
 const BASE = "https://muditek.com";
 
@@ -10,9 +12,14 @@ const MARKETING: Array<{ path: string; priority: number; changeFrequency: Metada
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/buy", priority: 0.8, changeFrequency: "monthly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
   { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly" },
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/mudikit-vs-skool", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/mudikit-vs-circle", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/resources", priority: 0.8, changeFrequency: "weekly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
 ];
@@ -47,6 +54,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of RESOURCE_SLUGS) {
     entries.push({
       url: `${BASE}/resources/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
+  for (const slug of INDUSTRY_SLUGS) {
+    entries.push({
+      url: `${BASE}/who-we-help/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
+  for (const slug of CASE_STUDY_SLUGS) {
+    entries.push({
+      url: `${BASE}/case-studies/${slug}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,

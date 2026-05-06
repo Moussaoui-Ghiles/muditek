@@ -26,9 +26,16 @@ export async function POST(
   const issue = rows[0];
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin;
+
+  // Use real token if recipient is a subscriber so footer links actually work
+  const subRows = await sql`
+    SELECT unsub_token FROM newsletter_subscribers WHERE email = ${to} LIMIT 1
+  `;
+  const token = subRows[0]?.unsub_token ?? "TEST";
+
   const html = wrapIssueHtml(issue.html ?? "", {
-    unsubUrl: `${baseUrl}/api/newsletter/unsubscribe/TEST`,
-    prefsUrl: `${baseUrl}/preferences/TEST`,
+    unsubUrl: `${baseUrl}/api/newsletter/unsubscribe/${token}`,
+    prefsUrl: `${baseUrl}/preferences/${token}`,
     webUrl: `${baseUrl}/newsletter/${issue.slug}`,
   });
 

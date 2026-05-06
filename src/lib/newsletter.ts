@@ -58,11 +58,11 @@ export function renderIssueHtml(markdown: string): string {
       if (inList) { out.push("</ul>"); inList = false; }
       out.push(`<h3 style="font-size:17px;margin:20px 0 8px;color:#111;">${escapeHtml(line.slice(4))}</h3>`);
     } else if (line.startsWith("- ")) {
-      if (!inList) { out.push(`<ul style="margin:0 0 14px;padding-left:20px;color:#444;line-height:1.7;">`); inList = true; }
-      out.push(`<li>${renderInline(line.slice(2))}</li>`);
+      if (!inList) { out.push(`<ul style="margin:0 0 14px;padding-left:20px;color:#1a1a1a;line-height:1.7;font-size:16px;">`); inList = true; }
+      out.push(`<li style="margin:0 0 6px;">${renderInline(line.slice(2))}</li>`);
     } else {
       if (inList) { out.push("</ul>"); inList = false; }
-      out.push(`<p style="margin:0 0 14px;font-size:16px;color:#444;line-height:1.7;">${renderInline(line)}</p>`);
+      out.push(`<p style="margin:0 0 14px;font-size:16px;color:#1a1a1a;line-height:1.7;">${renderInline(line)}</p>`);
     }
   }
   if (inList) out.push("</ul>");
@@ -78,18 +78,33 @@ function renderInline(text: string): string {
 }
 
 export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string; webUrl: string }): string {
+  const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
   return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 620px; margin: 0 auto; padding: 40px 20px; background: #fff;">
-      <div style="margin-bottom:24px;font-size:12px;color:#999;letter-spacing:0.04em;text-transform:uppercase;">Muditek Newsletter</div>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 40px 20px; background: #ffffff; color: #1a1a1a;">
+      <div style="margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #ececec;">
+        <a href="https://muditek.com" style="text-decoration:none; display:inline-block;">
+          <img src="${logoUrl}" alt="Muditek" width="120" height="28" style="display:block; border:0; outline:none; text-decoration:none; height:28px;" />
+        </a>
+        <div style="margin-top:14px; font-size:11px; color:#6e6e6e; letter-spacing:0.18em; text-transform:uppercase; font-weight:600;">Weekly Newsletter</div>
+      </div>
+
       ${bodyHtml}
-      <hr style="border:none;border-top:1px solid #eee;margin:40px 0 20px;" />
-      <p style="margin:0;font-size:12px;color:#999;line-height:1.6;">
-        <a href="${footer.webUrl}" style="color:#999;">View in browser</a> &middot;
-        <a href="${footer.prefsUrl}" style="color:#999;">Manage preferences</a> &middot;
-        <a href="${footer.unsubUrl}" style="color:#999;">Unsubscribe</a>
-      </p>
-      <p style="margin:8px 0 0;font-size:11px;color:#bbb;">
-        You are receiving this because you subscribed at ghiless.com. Muditek — Ghiles Moussaoui.
+
+      <hr style="border:none; border-top:1px solid #ececec; margin:48px 0 24px;" />
+
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-bottom:20px;">
+        <tr>
+          <td align="left" style="padding:0;">
+            <a href="${footer.webUrl}" style="display:inline-block; padding:8px 14px; margin:0 8px 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">View in browser</a>
+            <a href="${footer.prefsUrl}" style="display:inline-block; padding:8px 14px; margin:0 8px 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">Manage preferences</a>
+            <a href="${footer.unsubUrl}" style="display:inline-block; padding:8px 14px; margin:0 0 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">Unsubscribe</a>
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:0; font-size:12px; color:#6e6e6e; line-height:1.6;">
+        You're receiving this because you subscribed at <a href="https://muditek.com" style="color:#1a1a1a; text-decoration:underline;">muditek.com</a>.<br/>
+        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#1a1a1a; text-decoration:underline;">ghiles@muditek.com</a>
       </p>
     </div>
   `;

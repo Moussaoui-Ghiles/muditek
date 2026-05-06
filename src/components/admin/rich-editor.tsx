@@ -1,11 +1,12 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bold,
   Italic,
@@ -27,9 +28,12 @@ interface Props {
   initialHtml: string;
   onChange: (html: string) => void;
   readOnly?: boolean;
+  focusMode?: boolean;
 }
 
-export function RichEditor({ initialHtml, onChange, readOnly = false }: Props) {
+export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode = false }: Props) {
+  const [stats, setStats] = useState({ words: 0, chars: 0 });
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -39,20 +43,24 @@ export function RichEditor({ initialHtml, onChange, readOnly = false }: Props) {
       Link.configure({
         openOnClick: false,
         autolink: true,
-        HTMLAttributes: { class: "underline text-primary" },
+        HTMLAttributes: { rel: "noopener noreferrer" },
       }),
       Placeholder.configure({
-        placeholder: "Start writing your issue...",
+        placeholder: "Start writing the issue. Lead with the one thing that matters most.",
       }),
       Typography,
     ],
     content: initialHtml,
     editable: !readOnly,
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+      const text = editor.getText();
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      setStats({ words, chars: text.length });
+    },
     editorProps: {
       attributes: {
-        class:
-          "prose prose-invert max-w-none min-h-[500px] focus:outline-none px-6 py-5 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h1]:mt-6 [&_h1]:mb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:text-[15px] [&_p]:leading-[1.7] [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3 [&_li]:mb-1 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_code]:bg-secondary [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[13px] [&_code]:font-mono [&_hr]:my-6 [&_hr]:border-border [&_strong]:font-semibold [&_em]:italic",
+        class: "ProseMirror focus:outline-none max-w-[68ch] mx-auto",
       },
     },
   });
@@ -61,159 +69,223 @@ export function RichEditor({ initialHtml, onChange, readOnly = false }: Props) {
     if (!editor) return;
     if (editor.getHTML() !== initialHtml && initialHtml) {
       editor.commands.setContent(initialHtml, { emitUpdate: false });
+      const text = editor.getText();
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      setStats({ words, chars: text.length });
     }
   }, [initialHtml, editor]);
 
-  if (!editor) return <div className="min-h-[500px] bg-card animate-pulse rounded-md" />;
+  const readingMin = useMemo(() => Math.max(1, Math.round(stats.words / 220)), [stats.words]);
 
   function setLink() {
-    const url = window.prompt("URL", editor!.getAttributes("link").href || "https://");
+    if (!editor) return;
+    const prev = editor.getAttributes("link").href;
+    const url = window.prompt("Link URL", prev || "https://");
     if (url === null) return;
     if (url === "") {
-      editor!.chain().focus().extendMarkRange("link").unsetLink().run();
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
-    editor!.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }
 
-  const btn =
-    "size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors disabled:opacity-40 disabled:pointer-events-none";
-  const btnActive = "bg-secondary text-foreground";
+  if (!editor) {
+    return (
+      <div className="rounded-2xl border border-white/[0.06] bg-[#151517] min-h-[600px] animate-pulse" />
+    );
+  }
+
+  const railBtn =
+    "h-8 w-8 inline-flex items-center justify-center rounded-md text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100 spring disabled:opacity-30 disabled:pointer-events-none";
+  const railBtnActive = "bg-white/[0.08] text-zinc-100";
+
+  const bubbleBtn =
+    "h-8 px-2 inline-flex items-center justify-center rounded-md text-zinc-300 hover:bg-white/[0.08] hover:text-white spring";
+  const bubbleBtnActive = "bg-white/[0.10] text-white";
 
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden">
-      {!readOnly && (
-        <div className="flex items-center gap-0.5 flex-wrap border-b border-border px-2 py-1.5 bg-card sticky top-0 z-10">
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("heading", { level: 1 }) ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            title="Heading 1"
-          >
-            <Heading1 className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("heading", { level: 2 }) ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            title="Heading 2"
-          >
-            <Heading2 className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("heading", { level: 3 }) ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            title="Heading 3"
-          >
-            <Heading3 className="size-4" />
-          </button>
+    <div className="relative">
+      {/* Selection bubble menu */}
+      <BubbleMenu editor={editor} className="bubble-menu">
+        <button
+          type="button"
+          aria-label="Bold"
+          className={`${bubbleBtn} ${editor.isActive("bold") ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
+          <Bold className="size-3.5" strokeWidth={2.2} />
+        </button>
+        <button
+          type="button"
+          aria-label="Italic"
+          className={`${bubbleBtn} ${editor.isActive("italic") ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <Italic className="size-3.5" strokeWidth={2.2} />
+        </button>
+        <button
+          type="button"
+          aria-label="Strike"
+          className={`${bubbleBtn} ${editor.isActive("strike") ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <Strikethrough className="size-3.5" strokeWidth={2.2} />
+        </button>
+        <span className="mx-0.5 h-4 w-px bg-white/10" />
+        <button
+          type="button"
+          aria-label="H2"
+          className={`${bubbleBtn} ${editor.isActive("heading", { level: 2 }) ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        >
+          <span className="text-[11px] font-semibold tracking-wide">H2</span>
+        </button>
+        <button
+          type="button"
+          aria-label="H3"
+          className={`${bubbleBtn} ${editor.isActive("heading", { level: 3 }) ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        >
+          <span className="text-[11px] font-semibold tracking-wide">H3</span>
+        </button>
+        <button
+          type="button"
+          aria-label="Quote"
+          className={`${bubbleBtn} ${editor.isActive("blockquote") ? bubbleBtnActive : ""}`}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        >
+          <Quote className="size-3.5" strokeWidth={2} />
+        </button>
+        <span className="mx-0.5 h-4 w-px bg-white/10" />
+        <button
+          type="button"
+          aria-label="Link"
+          className={`${bubbleBtn} ${editor.isActive("link") ? bubbleBtnActive : ""}`}
+          onClick={setLink}
+        >
+          <LinkIcon className="size-3.5" strokeWidth={2} />
+        </button>
+      </BubbleMenu>
 
-          <span className="mx-1 h-5 w-px bg-border" />
+      {/* Sticky compact rail (hides in focus mode) */}
+      {!readOnly && !focusMode && (
+        <div className="sticky top-[64px] z-20 mb-3 flex items-center justify-between gap-2 rounded-full border border-white/[0.06] bg-[#151517]/90 px-2 py-1.5 backdrop-blur-md">
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              aria-label="Heading 1"
+              className={`${railBtn} ${editor.isActive("heading", { level: 1 }) ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            >
+              <Heading1 className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Heading 2"
+              className={`${railBtn} ${editor.isActive("heading", { level: 2 }) ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            >
+              <Heading2 className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Heading 3"
+              className={`${railBtn} ${editor.isActive("heading", { level: 3 }) ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            >
+              <Heading3 className="size-4" strokeWidth={1.8} />
+            </button>
+            <span className="mx-1 h-4 w-px bg-white/10" />
+            <button
+              type="button"
+              aria-label="Bullet list"
+              className={`${railBtn} ${editor.isActive("bulletList") ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+            >
+              <List className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Ordered list"
+              className={`${railBtn} ${editor.isActive("orderedList") ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            >
+              <ListOrdered className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Quote"
+              className={`${railBtn} ${editor.isActive("blockquote") ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            >
+              <Quote className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Code"
+              className={`${railBtn} ${editor.isActive("code") ? railBtnActive : ""}`}
+              onClick={() => editor.chain().focus().toggleCode().run()}
+            >
+              <Code className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Divider"
+              className={railBtn}
+              onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            >
+              <Minus className="size-4" strokeWidth={1.8} />
+            </button>
+            <span className="mx-1 h-4 w-px bg-white/10" />
+            <button
+              type="button"
+              aria-label="Link"
+              className={`${railBtn} ${editor.isActive("link") ? railBtnActive : ""}`}
+              onClick={setLink}
+            >
+              <LinkIcon className="size-4" strokeWidth={1.8} />
+            </button>
+          </div>
 
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("bold") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            title="Bold"
-          >
-            <Bold className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("italic") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            title="Italic"
-          >
-            <Italic className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("strike") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            title="Strikethrough"
-          >
-            <Strikethrough className="size-4" />
-          </button>
-
-          <span className="mx-1 h-5 w-px bg-border" />
-
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("bulletList") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            title="Bullet list"
-          >
-            <List className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("orderedList") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            title="Numbered list"
-          >
-            <ListOrdered className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("blockquote") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            title="Blockquote"
-          >
-            <Quote className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("code") ? btnActive : ""}`}
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            title="Inline code"
-          >
-            <Code className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={btn}
-            onClick={() => editor.chain().focus().setHorizontalRule().run()}
-            title="Divider"
-          >
-            <Minus className="size-4" />
-          </button>
-
-          <span className="mx-1 h-5 w-px bg-border" />
-
-          <button
-            type="button"
-            className={`${btn} ${editor.isActive("link") ? btnActive : ""}`}
-            onClick={setLink}
-            title="Link"
-          >
-            <LinkIcon className="size-4" />
-          </button>
-
-          <span className="ml-auto" />
-
-          <button
-            type="button"
-            className={btn}
-            onClick={() => editor.chain().focus().undo().run()}
-            disabled={!editor.can().undo()}
-            title="Undo"
-          >
-            <Undo2 className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={btn}
-            onClick={() => editor.chain().focus().redo().run()}
-            disabled={!editor.can().redo()}
-            title="Redo"
-          >
-            <Redo2 className="size-4" />
-          </button>
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              aria-label="Undo"
+              className={railBtn}
+              onClick={() => editor.chain().focus().undo().run()}
+              disabled={!editor.can().undo()}
+            >
+              <Undo2 className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Redo"
+              className={railBtn}
+              onClick={() => editor.chain().focus().redo().run()}
+              disabled={!editor.can().redo()}
+            >
+              <Redo2 className="size-4" strokeWidth={1.8} />
+            </button>
+          </div>
         </div>
       )}
 
-      <EditorContent editor={editor} />
+      {/* Paper canvas */}
+      <div
+        className={`editor-paper rounded-2xl shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] overflow-hidden spring ${
+          focusMode ? "min-h-[80dvh]" : "min-h-[640px]"
+        }`}
+      >
+        <div className={`${focusMode ? "py-24 md:py-32 px-6 md:px-12" : "py-16 md:py-20 px-6 md:px-10"}`}>
+          <EditorContent editor={editor} />
+        </div>
+      </div>
+
+      {/* Bottom meta strip */}
+      <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-mono">
+        <span>{stats.words.toLocaleString()} words · {stats.chars.toLocaleString()} chars</span>
+        <span>{readingMin} min read</span>
+      </div>
     </div>
   );
 }

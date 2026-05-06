@@ -6,7 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import {
   Bold,
   Italic,
@@ -32,8 +32,6 @@ interface Props {
 }
 
 export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode = false }: Props) {
-  const [stats, setStats] = useState({ words: 0, chars: 0 });
-
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -54,9 +52,6 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
     editable: !readOnly,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
-      const text = editor.getText();
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      setStats({ words, chars: text.length });
     },
     editorProps: {
       attributes: {
@@ -69,13 +64,8 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
     if (!editor) return;
     if (editor.getHTML() !== initialHtml && initialHtml) {
       editor.commands.setContent(initialHtml, { emitUpdate: false });
-      const text = editor.getText();
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      setStats({ words, chars: text.length });
     }
   }, [initialHtml, editor]);
-
-  const readingMin = useMemo(() => Math.max(1, Math.round(stats.words / 220)), [stats.words]);
 
   function setLink() {
     if (!editor) return;
@@ -279,12 +269,6 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
         <div className={`${focusMode ? "py-24 md:py-32 px-6 md:px-12" : "py-16 md:py-20 px-6 md:px-10"}`}>
           <EditorContent editor={editor} />
         </div>
-      </div>
-
-      {/* Bottom meta strip */}
-      <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-mono">
-        <span>{stats.words.toLocaleString()} words · {stats.chars.toLocaleString()} chars</span>
-        <span>{readingMin} min read</span>
       </div>
     </div>
   );

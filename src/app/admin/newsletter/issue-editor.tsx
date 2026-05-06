@@ -221,7 +221,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
               Issues
             </button>
             <span className="h-4 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-mono">
+            <div className="flex items-center gap-2 text-xs text-zinc-500">
               {isSent ? (
                 <>
                   <span className="inline-block size-1.5 rounded-full bg-zinc-500" />
@@ -313,29 +313,21 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       {/* Document area */}
       <div className={`mx-auto ${focusMode ? "max-w-3xl" : "max-w-5xl"} pt-8 pb-24 spring`}>
         {/* Subject */}
-        <div className="mb-6">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono">
-            Issue subject · what readers see in inbox
-          </span>
-          <input
-            type="text"
-            value={subject}
-            readOnly={readOnly}
-            onChange={(e) => {
-              setSubject(e.target.value);
-              markDirty();
-            }}
-            placeholder="Untitled — write a subject worth opening"
-            className="mt-2 w-full bg-transparent border-0 outline-none text-3xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 placeholder:text-zinc-700 px-0 py-1 leading-[1.05]"
-          />
-        </div>
+        <input
+          type="text"
+          value={subject}
+          readOnly={readOnly}
+          onChange={(e) => {
+            setSubject(e.target.value);
+            markDirty();
+          }}
+          placeholder="Subject"
+          className="mb-6 w-full bg-transparent border-0 outline-none text-3xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 placeholder:text-zinc-700 px-0 py-1 leading-[1.05]"
+        />
 
         {/* Audience pills */}
         {!focusMode && (
           <div className="mb-10 flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono mr-1">
-              Audience
-            </span>
             {AUDIENCE_OPTIONS.map((opt) => {
               const active = audience === opt.value;
               return (
@@ -347,7 +339,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                     setAudience(opt.value);
                     markDirty();
                   }}
-                  className={`h-7 px-3 inline-flex items-center gap-1.5 rounded-full text-[11px] font-medium spring ${
+                  className={`h-7 px-3 inline-flex items-center gap-1.5 rounded-full text-[12px] font-medium spring ${
                     active
                       ? "bg-white/[0.08] text-zinc-50 ring-1 ring-white/[0.10]"
                       : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
@@ -358,9 +350,6 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                 </button>
               );
             })}
-            <span className="text-[11px] text-zinc-600 ml-1">
-              → sending to <span className="text-zinc-300">{audienceOpt.label}</span>
-            </span>
           </div>
         )}
 
@@ -379,15 +368,9 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           </div>
 
           {showPreview && (
-            <div className="rounded-2xl border border-white/[0.06] bg-[#151517] overflow-hidden flex flex-col">
-              <div className="px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono">
-                  Email preview · Resend render
-                </span>
-                <span className="breath-dot" aria-hidden />
-              </div>
+            <div className="rounded-2xl border border-white/[0.06] bg-[#151517] overflow-hidden">
               <div
-                className="bg-white text-black overflow-auto max-h-[800px] flex-1"
+                className="bg-white text-black overflow-auto max-h-[800px]"
                 dangerouslySetInnerHTML={{
                   __html:
                     previewHtml ||
@@ -400,12 +383,10 @@ export default function IssueEditor({ issueId, onClose }: Props) {
 
         {/* Sent stats */}
         {issue.stats && isSent && (
-          <div className="mt-10 pt-6 border-t border-white/[0.06] flex items-center gap-6 text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-mono">
-            <span>Sent <span className="text-zinc-200">{issue.stats.sent ?? "—"}</span></span>
-            <span>Failed <span className="text-zinc-200">{issue.stats.failed ?? "—"}</span></span>
-            {issue.sent_at && (
-              <span>{new Date(issue.sent_at).toLocaleString()}</span>
-            )}
+          <div className="mt-10 pt-6 border-t border-white/[0.06] flex items-center gap-6 text-sm text-zinc-500">
+            <span>Sent <span className="text-zinc-200 font-medium">{issue.stats.sent ?? "—"}</span></span>
+            <span>Failed <span className="text-zinc-200 font-medium">{issue.stats.failed ?? "—"}</span></span>
+            {issue.sent_at && <span>{new Date(issue.sent_at).toLocaleString()}</span>}
           </div>
         )}
       </div>

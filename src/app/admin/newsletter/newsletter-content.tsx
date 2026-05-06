@@ -126,17 +126,9 @@ export default function NewsletterContent() {
     <div className="space-y-12 pb-24">
       {/* Header */}
       <header className="flex items-end justify-between gap-6 flex-wrap">
-        <div className="space-y-3">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono">
-            Newsletter · audience &amp; issues
-          </span>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 leading-[1.05]">
-            Write the next edition
-          </h1>
-          <p className="text-sm text-zinc-400 max-w-[55ch]">
-            One inbox. One signal. Send to all active or target HOT, WARM, COLD.
-          </p>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 leading-[1.05]">
+          Newsletter
+        </h1>
 
         <button
           ref={newBtnRef}
@@ -167,14 +159,7 @@ export default function NewsletterContent() {
 
       {/* Issues list */}
       <section className="space-y-4">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-sm font-semibold tracking-[-0.01em] text-zinc-200">Issues</h2>
-          {issues && issues.length > 0 && (
-            <span className="text-[11px] text-zinc-500 font-mono">
-              {issues.length} total
-            </span>
-          )}
-        </div>
+        <h2 className="text-sm font-semibold text-zinc-300">Issues</h2>
 
         {issues === null ? (
           <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
@@ -214,10 +199,10 @@ export default function NewsletterContent() {
                   </span>
 
                   {/* Audience */}
-                  <span className="hidden md:inline-flex shrink-0 items-center gap-1.5 text-[11px] text-zinc-500 font-mono uppercase tracking-wider">
+                  <span className="hidden md:inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
                     {i.audience_filter ? (
                       <>
-                        <span className={`size-1 rounded-full ${SEG_DOT[i.audience_filter] ?? "bg-zinc-500"}`} />
+                        <span className={`size-1.5 rounded-full ${SEG_DOT[i.audience_filter] ?? "bg-zinc-500"}`} />
                         {i.audience_filter}
                       </>
                     ) : (
@@ -226,29 +211,16 @@ export default function NewsletterContent() {
                   </span>
 
                   {/* Sent count */}
-                  <span className="hidden sm:inline-block w-16 text-right text-[12px] text-zinc-400 font-mono tabular-nums">
+                  <span className="hidden sm:inline-block w-16 text-right text-xs text-zinc-400 tabular-nums">
                     {i.stats?.sent ?? "—"}
                   </span>
 
-                  {/* Status label */}
-                  <span
-                    className={`hidden sm:inline-block w-20 text-[11px] uppercase tracking-[0.18em] font-mono ${
-                      i.status === "sent"
-                        ? "text-zinc-400"
-                        : i.status === "scheduled"
-                          ? "text-[var(--color-warn,#f5a524)]"
-                          : "text-zinc-500"
-                    }`}
-                  >
-                    {i.status}
-                  </span>
-
                   {/* Date */}
-                  <span className="shrink-0 w-28 text-right text-[11px] text-zinc-500 font-mono">
+                  <span className="shrink-0 w-24 text-right text-xs text-zinc-500">
                     {(i.sent_at
                       ? new Date(i.sent_at)
                       : new Date(i.created_at)
-                    ).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "2-digit" })}
+                    ).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                   </span>
 
                   <ChevronRight
@@ -278,12 +250,12 @@ function Stat({
 }) {
   return (
     <div className="px-5 py-6 first:pl-0 last:pr-0">
-      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono">
+      <div className="flex items-center gap-2 text-xs text-zinc-500">
         {dotClass && <span className={`size-1.5 rounded-full ${dotClass}`} />}
         {label}
       </div>
       <div
-        className={`mt-3 text-3xl font-bold tracking-[-0.02em] tabular-nums ${
+        className={`mt-2 text-3xl font-bold tracking-[-0.02em] tabular-nums ${
           muted ? "text-zinc-500" : "text-zinc-50"
         }`}
       >
@@ -297,20 +269,12 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
     <div className="border-y border-white/[0.06] py-20 text-center">
       <div className="mx-auto max-w-md space-y-4">
-        <div className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-mono">
-          Empty inbox
-        </div>
-        <h3 className="text-2xl font-bold tracking-[-0.02em] text-zinc-100">
-          The first edition writes itself.
-        </h3>
-        <p className="text-sm text-zinc-500">
-          A subject line, three short sections, one CTA. That&apos;s the shape.
-        </p>
+        <h3 className="text-xl font-semibold text-zinc-200">No issues yet.</h3>
         <button
           onClick={onCreate}
-          className="mt-3 inline-flex items-center gap-2 h-10 px-5 rounded-full bg-zinc-100 text-zinc-950 text-sm font-semibold spring hover:bg-white"
+          className="mt-2 inline-flex items-center gap-2 h-10 px-5 rounded-full bg-zinc-100 text-zinc-950 text-sm font-semibold spring hover:bg-white"
         >
-          Draft issue 001
+          Start drafting
           <ArrowUpRight className="size-4" strokeWidth={2} />
         </button>
       </div>

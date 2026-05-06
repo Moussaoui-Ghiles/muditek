@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
-import { NEWSLETTER_FROM, NEWSLETTER_REPLY_TO, wrapIssueHtml } from "@/lib/newsletter";
+import { NEWSLETTER_FROM, NEWSLETTER_REPLY_TO, wrapIssueHtml, htmlToPlainText } from "@/lib/newsletter";
 import { Resend } from "resend";
 
 export async function POST(
@@ -33,11 +33,10 @@ export async function POST(
   `;
   const token = subRows[0]?.unsub_token ?? "TEST";
 
-  const html = wrapIssueHtml(issue.html ?? "", {
-    unsubUrl: `${baseUrl}/api/newsletter/unsubscribe/${token}`,
-    prefsUrl: `${baseUrl}/preferences/${token}`,
-    webUrl: `${baseUrl}/newsletter/${issue.slug}`,
-  });
+  const unsubUrl = `${baseUrl}/api/newsletter/unsubscribe/${token}`;
+  const prefsUrl = `${baseUrl}/preferences/${token}`;
+  const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl });
+  const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { data, error } = await resend.emails.send({
@@ -46,6 +45,13 @@ export async function POST(
     to,
     subject: `[TEST] ${issue.subject}`,
     html,
+    text,
+    headers: {
+      "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsubscribe@muditek.com?subject=unsubscribe>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      "Precedence": "bulk",
+      "X-Entity-Ref-ID": `${id}-test`,
+    },
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true, email_id: data?.id });

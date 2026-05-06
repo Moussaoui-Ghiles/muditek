@@ -77,37 +77,46 @@ function renderInline(text: string): string {
   return s;
 }
 
-export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string; webUrl: string }): string {
+export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string }): string {
   const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 40px 20px; background: #ffffff; color: #1a1a1a;">
-      <div style="margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #ececec;">
+      <div style="margin-bottom: 28px;">
         <a href="https://muditek.com" style="text-decoration:none; display:inline-block;">
           <img src="${logoUrl}" alt="Muditek" width="120" height="28" style="display:block; border:0; outline:none; text-decoration:none; height:28px;" />
         </a>
-        <div style="margin-top:14px; font-size:11px; color:#6e6e6e; letter-spacing:0.18em; text-transform:uppercase; font-weight:600;">Weekly Newsletter</div>
       </div>
 
       ${bodyHtml}
 
-      <hr style="border:none; border-top:1px solid #ececec; margin:48px 0 24px;" />
-
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-bottom:20px;">
-        <tr>
-          <td align="left" style="padding:0;">
-            <a href="${footer.webUrl}" style="display:inline-block; padding:8px 14px; margin:0 8px 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">View in browser</a>
-            <a href="${footer.prefsUrl}" style="display:inline-block; padding:8px 14px; margin:0 8px 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">Manage preferences</a>
-            <a href="${footer.unsubUrl}" style="display:inline-block; padding:8px 14px; margin:0 0 8px 0; border:1px solid #d4d4d4; border-radius:6px; font-size:12px; color:#1a1a1a; text-decoration:none; font-weight:500;">Unsubscribe</a>
-          </td>
-        </tr>
-      </table>
-
-      <p style="margin:0; font-size:12px; color:#6e6e6e; line-height:1.6;">
-        You're receiving this because you subscribed at <a href="https://muditek.com" style="color:#1a1a1a; text-decoration:underline;">muditek.com</a>.<br/>
-        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#1a1a1a; text-decoration:underline;">ghiles@muditek.com</a>
+      <p style="margin:48px 0 0; font-size:12px; color:#8a8a8a; line-height:1.7;">
+        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a; text-decoration:underline;">ghiles@muditek.com</a><br/>
+        <a href="${footer.prefsUrl}" style="color:#8a8a8a; text-decoration:underline;">Manage preferences</a> &middot; <a href="${footer.unsubUrl}" style="color:#8a8a8a; text-decoration:underline;">Unsubscribe</a>
       </p>
     </div>
   `;
+}
+
+// Plain-text fallback for multipart/alternative — major deliverability boost.
+export function htmlToPlainText(html: string): string {
+  if (!html) return "";
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|h1|h2|h3|h4|h5|h6|li|tr|div)>/gi, "\n\n")
+    .replace(/<li[^>]*>/gi, "- ")
+    .replace(/<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, "$2 ($1)")
+    .replace(/<img[^>]*alt="([^"]*)"[^>]*>/gi, "[image: $1]")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 type ActiveSub = {
@@ -155,17 +164,21 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
     const emails = chunk.map((s) => {
       const unsubUrl = `${baseUrl}/api/newsletter/unsubscribe/${s.unsub_token}`;
       const prefsUrl = `${baseUrl}/preferences/${s.unsub_token}`;
-      const webUrl = `${baseUrl}/newsletter/${issue.slug}`;
-      const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl, webUrl });
+      const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl });
+      const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
       return {
         from: NEWSLETTER_FROM,
         reply_to: NEWSLETTER_REPLY_TO,
         to: s.email,
         subject: issue.subject,
         html,
+        text,
         headers: {
-          "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsub@ghiless.com?subject=unsub>`,
+          "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsubscribe@muditek.com?subject=unsubscribe>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          "List-ID": `Muditek Newsletter <newsletter.muditek.com>`,
+          "Precedence": "bulk",
+          "X-Entity-Ref-ID": `${issueId}-${s.id}`,
         },
       };
     });

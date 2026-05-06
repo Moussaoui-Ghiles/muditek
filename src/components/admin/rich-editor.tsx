@@ -6,7 +6,9 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
-import { useEffect } from "react";
+import Image from "@tiptap/extension-image";
+import { useEffect, useRef, useState } from "react";
+import { marked } from "marked";
 import {
   Bold,
   Italic,
@@ -22,6 +24,8 @@ import {
   Redo2,
   Strikethrough,
   Minus,
+  Image as ImageIcon,
+  Code2,
 } from "lucide-react";
 
 interface Props {
@@ -31,7 +35,24 @@ interface Props {
   focusMode?: boolean;
 }
 
+marked.setOptions({ gfm: true, breaks: true });
+
+function isLikelyMarkdown(text: string): boolean {
+  if (!text || text.length > 200_000) return false;
+  return /(^|\n)\s*(#{1,6}\s|[-*+]\s|>\s|\d+\.\s|```)/.test(text) ||
+    /\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|^---$/m.test(text);
+}
+
+function isLikelyHtml(text: string): boolean {
+  return /<[a-z][^>]*>/i.test(text) && /<\/[a-z]+>|\/>/i.test(text);
+}
+
 export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode = false }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [htmlOpen, setHtmlOpen] = useState(false);
+  const [htmlBuffer, setHtmlBuffer] = useState("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -47,15 +68,71 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
         placeholder: "Start writing the issue. Lead with the one thing that matters most.",
       }),
       Typography,
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "rounded-lg max-w-full h-auto my-4",
+        },
+      }),
     ],
     content: initialHtml,
     editable: !readOnly,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
         class: "ProseMirror focus:outline-none max-w-[68ch] mx-auto",
+      },
+      handlePaste(view, event) {
+        const cb = event.clipboardData;
+        if (!cb) return false;
+
+        // 1) Image paste
+        const items = Array.from(cb.items || []);
+        const imgItem = items.find((it) => it.type.startsWith("image/"));
+        if (imgItem) {
+          const file = imgItem.getAsFile();
+          if (file) {
+            event.preventDefault();
+            void uploadAndInsert(file);
+            return true;
+          }
+        }
+
+        // 2) HTML paste (preserve)
+        const html = cb.getData("text/html");
+        const text = cb.getData("text/plain");
+
+        if (html && html.trim()) {
+          // Tiptap handles HTML natively
+          return false;
+        }
+
+        // 3) Markdown detection on plain-text paste
+        if (text && isLikelyMarkdown(text)) {
+          event.preventDefault();
+          const rendered = marked.parse(text, { async: false }) as string;
+          editor?.commands.insertContent(rendered);
+          return true;
+        }
+
+        // 4) Raw HTML in plain text
+        if (text && isLikelyHtml(text)) {
+          event.preventDefault();
+          editor?.commands.insertContent(text);
+          return true;
+        }
+        return false;
+      },
+      handleDrop(_view, event) {
+        const dt = (event as DragEvent).dataTransfer;
+        const file = dt?.files?.[0];
+        if (file && file.type.startsWith("image/")) {
+          event.preventDefault();
+          void uploadAndInsert(file);
+          return true;
+        }
+        return false;
       },
     },
   });
@@ -67,6 +144,35 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
     }
   }, [initialHtml, editor]);
 
+  async function uploadAndInsert(file: File) {
+    setUploadError(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        // Fallback: inline data URL so the user still sees the image immediately
+        if (res.status === 501) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            editor?.chain().focus().setImage({ src: dataUrl }).run();
+            setUploadError(
+              "Saved inline (Vercel Blob not configured). For production sends, replace with a hosted URL.",
+            );
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+        throw new Error(data.error || "Upload failed");
+      }
+      editor?.chain().focus().setImage({ src: data.url }).run();
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload failed");
+    }
+  }
+
   function setLink() {
     if (!editor) return;
     const prev = editor.getAttributes("link").href;
@@ -77,6 +183,23 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
       return;
     }
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }
+
+  function insertImageFromUrl() {
+    if (!editor) return;
+    const url = window.prompt("Image URL (must be a public https URL for emails)", "https://");
+    if (!url || url === "https://") return;
+    editor.chain().focus().setImage({ src: url }).run();
+  }
+
+  function insertHtmlBuffer() {
+    if (!editor || !htmlBuffer.trim()) {
+      setHtmlOpen(false);
+      return;
+    }
+    editor.chain().focus().insertContent(htmlBuffer).run();
+    setHtmlBuffer("");
+    setHtmlOpen(false);
   }
 
   if (!editor) {
@@ -157,7 +280,7 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
         </button>
       </BubbleMenu>
 
-      {/* Sticky compact rail (hides in focus mode) */}
+      {/* Sticky compact rail */}
       {!readOnly && !focusMode && (
         <div className="sticky top-[64px] z-20 mb-3 flex items-center justify-between gap-2 rounded-full border border-white/[0.06] bg-[#151517]/90 px-2 py-1.5 backdrop-blur-md">
           <div className="flex items-center gap-0.5">
@@ -235,6 +358,33 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
             >
               <LinkIcon className="size-4" strokeWidth={1.8} />
             </button>
+            <button
+              type="button"
+              aria-label="Insert image"
+              className={railBtn}
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload image"
+            >
+              <ImageIcon className="size-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              aria-label="Image from URL"
+              className={`${railBtn} text-[10px] font-mono tracking-wide`}
+              onClick={insertImageFromUrl}
+              title="Image from URL"
+            >
+              URL
+            </button>
+            <button
+              type="button"
+              aria-label="Insert HTML"
+              className={railBtn}
+              onClick={() => setHtmlOpen(true)}
+              title="Insert HTML / embed"
+            >
+              <Code2 className="size-4" strokeWidth={1.8} />
+            </button>
           </div>
 
           <div className="flex items-center gap-0.5">
@@ -256,6 +406,67 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
             >
               <Redo2 className="size-4" strokeWidth={1.8} />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void uploadAndInsert(file);
+          e.target.value = "";
+        }}
+      />
+
+      {uploadError && (
+        <div className="mb-2 rounded-md border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-200">
+          {uploadError}
+        </div>
+      )}
+
+      {/* HTML insert sheet */}
+      {htmlOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setHtmlOpen(false)}
+        >
+          <div
+            className="w-full max-w-2xl rounded-2xl border border-white/[0.06] bg-[#151517] p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-zinc-100 mb-1">Insert HTML</h3>
+            <p className="text-xs text-zinc-500 mb-3">
+              Paste a snippet, embed, or table. It&apos;ll be inserted at the cursor.
+            </p>
+            <textarea
+              autoFocus
+              value={htmlBuffer}
+              onChange={(e) => setHtmlBuffer(e.target.value)}
+              spellCheck={false}
+              placeholder='<div style="...">...</div>'
+              className="w-full h-48 rounded-md border border-white/[0.06] bg-[#0c0c0e] text-zinc-100 text-sm font-mono p-3 outline-none focus:border-white/[0.12] resize-none"
+            />
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setHtmlOpen(false)}
+                className="h-8 px-3 rounded-md text-sm text-zinc-300 hover:bg-white/[0.04]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={insertHtmlBuffer}
+                className="h-8 px-4 rounded-md bg-zinc-100 text-zinc-950 text-sm font-semibold hover:bg-white"
+              >
+                Insert
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { buildPortalAccess } from "@/lib/portal-access";
 import PortalContent from "./portal-content";
 
 interface ContentItem {
@@ -33,9 +34,18 @@ export default async function PortalPage() {
   const sql = getDb();
 
   await sql`
-    UPDATE newsletter_subscribers
+    INSERT INTO newsletter_subscribers (email, source, topics, clerk_user_id)
+    VALUES (${email}, 'portal', ARRAY['ai-agents','gtm-systems','solo-operator'], ${user.id})
+    ON CONFLICT (email) DO UPDATE
     SET clerk_user_id = ${user.id}, status = 'active', unsub_at = NULL
-    WHERE email = ${email} AND (clerk_user_id IS NULL OR clerk_user_id = ${user.id})
+    WHERE newsletter_subscribers.clerk_user_id IS NULL OR newsletter_subscribers.clerk_user_id = ${user.id}
+  `;
+
+  await sql`
+    INSERT INTO portal_memberships (email, role)
+    VALUES (${email}, 'free')
+    ON CONFLICT (email, role) DO UPDATE
+    SET status = 'active', updated_at = NOW()
   `;
 
   const subs = await sql`
@@ -49,6 +59,26 @@ export default async function PortalPage() {
   }
 
   const isPaid = !!paidSub && paidSub.status === "active";
+
+  if (isPaid) {
+    await sql`
+      INSERT INTO portal_memberships (email, role)
+      VALUES (${email}, 'mudikit')
+      ON CONFLICT (email, role) DO UPDATE
+      SET status = 'active', updated_at = NOW()
+    `;
+  }
+
+  const membershipRows = await sql`
+    SELECT role FROM portal_memberships
+    WHERE email = ${email} AND status = 'active'
+  `;
+
+  const access = buildPortalAccess({
+    email,
+    membershipRoles: membershipRows.map((row) => String(row.role)),
+    hasActiveSubscription: isPaid,
+  });
 
   const freeItems = (await sql`
     SELECT id, title, slug, description, category, download_url, file_type, is_new, is_free, created_at
@@ -71,14 +101,14 @@ export default async function PortalPage() {
     FROM newsletter_issues
     WHERE status = 'sent' AND slug IS NOT NULL
     ORDER BY sent_at DESC NULLS LAST
-    LIMIT 20
+    LIMIT 40
   `) as NewsletterIssue[];
 
   return (
     <PortalContent
       displayName={user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0]}
       email={email}
-      isPaid={isPaid}
+      access={access}
       freeItems={freeItems}
       paidItems={paidItems}
       issues={issues}

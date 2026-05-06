@@ -37,21 +37,39 @@ export async function PATCH(
 
   const subject: string | undefined = body.subject;
   const markdown: string | undefined = body.markdown_src;
+  const htmlInput: string | undefined = typeof body.html === "string" ? body.html : undefined;
+  const audienceProvided = Object.prototype.hasOwnProperty.call(body, "audience_filter");
   const audienceFilter: string | null | undefined = body.audience_filter;
 
-  const html = markdown !== undefined ? renderIssueHtml(markdown) : undefined;
+  // Prefer Tiptap HTML, fall back to rendering markdown
+  const html = htmlInput !== undefined
+    ? htmlInput
+    : markdown !== undefined
+      ? renderIssueHtml(markdown)
+      : undefined;
 
-  const rows = await sql`
-    UPDATE newsletter_issues
-    SET
-      subject = COALESCE(${subject ?? null}, subject),
-      markdown_src = COALESCE(${markdown ?? null}, markdown_src),
-      html = COALESCE(${html ?? null}, html),
-      audience_filter = ${audienceFilter !== undefined ? audienceFilter : null},
-      updated_at = NOW()
-    WHERE id = ${id}
-    RETURNING id, subject, slug, status, audience_filter
-  `;
+  const rows = audienceProvided
+    ? await sql`
+        UPDATE newsletter_issues
+        SET
+          subject = COALESCE(${subject ?? null}, subject),
+          markdown_src = COALESCE(${markdown ?? null}, markdown_src),
+          html = COALESCE(${html ?? null}, html),
+          audience_filter = ${audienceFilter ?? null},
+          updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING id, subject, slug, status, audience_filter
+      `
+    : await sql`
+        UPDATE newsletter_issues
+        SET
+          subject = COALESCE(${subject ?? null}, subject),
+          markdown_src = COALESCE(${markdown ?? null}, markdown_src),
+          html = COALESCE(${html ?? null}, html),
+          updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING id, subject, slug, status, audience_filter
+      `;
   return NextResponse.json(rows[0]);
 }
 

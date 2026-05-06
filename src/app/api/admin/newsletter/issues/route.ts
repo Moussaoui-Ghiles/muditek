@@ -22,13 +22,15 @@ export async function POST(request: Request) {
   if (!admin.authorized) return admin.response;
 
   const body = await request.json();
-  const subject: string = String(body.subject ?? "").trim();
-  if (!subject) return NextResponse.json({ error: "Subject required" }, { status: 400 });
+  const rawSubject: string = String(body.subject ?? "").trim();
+  const subject: string = rawSubject || "Untitled draft";
 
+  // Accept HTML directly (Tiptap) or markdown for backwards compat
+  const htmlInput: string | undefined = typeof body.html === "string" ? body.html : undefined;
   const markdown: string = String(body.markdown_src ?? "");
   const audienceFilter: string | null = body.audience_filter ?? null;
   const slug = await ensureUniqueSlug(subject);
-  const html = renderIssueHtml(markdown);
+  const html = htmlInput ?? renderIssueHtml(markdown);
 
   const sql = getDb();
   const rows = await sql`

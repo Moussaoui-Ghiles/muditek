@@ -3,25 +3,8 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -53,9 +36,6 @@ export default function NewsletterContent() {
   const [issues, setIssues] = useState<Issue[] | null>(null);
   const [breakdown, setBreakdown] = useState<AudienceBreakdown[] | null>(null);
   const [totals, setTotals] = useState<{ status: string; count: number }[] | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [newSubject, setNewSubject] = useState("");
-  const [newAudience, setNewAudience] = useState<string>("all");
   const [creatingLoading, setCreatingLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -75,23 +55,19 @@ export default function NewsletterContent() {
   }, [reloadKey]);
 
   async function createIssue() {
-    if (!newSubject.trim()) return;
     setCreatingLoading(true);
     try {
       const res = await fetch("/api/admin/newsletter/issues", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          subject: newSubject.trim(),
-          markdown_src: "",
-          audience_filter: newAudience === "all" ? null : newAudience,
+          subject: "",
+          html: "",
+          audience_filter: null,
         }),
       });
       if (res.ok) {
         const data = await res.json();
-        setCreating(false);
-        setNewSubject("");
-        setNewAudience("all");
         setEditingId(data.id);
       }
     } finally {
@@ -148,7 +124,9 @@ export default function NewsletterContent() {
 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Issues</h2>
-        <Button onClick={() => setCreating(true)}>New issue</Button>
+        <Button onClick={createIssue} disabled={creatingLoading}>
+          {creatingLoading ? "Creating…" : "New issue"}
+        </Button>
       </div>
 
       <Card className="p-0 overflow-hidden">
@@ -204,48 +182,6 @@ export default function NewsletterContent() {
         )}
       </Card>
 
-      <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>New issue</DialogTitle>
-            <DialogDescription>
-              Start a draft. You can edit body, audience, and send later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div>
-              <Label htmlFor="subject">Subject</Label>
-              <Input
-                id="subject"
-                value={newSubject}
-                onChange={(e) => setNewSubject(e.target.value)}
-                placeholder="Weekly #1 — what I'm shipping"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Audience</Label>
-              <Select value={newAudience} onValueChange={(v) => setNewAudience(v ?? "all")}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All active</SelectItem>
-                  <SelectItem value="HOT">HOT only</SelectItem>
-                  <SelectItem value="WARM">WARM only</SelectItem>
-                  <SelectItem value="COLD">COLD only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreating(false)}>Cancel</Button>
-            <Button onClick={createIssue} disabled={creatingLoading || !newSubject.trim()}>
-              {creatingLoading ? "Creating…" : "Create draft"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

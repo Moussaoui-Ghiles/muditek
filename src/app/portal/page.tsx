@@ -23,13 +23,34 @@ interface NewsletterIssue {
   sent_at: Date | null;
 }
 
-export default async function PortalPage() {
+const VALID_VIEWS = new Set([
+  "overview",
+  "start",
+  "newsletter",
+  "free-library",
+  "mudikit",
+  "client",
+  "account",
+]);
+
+function normalizeView(value: unknown): string {
+  const view = Array.isArray(value) ? value[0] : value;
+  return typeof view === "string" && VALID_VIEWS.has(view) ? view : "overview";
+}
+
+export default async function PortalPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { isAuthenticated } = await auth();
   if (!isAuthenticated) redirect("/sign-in?redirect_url=/portal");
   const user = await currentUser();
   if (!user) redirect("/sign-in?redirect_url=/portal");
   const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
   if (!email) redirect("/sign-in?redirect_url=/portal");
+  const params = searchParams ? await searchParams : {};
+  const activeView = normalizeView(params.view);
 
   const sql = getDb();
 
@@ -106,6 +127,7 @@ export default async function PortalPage() {
 
   return (
     <PortalContent
+      activeView={activeView}
       displayName={user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0]}
       email={email}
       access={access}

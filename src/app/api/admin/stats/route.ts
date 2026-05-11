@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { NURTURE_SEQUENCE } from "@/lib/sequences";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
   const sql = getDb();
+  await ensureResourceLeadSchema(sql);
 
   const [
     [subs],
@@ -31,14 +33,33 @@ export async function GET(request: Request) {
       COUNT(*) FILTER (WHERE status = 'active')::int AS active,
       COUNT(*)::int AS total
       FROM subscribers`,
-    sql`SELECT COUNT(*)::int AS total FROM submissions`,
-    sql`SELECT COUNT(*)::int AS total FROM submissions WHERE created_at >= NOW() - INTERVAL '7 days'`,
+    sql`
+      SELECT COUNT(DISTINCT email)::int AS total
+      FROM (
+        SELECT lower(email) AS email FROM submissions
+        UNION ALL
+        SELECT lower(email) AS email FROM resource_leads
+      ) lead
+    `,
+    sql`
+      SELECT COUNT(DISTINCT email)::int AS total
+      FROM (
+        SELECT lower(email) AS email, created_at FROM submissions
+        UNION ALL
+        SELECT lower(email) AS email, created_at FROM resource_leads
+      ) lead
+      WHERE created_at >= NOW() - INTERVAL '7 days'
+    `,
     sql`SELECT COUNT(*)::int AS total FROM commenters`,
     sql`SELECT COUNT(*)::int AS total FROM submissions WHERE verified = true`,
     sql`SELECT COUNT(*)::int AS total FROM submissions WHERE delivered = true`,
     sql`SELECT COUNT(DISTINCT email)::int AS total
-      FROM submissions s
-      WHERE EXISTS (SELECT 1 FROM subscribers WHERE email = s.email AND status = 'active')`,
+      FROM (
+        SELECT lower(email) AS email FROM submissions
+        UNION
+        SELECT lower(email) AS email FROM resource_leads
+      ) lead
+      WHERE EXISTS (SELECT 1 FROM subscribers WHERE email = lead.email AND status = 'active')`,
     sql`SELECT COUNT(*)::int AS total FROM deliveries WHERE sent_at >= NOW() - INTERVAL '7 days'`,
     sql`SELECT COUNT(*)::int AS total FROM sequence_sends WHERE sent_at >= NOW() - INTERVAL '7 days'`,
     sql`SELECT COUNT(*)::int AS total FROM submissions
@@ -47,16 +68,23 @@ export async function GET(request: Request) {
       WHERE is_active = true
       AND expires_at BETWEEN NOW() AND NOW() + INTERVAL '3 days'`,
     sql`
-      WITH lead_progress AS (
-        SELECT DISTINCT ON (s.email)
-          s.email,
-          s.created_at AS enrolled_at,
-          COALESCE((SELECT MAX(step) FROM sequence_sends WHERE email = s.email), 1) AS last_step
-        FROM submissions s
+      WITH raw_leads AS (
+        SELECT lower(email) AS email, created_at AS enrolled_at
+        FROM submissions
+        UNION ALL
+        SELECT lower(email) AS email, created_at AS enrolled_at
+        FROM resource_leads
+      ),
+      lead_progress AS (
+        SELECT DISTINCT ON (lead.email)
+          lead.email,
+          lead.enrolled_at,
+          COALESCE((SELECT MAX(step) FROM sequence_sends WHERE email = lead.email), 1) AS last_step
+        FROM raw_leads lead
         WHERE NOT EXISTS (
-          SELECT 1 FROM subscribers sub WHERE sub.email = s.email AND sub.status = 'active'
+          SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active'
         )
-        ORDER BY s.email, s.created_at ASC
+        ORDER BY lead.email, lead.enrolled_at ASC
       )
       SELECT email, enrolled_at, last_step
       FROM lead_progress

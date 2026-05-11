@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { NURTURE_SEQUENCE } from "@/lib/sequences";
 import { sendSequenceEmail } from "@/lib/email-templates";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export async function POST(request: Request) {
   const admin = await requireAdmin(request);
@@ -10,17 +11,19 @@ export async function POST(request: Request) {
 
   const body = (await request.json()) as { email: string; step?: number };
   const { email, step } = body;
+  const normalizedEmail = email?.trim().toLowerCase();
 
-  if (!email) {
+  if (!normalizedEmail) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
   const sql = getDb();
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  await ensureResourceLeadSchema(sql);
 
   const subscriberRows = await sql`
-    SELECT 1 FROM subscribers WHERE email = ${email} AND status = 'active'
+    SELECT 1 FROM subscribers WHERE email = ${normalizedEmail} AND status = 'active'
   `;
   if (subscriberRows.length > 0) {
     return NextResponse.json(
@@ -30,10 +33,17 @@ export async function POST(request: Request) {
   }
 
   const leadRows = await sql`
-    SELECT name, created_at AS enrolled_at
-    FROM submissions
-    WHERE email = ${email}
-    ORDER BY created_at ASC
+    WITH raw_leads AS (
+      SELECT lower(email) AS email, name, created_at AS enrolled_at
+      FROM submissions
+      UNION ALL
+      SELECT lower(email) AS email, name, created_at AS enrolled_at
+      FROM resource_leads
+    )
+    SELECT name, enrolled_at
+    FROM raw_leads
+    WHERE email = ${normalizedEmail}
+    ORDER BY enrolled_at ASC
     LIMIT 1
   `;
   if (leadRows.length === 0) {
@@ -66,7 +76,7 @@ export async function POST(request: Request) {
   }
 
   const alreadySent = await sql`
-    SELECT 1 FROM sequence_sends WHERE email = ${email} AND step = ${target}
+    SELECT 1 FROM sequence_sends WHERE email = ${normalizedEmail} AND step = ${target}
   `;
   if (alreadySent.length > 0) {
     return NextResponse.json(
@@ -75,18 +85,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const checkoutUrl = `${baseUrl}/buy?email=${encodeURIComponent(email)}`;
+  const checkoutUrl = `${baseUrl}/mudikit?email=${encodeURIComponent(normalizedEmail)}`;
   const html = stepConfig.buildHtml(lead.name || "there", checkoutUrl);
 
   try {
-    await sendSequenceEmail(email, stepConfig.subject, html, stepConfig.step);
+    await sendSequenceEmail(normalizedEmail, stepConfig.subject, html, stepConfig.step);
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 
   await sql`
     INSERT INTO sequence_sends (email, step)
-    VALUES (${email}, ${target})
+    VALUES (${normalizedEmail}, ${target})
     ON CONFLICT (email, step) DO NOTHING
   `;
 

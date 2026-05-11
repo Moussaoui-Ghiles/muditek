@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { Webhook } from "svix";
 
+function tagValue(tags: unknown, name: string): string | null {
+  if (Array.isArray(tags)) {
+    const tag = tags.find((t) => t && typeof t === "object" && (t as { name?: string }).name === name);
+    const value = tag && typeof tag === "object" ? (tag as { value?: unknown }).value : null;
+    return typeof value === "string" ? value : null;
+  }
+  if (tags && typeof tags === "object") {
+    const value = (tags as Record<string, unknown>)[name];
+    return typeof value === "string" ? value : null;
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
   const secret = process.env.RESEND_WEBHOOK_SECRET;
   if (!secret) return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
@@ -26,18 +39,20 @@ export async function POST(request: Request) {
   const eventId: string | undefined = data.email_id ?? event.id;
   const to: string | undefined = Array.isArray(data.to) ? data.to[0] : data.to;
   const broadcastId: string | undefined = data.broadcast_id;
+  const taggedIssueId = tagValue(data.tags, "newsletter_issue_id");
+  const taggedSubscriberId = tagValue(data.tags, "newsletter_subscriber_id");
 
   const sql = getDb();
 
   const issueRows = broadcastId
     ? await sql`SELECT id FROM newsletter_issues WHERE resend_broadcast_id = ${broadcastId} LIMIT 1`
     : [];
-  const issueId: string | null = issueRows[0]?.id ?? null;
+  const issueId: string | null = taggedIssueId ?? issueRows[0]?.id ?? null;
 
   const subRows = to
     ? await sql`SELECT id FROM newsletter_subscribers WHERE email = ${to.toLowerCase()} LIMIT 1`
     : [];
-  const subscriberId: string | null = subRows[0]?.id ?? null;
+  const subscriberId: string | null = taggedSubscriberId ?? subRows[0]?.id ?? null;
 
   const eventType = type.replace(/^email\./, "").replace(/^contact\./, "");
 

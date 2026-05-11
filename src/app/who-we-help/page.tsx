@@ -10,7 +10,7 @@ import { INDUSTRIES, INDUSTRY_SLUGS } from "@/lib/industries";
 export const metadata: Metadata = {
   title: "Who We Help | AI Systems by Industry in 2026 | Muditek",
   description:
-    "Muditek builds AI systems for 5 industries in 2026: private equity, B2B SaaS, agencies, telecom, and fintech. Diagnose the waste in euros, then build the systems that fix it.",
+    "Muditek AI systems for 5 industries in 2026: private equity, B2B SaaS, agencies, telecom, fintech. Diagnose the waste, build the fix.",
   alternates: { canonical: "https://muditek.com/who-we-help" },
   openGraph: {
     title: "Who We Help | AI Systems by Industry in 2026 | Muditek",
@@ -53,7 +53,7 @@ export default function WhoWeHelpIndexPage() {
             url: "https://muditek.com/who-we-help",
             isPartOf: { "@id": "https://muditek.com/#website" },
             datePublished: "2026-05-03",
-            dateModified: "2026-05-03",
+            dateModified: "2026-05-04",
           },
           {
             "@context": "https://schema.org",

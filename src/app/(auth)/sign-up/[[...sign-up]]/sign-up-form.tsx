@@ -4,8 +4,9 @@ import { SignUp, useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
 
-export default function SignUpForm() {
+export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: string }) {
   const { isSignedIn, isLoaded } = useUser();
+  const encodedRedirect = encodeURIComponent(redirectUrl);
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
@@ -49,8 +50,11 @@ export default function SignUpForm() {
             alertText: "text-[13px] text-red-400/90",
           },
         }}
-        signInUrl="/sign-in"
-        fallbackRedirectUrl="/portal"
+        signInUrl={`/sign-in?redirect_url=${encodedRedirect}`}
+        fallbackRedirectUrl={redirectUrl}
+        forceRedirectUrl={redirectUrl}
+        signInFallbackRedirectUrl={redirectUrl}
+        signInForceRedirectUrl={redirectUrl}
       />
       <p className="mt-5 text-center text-[12px] leading-relaxed text-white/40">
         Creating an account subscribes you to the Muditek newsletter. One email/week. Unsubscribe anytime.

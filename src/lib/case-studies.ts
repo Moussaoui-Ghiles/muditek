@@ -49,7 +49,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     metaTitle:
       "Private Equity Onboarding: Weeks to 3-5 Days in 2026 | Muditek Case Study",
     metaDescription:
-      "How a regulated merchant banking firm cut LP onboarding from weeks to 3-5 days in 2026. 26 modules, 7 roles, 9 workflows, owned platform. KYC automated, fees computed.",
+      "How a merchant banking firm cut LP onboarding from weeks to 3-5 days in 2026. 26 modules, 7 roles, 9 workflows. KYC automated, fees computed.",
     ogEyebrow: "PE Case Study",
     problem: [
       "A regulated merchant banking firm managed private equity, venture capital, and real estate investments across multiple jurisdictions. Their compliance team tracked LP onboarding, KYC documents, and expiry dates across spreadsheets and email threads.",
@@ -126,7 +126,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     metaTitle:
       "B2B SaaS Revenue Leak: €120K/Year Recovered in 2026 | Muditek Case Study",
     metaDescription:
-      "How a €800K ARR B2B SaaS found €120K/year in pipeline leakage in 2026: speed-to-lead, conversion gaps, and churn diagnosed in euros, then fixed with AI systems.",
+      "A €800K ARR B2B SaaS found €120K/year in pipeline leakage in 2026: speed-to-lead, conversion, and churn diagnosed and fixed with AI systems.",
     ogEyebrow: "SaaS Case Study",
     problem: [
       "A B2B SaaS company at €800K ARR was growing — but margin wasn't keeping up. Pipeline looked healthy on the dashboard. Conversion looked normal. Churn was 'within range.' Yet the founder couldn't tell where the money was actually going.",
@@ -198,7 +198,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     metaTitle:
       "Agency Content Engine: 20 Hours to 20 Minutes in 2026 | Muditek Case Study",
     metaDescription:
-      "How a 5-person marketing agency cut social content production from 20 hrs/week to 20 minutes in 2026 using MudiKit skills and a custom content engine.",
+      "A 5-person marketing agency cut social production from 20 hrs/week to 20 minutes in 2026 using MudiKit skills + a custom content engine.",
     ogEyebrow: "Agency Case Study",
     problem: [
       "A 5-person marketing agency served seven retainer clients. Each client needed 3-5 social posts per week, written in their voice, sourced from their newsletter or product updates, with platform-specific formatting for LinkedIn, Twitter, and email summaries.",
@@ -252,7 +252,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       "We weren't slow at writing. We were slow at writing twenty-one posts a week in seven different voices. The engine kills the part nobody got hired to do.",
     quoteAttribution: "Anonymous Founder, 5-person marketing agency",
     isAnonymizedQuote: true,
-    primaryServicePath: "/buy",
+    primaryServicePath: "/mudikit",
     primaryServiceLabel: "Get MudiKit — $47/mo",
     buildTimeline: "2 weeks (configure + deploy)",
     ownership: "Custom voice configs + review queue owned by agency; MudiKit subscription for the underlying skills",
@@ -270,7 +270,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     metaTitle:
       "Telecom NOC Automation: SLA Report in Under 1 Hour in 2026 | Muditek Case Study",
     metaDescription:
-      "How a 50-person regional telecom operator cut weekly SLA report production from 2-3 days to under 1 hour with on-premises mudiAgent in 2026. NOC tickets to report, automated.",
+      "A 50-person regional telecom cut weekly SLA report production from 2-3 days to under 1 hour with on-premises mudiAgent in 2026. NOC, automated.",
     ogEyebrow: "Telecom Case Study",
     problem: [
       "A regional telecom operator with 50 employees and three NOC engineers ran weekly SLA reporting manually. Every Monday, an engineer pulled tickets from the OSS, joined them with vendor portal exports, cross-referenced the contract penalty matrix, and assembled a 30-40 page customer-facing PDF report.",
@@ -342,7 +342,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     metaTitle:
       "Fintech Compliance Ops: KYC Backlog 14 Days to 48 Hours in 2026 | Muditek Case Study",
     metaDescription:
-      "How a 30-person fintech cut KYC review backlog from 14 days to under 48 hours in 2026. Single queue, automated expiry alerts, owned compliance infrastructure.",
+      "A 30-person fintech cut KYC review backlog from 14 days to under 48 hours in 2026. Single queue, expiry alerts, owned compliance infrastructure.",
     ogEyebrow: "Fintech Case Study",
     problem: [
       "A 30-person fintech firm processed customer KYC across multiple jurisdictions. Each new account required identity verification, source-of-funds review, sanctions screening, and politically-exposed-persons (PEP) checks — with documents that expire on different schedules per jurisdiction.",

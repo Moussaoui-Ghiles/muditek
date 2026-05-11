@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -118,7 +119,9 @@ export async function GET(request: Request) {
       category TEXT NOT NULL,
       download_url TEXT NOT NULL,
       file_type TEXT DEFAULT 'zip',
+      thumbnail_url TEXT,
       is_new BOOLEAN DEFAULT true,
+      updated_at TIMESTAMP DEFAULT NOW(),
       created_at TIMESTAMP DEFAULT NOW()
     )
   `;
@@ -127,7 +130,10 @@ export async function GET(request: Request) {
     ALTER TABLE content_items
     ADD COLUMN IF NOT EXISTS description TEXT,
     ADD COLUMN IF NOT EXISTS file_type TEXT DEFAULT 'zip',
-    ADD COLUMN IF NOT EXISTS is_new BOOLEAN DEFAULT true
+    ADD COLUMN IF NOT EXISTS is_new BOOLEAN DEFAULT true,
+    ADD COLUMN IF NOT EXISTS is_free BOOLEAN DEFAULT false,
+    ADD COLUMN IF NOT EXISTS thumbnail_url TEXT,
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()
   `;
 
   await sql`
@@ -178,8 +184,14 @@ export async function GET(request: Request) {
       lifetime_click_count INTEGER DEFAULT 0,
       subscribed_at TIMESTAMP DEFAULT NOW(),
       unsub_token UUID DEFAULT gen_random_uuid(),
-      unsub_at TIMESTAMP
+      unsub_at TIMESTAMP,
+      clerk_user_id TEXT
     )
+  `;
+
+  await sql`
+    ALTER TABLE newsletter_subscribers
+    ADD COLUMN IF NOT EXISTS clerk_user_id TEXT
   `;
 
   await sql`CREATE INDEX IF NOT EXISTS newsletter_subs_status_idx ON newsletter_subscribers (status)`;
@@ -225,6 +237,22 @@ export async function GET(request: Request) {
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_issue_idx ON newsletter_events (issue_id)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_event_idx ON newsletter_events (event)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_ts_idx ON newsletter_events (ts DESC)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS portal_memberships (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      email TEXT NOT NULL,
+      role TEXT NOT NULL,
+      status TEXT DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(email, role)
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS portal_memberships_email_idx ON portal_memberships (email)`;
+  await sql`CREATE INDEX IF NOT EXISTS portal_memberships_role_idx ON portal_memberships (role)`;
+  await ensureResourceLeadSchema(sql);
 
   return NextResponse.json({ success: true, message: "Schema ready" });
 }

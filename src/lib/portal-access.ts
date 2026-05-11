@@ -44,7 +44,7 @@ export function buildPortalAccess(input: {
   return {
     roles: resolved,
     isAdmin: roles.has("admin"),
-    isClient: roles.has("client") || roles.has("admin"),
+    isClient: roles.has("client"),
     isMudikit: roles.has("mudikit") || roles.has("admin"),
     isFree: roles.has("free"),
   };

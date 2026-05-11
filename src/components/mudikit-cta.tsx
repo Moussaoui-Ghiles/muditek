@@ -10,7 +10,7 @@ interface MudikitCtaProps {
 
 const DEFAULT_HEADLINE = "Get MudiKit · $47/mo";
 const DEFAULT_BODY =
-  "15+ Claude Code skills, 6 implementation playbooks, the vault template, 20+ outreach templates. New drops every month.";
+  "15+ Claude Code skills, 6 implementation playbooks, the vault template, 20+ outreach templates. New drops every week.";
 const DEFAULT_CTA_LABEL = "Get MudiKit — $47/mo";
 
 export function MudikitCta({
@@ -38,7 +38,7 @@ export function MudikitCta({
         </div>
         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
           <Link
-            href="/buy"
+            href="/mudikit"
             className="btn-press inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-xs font-black uppercase tracking-[0.18em] rounded-[2px] hover:scale-[1.02] transition-transform"
           >
             {ctaLabel}
@@ -84,7 +84,7 @@ export function MudikitCta({
 
           <div className="md:col-span-5 flex flex-col items-start md:items-end gap-3">
             <Link
-              href="/buy"
+              href="/mudikit"
               className="btn-press group relative inline-flex items-center justify-center px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300"
             >
               <span className="relative z-10 flex items-center gap-3">
@@ -108,10 +108,10 @@ export function MudikitCta({
               <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
             </Link>
             <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/45">
-              Cancel anytime · Stripe portal
+              Workflows that add ROI · New drops every week
             </span>
             <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/35">
-              No upsells · No annual lock-in
+              Cancel anytime
             </span>
           </div>
         </div>

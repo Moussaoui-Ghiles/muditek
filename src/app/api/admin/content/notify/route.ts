@@ -11,15 +11,18 @@ export async function POST(request: Request) {
 
   const sql = getDb();
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://linkingin.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
 
-  // Get new content items (is_new = true)
+  // Only paid MudiKit items should trigger paid-subscriber drop emails.
   const newItems = await sql`
-    SELECT title, category FROM content_items WHERE is_new = true ORDER BY category, title
+    SELECT title, category
+    FROM content_items
+    WHERE is_new = true AND is_free = false
+    ORDER BY category, title
   `;
 
   if (newItems.length === 0) {
-    return NextResponse.json({ message: "No new content to notify about", sent: 0 });
+    return NextResponse.json({ message: "No new paid MudiKit items to notify about", sent: 0 });
   }
 
   // Build summary
@@ -29,6 +32,16 @@ export async function POST(request: Request) {
   const subscribers = await sql`
     SELECT email, name FROM subscribers WHERE status = 'active'
   `;
+
+  if (subscribers.length === 0) {
+    return NextResponse.json({
+      message: "No active paid subscribers yet. Paid items remain marked as new.",
+      newItems: newItems.length,
+      subscribers: 0,
+      sent: 0,
+      errors: 0,
+    });
+  }
 
   let sent = 0;
   let errors = 0;
@@ -48,8 +61,13 @@ export async function POST(request: Request) {
     }
   }
 
-  // Mark all items as no longer new
-  await sql`UPDATE content_items SET is_new = false WHERE is_new = true`;
+  if (sent > 0) {
+    await sql`
+      UPDATE content_items
+      SET is_new = false
+      WHERE is_new = true AND is_free = false
+    `;
+  }
 
   return NextResponse.json({
     newItems: newItems.length,

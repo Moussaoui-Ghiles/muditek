@@ -34,7 +34,19 @@ const ABOUT_FAQ = [
 
 export const metadata: Metadata = {
   title: "About Muditek | AI Systems That Eliminate Operational Waste",
-  description: "We diagnose where companies lose money to manual operations. Then we build the AI systems that fix it. 35+ systems deployed. $3M+ in revenue generated and saved.",
+  description:
+    "Muditek diagnoses where companies lose money to manual ops and builds the AI systems that fix it. 35+ systems deployed in 2026. Founder: Ghiles Moussaoui.",
+  alternates: {
+    canonical: "https://muditek.com/about",
+    types: { "text/markdown": "https://muditek.com/about.md" },
+  },
+  openGraph: {
+    title: "About Muditek | AI Systems That Eliminate Operational Waste",
+    description:
+      "Muditek diagnoses where companies lose money to manual operations and builds the AI systems that fix it. 35+ systems deployed in 2026.",
+    url: "https://muditek.com/about",
+    type: "website",
+  },
 };
 
 const PROOF_METRICS = [

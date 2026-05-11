@@ -137,20 +137,23 @@ export function EmailCapture({
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className={`flex ${compact ? "flex-row gap-2" : "flex-col sm:flex-row gap-3"}`}>
+      <form
+        onSubmit={handleSubmit}
+        className={`flex ${compact ? "flex-col gap-2 sm:flex-row" : "flex-col gap-3 sm:flex-row"}`}
+      >
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className={`flex-1 bg-white/[0.03] border border-white/[0.08] rounded-[2px] ${compact ? "py-2.5 px-4 text-sm" : "py-3.5 px-5 text-sm"} font-mono text-foreground placeholder:text-foreground/30 focus:outline-none ${accent.ring} transition-colors`}
+          className={`min-w-0 flex-1 bg-white/[0.03] border border-white/[0.08] rounded-[2px] ${compact ? "py-2.5 px-4 text-sm" : "py-3.5 px-5 text-sm"} font-mono text-foreground placeholder:text-foreground/30 focus:outline-none ${accent.ring} transition-colors`}
           disabled={status === "loading"}
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className={`btn-press ${accent.btn} ${accent.btnHover} ${compact ? "px-5 py-2.5" : "px-8 py-3.5"} font-black text-sm uppercase tracking-[0.15em] rounded-[2px] transition-transform whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`btn-press ${accent.btn} ${accent.btnHover} ${compact ? "w-full px-5 py-2.5 sm:w-auto" : "px-8 py-3.5"} font-black text-sm uppercase tracking-[0.15em] rounded-[2px] transition-transform whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {status === "loading" ? (
             <span className="flex items-center gap-2">

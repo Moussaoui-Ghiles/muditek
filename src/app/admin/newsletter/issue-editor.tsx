@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, ArrowUpRight, Eye, EyeOff, Maximize2, Minimize2, Trash2 } from "lucide-react";
 import { RichEditor } from "@/components/admin/rich-editor";
+import { wrapIssueHtml } from "@/lib/newsletter-html";
 
 interface Issue {
   id: string;
@@ -54,7 +55,6 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const [confirmSend, setConfirmSend] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
-  const [previewHtml, setPreviewHtml] = useState<string>("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const dirtyRef = useRef(false);
@@ -70,7 +70,6 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         setSubject(data.subject ?? "");
         setHtml(data.html ?? "");
         setAudience(data.audience_filter ?? "all");
-        setPreviewHtml(data.html ?? "");
       });
   }, [issueId]);
 
@@ -91,7 +90,6 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       if (res.ok) {
         setSavedAt(new Date());
         dirtyRef.current = false;
-        setPreviewHtml(html);
       }
     } finally {
       setSaving(false);
@@ -206,6 +204,9 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const isSent = issue.status === "sent";
   const readOnly = isSent;
   const audienceOpt = AUDIENCE_OPTIONS.find((o) => o.value === audience) ?? AUDIENCE_OPTIONS[0];
+  const finalPreviewHtml = html.trim()
+    ? wrapIssueHtml(html, { prefsUrl: "#preferences", unsubUrl: "#unsubscribe" })
+    : "<p style='padding:40px;color:#999;font-family:system-ui'>Start writing to see the rendered email preview.</p>";
 
   return (
     <div className="relative">
@@ -372,9 +373,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
               <div
                 className="bg-white text-black overflow-auto max-h-[800px]"
                 dangerouslySetInnerHTML={{
-                  __html:
-                    previewHtml ||
-                    "<p style='padding:40px;color:#999;font-family:system-ui'>Save once to see the rendered email preview.</p>",
+                  __html: finalPreviewHtml,
                 }}
               />
             </div>

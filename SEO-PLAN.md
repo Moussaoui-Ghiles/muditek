@@ -338,7 +338,61 @@ Each checkbox closes when:
 
 ## Done log
 
-### 2026-05-04 (latest) — Phase 2 docs + Phase 3.4 + Phase 8 infrastructure (closeout)
+### 2026-05-04 (latest) — Audit close-out: critical + medium fixes from SEO-AUDIT.md
+
+**Critical (3) shipped:**
+
+- **C1: /buy made indexable.** `src/app/buy/layout.tsx` — removed `robots: { index: false, follow: false }`. Added full Metadata: title, ~155-char description, OG, canonical `https://muditek.com/buy`. Added `Product` + `Offer` schema (USD 47/mo, billingIncrement P1M, InStock, brand @id ref to #organization, image points to OG endpoint). Wired via `<JsonLd>` in layout. /buy added to `public/llms.txt` under new "Product" section.
+- **C2: 6 missing OG image routes shipped.** Each uses `ogImage()` helper from `src/lib/og.tsx` (1200×630):
+  - `src/app/mudiagent-vs-chatgpt/opengraph-image.tsx`
+  - `src/app/pe-ops-vs-juniper-square/opengraph-image.tsx`
+  - `src/app/mudikit-vs-skool/opengraph-image.tsx`
+  - `src/app/mudikit-vs-circle/opengraph-image.tsx`
+  - `src/app/newsletter/[slug]/opengraph-image.tsx` — dynamic, queries Neon for issue subject + tldr
+  - `src/app/resources/[slug]/opengraph-image.tsx` — dynamic, generated for all 13 resource slugs via `generateStaticParams`
+- **C3: Newsletter slug ISR + canonical.** `src/app/newsletter/[slug]/page.tsx` — replaced `force-dynamic` with `revalidate = 3600` (1hr ISR). `generateMetadata` now sets `alternates.canonical`. `Article` schema gained `inLanguage: "en"` + `articleSection: "Newsletter"`. `image` field on Article + OG `images` now point to `/newsletter/{slug}/opengraph-image` (per-issue dynamic OG, replacing the static ghiles.jpg portrait).
+
+**Medium (7) shipped:**
+
+- **M1: metadataBase set.** `src/app/layout.tsx` — added `metadataBase: new URL("https://muditek.com")` + canonical to root metadata. Tightened root description to 145 chars.
+- **M2: Canonicals added on 8 pages.** `/` (new full metadata block), `/pe-ops`, `/revenue-leak-audit`, `/mudiagent`, `/about`, `/buy`, `/tools/revenue-leak-calculator`, `/newsletter/[slug]`. All comparison + index + industry pages already had canonicals — verified.
+- **M3: Description lengths trimmed to ≤160 chars** while preserving year stamp + value prop on: `/`, `/pe-ops`, `/mudiagent`, `/revenue-leak-audit`, `/about`, `/who-we-help`, `/case-studies`, `/resources`, `/tools/revenue-leak-calculator`, `/mudiagent-vs-chatgpt`, `/pe-ops-vs-juniper-square`, `/mudikit-vs-skool`, `/mudikit-vs-circle`. Industry descriptions in `src/lib/industries.ts` and case study descriptions in `src/lib/case-studies.ts` also tightened.
+- **M4: llms.txt expanded.** New sections added: Product (MudiKit), Industries (5 routes), Case Studies (5 routes), Comparison Pages (4 routes incl. 2 new mudikit-vs-* pages). Resources index also added. Now ~30 URLs vs the previous ~10.
+- **M5: Navigation discoverability.** `src/components/navbar.tsx` — Solutions dropdown gains `Who We Help` + `Case Studies` links (both desktop + mobile). `src/components/footer.tsx` — restructured into 4 columns: Solutions, Industries (5 industry pages + index), Resources (case studies, newsletter, playbooks, 2 comparison pages), Company. MudiKit link added to Solutions column.
+- **M6: Service schema @id refs.** `src/app/pe-ops/page.tsx`, `src/app/revenue-leak-audit/page.tsx`, `src/app/mudiagent/page.tsx` — replaced `provider: { "@type": "Organization", name: "Muditek", url: "..." }` with `provider: { "@id": "https://muditek.com/#organization" }`. Entity graph now consistent across all service + industry pages.
+- **M7: dateModified bumped.** Set to "2026-05-04" via `LAST_UPDATED` constant in `src/app/case-studies/[slug]/page.tsx` and `src/app/resources/[slug]/page.tsx`. All 5 industry pages, 4 comparison pages, and the 2 index pages (who-we-help, case-studies) updated to `dateModified: "2026-05-04"`. `datePublished` preserved everywhere. Also: `image` field on Article schemas in case-studies + resources now point to per-page OG endpoint instead of `ghiles.jpg`.
+
+**NOT touched (deferred per task brief):**
+- 8.2 testimonial arrays (still empty, awaiting real user data)
+- 8.4 real research (already shipped real internal data via `data-points.ts`)
+- 29 imported beehiiv post HTML (fragility)
+- /buy Stripe checkout flow logic (only metadata + schema added)
+- Existing service-page hero CTAs
+
+**Files added (6):**
+- `src/app/mudiagent-vs-chatgpt/opengraph-image.tsx`
+- `src/app/pe-ops-vs-juniper-square/opengraph-image.tsx`
+- `src/app/mudikit-vs-skool/opengraph-image.tsx`
+- `src/app/mudikit-vs-circle/opengraph-image.tsx`
+- `src/app/newsletter/[slug]/opengraph-image.tsx`
+- `src/app/resources/[slug]/opengraph-image.tsx`
+
+**Files modified (~22):**
+- `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/buy/layout.tsx`, `src/app/mudiagent/page.tsx`, `src/app/pe-ops/page.tsx`, `src/app/revenue-leak-audit/page.tsx`, `src/app/tools/revenue-leak-calculator/layout.tsx`
+- `src/app/newsletter/[slug]/page.tsx`, `src/app/case-studies/[slug]/page.tsx`, `src/app/resources/[slug]/page.tsx`
+- `src/app/case-studies/page.tsx`, `src/app/who-we-help/page.tsx`, `src/app/resources/page.tsx`
+- `src/app/mudiagent-vs-chatgpt/page.tsx`, `src/app/pe-ops-vs-juniper-square/page.tsx`, `src/app/mudikit-vs-skool/page.tsx`, `src/app/mudikit-vs-circle/page.tsx`
+- `src/app/who-we-help/{private-equity,b2b-saas,agencies,telecom,fintech}/page.tsx`
+- `src/components/navbar.tsx`, `src/components/footer.tsx`
+- `src/lib/industries.ts`, `src/lib/case-studies.ts`
+- `public/llms.txt`
+
+**Verification:**
+- TypeScript clean (`pnpm tsc --noEmit` passes)
+- `pnpm build` succeeds — 108/108 static pages generated, all 6 new OG routes present in build output
+- All canonical URLs match actual route paths (no fabricated routes)
+
+### 2026-05-04 (earlier) — Phase 2 docs + Phase 3.4 + Phase 8 infrastructure (closeout)
 
 **Final SEO-playbook close-out. Six items shipped:**
 

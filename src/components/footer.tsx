@@ -36,19 +36,35 @@ export function Footer() {
             </p>
           </div>
 
-          <nav className="flex gap-16 md:gap-20" aria-label="Footer navigation">
+          <nav className="flex flex-wrap gap-12 md:gap-16" aria-label="Footer navigation">
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Solutions</span>
               <Link href="/mudiagent" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Operational Infrastructure</Link>
+              <Link href="/mudikit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">MudiKit ($47/mo)</Link>
               <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
+            </div>
+            <div>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Industries</span>
+              <Link href="/who-we-help" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Who We Help</Link>
+              <Link href="/who-we-help/private-equity" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Private Equity & VC</Link>
+              <Link href="/who-we-help/b2b-saas" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">B2B SaaS</Link>
+              <Link href="/who-we-help/agencies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Agencies</Link>
+              <Link href="/who-we-help/telecom" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Telecom</Link>
+              <Link href="/who-we-help/fintech" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Fintech & Payments</Link>
+            </div>
+            <div>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Learn</span>
+              <Link href="/case-studies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Case Studies</Link>
+              <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
+              <Link href="/sign-up" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Free Portal</Link>
+              <Link href="/mudiagent-vs-chatgpt" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">vs ChatGPT</Link>
+              <Link href="/pe-ops-vs-juniper-square" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">vs Juniper Square</Link>
             </div>
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Company</span>
               <Link href="/about" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">About</Link>
-              <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
-              <Link href="/resources" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Resources</Link>
               <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
               <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">LinkedIn</a>
             </div>

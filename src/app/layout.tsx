@@ -3,6 +3,9 @@ import { Inter, Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { PostHogProvider } from "@/components/posthog-provider";
 import { WhatsAppBubble } from "@/components/whatsapp-bubble";
 import { ExitIntent } from "@/components/exit-intent";
 import { JsonLd } from "@/components/json-ld";
@@ -28,16 +31,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://muditek.com"),
   title: "Muditek | AI Systems That Eliminate Operational Waste",
   description:
-    "We diagnose where companies lose money to manual operations and build AI systems that fix it. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
+    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-premises AI, revenue recovery, and operational infrastructure.",
+  alternates: { canonical: "https://muditek.com" },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: "/icon.svg",
   },
   openGraph: {
     title: "Muditek | AI Systems That Eliminate Operational Waste",
     description:
-      "Your best people are stuck doing work a machine should handle. We find where you're bleeding money, then build the systems that fix it.",
+      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-prem AI, revenue recovery, ops infrastructure.",
+    url: "https://muditek.com",
     type: "website",
   },
 };
@@ -152,10 +161,12 @@ export default function RootLayout({
               },
             ]}
           />
-          {children}
+          <PostHogProvider>{children}</PostHogProvider>
           <WhatsAppBubble />
           <ExitIntent />
           <Analytics />
+          <SpeedInsights />
+          <GoogleAnalytics />
         </body>
       </html>
     </ClerkProvider>

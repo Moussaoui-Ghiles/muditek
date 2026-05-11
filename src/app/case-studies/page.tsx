@@ -10,7 +10,7 @@ import { CASE_STUDIES } from "@/lib/case-studies";
 export const metadata: Metadata = {
   title: "Case Studies | AI Systems in Production in 2026 | Muditek",
   description:
-    "Real-pattern Muditek case studies in 2026: PE onboarding, B2B SaaS revenue leak, agency content engine, telecom NOC automation, fintech compliance ops. Anonymized, owned by clients.",
+    "Five Muditek case studies in 2026: PE onboarding, SaaS revenue leak, agency content engine, telecom NOC automation, fintech compliance ops.",
   alternates: { canonical: "https://muditek.com/case-studies" },
   openGraph: {
     title: "Case Studies | AI Systems in Production in 2026 | Muditek",
@@ -51,7 +51,7 @@ export default function CaseStudiesIndexPage() {
             url: "https://muditek.com/case-studies",
             isPartOf: { "@id": "https://muditek.com/#website" },
             datePublished: "2026-05-03",
-            dateModified: "2026-05-03",
+            dateModified: "2026-05-04",
           },
           {
             "@context": "https://schema.org",

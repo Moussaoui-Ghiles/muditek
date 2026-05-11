@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muditek — Full System Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+    --paper: #e6eef5;
+    --paper-2: #dde7f0;
+    --grid: rgba(20, 60, 120, 0.06);
+    --grid-strong: rgba(20, 60, 120, 0.12);
+    --surface: #ffffff;
+    --surface-2: #f4f8fc;
+    --border: rgba(20, 60, 120, 0.18);
+    --border-bright: rgba(20, 60, 120, 0.32);
+    --ink: #0d2944;
+    --ink-2: #1c4570;
+    --ink-dim: #547ba1;
+    --ink-dimmer: #8aa3bd;
+
+    --primary: #1a4d8f;
+    --primary-dim: rgba(26, 77, 143, 0.1);
+    --cyan: #0883a8;
+    --cyan-dim: rgba(8, 131, 168, 0.1);
+    --amber: #b87209;
+    --amber-dim: rgba(184, 114, 9, 0.1);
+    --green: #2d6a4f;
+    --green-dim: rgba(45, 106, 79, 0.1);
+    --red: #a8341e;
+    --red-dim: rgba(168, 52, 30, 0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      linear-gradient(var(--grid-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    line-height: 1.55;
+    padding: 40px 24px 72px;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .animate { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 0.04s); }
+  .animate-scale { animation: fadeScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 0.04s); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  /* ============ TITLE BLOCK (BLUEPRINT STAMP) ============ */
+  .title-block {
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .title-main h1 {
+    font-size: clamp(32px, 4.5vw, 50px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    margin-bottom: 4px;
+  }
+  .title-main .sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .title-meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    border-left: 1px solid var(--border);
+    padding-left: 24px;
+    min-width: 220px;
+  }
+  .title-meta strong { color: var(--ink); font-weight: 600; }
+  .title-meta .ok { color: var(--green); }
+  .title-meta .warn { color: var(--amber); }
+  .title-meta .danger { color: var(--red); }
+
+  /* ============ SECTION ============ */
+  section { margin-bottom: 56px; }
+  .section-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .section-bar .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+    background: var(--surface);
+    border: 1.5px solid var(--primary);
+    padding: 4px 10px;
+    border-radius: 3px;
+  }
+  .section-bar h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .section-bar .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-intro {
+    color: var(--ink-2);
+    max-width: 760px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ============ STACK INVENTORY ============ */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+  }
+  .stack-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    position: relative;
+  }
+  .stack-item::before {
+    content: '';
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 2px var(--green-dim);
+  }
+  .stack-item.warn::before { background: var(--amber); box-shadow: 0 0 0 2px var(--amber-dim); }
+  .stack-item.danger::before { background: var(--red); box-shadow: 0 0 0 2px var(--red-dim); }
+  .stack-role {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 6px;
+  }
+  .stack-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .stack-detail {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-dim);
+  }
+
+  /* ============ MERMAID ============ */
+  .mermaid-wrap {
+    position: relative;
+    background: var(--surface);
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+    padding: 28px 24px;
+    overflow: auto;
+    box-shadow: 3px 3px 0 var(--ink);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-bright) transparent;
+  }
+  .mermaid-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+  .mermaid-wrap::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+  .mermaid-wrap .mermaid {
+    display: flex;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    transform-origin: top center;
+  }
+  .mermaid-wrap.is-zoomed { cursor: grab; }
+  .mermaid-wrap.is-panning { cursor: grabbing; user-select: none; }
+  .zoom-controls {
+    position: absolute; top: 10px; right: 10px;
+    display: flex; gap: 2px; z-index: 10;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px;
+  }
+  .zoom-controls button {
+    width: 28px; height: 28px;
+    border: none; background: transparent;
+    color: var(--ink-dim);
+    font-family: var(--font-mono); font-size: 14px;
+    cursor: pointer; border-radius: 3px;
+  }
+  .zoom-controls button:hover { background: var(--paper-2); color: var(--ink); }
+
+  .mermaid .nodeLabel {
+    font-family: var(--font-display) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+  .mermaid .edgeLabel {
+    font-family: var(--font-mono) !important;
+    font-size: 11px !important;
+  }
+
+  /* ============ TABLES ============ */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--surface-2);
+    padding: 12px 14px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    border-bottom: 1.5px solid var(--border);
+  }
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.path {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 500;
+  }
+  td .desc { color: var(--ink-dim); font-size: 12px; line-height: 1.5; }
+  td .count {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .pill {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+  .pill.live { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+  .pill.idle { color: var(--ink-dim); border-color: var(--ink-dim); background: rgba(84, 123, 161, 0.08); }
+  .pill.warn { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+  .pill.danger { color: var(--red); border-color: var(--red); background: var(--red-dim); }
+
+  /* ============ TWO-COL LAYOUT ============ */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* ============ LEAKS ============ */
+  .leaks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .leak {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--red);
+    border-radius: 4px;
+    padding: 18px 22px;
+  }
+  .leak-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .leak-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .leak-body {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .leak-body code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    background: var(--primary-dim);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  /* ============ BLUEPRINT MARGIN MARKS ============ */
+  .corner-mark {
+    position: fixed;
+    width: 24px; height: 24px;
+    border: 1.5px solid var(--ink);
+    pointer-events: none;
+    z-index: 100;
+  }
+  .corner-mark.tl { top: 16px; left: 16px; border-right: none; border-bottom: none; }
+  .corner-mark.tr { top: 16px; right: 16px; border-left: none; border-bottom: none; }
+  .corner-mark.bl { bottom: 16px; left: 16px; border-right: none; border-top: none; }
+  .corner-mark.br { bottom: 16px; right: 16px; border-left: none; border-top: none; }
+
+  footer {
+    margin-top: 56px;
+    padding: 16px 24px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  @media (max-width: 800px) {
+    body { padding: 24px 14px 60px; }
+    .title-block { grid-template-columns: 1fr; gap: 16px; }
+    .title-meta { text-align: left; border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 16px; }
+    .two-col { grid-template-columns: 1fr; }
+    .corner-mark { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- blueprint corner registration marks -->
+<div class="corner-mark tl"></div>
+<div class="corner-mark tr"></div>
+<div class="corner-mark bl"></div>
+<div class="corner-mark br"></div>
+
+<div class="container">
+
+  <!-- ============ TITLE BLOCK ============ -->
+  <header class="title-block animate" style="--i:0">
+    <div class="title-main">
+      <h1>Muditek — System Architecture</h1>
+      <div class="sub">URL → click → database → revenue · full topology</div>
+    </div>
+    <div class="title-meta">
+      Drawing&nbsp;&nbsp;&nbsp;<strong>SYS-001</strong><br>
+      Revision&nbsp;&nbsp;&nbsp;<strong>R3</strong><br>
+      Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>2026-04-28</strong><br>
+      Live URL&nbsp;&nbsp;&nbsp;<strong>muditek.com</strong><br>
+      Status&nbsp;&nbsp;&nbsp;&nbsp;<span class="warn">5 of 8 engines idle</span>
+    </div>
+  </header>
+
+  <!-- ============ § 01 STACK ============ -->
+  <section>
+    <div class="section-bar animate" style="--i:0">
+      <span class="num">§ 01</span>
+      <h2>Stack inventory</h2>
+      <span class="rule"></span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Every external service Muditek depends on. Green = working &amp; in use. Amber = configured but idle. Red = broken or vendor-leaked.
+    </p>
+
+    <div class="stack-grid">
+      <div class="stack-item animate-scale" style="--i:0">
+        <div class="stack-role">Frontend / SSR</div>
+        <div class="stack-name">Next.js 16</div>
+        <div class="stack-detail">Tailwind 4 · React 19</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:1">
+        <div class="stack-role">Hosting / CI</div>
+        <div class="stack-name">Vercel</div>
+        <div class="stack-detail">prod · 3 cron jobs · auto-deploy</div>
+      </div>
+      <div class="stack-item warn animate-scale" style="--i:2">
+        <div class="stack-role">Auth</div>
+        <div class="stack-name">Clerk</div>
+        <div class="stack-detail">DEV instance · password on</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:3">
+        <div class="stack-role">Payments</div>
+        <div class="stack-name">Stripe</div>
+        <div class="stack-detail">live · webhook OK · 0 charges</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:4">
+        <div class="stack-role">Database</div>
+        <div class="stack-name">Neon Postgres</div>
+        <div class="stack-detail">12 tables · serverless</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:5">
+        <div class="stack-role">Email send</div>
+        <div class="stack-name">Resend</div>
+        <div class="stack-detail">mail.ghiless.com (warm)</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:6">
+        <div class="stack-role">LinkedIn scrape</div>
+        <div class="stack-name">Apify</div>
+        <div class="stack-detail">cron pull · idle, no campaign</div>
+      </div>
+      <div class="stack-item animate-scale" style="--i:7">
+        <div class="stack-role">Newsletter source</div>
+        <div class="stack-name">Beehiiv</div>
+        <div class="stack-detail">cancelled · subs imported</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ § 02 TOPOLOGY ============ -->
+  <section>
+    <div class="section-bar animate" style="--i:0">
+      <span class="num">§ 02</span>
+      <h2>Full system topology</h2>
+      <span class="rule"></span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Every front door, every page, every service, every database table. Solid lines = synchronous request. Dashed = async / event / background job.
+      Zoom: <code>+</code> / <code>−</code> / Ctrl+scroll.
+    </p>
+
+    <div class="mermaid-wrap animate" style="--i:2">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)">+</button>
+        <button onclick="zoomDiagram(this, 0.8)">&minus;</button>
+        <button onclick="resetZoom(this)">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+        flowchart TD
+          classDef door fill:#f4f8fc,stroke:#1a4d8f,stroke-width:2px,color:#0d2944
+          classDef page fill:#ffffff,stroke:#547ba1,stroke-width:1.5px,color:#0d2944
+          classDef api fill:#ffffff,stroke:#0883a8,stroke-width:1.5px,color:#0d2944
+          classDef ext fill:#f4f8fc,stroke:#b87209,stroke-width:1.5px,color:#0d2944
+          classDef db fill:#f4f8fc,stroke:#2d6a4f,stroke-width:2px,color:#0d2944
+          classDef portal fill:#ffffff,stroke:#1a4d8f,stroke-width:2.5px,color:#0d2944
+          classDef admin fill:#ffffff,stroke:#b87209,stroke-width:2px,color:#0d2944
+          classDef idle fill:#f4f8fc,stroke:#8aa3bd,stroke-width:1px,color:#547ba1,stroke-dasharray:3 3
+
+          subgraph DOORS [&quot;Front doors&quot;]
+            LI[&quot;LinkedIn post&quot;]:::idle
+            ORG[&quot;Google / direct&quot;]:::door
+            SHARE[&quot;Forwarded email&quot;]:::door
+          end
+
+          subgraph MARKETING [&quot;Marketing pages&quot;]
+            HOME[&quot;/&quot;]:::page
+            PE[&quot;/pe-ops&quot;]:::page
+            MA[&quot;/mudiagent&quot;]:::page
+            RLA[&quot;/revenue-leak-audit&quot;]:::page
+            AI[&quot;/ai-act&quot;]:::page
+            RES[&quot;/resources&quot;]:::page
+            NL[&quot;/newsletter&quot;]:::page
+          end
+
+          subgraph CAPTURE [&quot;Capture surfaces&quot;]
+            EC[&quot;EmailCapture component&quot;]:::page
+            SUB[&quot;/subscribe&quot;]:::page
+            CAMP[&quot;/c/[id]&quot;]:::idle
+          end
+
+          subgraph PRODUCT [&quot;Product surfaces&quot;]
+            SIN[&quot;/sign-in&quot;]:::page
+            SUP[&quot;/sign-up&quot;]:::page
+            PORT[&quot;/portal&quot;]:::portal
+            BUY[&quot;/buy&quot;]:::page
+            WEL[&quot;/welcome&quot;]:::page
+            PREF[&quot;/preferences/[token]&quot;]:::page
+          end
+
+          subgraph APIS [&quot;Server endpoints&quot;]
+            A_SUB[&quot;/api/subscribe&quot;]:::api
+            A_CHK[&quot;/api/checkout&quot;]:::api
+            A_STR[&quot;/api/stripe/webhook&quot;]:::api
+            A_RES[&quot;/api/resend/webhook&quot;]:::api
+            A_LNK[&quot;/api/account/link&quot;]:::api
+            A_PRF[&quot;/api/newsletter/preferences/[t]&quot;]:::api
+            A_UNS[&quot;/api/newsletter/unsubscribe/[t]&quot;]:::api
+            A_SUM[&quot;/api/submit&quot;]:::api
+            CRON[&quot;cron · /api/cron/*&quot;]:::api
+          end
+
+          subgraph EXT [&quot;External services&quot;]
+            CLERK[&quot;Clerk auth&quot;]:::ext
+            STRIPE[&quot;Stripe&quot;]:::ext
+            RESEND[&quot;Resend&quot;]:::ext
+            APIFY[&quot;Apify scrape&quot;]:::idle
+          end
+
+          subgraph DB [&quot;Neon Postgres&quot;]
+            T_NS[(&quot;newsletter_subscribers · 5,365&quot;)]:::db
+            T_SUB[(&quot;subscribers · 0&quot;)]:::db
+            T_NI[(&quot;newsletter_issues · drafts&quot;)]:::db
+            T_NE[(&quot;newsletter_events&quot;)]:::db
+            T_CI[(&quot;content_items · 14 free / 0 paid&quot;)]:::db
+            T_CMP[(&quot;campaigns · 4, all expired&quot;)]:::db
+            T_SUMS[(&quot;submissions · deliveries · sequence_sends&quot;)]:::db
+            T_EL[(&quot;email_log&quot;)]:::db
+          end
+
+          ADMIN[&quot;/admin&quot;]:::admin
+
+          %% Doors → marketing
+          LI -.dormant.-> CAMP
+          ORG --> HOME
+          ORG --> PE
+          ORG --> MA
+          ORG --> RLA
+          SHARE --> NL
+
+          HOME --> EC
+          PE --> EC
+          MA --> EC
+          RLA --> EC
+          AI --> EC
+          RES --> EC
+          NL --> EC
+
+          EC --> A_SUB
+          SUB --> A_SUB
+          CAMP -.dormant.-> A_SUM
+
+          A_SUB --> T_NS
+          A_SUB -.welcome email.-> RESEND
+          A_SUM --> T_SUMS
+          A_SUM -.lead magnet.-> RESEND
+
+          BUY --> A_CHK
+          A_CHK --> STRIPE
+          STRIPE -.webhook.-> A_STR
+          A_STR --> T_SUB
+          A_STR --> CLERK
+          A_STR -.welcome.-> RESEND
+          A_STR --> WEL
+
+          SUP --> CLERK
+          SIN --> CLERK
+          CLERK --> PORT
+          CLERK -.user.id.-> A_LNK
+          A_LNK --> T_NS
+          PORT --> T_NS
+          PORT --> T_CI
+          PORT --> T_NI
+
+          PREF --> A_PRF
+          A_PRF --> T_NS
+          A_UNS --> T_NS
+
+          ADMIN --> T_NS
+          ADMIN --> T_SUB
+          ADMIN --> T_NI
+          ADMIN --> T_CMP
+          ADMIN --> T_SUMS
+          ADMIN --> T_EL
+          ADMIN --> RESEND
+
+          RESEND -.delivery events.-> A_RES
+          A_RES --> T_NE
+          A_RES --> T_EL
+
+          CRON -.daily.-> APIFY
+          APIFY -.commenters.-> T_SUMS
+          CRON -.daily.-> T_SUMS
+
+          T_NS --> RESEND
+      </pre>
+    </div>
+  </section>
+
+  <!-- ============ § 03 SURFACES ============ -->
+  <section>
+    <div class="section-bar animate" style="--i:0">
+      <span class="num">§ 03</span>
+      <h2>URL surface inventory</h2>
+      <span class="rule"></span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Every page a user (or you) can visit. 26 surfaces total across marketing, product, admin, API.
+    </p>
+
+    <div class="two-col">
+      <div class="table-wrap animate" style="--i:2">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:55%">Surface</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="path">/</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/pe-ops</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/mudiagent</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/revenue-leak-audit</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/ai-act</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/resources</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/resources/[slug]</td><td><span class="pill live">Live · 14 magnets</span></td></tr>
+            <tr><td class="path">/tools/revenue-leak-calculator</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/newsletter</td><td><span class="pill live">Archive</span></td></tr>
+            <tr><td class="path">/newsletter/[slug]</td><td><span class="pill live">Issue page</span></td></tr>
+            <tr><td class="path">/subscribe</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/sign-in</td><td><span class="pill warn">Live · dev banner</span></td></tr>
+            <tr><td class="path">/sign-up</td><td><span class="pill warn">Live · dev banner</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap animate" style="--i:3">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:55%">Surface</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="path">/portal</td><td><span class="pill live">Live · 1 user</span></td></tr>
+            <tr><td class="path">/buy</td><td><span class="pill danger">Live · empty shelf</span></td></tr>
+            <tr><td class="path">/welcome</td><td><span class="pill live">Auto-redirect</span></td></tr>
+            <tr><td class="path">/preferences/[token]</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/c/[id]</td><td><span class="pill idle">Built · 0 active</span></td></tr>
+            <tr><td class="path">/admin</td><td><span class="pill live">Live</span></td></tr>
+            <tr><td class="path">/admin/newsletter</td><td><span class="pill live">Compose · idle</span></td></tr>
+            <tr><td class="path">/admin/subscribers</td><td><span class="pill live">0 paying</span></td></tr>
+            <tr><td class="path">/admin/leads</td><td><span class="pill idle">No new leads</span></td></tr>
+            <tr><td class="path">/admin/campaigns</td><td><span class="pill warn">All expired</span></td></tr>
+            <tr><td class="path">/admin/nurture</td><td><span class="pill idle">No content</span></td></tr>
+            <tr><td class="path">/admin/content</td><td><span class="pill live">14 free items</span></td></tr>
+            <tr><td class="path">/admin/emails</td><td><span class="pill live">Log</span></td></tr>
+            <tr><td class="path">/admin/import</td><td><span class="pill live">CSV tool</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ § 04 DATA ============ -->
+  <section>
+    <div class="section-bar animate" style="--i:0">
+      <span class="num">§ 04</span>
+      <h2>Data layer · what's actually stored</h2>
+      <span class="rule"></span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Twelve tables in Neon. Where every signup, payment, lead, and email event lives.
+    </p>
+
+    <div class="table-wrap animate" style="--i:2">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:24%">Table</th>
+            <th style="width:12%">Rows</th>
+            <th>Purpose</th>
+            <th style="width:14%">Health</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="path">newsletter_subscribers</td>
+            <td><span class="count">5,365</span></td>
+            <td><span class="desc">Free email list. HOT 2,002 · WARM 998 · COLD 2,364. Token-based unsub + topic prefs.</span></td>
+            <td><span class="pill live">Healthy</span></td>
+          </tr>
+          <tr>
+            <td class="path">subscribers</td>
+            <td><span class="count">0</span></td>
+            <td><span class="desc">Paying $47/mo customers. Linked to Stripe customer + Clerk user.</span></td>
+            <td><span class="pill warn">Empty</span></td>
+          </tr>
+          <tr>
+            <td class="path">newsletter_issues</td>
+            <td><span class="count">drafts</span></td>
+            <td><span class="desc">Compose / schedule / send newsletter editions. Markdown body + audience filter.</span></td>
+            <td><span class="pill warn">Idle since Apr 20</span></td>
+          </tr>
+          <tr>
+            <td class="path">newsletter_events</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">Per-recipient send / open / click / bounce events from Resend webhooks.</span></td>
+            <td><span class="pill live">Healthy</span></td>
+          </tr>
+          <tr>
+            <td class="path">content_items</td>
+            <td><span class="count">14 / 0</span></td>
+            <td><span class="desc">Library. Free playbooks (14) shown to all portal users. Paid items (0) gated to subscribers.</span></td>
+            <td><span class="pill danger">Paid shelf empty</span></td>
+          </tr>
+          <tr>
+            <td class="path">campaigns</td>
+            <td><span class="count">4</span></td>
+            <td><span class="desc">LinkedIn lead-magnet campaigns. Each has keyword + landing URL + expiry.</span></td>
+            <td><span class="pill warn">All expired</span></td>
+          </tr>
+          <tr>
+            <td class="path">commenters</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">LinkedIn comments scraped by Apify. Matched to campaigns by keyword.</span></td>
+            <td><span class="pill idle">Dormant</span></td>
+          </tr>
+          <tr>
+            <td class="path">submissions</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">Form fills on /c/[id] landing pages. Verified flag once keyword matches.</span></td>
+            <td><span class="pill idle">Dormant</span></td>
+          </tr>
+          <tr>
+            <td class="path">deliveries</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">Lead-magnet email sends. One row per asset delivered.</span></td>
+            <td><span class="pill idle">Dormant</span></td>
+          </tr>
+          <tr>
+            <td class="path">sequence_sends</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">Nurture drip queue. Pending / sent / failed steps per lead.</span></td>
+            <td><span class="pill idle">No content</span></td>
+          </tr>
+          <tr>
+            <td class="path">drops</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">Monthly content drops to paid subscribers (kit refresh).</span></td>
+            <td><span class="pill idle">Unused</span></td>
+          </tr>
+          <tr>
+            <td class="path">email_log</td>
+            <td><span class="count">log</span></td>
+            <td><span class="desc">All outbound email events from Resend (welcome, drop, sequence, newsletter).</span></td>
+            <td><span class="pill live">Healthy</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ § 05 LEAKS ============ -->
+  <section>
+    <div class="section-bar animate" style="--i:0">
+      <span class="num">§ 05</span>
+      <h2>Where it leaks</h2>
+      <span class="rule"></span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Five places money or trust falls out of the system today. Ranked by impact.
+    </p>
+
+    <div class="leaks">
+      <div class="leak animate" style="--i:2">
+        <div class="leak-num">Leak 01 · biggest</div>
+        <div class="leak-title">Newsletter is silent</div>
+        <div class="leak-body">
+          5,365 subs. Last <code>newsletter_issue</code> with <code>status='sent'</code>: <strong>Apr 20</strong>.
+          List-warmth + open-rate compounds against you weekly.
+        </div>
+      </div>
+      <div class="leak animate" style="--i:3">
+        <div class="leak-num">Leak 02</div>
+        <div class="leak-title">Paid shelf is empty</div>
+        <div class="leak-body">
+          <code>/buy</code> charges $47/mo. <code>content_items.is_free=false</code> count = <strong>0</strong>.
+          Selling vapor.
+        </div>
+      </div>
+      <div class="leak animate" style="--i:4">
+        <div class="leak-num">Leak 03</div>
+        <div class="leak-title">Portal unknown to subs</div>
+        <div class="leak-body">
+          <code>clerk_user_id IS NOT NULL</code> on <code>newsletter_subscribers</code>: <strong>1 / 5,365</strong>.
+          Free portal exists, nobody's been told.
+        </div>
+      </div>
+      <div class="leak animate" style="--i:5">
+        <div class="leak-num">Leak 04</div>
+        <div class="leak-title">LinkedIn front door closed</div>
+        <div class="leak-body">
+          0 active campaigns. Apify cron runs daily but has nothing to scrape.
+          Highest-velocity acquisition channel is dark.
+        </div>
+      </div>
+      <div class="leak animate" style="--i:6">
+        <div class="leak-num">Leak 05</div>
+        <div class="leak-title">Auth UX leaks vendor</div>
+        <div class="leak-body">
+          Clerk dev instance shows "Development mode" banner + "Secured by Clerk" footer
+          on every auth page. 3 dashboard toggles fix it.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Drawing SYS-001 · R3</span>
+    <span>visual-explainer · 2026-04-28</span>
+    <span>muditek.com</span>
+  </footer>
+
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk/dist/mermaid-layout-elk.esm.min.mjs';
+  mermaid.registerLayoutLoaders(elkLayouts);
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    look: 'classic',
+    layout: 'elk',
+    themeVariables: {
+      primaryColor: '#f4f8fc',
+      primaryBorderColor: '#1a4d8f',
+      primaryTextColor: '#0d2944',
+      secondaryColor: '#ffffff',
+      secondaryBorderColor: '#547ba1',
+      secondaryTextColor: '#0d2944',
+      tertiaryColor: '#f4f8fc',
+      tertiaryBorderColor: '#b87209',
+      tertiaryTextColor: '#0d2944',
+      lineColor: '#547ba1',
+      fontSize: '14px',
+      fontFamily: "'Space Grotesk', system-ui, sans-serif",
+      edgeLabelBackground: '#f4f8fc',
+      clusterBkg: '#f4f8fc',
+      clusterBorder: '#1a4d8f',
+    }
+  });
+</script>
+<script>
+  function updateZoomState(wrap){var t=wrap.querySelector('.mermaid');var z=parseFloat(t.dataset.zoom||'1');wrap.classList.toggle('is-zoomed',z>1);}
+  function zoomDiagram(b,f){var w=b.closest('.mermaid-wrap');var t=w.querySelector('.mermaid');var c=parseFloat(t.dataset.zoom||'1');var n=Math.min(Math.max(c*f,0.3),5);t.dataset.zoom=n;t.style.transform='scale('+n+')';updateZoomState(w);}
+  function resetZoom(b){var w=b.closest('.mermaid-wrap');var t=w.querySelector('.mermaid');t.dataset.zoom='1';t.style.transform='scale(1)';updateZoomState(w);}
+  document.querySelectorAll('.mermaid-wrap').forEach(function(wrap){
+    wrap.addEventListener('wheel',function(e){
+      if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+      var t=wrap.querySelector('.mermaid');var c=parseFloat(t.dataset.zoom||'1');
+      var f=e.deltaY<0?1.1:0.9;var n=Math.min(Math.max(c*f,0.3),5);
+      t.dataset.zoom=n;t.style.transform='scale('+n+')';updateZoomState(wrap);
+    },{passive:false});
+    var sx,sy,sl,st;
+    wrap.addEventListener('mousedown',function(e){
+      if(e.target.closest('.zoom-controls'))return;
+      var t=wrap.querySelector('.mermaid');if(parseFloat(t.dataset.zoom||'1')<=1)return;
+      wrap.classList.add('is-panning');sx=e.clientX;sy=e.clientY;sl=wrap.scrollLeft;st=wrap.scrollTop;
+    });
+    window.addEventListener('mousemove',function(e){
+      if(!wrap.classList.contains('is-panning'))return;
+      wrap.scrollLeft=sl-(e.clientX-sx);wrap.scrollTop=st-(e.clientY-sy);
+    });
+    window.addEventListener('mouseup',function(){wrap.classList.remove('is-panning');});
+  });
+</script>
+
+</body>
+</html>

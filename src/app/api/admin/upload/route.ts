@@ -11,7 +11,6 @@ const ALLOWED_MIME = new Set([
   "image/jpg",
   "image/gif",
   "image/webp",
-  "image/svg+xml",
 ]);
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -21,6 +20,7 @@ export async function POST(request: Request) {
 
   const form = await request.formData();
   const file = form.get("file");
+  const purpose = String(form.get("purpose") || "newsletter");
   if (!(file instanceof Blob)) {
     return NextResponse.json({ error: "No file" }, { status: 400 });
   }
@@ -54,7 +54,8 @@ export async function POST(request: Request) {
   const ext = (name.split(".").pop() || "bin").toLowerCase();
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
-  const path = `newsletter/${stamp}-${rand}.${ext}`;
+  const folder = purpose === "content-thumbnail" ? "content" : "newsletter";
+  const path = `${folder}/${stamp}-${rand}.${ext}`;
 
   try {
     const blob = await put(path, file, {

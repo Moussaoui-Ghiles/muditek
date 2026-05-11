@@ -7,12 +7,25 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
-  description: "We diagnose where your B2B SaaS pipeline loses €80-180K/year, in euros, with formulas, and build AI systems to fix it. €50K guarantee.",
+  description:
+    "Diagnose where your B2B SaaS pipeline loses €80-180K/year in 2026 — in euros, with formulas — then build the AI systems that fix it. €50K guarantee.",
+  alternates: {
+    canonical: "https://muditek.com/revenue-leak-audit",
+    types: { "text/markdown": "https://muditek.com/revenue-leak-audit.md" },
+  },
+  openGraph: {
+    title: "Revenue Leak Audit | Muditek",
+    description:
+      "Diagnose where your B2B SaaS pipeline loses €80-180K/year in 2026 — in euros, with formulas — then build the AI systems that fix it. €50K guarantee.",
+    url: "https://muditek.com/revenue-leak-audit",
+    type: "website",
+  },
 };
 
 const LEAKS = [
@@ -45,7 +58,7 @@ export default function RevenueMachinePage() {
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Revenue Leak Audit",
-          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          provider: { "@id": "https://muditek.com/#organization" },
           description: "Diagnoses where B2B SaaS pipelines lose €80-180K/year with exact formulas. Builds AI systems to fix speed-to-lead, pipeline conversion, churn, and outbound.",
           url: "https://muditek.com/revenue-leak-audit",
           areaServed: "Worldwide",
@@ -237,6 +250,15 @@ export default function RevenueMachinePage() {
         description="The exact methodology we use to find €80-180K in annual pipeline leakage — with the formulas, benchmark sources, and a self-assessment worksheet."
         tags={["source:revenue-audit", "segment:saas", "lead-magnet:5-leak-framework"]}
         accentColor="emerald"
+      />
+
+      {/* ══════ MUDIKIT CROSS-SELL ══════ */}
+      <MudikitCta
+        variant="inline"
+        className="max-w-[1000px] mx-auto px-6 md:px-12"
+        headline="Run the systems yourself · $47/mo"
+        body="Same Claude Code skills, playbooks, and vault template I install for €40K–100K engagements. New drops every week."
+        ctaLabel="See the kit"
       />
 
       {/* ══════ GUARANTEE ══════ */}

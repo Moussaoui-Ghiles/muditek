@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { NURTURE_SEQUENCE } from "@/lib/sequences";
 import { sendSequenceEmail } from "@/lib/email-templates";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export const maxDuration = 300;
 
@@ -13,14 +14,21 @@ export async function GET(request: Request) {
 
   const sql = getDb();
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://linkingin.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+  await ensureResourceLeadSchema(sql);
 
-  // Get all unique emails from submissions with their earliest submission date
   const allLeads = await sql`
+    WITH raw_leads AS (
+      SELECT lower(email) AS email, name, created_at AS enrolled_at
+      FROM submissions
+      UNION ALL
+      SELECT lower(email) AS email, name, created_at AS enrolled_at
+      FROM resource_leads
+    )
     SELECT DISTINCT ON (email)
-      email, name, created_at as enrolled_at
-    FROM submissions
-    ORDER BY email, created_at ASC
+      email, name, enrolled_at
+    FROM raw_leads
+    ORDER BY email, enrolled_at ASC
   `;
 
   let sent = 0;
@@ -57,7 +65,7 @@ export async function GET(request: Request) {
       if (now < dueDate) break; // Not due yet, and later steps won't be either
 
       // Build email content
-      const checkoutUrl = `${baseUrl}/buy?email=${encodeURIComponent(lead.email)}`;
+      const checkoutUrl = `${baseUrl}/mudikit?email=${encodeURIComponent(lead.email)}`;
       const html =
         step.step === 5
           ? (step.buildHtml as (name: string, url: string) => string)(
@@ -67,7 +75,7 @@ export async function GET(request: Request) {
           : step.buildHtml(lead.name || "there");
 
       try {
-        await sendSequenceEmail(lead.email, step.subject, html);
+        await sendSequenceEmail(lead.email, step.subject, html, step.step);
 
         await sql`
           INSERT INTO sequence_sends (email, step)

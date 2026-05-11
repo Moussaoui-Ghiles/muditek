@@ -8,11 +8,13 @@ import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "mudiAgent vs ChatGPT Enterprise | On-Premises AI Comparison | Muditek",
-  description: "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee that automates workflows vs cloud chatbox. Data sovereignty, no per-user fees, scheduled autonomous operation.",
+  description:
+    "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees.",
   alternates: { canonical: "https://muditek.com/mudiagent-vs-chatgpt" },
   openGraph: {
     title: "mudiAgent vs ChatGPT Enterprise in 2026 | On-Premises AI",
-    description: "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees.",
+    description:
+      "mudiAgent vs ChatGPT Enterprise in 2026: on-prem digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees.",
     url: "https://muditek.com/mudiagent-vs-chatgpt",
     type: "article",
   },
@@ -52,7 +54,7 @@ export default function MudiAgentVsChatGPTPage() {
             url: "https://muditek.com/mudiagent-vs-chatgpt",
             isPartOf: { "@id": "https://muditek.com/#website" },
             datePublished: "2026-04-15",
-            dateModified: "2026-05-03",
+            dateModified: "2026-05-04",
           },
           {
             "@context": "https://schema.org",

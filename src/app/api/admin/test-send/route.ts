@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       if (!s) {
         return NextResponse.json({ error: "Invalid step" }, { status: 400 });
       }
-      const checkoutUrl = `${baseUrl}/buy?email=${encodeURIComponent(to)}`;
+      const checkoutUrl = `${baseUrl}/mudikit?email=${encodeURIComponent(to)}`;
       const html = s.buildHtml("there", checkoutUrl);
       await sendSequenceEmail(to, `[TEST] ${s.subject}`, html, s.step);
       return NextResponse.json({ sent: true });

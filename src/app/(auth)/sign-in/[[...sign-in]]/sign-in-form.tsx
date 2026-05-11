@@ -3,7 +3,9 @@
 import { SignIn } from "@clerk/nextjs";
 import { AuthShell } from "@/components/auth/auth-shell";
 
-export default function SignInForm() {
+export default function SignInForm({ redirectUrl = "/portal" }: { redirectUrl?: string }) {
+  const encodedRedirect = encodeURIComponent(redirectUrl);
+
   return (
     <AuthShell variant="sign-in">
       <div className="mb-6">
@@ -38,8 +40,11 @@ export default function SignInForm() {
             alertText: "text-[13px] text-red-400/90",
           },
         }}
-        signUpUrl="/sign-up"
-        fallbackRedirectUrl="/portal"
+        signUpUrl={`/sign-up?redirect_url=${encodedRedirect}`}
+        fallbackRedirectUrl={redirectUrl}
+        forceRedirectUrl={redirectUrl}
+        signUpFallbackRedirectUrl={redirectUrl}
+        signUpForceRedirectUrl={redirectUrl}
       />
     </AuthShell>
   );

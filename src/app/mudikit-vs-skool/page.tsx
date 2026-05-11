@@ -9,11 +9,13 @@ import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "MudiKit vs Skool in 2026 | AI Skills Library vs Community Platform | Muditek",
-  description: "MudiKit vs Skool in 2026: a $47/mo Claude Code skills library you install and run vs a community platform with courses, threads, and gamification. Honest side-by-side.",
+  description:
+    "MudiKit vs Skool in 2026: $47/mo Claude Code skills library you install and run vs a hosted community platform with courses, threads, and gamification.",
   alternates: { canonical: "https://muditek.com/mudikit-vs-skool" },
   openGraph: {
     title: "MudiKit vs Skool in 2026 | Skills Library vs Community Platform",
-    description: "MudiKit vs Skool in 2026: $47/mo Claude Code skills library you deploy vs community + courses platform. Where each one wins.",
+    description:
+      "MudiKit vs Skool in 2026: $47/mo Claude Code skills library you deploy vs community + courses platform. Where each one wins.",
     url: "https://muditek.com/mudikit-vs-skool",
     type: "article",
   },
@@ -71,7 +73,7 @@ export default function MudikitVsSkoolPage() {
             url: "https://muditek.com/mudikit-vs-skool",
             isPartOf: { "@id": "https://muditek.com/#website" },
             datePublished: "2026-05-03",
-            dateModified: "2026-05-03",
+            dateModified: "2026-05-04",
           },
           {
             "@context": "https://schema.org",
@@ -122,7 +124,7 @@ export default function MudikitVsSkoolPage() {
           <ScrollReveal delay={240}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
               <Link
-                href="/buy"
+                href="/mudikit"
                 className="group relative inline-flex items-center px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press"
               >
                 <span className="relative z-10 flex items-center gap-3">
@@ -294,7 +296,7 @@ export default function MudikitVsSkoolPage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               MudiKit is what I run my own business on. Subscribe, install, deploy something this weekend. $47/month. Cancel anytime.
             </p>
-            <Link href="/buy" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <Link href="/mudikit" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Get MudiKit
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />

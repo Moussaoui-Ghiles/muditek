@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { TldrBox } from "@/components/tldr-box";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 interface IssueStats {
   source?: string;
@@ -28,7 +28,7 @@ interface Issue {
 type RelatedLink = { href: string; tag: string; title: string; body: string };
 
 const RELATED_BUY: RelatedLink = {
-  href: "/buy",
+  href: "/mudikit",
   tag: "MudiKit",
   title: "Get the operator library — $47/mo",
   body: "Skills, playbooks, vault template, outreach templates. New drops monthly.",
@@ -93,15 +93,18 @@ export async function generateMetadata(
   const issue = await getIssue(slug);
   if (!issue) return { title: "Not found — Muditek" };
   const desc = issue.stats?.tldr || issue.stats?.preview || issue.subject;
+  const url = `https://muditek.com/newsletter/${slug}`;
   return {
     title: `${issue.subject} — Muditek Newsletter`,
     description: desc,
+    alternates: { canonical: url },
     openGraph: {
       title: issue.subject,
       description: desc,
+      url,
       type: "article",
       publishedTime: issue.sent_at,
-      images: ["https://muditek.com/images/ghiles.jpg"],
+      images: [`${url}/opengraph-image`],
     },
   };
 }
@@ -136,9 +139,11 @@ export default async function IssuePage({
       },
       publisher: { "@id": "https://muditek.com/#organization" },
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
-      image: "https://muditek.com/images/ghiles.jpg",
+      image: `${url}/opengraph-image`,
       url,
       isPartOf: { "@id": "https://muditek.com/#website" },
+      inLanguage: "en",
+      articleSection: "Newsletter",
     },
     {
       "@context": "https://schema.org",

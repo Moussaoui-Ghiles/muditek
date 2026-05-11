@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muditek — The Operating Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter Tight', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --paper: #f3efe6;
+    --paper-2: #ebe5d6;
+    --surface: #fcfaf3;
+    --surface-2: #f6f1e3;
+    --border: rgba(58, 78, 64, 0.14);
+    --border-bright: rgba(58, 78, 64, 0.28);
+    --ink: #2c3a30;
+    --ink-2: #4a5d50;
+    --ink-dim: #7e8d80;
+    --ink-dimmer: #a4b0a4;
+
+    --sage: #5a7a5a;
+    --sage-dim: rgba(90, 122, 90, 0.12);
+    --rose: #b76060;
+    --rose-dim: rgba(183, 96, 96, 0.1);
+    --gold: #b88040;
+    --gold-dim: rgba(184, 128, 64, 0.1);
+    --slate: #5a6a7a;
+    --slate-dim: rgba(90, 106, 122, 0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(184, 128, 64, 0.06), transparent 60%),
+      radial-gradient(ellipse at 100% 100%, rgba(90, 122, 90, 0.07), transparent 60%);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    padding: 48px 24px 80px;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .animate { animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; animation-delay: calc(var(--i,0)*0.04s); }
+  .animate-scale { animation: fadeScale 0.4s cubic-bezier(0.16,1,0.3,1) both; animation-delay: calc(var(--i,0)*0.04s); }
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; } }
+
+  .container { max-width: 1080px; margin: 0 auto; }
+
+  /* HERO */
+  .hero {
+    margin-bottom: 64px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 24px;
+  }
+  .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--sage); }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 84px);
+    font-weight: 500;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    margin-bottom: 22px;
+    text-wrap: balance;
+  }
+  h1 .italic { font-style: italic; font-weight: 400; color: var(--sage); }
+  .lede {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 72;
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 760px;
+  }
+  .lede strong { color: var(--ink); font-weight: 500; }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 64px;
+  }
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+  }
+  .toc-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 4px 24px;
+  }
+  .toc-list a {
+    display: flex; gap: 12px; align-items: baseline;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .toc-list a:hover { color: var(--sage); border-color: var(--sage); }
+  .toc-list .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    min-width: 28px;
+  }
+
+  /* SECTION */
+  section { margin-bottom: 80px; scroll-margin-top: 24px; }
+  .section-head {
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 500;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+  .section-head h2 .italic { font-style: italic; font-weight: 400; color: var(--sage); }
+  .section-intro {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 760px;
+    margin-bottom: 32px;
+    line-height: 1.55;
+  }
+
+  /* OFFERS */
+  .offers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .offer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+  }
+  .offer-tier {
+    font-family: var(--font-mono);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-dimmer);
+    margin-bottom: 12px;
+  }
+  .offer-price {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 500;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .offer-price .unit {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-left: 4px;
+  }
+  .offer-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .offer-body { font-size: 13px; color: var(--ink-dim); line-height: 1.55; }
+
+  /* JOURNEY STEPS */
+  .journey {
+    display: grid;
+    gap: 4px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .step {
+    background: var(--surface);
+    padding: 22px 26px;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 24px;
+    align-items: start;
+  }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--sage);
+    line-height: 1;
+    font-variation-settings: 'opsz' 72;
+  }
+  .step-body h4 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .step-body p { font-size: 14px; color: var(--ink-dim); line-height: 1.55; }
+  .step-where {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+    background: var(--paper-2);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  /* CADENCE TABLE */
+  .cadence {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .cadence-row {
+    display: contents;
+  }
+  .cadence-day {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--sage);
+    padding: 18px 20px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .cadence-task {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cadence-task:last-of-type, .cadence-day:last-of-type { border-bottom: none; }
+  .cadence-task h5 {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--ink);
+  }
+  .cadence-task p { font-size: 13px; color: var(--ink-dim); line-height: 1.55; }
+  .cadence-task .where {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* HOW-TO PANELS */
+  .howto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .howto {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 26px;
+  }
+  .howto h4 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--sage);
+    margin-bottom: 4px;
+  }
+  .howto .where {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+  }
+  .howto ol {
+    list-style: none;
+    counter-reset: step;
+  }
+  .howto ol li {
+    counter-increment: step;
+    padding: 8px 0 8px 32px;
+    border-bottom: 1px dashed var(--border);
+    position: relative;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .howto ol li:last-child { border-bottom: none; }
+  .howto ol li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute; left: 0; top: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sage);
+  }
+
+  /* CONTENT CALENDAR */
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    border-left: 4px solid var(--gold);
+  }
+  .content-card.priority { border-left-color: var(--rose); }
+  .content-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .content-card.priority .content-tag { color: var(--rose); }
+  .content-card h5 {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.25;
+  }
+  .content-card p { font-size: 13px; color: var(--ink-dim); line-height: 1.55; }
+  .content-card .effort {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-dimmer);
+    letter-spacing: 0.08em;
+  }
+
+  /* ROADMAP */
+  .roadmap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .horizon {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 26px;
+    position: relative;
+  }
+  .horizon.h30 { border-top: 4px solid var(--rose); }
+  .horizon.h60 { border-top: 4px solid var(--gold); }
+  .horizon.h90 { border-top: 4px solid var(--sage); }
+  .horizon-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 6px;
+  }
+  .horizon h3 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    color: var(--ink);
+  }
+  .h30 h3 { color: var(--rose); }
+  .h60 h3 { color: var(--gold); }
+  .h90 h3 { color: var(--sage); }
+  .horizon ul { list-style: none; }
+  .horizon ul li {
+    padding: 10px 0 10px 26px;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    position: relative;
+  }
+  .horizon ul li:last-child { border-bottom: none; }
+  .horizon ul li::before {
+    content: '☐';
+    position: absolute; left: 0; top: 8px;
+    font-size: 14px;
+    color: var(--ink-dimmer);
+  }
+  .horizon ul li strong { color: var(--ink); font-weight: 600; }
+
+  /* DECISION TREE */
+  .decisions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .decision {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+  }
+  .decision .q {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 14px;
+    line-height: 1.35;
+  }
+  .decision .a {
+    background: var(--surface-2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    border-left: 3px solid var(--sage);
+  }
+  .decision .a strong { color: var(--ink); font-weight: 600; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 800px) {
+    body { padding: 28px 16px 60px; }
+    h1 { font-size: 44px; }
+    .step { grid-template-columns: 40px 1fr; }
+    .step-where { grid-column: 1 / -1; justify-self: start; margin-top: 10px; }
+    .roadmap { grid-template-columns: 1fr; }
+    .cadence { grid-template-columns: 1fr; }
+    .cadence-day { border-right: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow animate" style="--i:0">Muditek · operating manual · v1.0 · 2026-04-28</div>
+    <h1 class="animate" style="--i:1">
+      How you actually<br>
+      <span class="italic">run this thing.</span>
+    </h1>
+    <p class="lede animate" style="--i:2">
+      Not how it's wired. <strong>How you operate it</strong> — what you do every Monday morning,
+      what each person sees on their journey, what to write next, and the order to build the missing pieces.
+      A field manual for your own business.
+    </p>
+  </header>
+
+  <!-- TOC -->
+  <nav class="toc animate" style="--i:3">
+    <div class="toc-title">In this manual</div>
+    <div class="toc-list">
+      <a href="#offers"><span class="num">01</span> What you sell</a>
+      <a href="#journey"><span class="num">02</span> Customer journey</a>
+      <a href="#cadence"><span class="num">03</span> Your weekly cadence</a>
+      <a href="#howto"><span class="num">04</span> How to use each piece</a>
+      <a href="#content"><span class="num">05</span> Content to write</a>
+      <a href="#roadmap"><span class="num">06</span> 30/60/90 build roadmap</a>
+      <a href="#decisions"><span class="num">07</span> Decision shortcuts</a>
+    </div>
+  </nav>
+
+  <!-- §01 OFFERS -->
+  <section id="offers">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 01</div>
+      <h2>What you actually <span class="italic">sell</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Four offers stacked from free to high-ticket. Every visitor enters at one rung. The job of the system is to walk them up.
+    </p>
+
+    <div class="offers">
+      <div class="offer animate-scale" style="--i:2">
+        <div class="offer-tier">Rung 01</div>
+        <div class="offer-price">Free</div>
+        <div class="offer-name">Newsletter</div>
+        <div class="offer-body">Weekly email. One deployable system per issue. Lowest commitment, biggest reach.</div>
+      </div>
+      <div class="offer animate-scale" style="--i:3">
+        <div class="offer-tier">Rung 02</div>
+        <div class="offer-price">Free</div>
+        <div class="offer-name">Free portal</div>
+        <div class="offer-body">Account + 14 playbooks + archive + book-a-call cards. Trust escalator.</div>
+      </div>
+      <div class="offer animate-scale" style="--i:4">
+        <div class="offer-tier">Rung 03</div>
+        <div class="offer-price">$47<span class="unit">/month</span></div>
+        <div class="offer-name">Paid kit</div>
+        <div class="offer-body">Paid playbooks, skills, templates, monthly drops. Recurring revenue.</div>
+      </div>
+      <div class="offer animate-scale" style="--i:5">
+        <div class="offer-tier">Rung 04</div>
+        <div class="offer-price">$X,000<span class="unit">+ /eng</span></div>
+        <div class="offer-name">Book a call</div>
+        <div class="offer-body">PE Ops · Revenue Leak · MudiAgent. High-ticket services. Where most of the money is.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §02 JOURNEY -->
+  <section id="journey">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 02</div>
+      <h2>The journey from <span class="italic">stranger to customer</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Seven steps. Most people stop at step 4 (just reads the newsletter). Your job is to make each step easy enough that the natural ones happen on their own.
+    </p>
+
+    <div class="journey">
+      <div class="step animate" style="--i:2">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h4>Sees you somewhere</h4>
+          <p>LinkedIn post, Google search, someone forwards an email, or a paid ad later. They're a stranger on the internet.</p>
+        </div>
+        <span class="step-where">External</span>
+      </div>
+      <div class="step animate" style="--i:3">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h4>Lands on a marketing page</h4>
+          <p>Homepage, /pe-ops, /mudiagent, or a resource page. They read for 30 seconds and decide if you're real.</p>
+        </div>
+        <span class="step-where">muditek.com/*</span>
+      </div>
+      <div class="step animate" style="--i:4">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h4>Drops their email</h4>
+          <p>Every page has the box. They type email + click subscribe. Now they're on the list.</p>
+        </div>
+        <span class="step-where">EmailCapture box</span>
+      </div>
+      <div class="step animate" style="--i:5">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h4>Gets the weekly newsletter</h4>
+          <p>One issue per week. Real value. They start to recognize your name in the inbox. This is the warming step.</p>
+        </div>
+        <span class="step-where">Inbox</span>
+      </div>
+      <div class="step animate" style="--i:6">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <h4>Claims a free account</h4>
+          <p>A CTA in the newsletter footer says "Create your free Muditek account →". Click → email code → portal.</p>
+        </div>
+        <span class="step-where">/sign-up</span>
+      </div>
+      <div class="step animate" style="--i:7">
+        <div class="step-num">06</div>
+        <div class="step-body">
+          <h4>Reads your playbooks</h4>
+          <p>Inside the portal: 14 free playbooks + every old newsletter. They binge-read. Trust deepens.</p>
+        </div>
+        <span class="step-where">/portal</span>
+      </div>
+      <div class="step animate" style="--i:8">
+        <div class="step-num">07</div>
+        <div class="step-body">
+          <h4>Pays you</h4>
+          <p>Either books a call (high-ticket service) OR upgrades to the $47 paid kit. Money moves.</p>
+        </div>
+        <span class="step-where">/buy or call link</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- §03 CADENCE -->
+  <section id="cadence">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 03</div>
+      <h2>Your weekly <span class="italic">operating cadence</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      What you actually do, week after week, to keep the machines running. If you stick to this, the system runs itself.
+    </p>
+
+    <div class="cadence">
+      <div class="cadence-day">Monday</div>
+      <div class="cadence-task">
+        <h5>Plan the week's content</h5>
+        <p>Pick one deployable system you'll teach this week. Open Apple Notes or your vault. Sketch the outline in 30 minutes.</p>
+        <div class="where">→ self/active-projects.md</div>
+      </div>
+
+      <div class="cadence-day">Tuesday</div>
+      <div class="cadence-task">
+        <h5>Write the newsletter</h5>
+        <p>Draft the issue. ~600–1200 words. One concrete win, one playbook, one CTA at the bottom.</p>
+        <div class="where">→ /admin/newsletter → New issue</div>
+      </div>
+
+      <div class="cadence-day">Wednesday</div>
+      <div class="cadence-task">
+        <h5>Send to HOT segment</h5>
+        <p>Send to the 2,002 hot subs first. Watch open rate over 4 hours. If &gt;25%, send to WARM at 6PM. If &gt;15%, send to COLD next day.</p>
+        <div class="where">→ /admin/newsletter/[id] → Send</div>
+      </div>
+
+      <div class="cadence-day">Thursday</div>
+      <div class="cadence-task">
+        <h5>Post on LinkedIn</h5>
+        <p>Repurpose the newsletter into a LinkedIn post. Add a keyword + lead-magnet hook. Activate the campaign.</p>
+        <div class="where">→ /admin/campaigns → New campaign</div>
+      </div>
+
+      <div class="cadence-day">Friday</div>
+      <div class="cadence-task">
+        <h5>Review the week</h5>
+        <p>Check /admin: new subscribers, paid signups, calls booked, top-performing campaign. Note one thing to improve next week.</p>
+        <div class="where">→ /admin (dashboard)</div>
+      </div>
+
+      <div class="cadence-day">Sat–Sun</div>
+      <div class="cadence-task">
+        <h5>Off (or build paid kit)</h5>
+        <p>Optional: write one paid playbook for /admin/content. Once 5 paid items exist, /buy stops selling vapor.</p>
+        <div class="where">→ /admin/content → New (is_free=false)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §04 HOW TO USE -->
+  <section id="howto">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 04</div>
+      <h2>How to use <span class="italic">each piece</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Concrete steps for the four moves you'll make most often.
+    </p>
+
+    <div class="howto-grid">
+      <div class="howto animate" style="--i:2">
+        <h4>Send a newsletter</h4>
+        <div class="where">/admin/newsletter</div>
+        <ol>
+          <li>Click "New issue".</li>
+          <li>Subject line first. Plain. Specific. No "🚀".</li>
+          <li>Markdown body. H2 for sections. One CTA link at bottom.</li>
+          <li>Pick audience: HOT / WARM / COLD / All / Custom topic.</li>
+          <li>"Test send" to yourself first. Open it in Gmail mobile.</li>
+          <li>"Send" → confirms count → fires through Resend.</li>
+          <li>Check /admin/newsletter/[id] for opens/clicks 4 hrs later.</li>
+        </ol>
+      </div>
+
+      <div class="howto animate" style="--i:3">
+        <h4>Add portal content</h4>
+        <div class="where">/admin/content</div>
+        <ol>
+          <li>Click "New item".</li>
+          <li>Title, slug, category (playbook / guide / tool / blueprint).</li>
+          <li>Description (1–2 sentences shown on the card).</li>
+          <li>Download URL (PDF link or Notion link).</li>
+          <li>Toggle <strong>is_free</strong>: on for free portal, off for paid kit.</li>
+          <li>Toggle <strong>is_new</strong> for a "New" badge for 7 days.</li>
+          <li>Save → appears in /portal immediately.</li>
+        </ol>
+      </div>
+
+      <div class="howto animate" style="--i:4">
+        <h4>Launch a LinkedIn campaign</h4>
+        <div class="where">/admin/campaigns</div>
+        <ol>
+          <li>Click "New campaign".</li>
+          <li>Title, keyword (e.g. "PLAYBOOK"), expiry date (2 weeks out).</li>
+          <li>Lead magnet PDF URL.</li>
+          <li>Save → get the /c/[id] landing URL.</li>
+          <li>Post on LinkedIn: "Comment PLAYBOOK below to get the system →"</li>
+          <li>Apify cron scrapes commenters daily.</li>
+          <li>Verified emails get the magnet auto-sent.</li>
+        </ol>
+      </div>
+
+      <div class="howto animate" style="--i:5">
+        <h4>Book-a-call lead</h4>
+        <div class="where">portal CTAs + offer pages</div>
+        <ol>
+          <li>Lead clicks "Book a call" on /pe-ops, /mudiagent, /revenue-leak-audit.</li>
+          <li>External booking (Cal.com / Savvycal) handles the slot.</li>
+          <li>Pre-call form captures: company, role, urgency, scope.</li>
+          <li>Note added to clients/pipeline/[company]/.</li>
+          <li>You take the call. Send proposal within 48 hrs.</li>
+          <li>If won → company moves clients/&lt;company&gt;/ folder.</li>
+          <li>Track in marketing/pipeline/pipeline.md.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- §05 CONTENT TO WRITE -->
+  <section id="content">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 05</div>
+      <h2>Content you need to <span class="italic">write</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Twelve pieces of copy stand between today and a system that converts on autopilot. Red border = priority, gold = next.
+    </p>
+
+    <div class="content-grid">
+      <div class="content-card priority animate" style="--i:2">
+        <div class="content-tag">Priority · this week</div>
+        <h5>Issue 30 — first weekly send back</h5>
+        <p>The "we're back" issue. One playbook. CTA at the bottom: "Create your free Muditek account →".</p>
+        <div class="effort">Effort · 2 hrs · drives leak fix #1, #3</div>
+      </div>
+
+      <div class="content-card priority animate" style="--i:3">
+        <div class="content-tag">Priority · this week</div>
+        <h5>Welcome email rewrite</h5>
+        <p>Triggers when someone subscribes. Currently functional but no portal CTA. Add one big "Claim your free portal" button.</p>
+        <div class="effort">Effort · 30 min · drives leak fix #3</div>
+      </div>
+
+      <div class="content-card priority animate" style="--i:4">
+        <div class="content-tag">Priority · this week</div>
+        <h5>Decide: /buy live or hidden</h5>
+        <p>Either write 3–5 paid items OR remove /buy from sitemap + navbar until ready.</p>
+        <div class="effort">Effort · 30 min decision · drives leak fix #2</div>
+      </div>
+
+      <div class="content-card animate" style="--i:5">
+        <div class="content-tag">Next · 2 weeks</div>
+        <h5>5 paid playbooks for /buy</h5>
+        <p>Write your first 5 paid items so the kit has something to deliver. Format: PDF + 1-page summary.</p>
+        <div class="effort">Effort · 1–2 hrs each</div>
+      </div>
+
+      <div class="content-card animate" style="--i:6">
+        <div class="content-tag">Next · 2 weeks</div>
+        <h5>3-step nurture sequence</h5>
+        <p>For LinkedIn lead-magnet downloaders: day 0 (deliver) → day 3 (related playbook) → day 7 (book a call).</p>
+        <div class="effort">Effort · 3 hrs total</div>
+      </div>
+
+      <div class="content-card animate" style="--i:7">
+        <div class="content-tag">Next · 2 weeks</div>
+        <h5>/buy page proof section</h5>
+        <p>Add: portal screenshot, sample paid playbook preview, refund line, FAQ, real-name testimonial when you have one.</p>
+        <div class="effort">Effort · 2 hrs</div>
+      </div>
+
+      <div class="content-card animate" style="--i:8">
+        <div class="content-tag">Next · 2 weeks</div>
+        <h5>Portal welcome screen copy</h5>
+        <p>First-time portal visit: "Welcome to Muditek. Start here." + 3 onboarding cards. Not the dense library view.</p>
+        <div class="effort">Effort · 1 hr</div>
+      </div>
+
+      <div class="content-card animate" style="--i:9">
+        <div class="content-tag">Next · 2 weeks</div>
+        <h5>One LinkedIn post + campaign</h5>
+        <p>Test: "Comment X to get this audit playbook." Activate dormant campaign machine.</p>
+        <div class="effort">Effort · 90 min</div>
+      </div>
+
+      <div class="content-card animate" style="--i:10">
+        <div class="content-tag">Soon · month</div>
+        <h5>LinkedIn Newsletter (their format)</h5>
+        <p>Different from your email newsletter. LinkedIn's native newsletter feature → puts you in subscribers' LinkedIn inbox.</p>
+        <div class="effort">Effort · 1 hr setup + repurpose weekly</div>
+      </div>
+
+      <div class="content-card animate" style="--i:11">
+        <div class="content-tag">Soon · month</div>
+        <h5>Onboarding email sequence</h5>
+        <p>For new portal accounts: day 0 (welcome), day 3 (best playbook), day 7 (book a call), day 14 (paid kit pitch).</p>
+        <div class="effort">Effort · 4 hrs</div>
+      </div>
+
+      <div class="content-card animate" style="--i:12">
+        <div class="content-tag">Later · quarter</div>
+        <h5>Re-segment by behavior</h5>
+        <p>HOT/WARM/COLD by historical opens. Now that you're sending again, refresh segments based on last 4 sends.</p>
+        <div class="effort">Effort · 2 hrs analysis</div>
+      </div>
+
+      <div class="content-card animate" style="--i:13">
+        <div class="content-tag">Later · quarter</div>
+        <h5>Case study from a paying client</h5>
+        <p>Once a Verso/Nextronics-style client lands, write a one-pager. Drives every page's conversion.</p>
+        <div class="effort">Effort · 1 day · async with client</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §06 ROADMAP -->
+  <section id="roadmap">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 06</div>
+      <h2>30 / 60 / 90 day <span class="italic">build roadmap</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Three horizons. The first month is mostly content + cadence. The second is automation. The third is scale.
+    </p>
+
+    <div class="roadmap">
+      <div class="horizon h30 animate" style="--i:2">
+        <div class="horizon-when">Day 1 — 30</div>
+        <h3>Restart the engine</h3>
+        <ul>
+          <li>Send <strong>Issue 30</strong> to HOT (2,002 people)</li>
+          <li>Add "Create your free account" CTA to newsletter footer</li>
+          <li>Decide on <strong>/buy</strong> — ship content or hide button</li>
+          <li>Write 3 paid playbooks for the kit</li>
+          <li>Post 1 LinkedIn campaign with keyword</li>
+          <li>Flip Clerk dashboard: <strong>password off, prod instance, rename app</strong></li>
+          <li>Establish weekly cadence (§03 routine)</li>
+        </ul>
+      </div>
+
+      <div class="horizon h60 animate" style="--i:3">
+        <div class="horizon-when">Day 31 — 60</div>
+        <h3>Automate the warm</h3>
+        <ul>
+          <li>Write the 3-step nurture sequence</li>
+          <li>Wire <strong>onboarding email</strong> sequence (4 emails over 14 days)</li>
+          <li>Launch <strong>LinkedIn Native Newsletter</strong> (different from email)</li>
+          <li>Add 2 more paid playbooks (5 total in /buy)</li>
+          <li>Add proof section to /buy (testimonial, screenshot, refund)</li>
+          <li>First case study from a paying client</li>
+          <li>Re-segment HOT/WARM/COLD on last 4 sends</li>
+        </ul>
+      </div>
+
+      <div class="horizon h90 animate" style="--i:4">
+        <div class="horizon-when">Day 61 — 90</div>
+        <h3>Scale &amp; widen</h3>
+        <ul>
+          <li>Run 4 LinkedIn campaigns concurrently with different angles</li>
+          <li>Test paid ads on best-performing organic post</li>
+          <li>Build referral program for paid subscribers</li>
+          <li>Add <strong>community / Slack</strong> tier above $47 ($197/mo)</li>
+          <li>Hire VA to run /admin daily ops + reply to leads</li>
+          <li>First repeatable client win → record + ship case study</li>
+          <li>Replace Clerk dev instance fully with prod</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- §07 DECISIONS -->
+  <section id="decisions">
+    <div class="section-head animate" style="--i:0">
+      <div class="section-num">§ 07</div>
+      <h2>Decision <span class="italic">shortcuts</span></h2>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      The questions you'll ask yourself every week. Keep these answers in your head so you don't re-debate them.
+    </p>
+
+    <div class="decisions">
+      <div class="decision animate" style="--i:2">
+        <div class="q">Send to HOT only or to everyone?</div>
+        <div class="a"><strong>HOT first.</strong> If open rate &gt;25% in 4 hours, send to WARM. If WARM &gt;15%, send to COLD next day. Never blast all 5,365 cold.</div>
+      </div>
+
+      <div class="decision animate" style="--i:3">
+        <div class="q">Newsletter topic this week?</div>
+        <div class="a"><strong>Pick the most concrete win.</strong> Real client, real number, real playbook they can copy in 1 hour. Avoid theory weeks.</div>
+      </div>
+
+      <div class="decision animate" style="--i:4">
+        <div class="q">Should I add this to the free or paid kit?</div>
+        <div class="a"><strong>Free if it teaches.</strong> Paid if it copy-pastes (templates, vault structures, prompts, scripts). Education = free, leverage = paid.</div>
+      </div>
+
+      <div class="decision animate" style="--i:5">
+        <div class="q">Do I take this client call?</div>
+        <div class="a"><strong>Use decisions/decision-go-no-go-client.md.</strong> Tldr: revenue size, ops fit, urgency, payment terms. If 3 of 4 yes → take it.</div>
+      </div>
+
+      <div class="decision animate" style="--i:6">
+        <div class="q">Should I unsub a non-opener?</div>
+        <div class="a"><strong>No.</strong> Resend handles reputation. Cold subs cost almost nothing. Re-engagement campaigns work better than purges.</div>
+      </div>
+
+      <div class="decision animate" style="--i:7">
+        <div class="q">Lead asks for a discount on /buy?</div>
+        <div class="a"><strong>No discount.</strong> Offer a free 30-min audit instead. Discounts on $47 attract the wrong customer.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Muditek operating manual · v1.0 · visual-explainer · 2026-04-28
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { NURTURE_SEQUENCE } from "@/lib/sequences";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
   const sql = getDb();
+  await ensureResourceLeadSchema(sql);
 
   const [stepCounts, upcoming, recent, totalEnrolled] = await Promise.all([
     sql`
@@ -17,15 +19,22 @@ export async function GET(request: Request) {
       ORDER BY step ASC
     `,
     sql`
-      WITH lead_progress AS (
-        SELECT DISTINCT ON (s.email)
-          s.email,
-          s.name,
-          s.created_at AS enrolled_at,
-          (SELECT MAX(step) FROM sequence_sends WHERE email = s.email) AS last_step
-        FROM submissions s
-        WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = s.email AND sub.status = 'active')
-        ORDER BY s.email, s.created_at ASC
+      WITH raw_leads AS (
+        SELECT lower(email) AS email, name, created_at AS enrolled_at
+        FROM submissions
+        UNION ALL
+        SELECT lower(email) AS email, name, created_at AS enrolled_at
+        FROM resource_leads
+      ),
+      lead_progress AS (
+        SELECT DISTINCT ON (lead.email)
+          lead.email,
+          lead.name,
+          lead.enrolled_at,
+          (SELECT MAX(step) FROM sequence_sends WHERE email = lead.email) AS last_step
+        FROM raw_leads lead
+        WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
+        ORDER BY lead.email, lead.enrolled_at ASC
       )
       SELECT email, name, enrolled_at, last_step
       FROM lead_progress
@@ -40,8 +49,12 @@ export async function GET(request: Request) {
     `,
     sql`
       SELECT COUNT(DISTINCT email)::int AS total
-      FROM submissions s
-      WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = s.email AND sub.status = 'active')
+      FROM (
+        SELECT lower(email) AS email FROM submissions
+        UNION
+        SELECT lower(email) AS email FROM resource_leads
+      ) lead
+      WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
     `,
   ]);
 

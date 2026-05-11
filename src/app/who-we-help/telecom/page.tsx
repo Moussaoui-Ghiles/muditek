@@ -118,7 +118,7 @@ export default function TelecomIndustryPage() {
         serviceSchemaDescription:
           "mudiAgent on-premises AI for telecom operators — automated SLA reporting, NOC knowledge search, scheduled monitoring, and software operation. Runs entirely on customer infrastructure with no cloud dependency.",
         datePublished: "2026-05-03",
-        dateModified: "2026-05-03",
+        dateModified: "2026-05-04",
       }}
     />
   );

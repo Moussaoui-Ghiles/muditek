@@ -18,26 +18,29 @@ const isPublicRoute = createRouteMatcher([
   "/revenue-leak-audit",
   "/newsletter",
   "/newsletter/(.*)",
-  "/resources",
-  "/resources/(.*)",
   "/tools/(.*)",
   "/preferences/(.*)",
   "/subscribe",
   "/robots.txt",
   "/sitemap.xml",
   "/llms.txt",
+  "/llms-full.txt",
+  "/(.*).md",
+  "/playbooks/(.*)",
   "/opengraph-image",
   "/twitter-image",
   "/(.*)/opengraph-image",
   "/(.*)/twitter-image",
   // Product
-  "/buy",
+  "/mudikit",
   "/welcome",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/admin(.*)",
   // Campaign landing
   "/c/(.*)",
+  // Resource unlock links
+  "/r/(.*)",
   // APIs (public or self-authenticating)
   "/api/submit",
   "/api/subscribe",
@@ -50,6 +53,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/cron/(.*)",
   "/api/init",
   "/api/portal/billing",
+  "/api/indexnow",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -63,7 +67,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|md)).*)",
+    "/playbooks/(.*)",
     "/(api|trpc)(.*)",
   ],
 };

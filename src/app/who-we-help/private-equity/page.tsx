@@ -118,7 +118,7 @@ export default function PrivateEquityIndustryPage() {
         serviceSchemaDescription:
           "Custom operational infrastructure for private equity and venture capital firms — investor onboarding, KYC automation, document generation, fee computation, e-signatures, and bank reconciliation. Owned by the firm, not subscribed.",
         datePublished: "2026-05-03",
-        dateModified: "2026-05-03",
+        dateModified: "2026-05-04",
       }}
     />
   );

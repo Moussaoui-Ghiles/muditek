@@ -118,7 +118,7 @@ export default function AgenciesIndustryPage() {
         serviceSchemaDescription:
           "MudiKit operator library plus custom AI systems for marketing and development agencies — content production engines, reporting automation, and agentic outbound for agency new business.",
         datePublished: "2026-05-03",
-        dateModified: "2026-05-03",
+        dateModified: "2026-05-04",
       }}
     />
   );

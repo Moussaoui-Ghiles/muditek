@@ -118,7 +118,7 @@ export default function FintechIndustryPage() {
         serviceSchemaDescription:
           "Custom-built KYC and compliance operations infrastructure for fintech and payments firms — single review queue, jurisdiction-aware document rules, automated expiry alerts, sanctions/PEP integration, structured audit log. Owned by the firm.",
         datePublished: "2026-05-03",
-        dateModified: "2026-05-03",
+        dateModified: "2026-05-04",
       }}
     />
   );

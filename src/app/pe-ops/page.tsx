@@ -7,12 +7,25 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Operational Infrastructure for Investment Firms | Muditek",
-  description: "Custom operational infrastructure for private equity and investment banking firms. Investor onboarding in 3-5 days. KYC automated. You own the platform. Alternative to Juniper Square.",
+  description:
+    "Custom PE & investment banking ops in 2026: LP onboarding in 3-5 days, KYC, fee computation, e-signatures. You own it. Juniper Square alternative.",
+  alternates: {
+    canonical: "https://muditek.com/pe-ops",
+    types: { "text/markdown": "https://muditek.com/pe-ops.md" },
+  },
+  openGraph: {
+    title: "Operational Infrastructure for Investment Firms | Muditek",
+    description:
+      "Custom PE & investment banking ops in 2026: LP onboarding in 3-5 days, KYC automated, fee computation, e-signatures. Juniper Square alternative.",
+    url: "https://muditek.com/pe-ops",
+    type: "website",
+  },
 };
 
 const CASE_STUDY = [
@@ -41,7 +54,7 @@ export default function PEOpsPage() {
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Operational Infrastructure for Investment Firms",
-          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          provider: { "@id": "https://muditek.com/#organization" },
           description: "Custom operational infrastructure for private equity and investment banking firms. Investor onboarding, KYC automation, document generation, e-signatures, fee computation. Alternative to Juniper Square.",
           url: "https://muditek.com/pe-ops",
           areaServed: "Worldwide",
@@ -274,6 +287,15 @@ export default function PEOpsPage() {
 
       {/* ══════ FAQ ══════ */}
       <FaqBlock items={FAQ} accentColor="sky" />
+
+      {/* ══════ MUDIKIT CROSS-SELL ══════ */}
+      <MudikitCta
+        variant="inline"
+        className="max-w-[1000px] mx-auto px-6 md:px-12"
+        headline="Run the systems yourself · $47/mo"
+        body="Same Claude Code skills, playbooks, and vault template I install for €40K–100K engagements. New drops every week."
+        ctaLabel="See the kit"
+      />
 
       {/* ══════ FINAL CTA ══════ */}
       <section id="contact" className="py-48 min-h-[50vh] w-full flex items-center justify-center relative overflow-hidden bg-background">

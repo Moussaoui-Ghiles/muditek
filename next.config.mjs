@@ -29,6 +29,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/buy",
+        destination: "/mudikit",
+        permanent: true,
+      },
+      {
         // Legacy LinkedIn campaign URLs — UUID at root → /c/[id]
         source: "/:id(:?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
         destination: "/c/:id",

@@ -31,7 +31,7 @@ export async function GET() {
   }
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://linkingin.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
 
   const url = await createBillingPortalSession(
     subscribers[0].stripe_customer_id,

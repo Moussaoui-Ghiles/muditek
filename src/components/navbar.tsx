@@ -6,16 +6,12 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
 
-const ADMIN_EMAIL = "ghiles@muditek.com";
-
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { isSignedIn, user, isLoaded } = useUser();
-  const email = user?.primaryEmailAddress?.emailAddress;
-  const isAdmin = email === ADMIN_EMAIL;
+  const { isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
     setMobileOpen(false);
@@ -70,6 +66,13 @@ export function Navbar() {
                 Operational Infrastructure
               </Link>
               <div className="h-px bg-white/[0.04] mx-5 my-2" />
+              <Link href="/who-we-help" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Who We Help
+              </Link>
+              <Link href="/case-studies" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Case Studies
+              </Link>
+              <div className="h-px bg-white/[0.04] mx-5 my-2" />
               <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Revenue Leak Calculator
                 <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Free</span>
@@ -83,20 +86,12 @@ export function Navbar() {
           <Link href="/newsletter" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Newsletter
           </Link>
-          <Link href="/resources" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Resources
-          </Link>
 
           {isLoaded && isSignedIn && (
             <>
               <Link href="/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
                 Portal
               </Link>
-              {isAdmin && (
-                <Link href="/admin" className="text-sm uppercase tracking-[0.2em] text-amber-400/80 hover:text-amber-300 transition-colors font-bold">
-                  Admin
-                </Link>
-              )}
             </>
           )}
         </div>
@@ -185,6 +180,8 @@ export function Navbar() {
               <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
+              <Link href="/who-we-help" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Who We Help</Link>
+              <Link href="/case-studies" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Case Studies</Link>
               <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
             </div>
           </div>
@@ -209,16 +206,6 @@ export function Navbar() {
             Newsletter
           </Link>
 
-          <Link
-            href="/resources"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
-          >
-            Resources
-          </Link>
-
           {isLoaded && !isSignedIn && (
             <>
               <Link
@@ -226,7 +213,7 @@ export function Navbar() {
                 className={`text-2xl font-black uppercase tracking-[0.05em] text-primary hover:text-primary/80 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                   mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                 }`}
-                style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
               >
                 Join Free
               </Link>
@@ -235,7 +222,7 @@ export function Navbar() {
                 className={`text-xl font-bold uppercase tracking-[0.05em] text-foreground/60 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                   mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                 }`}
-                style={{ transitionDelay: mobileOpen ? "420ms" : "0ms" }}
+                style={{ transitionDelay: mobileOpen ? "360ms" : "0ms" }}
               >
                 Sign in
               </Link>
@@ -248,21 +235,10 @@ export function Navbar() {
                 className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                   mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                 }`}
-                style={{ transitionDelay: mobileOpen ? "380ms" : "0ms" }}
+                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
               >
                 Portal
               </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className={`text-2xl font-black uppercase tracking-[0.05em] text-amber-400/90 hover:text-amber-300 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                    mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                  }`}
-                  style={{ transitionDelay: mobileOpen ? "440ms" : "0ms" }}
-                >
-                  Admin
-                </Link>
-              )}
             </>
           )}
 

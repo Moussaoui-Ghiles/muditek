@@ -1,8 +1,13 @@
 import { getDb } from "@/lib/db";
+import { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/newsletter-html";
 import { Resend } from "resend";
 
-export const NEWSLETTER_FROM = "Ghiles <resources@mail.ghiless.com>";
-export const NEWSLETTER_REPLY_TO = "ghiles@ghiless.com";
+export { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/newsletter-html";
+
+export const NEWSLETTER_FROM =
+  process.env.NEWSLETTER_FROM || "Ghiles <resources@mail.ghiless.com>";
+export const NEWSLETTER_REPLY_TO =
+  process.env.NEWSLETTER_REPLY_TO || "ghiles@ghiless.com";
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
@@ -77,48 +82,6 @@ function renderInline(text: string): string {
   return s;
 }
 
-export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string }): string {
-  const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 40px 20px; background: #ffffff; color: #1a1a1a;">
-      <div style="margin-bottom: 28px;">
-        <a href="https://muditek.com" style="text-decoration:none; display:inline-block;">
-          <img src="${logoUrl}" alt="Muditek" width="120" height="28" style="display:block; border:0; outline:none; text-decoration:none; height:28px;" />
-        </a>
-      </div>
-
-      ${bodyHtml}
-
-      <p style="margin:48px 0 0; font-size:12px; color:#8a8a8a; line-height:1.7;">
-        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a; text-decoration:underline;">ghiles@muditek.com</a><br/>
-        <a href="${footer.prefsUrl}" style="color:#8a8a8a; text-decoration:underline;">Manage preferences</a> &middot; <a href="${footer.unsubUrl}" style="color:#8a8a8a; text-decoration:underline;">Unsubscribe</a>
-      </p>
-    </div>
-  `;
-}
-
-// Plain-text fallback for multipart/alternative — major deliverability boost.
-export function htmlToPlainText(html: string): string {
-  if (!html) return "";
-  return html
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/(p|h1|h2|h3|h4|h5|h6|li|tr|div)>/gi, "\n\n")
-    .replace(/<li[^>]*>/gi, "- ")
-    .replace(/<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, "$2 ($1)")
-    .replace(/<img[^>]*alt="([^"]*)"[^>]*>/gi, "[image: $1]")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 type ActiveSub = {
   id: string;
   email: string;
@@ -150,6 +113,11 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
   if (issueRows.length === 0) throw new Error("Issue not found");
   const issue = issueRows[0];
   if (issue.status === "sent") throw new Error("Already sent");
+  const bodyHtml = String(issue.html ?? "").trim();
+  if (!bodyHtml || bodyHtml === "<p></p>") throw new Error("Issue has no body");
+  if (containsInlineImages(bodyHtml)) {
+    throw new Error("Issue contains inline images. Configure Vercel Blob or replace them with hosted image URLs before sending.");
+  }
 
   const subs = await listActiveSubscribers(issue.audience_filter);
   if (subs.length === 0) throw new Error("No active subscribers for this audience");
@@ -168,11 +136,15 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
       const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
       return {
         from: NEWSLETTER_FROM,
-        reply_to: NEWSLETTER_REPLY_TO,
+        replyTo: NEWSLETTER_REPLY_TO,
         to: s.email,
         subject: issue.subject,
         html,
         text,
+        tags: [
+          { name: "newsletter_issue_id", value: issueId },
+          { name: "newsletter_subscriber_id", value: s.id },
+        ],
         headers: {
           "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsubscribe@muditek.com?subject=unsubscribe>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

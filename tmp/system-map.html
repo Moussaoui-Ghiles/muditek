@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muditek — The Business, In Plain English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter Tight', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+    --paper: #faf6ed;
+    --paper-warm: #f3ecdb;
+    --surface: #ffffff;
+    --surface-2: #f7efdd;
+    --border: rgba(30, 24, 18, 0.1);
+    --border-bright: rgba(30, 24, 18, 0.22);
+    --ink: #1e1812;
+    --ink-dim: #5a4d3e;
+    --ink-dimmer: #8a7c6b;
+
+    --brand: #b44c28;          /* deep terracotta — primary accent */
+    --brand-dim: rgba(180, 76, 40, 0.09);
+    --gold: #b8892a;           /* ochre — "money" */
+    --gold-dim: rgba(184, 137, 42, 0.1);
+    --green: #557a48;          /* forest — "running" */
+    --green-dim: rgba(85, 122, 72, 0.1);
+    --red: #a83a32;            /* deep red — "leaking" */
+    --red-dim: rgba(168, 58, 50, 0.09);
+    --slate: #4a6275;          /* slate — neutral */
+    --slate-dim: rgba(74, 98, 117, 0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(ellipse at top, rgba(184, 137, 42, 0.05), transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0 0.07 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    padding: 48px 24px 80px;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .animate { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 0.06s); }
+  .animate-scale { animation: fadeScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 0.06s); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  .container { max-width: 1060px; margin: 0 auto; }
+
+  /* ============ HERO ============ */
+  .hero {
+    margin-bottom: 56px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 22px;
+  }
+  .eyebrow::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--brand);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6.5vw, 76px);
+    font-weight: 500;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin-bottom: 20px;
+    text-wrap: balance;
+  }
+  h1 .italic { font-style: italic; font-weight: 400; color: var(--brand); }
+  .lede {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 72;
+    line-height: 1.45;
+    color: var(--ink-dim);
+    max-width: 760px;
+  }
+  .lede strong { color: var(--ink); font-weight: 500; }
+
+  /* ============ OFFERS ============ */
+  .offers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 64px;
+  }
+  .offer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 22px 20px;
+    position: relative;
+  }
+  .offer-tier {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+    margin-bottom: 12px;
+  }
+  .offer-price {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .offer-price .unit {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-dim);
+    margin-left: 4px;
+  }
+  .offer-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .offer-body { font-size: 13px; color: var(--ink-dim); line-height: 1.55; }
+
+  /* ============ SECTION ============ */
+  section { margin-bottom: 72px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.02em;
+  }
+  .section-head h2 .italic { font-style: italic; font-weight: 400; color: var(--brand); }
+  .section-head .step {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dimmer);
+  }
+  .section-intro {
+    color: var(--ink-dim);
+    max-width: 720px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ============ JOURNEY DIAGRAM ============ */
+  .mermaid-wrap {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-bright) transparent;
+  }
+  .mermaid-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+  .mermaid-wrap::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+  .mermaid-wrap .mermaid {
+    display: flex;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    transform-origin: top center;
+  }
+  .mermaid-wrap.is-zoomed { cursor: grab; }
+  .mermaid-wrap.is-panning { cursor: grabbing; user-select: none; }
+  .zoom-controls {
+    position: absolute; top: 10px; right: 10px;
+    display: flex; gap: 2px; z-index: 10;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px;
+  }
+  .zoom-controls button {
+    width: 28px; height: 28px;
+    border: none; background: transparent;
+    color: var(--ink-dim);
+    font-family: var(--font-mono); font-size: 14px;
+    cursor: pointer; border-radius: 4px;
+  }
+  .zoom-controls button:hover { background: var(--paper-warm); color: var(--ink); }
+
+  .mermaid .nodeLabel {
+    font-family: var(--font-display) !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+  }
+  .mermaid .edgeLabel {
+    font-family: var(--font-mono) !important;
+    font-size: 11px !important;
+  }
+
+  /* ============ STATUS LIST ============ */
+  .status-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .status-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+  }
+  .status-col h3 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .status-col.running h3 { color: var(--green); }
+  .status-col.idle h3 { color: var(--gold); }
+
+  .status-item {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .status-item:last-child { border-bottom: none; }
+  .status-mark {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .running .status-mark { color: var(--green); }
+  .idle .status-mark { color: var(--gold); }
+  .status-text { color: var(--ink); font-size: 14px; line-height: 1.5; }
+  .status-text em {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    font-style: normal;
+  }
+
+  /* ============ LEAKS ============ */
+  .leak-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+  }
+  .leak {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 0 12px 12px 0;
+    padding: 26px 28px;
+  }
+  .leak-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+  }
+  .leak-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .leak-body {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.65;
+  }
+  .leak-body strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .leak-body .num {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--red);
+  }
+
+  /* ============ THE 3 MOVES ============ */
+  .moves-wrap {
+    background: linear-gradient(135deg, var(--brand-dim), var(--gold-dim) 70%);
+    border: 1px solid var(--border-bright);
+    border-radius: 16px;
+    padding: 44px 40px;
+    margin-top: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .moves-wrap::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--brand-dim), transparent 70%);
+    pointer-events: none;
+  }
+  .moves-wrap h3 {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-bottom: 10px;
+  }
+  .moves-wrap h3 .italic {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--brand);
+  }
+  .moves-sub {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--ink-dim);
+    max-width: 620px;
+    margin-bottom: 28px;
+  }
+  .moves {
+    display: grid;
+    gap: 14px;
+    position: relative;
+  }
+  .move {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 20px;
+    padding: 20px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .move:hover {
+    transform: translateY(-1px);
+    border-color: var(--brand);
+  }
+  .move-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand);
+    padding-top: 4px;
+    line-height: 1.4;
+  }
+  .move-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .move-body {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+  .move-body strong { color: var(--ink); font-weight: 600; }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dimmer);
+    text-align: center;
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 28px 16px 60px; }
+    h1 { font-size: 40px; }
+    .section-head h2 { font-size: 24px; }
+    .status-list { grid-template-columns: 1fr; }
+    .moves-wrap { padding: 28px 22px; }
+    .moves-wrap h3 { font-size: 28px; }
+    .move { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="eyebrow animate" style="--i:0">Muditek · the business, in plain english · 2026-04-24</div>
+    <h1 class="animate" style="--i:1">
+      Four doors in.<br>
+      <span class="italic">Three ways out.</span>
+    </h1>
+    <p class="lede animate" style="--i:2">
+      You sell four things. A stranger walks through one of four front doors,
+      lands on your weekly newsletter, and — over weeks or months — <strong>keeps reading, books a call, or pays monthly</strong>.
+      That's the whole business. This page shows how people move through it today,
+      what's running, what's paused, and where money is slipping out.
+    </p>
+  </header>
+
+  <!-- ============ OFFERS ============ -->
+  <div class="offers">
+    <div class="offer animate-scale" style="--i:0">
+      <div class="offer-tier">Tier 01</div>
+      <div class="offer-price">Free</div>
+      <div class="offer-name">The newsletter</div>
+      <div class="offer-body">Weekly email. One deployable system per issue. Sits in the inbox.</div>
+    </div>
+    <div class="offer animate-scale" style="--i:1">
+      <div class="offer-tier">Tier 02</div>
+      <div class="offer-price">Free</div>
+      <div class="offer-name">The portal</div>
+      <div class="offer-body">Account + 14 playbooks + archive of past issues + book-a-call cards.</div>
+    </div>
+    <div class="offer animate-scale" style="--i:2">
+      <div class="offer-tier">Tier 03</div>
+      <div class="offer-price">$47<span class="unit">/month</span></div>
+      <div class="offer-name">The paid kit</div>
+      <div class="offer-body">Paid playbooks, skills, templates, monthly drops. The subscription.</div>
+    </div>
+    <div class="offer animate-scale" style="--i:3">
+      <div class="offer-tier">Tier 04</div>
+      <div class="offer-price">$X,000<span class="unit">+ / engagement</span></div>
+      <div class="offer-name">Book a call</div>
+      <div class="offer-body">PE Ops audit · Revenue Leak audit · MudiAgent for telecom. High-ticket services.</div>
+    </div>
+  </div>
+
+  <!-- ============ JOURNEY ============ -->
+  <section>
+    <div class="section-head animate" style="--i:0">
+      <h2>How a stranger becomes a <span class="italic">customer</span></h2>
+      <span class="step">§ 01 · the journey</span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Seven steps. First six are free. The seventh is where money shows up.
+      Each step is its own decision for the reader — every decision is a chance to leak people.
+    </p>
+
+    <div class="mermaid-wrap animate" style="--i:2">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+        <button onclick="resetZoom(this)" title="Reset">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+        flowchart TD
+          classDef door fill:#f7efdd,stroke:#b44c28,stroke-width:2px,color:#1e1812
+          classDef step fill:#ffffff,stroke:#4a6275,stroke-width:1.5px,color:#1e1812
+          classDef portal fill:#ffffff,stroke:#b44c28,stroke-width:2.5px,color:#1e1812
+          classDef exit fill:#ffffff,stroke:#b8892a,stroke-width:2px,color:#1e1812
+          classDef money fill:#f7efdd,stroke:#557a48,stroke-width:2.5px,color:#1e1812
+
+          A1[&quot;LinkedIn post&quot;]:::door
+          A2[&quot;Google &amp; share&quot;]:::door
+          A3[&quot;Direct to site&quot;]:::door
+          A4[&quot;Someone forwards an email&quot;]:::door
+
+          S1[&quot;Lands on a marketing page&quot;]:::step
+          S2[&quot;Drops email in the box&quot;]:::step
+          S3[&quot;Gets welcome email&quot;]:::step
+          S4[&quot;Reads newsletter every week&quot;]:::step
+          S5[&quot;Creates free account&quot;]:::step
+          S6[&quot;Inside the portal&quot;]:::portal
+
+          EX1[&quot;Keeps reading for free&quot;]:::exit
+          EX2[&quot;Books a call&quot;]:::money
+          EX3[&quot;Pays $47/month&quot;]:::money
+
+          A1 --&gt; S1
+          A2 --&gt; S1
+          A3 --&gt; S1
+          A4 --&gt; S1
+          S1 --&gt;|&quot;One email box&quot;| S2
+          S2 --&gt;|&quot;Automatic&quot;| S3
+          S3 --&gt;|&quot;Weekly&quot;| S4
+          S4 --&gt;|&quot;Click the CTA&quot;| S5
+          S5 --&gt; S6
+          S6 --&gt; EX1
+          S6 --&gt; EX2
+          S6 --&gt; EX3
+      </pre>
+    </div>
+  </section>
+
+  <!-- ============ STATUS ============ -->
+  <section>
+    <div class="section-head animate" style="--i:0">
+      <h2>What's running <span class="italic">right now</span></h2>
+      <span class="step">§ 02 · state of play</span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Every machine is built. Some are carrying traffic. Most are sitting still with the doors open and nobody walking through.
+    </p>
+
+    <div class="status-list">
+      <div class="status-col running animate" style="--i:2">
+        <h3>Still running</h3>
+
+        <div class="status-item">
+          <div class="status-mark">✓</div>
+          <div class="status-text">
+            People can find the site &amp; drop an email
+            <em>Marketing pages and capture box are up</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">✓</div>
+          <div class="status-text">
+            People can create a free account
+            <em>Sign-up works, portal opens</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">✓</div>
+          <div class="status-text">
+            People can book a call
+            <em>3 service pages (PE, Revenue Leak, MudiAgent) live</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">✓</div>
+          <div class="status-text">
+            You can send a newsletter
+            <em>Admin console lets you write and send in one click</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">✓</div>
+          <div class="status-text">
+            Paid checkout is live
+            <em>Stripe button works — but see the right column</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-col idle animate" style="--i:3">
+        <h3>Sitting still</h3>
+
+        <div class="status-item">
+          <div class="status-mark">○</div>
+          <div class="status-text">
+            Newsletter hasn't gone out in 4 days
+            <em>Last issue: April 20 — list is going cold</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">○</div>
+          <div class="status-text">
+            5,364 subscribers never asked to create an account
+            <em>Only you have one. Everyone else still just gets email</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">○</div>
+          <div class="status-text">
+            Paid kit has nothing inside
+            <em>0 playbooks in the paid library — can't deliver what /buy promises</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">○</div>
+          <div class="status-text">
+            No LinkedIn lead-capture post running
+            <em>Last campaign expired April 20 — front door of biggest channel is closed</em>
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="status-mark">○</div>
+          <div class="status-text">
+            Nurture drip has no content
+            <em>If a lead came in today, they'd get silence after the first email</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEAKS ============ -->
+  <section>
+    <div class="section-head animate" style="--i:0">
+      <h2>Where money is <span class="italic">leaking</span></h2>
+      <span class="step">§ 03 · ranked by pain</span>
+    </div>
+    <p class="section-intro animate" style="--i:1">
+      Four leaks. All cost you money. Ranked by how much and how fast.
+    </p>
+
+    <div class="leak-grid">
+      <div class="leak animate" style="--i:2">
+        <div class="leak-num">Leak 01 · the big one</div>
+        <div class="leak-title">Silent newsletter</div>
+        <div class="leak-body">
+          <span class="num">5,365 people</span> said "yes, email me." You haven't sent in <strong>4 days</strong>.
+          Every silent week kills your open rate. This list is the asset you already earned —
+          not using it is the single biggest loss in the business today.
+        </div>
+      </div>
+
+      <div class="leak animate" style="--i:3">
+        <div class="leak-num">Leak 02</div>
+        <div class="leak-title">Selling an empty shelf</div>
+        <div class="leak-body">
+          Your <strong>$47/month</strong> checkout is live. Stripe is wired. If a stranger pays today,
+          they log into the paid portal and see <strong>nothing inside</strong>.
+          Better to hide the Buy button than to sell empty.
+        </div>
+      </div>
+
+      <div class="leak animate" style="--i:4">
+        <div class="leak-num">Leak 03</div>
+        <div class="leak-title">Nobody knows the portal exists</div>
+        <div class="leak-body">
+          <span class="num">5,364 subscribers</span> trust you enough to be on your list.
+          They'd take a free account if asked. Right now no email mentions that the portal
+          even exists. One CTA in the next newsletter fixes it.
+        </div>
+      </div>
+
+      <div class="leak animate" style="--i:5">
+        <div class="leak-num">Leak 04</div>
+        <div class="leak-title">LinkedIn front door is closed</div>
+        <div class="leak-body">
+          Your biggest traffic channel. Your proven lead-capture play (comment a keyword, get a playbook)
+          is <strong>not running</strong>. One post with a keyword turns the whole capture &amp; nurture machine back on.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE 3 MOVES ============ -->
+  <div class="moves-wrap animate" style="--i:0">
+    <h3>Three moves <span class="italic">fix most of it.</span></h3>
+    <p class="moves-sub">
+      Not new features. Not more code. Just turning on machines that already exist.
+    </p>
+    <div class="moves">
+      <div class="move">
+        <div class="move-when">Tonight</div>
+        <div>
+          <div class="move-title">Write one newsletter, send to the hot 2,002.</div>
+          <div class="move-body">
+            Put <strong>"Create your free Muditek account →"</strong> in the footer.
+            One email kicks on three things at once: newsletter cadence restarts, people start claiming accounts,
+            and the portal starts getting traffic for the first time.
+          </div>
+        </div>
+      </div>
+      <div class="move">
+        <div class="move-when">This week</div>
+        <div>
+          <div class="move-title">Decide on the paid kit.</div>
+          <div class="move-body">
+            Either <strong>seed 3–5 real paid items</strong> in the library so $47 is worth paying,
+            or <strong>hide the Buy button</strong> from the site until you're ready.
+            Advertising an empty store burns trust worse than no store at all.
+          </div>
+        </div>
+      </div>
+      <div class="move">
+        <div class="move-when">Next LinkedIn post</div>
+        <div>
+          <div class="move-title">Turn the front door back on.</div>
+          <div class="move-body">
+            One post with a keyword + a lead magnet. The scrape → email → playbook → drip machine
+            catches everything automatically. You just need to publish again.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Muditek system map · generated with visual-explainer · 2026-04-24
+  </footer>
+
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk/dist/mermaid-layout-elk.esm.min.mjs';
+
+  mermaid.registerLayoutLoaders(elkLayouts);
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    look: 'handDrawn',
+    layout: 'elk',
+    themeVariables: {
+      primaryColor: '#faf6ed',
+      primaryBorderColor: '#b44c28',
+      primaryTextColor: '#1e1812',
+      secondaryColor: '#ffffff',
+      secondaryBorderColor: '#4a6275',
+      secondaryTextColor: '#1e1812',
+      tertiaryColor: '#f7efdd',
+      tertiaryBorderColor: '#b8892a',
+      tertiaryTextColor: '#1e1812',
+      lineColor: '#5a4d3e',
+      fontSize: '15px',
+      fontFamily: "'Fraunces', Georgia, serif",
+      edgeLabelBackground: '#faf6ed',
+    }
+  });
+</script>
+<script>
+  function updateZoomState(wrap) {
+    var target = wrap.querySelector('.mermaid');
+    var zoom = parseFloat(target.dataset.zoom || '1');
+    wrap.classList.toggle('is-zoomed', zoom > 1);
+  }
+  function zoomDiagram(btn, factor) {
+    var wrap = btn.closest('.mermaid-wrap');
+    var target = wrap.querySelector('.mermaid');
+    var current = parseFloat(target.dataset.zoom || '1');
+    var next = Math.min(Math.max(current * factor, 0.3), 5);
+    target.dataset.zoom = next;
+    target.style.transform = 'scale(' + next + ')';
+    updateZoomState(wrap);
+  }
+  function resetZoom(btn) {
+    var wrap = btn.closest('.mermaid-wrap');
+    var target = wrap.querySelector('.mermaid');
+    target.dataset.zoom = '1';
+    target.style.transform = 'scale(1)';
+    updateZoomState(wrap);
+  }
+  document.querySelectorAll('.mermaid-wrap').forEach(function(wrap) {
+    wrap.addEventListener('wheel', function(e) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      var target = wrap.querySelector('.mermaid');
+      var current = parseFloat(target.dataset.zoom || '1');
+      var factor = e.deltaY < 0 ? 1.1 : 0.9;
+      var next = Math.min(Math.max(current * factor, 0.3), 5);
+      target.dataset.zoom = next;
+      target.style.transform = 'scale(' + next + ')';
+      updateZoomState(wrap);
+    }, { passive: false });
+    var startX, startY, scrollL, scrollT;
+    wrap.addEventListener('mousedown', function(e) {
+      if (e.target.closest('.zoom-controls')) return;
+      var target = wrap.querySelector('.mermaid');
+      if (parseFloat(target.dataset.zoom || '1') <= 1) return;
+      wrap.classList.add('is-panning');
+      startX = e.clientX; startY = e.clientY;
+      scrollL = wrap.scrollLeft; scrollT = wrap.scrollTop;
+    });
+    window.addEventListener('mousemove', function(e) {
+      if (!wrap.classList.contains('is-panning')) return;
+      wrap.scrollLeft = scrollL - (e.clientX - startX);
+      wrap.scrollTop = scrollT - (e.clientY - startY);
+    });
+    window.addEventListener('mouseup', function() {
+      wrap.classList.remove('is-panning');
+    });
+  });
+</script>
+
+</body>
+</html>

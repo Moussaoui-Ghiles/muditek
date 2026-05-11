@@ -74,7 +74,7 @@ export function AuthBrandPanel() {
         <span className="text-white/20">·</span>
         <Link href="/newsletter" className="hover:text-white/70 transition-colors">Newsletter</Link>
         <span className="text-white/20">·</span>
-        <Link href="/resources" className="hover:text-white/70 transition-colors">Resources</Link>
+        <Link href="/portal" className="hover:text-white/70 transition-colors">Portal</Link>
       </div>
     </aside>
   );

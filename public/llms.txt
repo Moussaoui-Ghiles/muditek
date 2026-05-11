@@ -10,22 +10,53 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - [Revenue Leak Audit](https://muditek.com/revenue-leak-audit): Diagnoses where B2B SaaS pipelines lose €80-180K/year with exact formulas. Builds AI systems to fix speed-to-lead, pipeline conversion, churn, and outbound performance. €50K guarantee.
 - [Operational Infrastructure for Private Equity & Investment Banking](https://muditek.com/pe-ops): Custom operational infrastructure for private equity and investment banking firms. Investor onboarding, KYC automation, document generation, e-signatures, fee computation. Alternative to Juniper Square at a fraction of the cost.
 
+## Product
+
+- [MudiKit](https://muditek.com/buy): $47/month subscription operator library — 15+ Claude Code skills (outreach, lead gen, content writing, scraping, inbox SDR), 6 implementation playbooks, vault template, 20+ outreach templates, open-source lead capture system. New skills and playbooks drop every month. Cancel anytime via Stripe.
+
 ## Tools
 
 - [Revenue Leak Calculator](https://muditek.com/tools/revenue-leak-calculator): Free calculator that estimates annual revenue leakage from speed-to-lead decay, pipeline conversion gaps, and excess churn.
 
+## Industries
+
+- [Who We Help (index)](https://muditek.com/who-we-help): Five industries served by Muditek with industry-specific AI systems and case studies.
+- [Private Equity & VC](https://muditek.com/who-we-help/private-equity): Custom operational infrastructure for PE and VC firms — investor onboarding in 3-5 days, KYC, fee computation, document generation. You own the platform.
+- [B2B SaaS](https://muditek.com/who-we-help/b2b-saas): B2B SaaS at €800K-€1.8M ARR — diagnose where pipeline, conversion, and churn leak money in euros, then ship the AI systems that fix each leak.
+- [Marketing & Dev Agencies](https://muditek.com/who-we-help/agencies): Recover 20+ hours/week from manual content, reporting, and client ops. MudiKit operator library plus targeted custom builds.
+- [Telecom Operators](https://muditek.com/who-we-help/telecom): On-premises AI for SLA reporting, NOC automation, knowledge search, and software operation. No cloud, no per-user fees.
+- [Fintech & Payments](https://muditek.com/who-we-help/fintech): Custom operational infrastructure for KYC review queues, automated expiry alerts, reconciliation, and compliance workflows you own.
+
+## Case Studies
+
+- [Case Studies (index)](https://muditek.com/case-studies): Real-pattern case studies of AI systems Muditek has built across PE, B2B SaaS, agencies, telecom, and fintech.
+- [PE Onboarding (Merchant Bank)](https://muditek.com/case-studies/private-equity-onboarding): Regulated merchant banking firm cut LP onboarding from weeks to 3-5 days. 26 modules, 7 stakeholder roles, 9 automated workflows.
+- [SaaS Revenue Leak](https://muditek.com/case-studies/saas-revenue-leak): €800K ARR B2B SaaS found €120K/year in pipeline leakage in two weeks. Speed-to-lead, conversion, and churn fixed with three targeted AI systems.
+- [Agency Content Engine](https://muditek.com/case-studies/agency-content-engine): 5-person marketing agency cut social production from 20 hrs/week to 20 minutes. Same quality, 60x throughput.
+- [Telecom NOC Automation](https://muditek.com/case-studies/telecom-noc-automation): 50-person regional telco cut weekly SLA report production from 2-3 days to under one hour. On-premises mudiAgent.
+- [Fintech Compliance Ops](https://muditek.com/case-studies/fintech-compliance-ops): 30-person fintech cut KYC review backlog from 14 days to under 48 hours. Owned compliance infrastructure.
+
+## Comparison Pages
+
+- [mudiAgent vs ChatGPT Enterprise](https://muditek.com/mudiagent-vs-chatgpt): On-premises digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees, scheduled autonomous operation.
+- [Muditek vs Juniper Square](https://muditek.com/pe-ops-vs-juniper-square): Own a custom PE ops platform for €40-80K vs rent Juniper Square at $700K+/year. KYC, e-signatures, fee computation, full source.
+- [MudiKit vs Skool](https://muditek.com/mudikit-vs-skool): $47/mo Claude Code skills library you install and run vs hosted community platform with courses, threads, and gamification.
+- [MudiKit vs Circle](https://muditek.com/mudikit-vs-circle): $47/mo Claude Code skills library vs tiered community platform with spaces, events, and white-label apps.
+
 ## Newsletter & Resources
 
 - [Muditek Newsletter](https://muditek.com/newsletter): Weekly playbooks for AI operators, B2B operators, and investment professionals. 5,000+ subscribers across telecom, SaaS, and finance. Archive of 29+ issues.
+- [Resources](https://muditek.com/resources): Free playbooks and guides — Chief of Staff Blueprint, Claude Code self-evolving system, Judgment Moat, Google Maps outbound, Agentic SDR setup, and more.
 - [About / Founder](https://muditek.com/about): Background on Ghiles Moussaoui, the methodology, and how to book a call.
-- [mudiAgent vs ChatGPT](https://muditek.com/mudiagent-vs-chatgpt): Comparison covering data sovereignty, workflow automation, and cost at scale.
-- [Muditek vs Juniper Square](https://muditek.com/pe-ops-vs-juniper-square): Operational infrastructure comparison for investment firms.
 
 ## Target Audiences
 
 - Telecom operators and traders with 50+ employees needing on-premises AI automation
 - B2B SaaS founders at €800K-1.8M ARR with 2-5 sales reps losing pipeline revenue
 - Private equity, venture capital, and investment banking firms managing investor operations across multiple jurisdictions
+- Marketing and development agencies (3+ people, 3+ retainer clients) recovering hours from manual content and reporting
+- Fintech and payments firms automating KYC, expiry tracking, and compliance ops
+- Solo operators, AI builders, and consultants using Claude Code who want production-grade skills they can deploy this week (MudiKit)
 
 ## Key Differentiators
 
@@ -39,6 +70,7 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - mudiAgent: 40 hours saved in 90 days or reconfigured at no cost
 - Revenue Leak Audit: €50K in annual leakage found or you pay nothing
 - Operational Infrastructure: €150K+ in annual operational waste identified or you pay nothing
+- MudiKit: cancel anytime via Stripe customer portal, no annual lock-in
 
 ## Contact
 
@@ -46,3 +78,21 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - Book a call: https://muditek.com/about
 - Newsletter: https://muditek.com/newsletter
 - LinkedIn: https://www.linkedin.com/in/ghiles-moussaoui-b36218250/
+- Founder personal site: https://ghiless.com
+
+## Extended Reference
+
+- [llms-full.txt](https://muditek.com/llms-full.txt): Long-form (30-60KB) companion to this file. Contains full service descriptions, pricing details, FAQs, comparison data, methodology, and case study summaries. Use this when you need deep context.
+
+## Markdown Routes
+
+These pages are also available in clean Markdown for AI agents that prefer text/markdown over HTML:
+
+- https://muditek.com/index.md (homepage)
+- https://muditek.com/mudiagent.md
+- https://muditek.com/revenue-leak-audit.md
+- https://muditek.com/pe-ops.md
+- https://muditek.com/buy.md (MudiKit)
+- https://muditek.com/about.md
+
+Each page also declares its Markdown alternate via `<link rel="alternate" type="text/markdown">` in the HTML head.

@@ -8,11 +8,13 @@ import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "Muditek vs Juniper Square | Custom Private Equity Operations Platform | Muditek",
-  description: "Muditek vs Juniper Square in 2026: own a custom PE ops platform for €40-80K one-time vs rent Juniper Square at $700K+/year. KYC, e-signatures, fee computation, full source.",
+  description:
+    "Muditek vs Juniper Square in 2026: own a custom PE ops platform for €40-80K vs rent Juniper Square at $700K+/year. KYC, e-sig, fee computation.",
   alternates: { canonical: "https://muditek.com/pe-ops-vs-juniper-square" },
   openGraph: {
     title: "Muditek vs Juniper Square in 2026 | Custom Private Equity Operations",
-    description: "Muditek vs Juniper Square in 2026: own custom PE ops infrastructure for €40-80K vs rent Juniper Square at $700K+/year. Side-by-side comparison.",
+    description:
+      "Muditek vs Juniper Square in 2026: own custom PE ops infrastructure for €40-80K vs rent Juniper Square at $700K+/year. Side-by-side comparison.",
     url: "https://muditek.com/pe-ops-vs-juniper-square",
     type: "article",
   },
@@ -54,7 +56,7 @@ export default function PEOpsVsJuniperSquarePage() {
             url: "https://muditek.com/pe-ops-vs-juniper-square",
             isPartOf: { "@id": "https://muditek.com/#website" },
             datePublished: "2026-04-15",
-            dateModified: "2026-05-03",
+            dateModified: "2026-05-04",
           },
           {
             "@context": "https://schema.org",

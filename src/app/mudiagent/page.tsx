@@ -7,15 +7,24 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { LeadMagnetGate } from "@/components/lead-magnet-gate";
+import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
 
 export const metadata: Metadata = {
   title: "mudiAgent | Digital Employees for Telecom & Enterprise | Muditek",
-  description: "On-premises AI that automates SLA reporting, knowledge search, follow-ups, and software operation. Free discovery audit. 40-hour guarantee.",
+  description:
+    "On-premises AI digital employees for telecom and enterprise in 2026. Automate SLA reporting, knowledge search, and follow-ups. 40-hour guarantee.",
+  alternates: {
+    canonical: "https://muditek.com/mudiagent",
+    types: { "text/markdown": "https://muditek.com/mudiagent.md" },
+  },
   openGraph: {
     title: "mudiAgent | Digital Employees for Telecom & Enterprise",
-    description: "On-premises AI that automates SLA reporting, knowledge search, follow-ups, and software operation. No cloud. No per-user fees. 40-hour guarantee.",
+    description:
+      "On-premises AI digital employees in 2026. Automate SLA reporting, knowledge search, follow-ups. No cloud. No per-user fees. 40-hour guarantee.",
+    url: "https://muditek.com/mudiagent",
+    type: "website",
   },
 };
 
@@ -52,7 +61,7 @@ export default function MudiAgentPage() {
           "@context": "https://schema.org",
           "@type": "Service",
           name: "mudiAgent",
-          provider: { "@type": "Organization", name: "Muditek", url: "https://muditek.com" },
+          provider: { "@id": "https://muditek.com/#organization" },
           description: "On-premises AI digital employees for telecom and enterprise. Automates SLA reporting, knowledge search, follow-ups, and software operation.",
           url: "https://muditek.com/mudiagent",
           areaServed: "Worldwide",
@@ -269,6 +278,15 @@ export default function MudiAgentPage() {
         description="A free guide to the highest-ROI automation targets for telecom and enterprise operations — with time savings estimates and implementation complexity ratings."
         tags={["source:mudiagent", "segment:telecom", "lead-magnet:telecom-workflows"]}
         accentColor="primary"
+      />
+
+      {/* ══════ MUDIKIT CROSS-SELL ══════ */}
+      <MudikitCta
+        variant="inline"
+        className="max-w-[1000px] mx-auto px-6 md:px-12"
+        headline="Run the systems yourself · $47/mo"
+        body="Same Claude Code skills, playbooks, and vault template I install for €40K–100K engagements. New drops every week."
+        ctaLabel="See the kit"
       />
 
       {/* ══════ PRICING — Anchoring + Mental Accounting + Loss Aversion ══════ */}

@@ -118,7 +118,7 @@ export default function B2bSaasIndustryPage() {
         serviceSchemaDescription:
           "Diagnostic that quantifies B2B SaaS revenue leakage in euros across speed-to-lead, pipeline conversion, churn, channel ROI, and outbound. Followed by custom AI systems that close each identified leak.",
         datePublished: "2026-05-03",
-        dateModified: "2026-05-03",
+        dateModified: "2026-05-04",
       }}
     />
   );

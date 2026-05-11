@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/navbar";
@@ -9,6 +10,23 @@ import { FaqBlock } from "@/components/faq-block";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { DataCitation } from "@/components/data-citation";
 import { DATA_POINTS } from "@/lib/data-points";
+
+export const metadata: Metadata = {
+  title: "Muditek | AI Systems That Eliminate Operational Waste",
+  description:
+    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
+  alternates: {
+    canonical: "https://muditek.com",
+    types: { "text/markdown": "https://muditek.com/index.md" },
+  },
+  openGraph: {
+    title: "Muditek | AI Systems That Eliminate Operational Waste",
+    description:
+      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
+    url: "https://muditek.com",
+    type: "website",
+  },
+};
 
 const BOOKING_URL =
   "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";

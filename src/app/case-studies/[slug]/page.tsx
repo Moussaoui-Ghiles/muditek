@@ -87,6 +87,7 @@ export default async function CaseStudyPage({
   const accentBtn = ACCENT_BTN[c.accent];
 
   const otherCases = CASE_STUDIES.filter((x) => x.slug !== c.slug).slice(0, 3);
+  const LAST_UPDATED = "2026-05-04";
 
   return (
     <div className="bg-background min-h-[100dvh] text-foreground flex flex-col items-center">
@@ -106,11 +107,11 @@ export default async function CaseStudyPage({
             },
             publisher: { "@id": "https://muditek.com/#organization" },
             datePublished: c.date,
-            dateModified: c.date,
+            dateModified: LAST_UPDATED,
             mainEntityOfPage: { "@type": "WebPage", "@id": url },
             url,
             isPartOf: { "@id": "https://muditek.com/#website" },
-            image: "https://muditek.com/images/ghiles.jpg",
+            image: `${url}/opengraph-image`,
             inLanguage: "en",
             articleSection: "Case Study",
             about: {

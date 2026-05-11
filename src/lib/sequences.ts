@@ -1,10 +1,10 @@
 /**
  * Nurture sequence configuration.
  *
- * Step 1 is skipped — it's the resource delivery already handled by MudiKit campaigns.
- * Steps 2-5 are the nurture emails that sell the MudiKit subscription.
+ * Step 1 = resource delivery (handled separately, instant).
+ * Steps 2-5 are the nurture emails that move free-resource leads to MudiKit.
  *
- * Email copy is placeholder — Ghiles writes the real versions.
+ * Voice: direct, factual, specific numbers. No SaaS fluff.
  */
 
 function escapeHtml(str: string): string {
@@ -17,11 +17,14 @@ function escapeHtml(str: string): string {
 
 function wrapEmail(content: string): string {
   return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 540px; margin: 0 auto; padding: 40px 20px; color: #111;">
       ${content}
-      <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
-      <p style="margin: 0; font-size: 13px; color: #999;">
-        You're receiving this because you downloaded a resource from one of my LinkedIn posts.
+      <p style="margin: 32px 0 0; font-size: 15px; color: #444; line-height: 1.6;">
+        — Ghiles
+      </p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 28px 0 18px;" />
+      <p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;">
+        You&rsquo;re on this list because you grabbed a resource from one of my LinkedIn posts.
       </p>
     </div>
   `;
@@ -38,21 +41,23 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 2,
     delayDays: 2,
-    subject: "How I actually use this in my business",
+    subject: "What I actually do with that playbook",
     buildHtml: (name: string) => {
       const safeName = escapeHtml(name);
       return wrapEmail(`
-        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">Hey ${safeName},</h2>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          That resource you grabbed? It's one piece of a system I run every day.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          Hey ${safeName},
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          I don't just share AI tools — I run my entire business on them. Lead gen, outreach, content, client delivery. All orchestrated through Claude Code skills and an Obsidian vault that AI agents read and execute.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          That resource you grabbed — it&rsquo;s one piece of how I actually run Muditek.
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          The playbook you downloaded is how one part works. The full system is how they all connect.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          The setup: skills sit in <code style="font-family: ui-monospace, monospace; background: #f5f5f5; padding: 1px 5px; border-radius: 3px; font-size: 14px;">~/.claude/skills/</code>. Claude Code reads them and does the work. Outreach, content, lead capture, client delivery. Most of my day is reviewing what an agent already drafted, not drafting from scratch.
         </p>
-        <p style="margin: 0; font-size: 16px; color: #444; line-height: 1.6;">
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          The playbook you downloaded is one of those systems. The vault structure behind it is what makes them stack.
+        </p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.65;">
           More on that in a few days.
         </p>
       `);
@@ -61,22 +66,27 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 3,
     delayDays: 5,
-    subject: "From $0 to a $50K client — the system behind it",
+    subject: "$50K platform shipped on the same setup",
     buildHtml: (name: string) => {
       const safeName = escapeHtml(name);
       return wrapEmail(`
-        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">Quick story, ${safeName}.</h2>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          I built a $50K platform for a merchant banking firm. Investor onboarding, KYC automation, document generation, e-signatures — the full stack.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          Quick story, ${safeName}.
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          That client came from LinkedIn. Same content strategy, same systems, same skills running behind the scenes.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          One of my clients is a merchant banking firm. They needed investor onboarding, KYC automation, document generation, e-signatures — the whole stack, multi-jurisdiction, compliant.
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          35+ systems deployed. $3M+ in revenue generated and saved. Not because I'm faster than everyone else — because the system runs without me.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          We built and shipped it in weeks. They paid $50K, kept the source code, no SaaS lock-in.
         </p>
-        <p style="margin: 0; font-size: 16px; color: #444; line-height: 1.6;">
-          The tools I use to do this aren't secret. I've been sharing them one post at a time. But there's a faster way to get all of them at once.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          The reason it moved fast: the hard parts were already solved in the playbooks. We reused the knowledge, not the code.
+        </p>
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          That client came from a LinkedIn post. Same content engine that&rsquo;s in the kit.
+        </p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.65;">
+          Tools aren&rsquo;t the secret. The way they connect is.
         </p>
       `);
     },
@@ -84,22 +94,24 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 4,
     delayDays: 8,
-    subject: "Most people stop at the free resource",
+    subject: "Most people stop at the free download",
     buildHtml: (name: string) => {
       const safeName = escapeHtml(name);
       return wrapEmail(`
-        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">${safeName}, real talk.</h2>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          Most people download the free resource, skim it, and move on. Some try to implement one piece. Very few build the full system.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          ${safeName},
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          The difference isn't talent or time. It's having the complete picture — the skills that connect, the templates that work together, the vault structure that makes AI agents actually useful.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          Most people grab a free resource and move on. Some try to build one piece of it. Almost no one connects them.
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          One playbook is a starting point. A full system is what generates results.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          Not because they can&rsquo;t — because the <em>connections</em> are the part nobody ships in a free PDF. The vault structure. The naming conventions skills use to find each other. The decision rules that tell an agent what to do when context is missing.
         </p>
-        <p style="margin: 0; font-size: 16px; color: #444; line-height: 1.6;">
-          Tomorrow I'll show you what the full system looks like.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          That&rsquo;s the difference between &ldquo;AI helps me&rdquo; and &ldquo;AI runs the work.&rdquo;
+        </p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.65;">
+          Tomorrow: the kit, packaged.
         </p>
       `);
     },
@@ -107,34 +119,38 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 5,
     delayDays: 12,
-    subject: "The full system — everything I use, packaged",
+    subject: "MudiKit — same files I work from",
     buildHtml: (name: string, checkoutUrl?: string) => {
       const safeName = escapeHtml(name);
-      const safeUrl = escapeHtml(checkoutUrl || "#");
+      const safeUrl = escapeHtml(checkoutUrl || "https://muditek.com/mudikit");
       return wrapEmail(`
-        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">${safeName},</h2>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          I packaged everything. The skills, the playbooks, the vault template, the outreach templates — the complete system I use to run my business with AI.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          ${safeName},
         </p>
-        <p style="margin: 0 0 12px; font-size: 16px; color: #444; line-height: 1.6;">
-          I packaged it as <strong>MudiKit</strong>. Here's what's inside:
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          I packaged it.
         </p>
-        <ul style="margin: 0 0 16px; padding-left: 20px; font-size: 15px; color: #444; line-height: 1.8;">
-          <li>15+ Claude Code skills for outreach, content, lead gen, and more</li>
-          <li>6 step-by-step playbooks</li>
-          <li>A complete vault template with CLAUDE.md files and decision frameworks</li>
-          <li>Outreach message templates with A/B variants</li>
-          <li>New skills and playbooks every month</li>
+        <ul style="margin: 0 0 18px; padding-left: 20px; font-size: 15.5px; line-height: 1.85;">
+          <li>15+ Claude Code skills</li>
+          <li>6 implementation playbooks</li>
+          <li>The vault template — CLAUDE.md hierarchy + decision rules</li>
+          <li>20+ outreach DMs with A/B variants</li>
+          <li>New drops every week</li>
         </ul>
-        <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
-          $47/month. Cancel anytime. Every month you get new drops as the tools evolve.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          $47 a month. Cancel anytime. Keep what you&rsquo;ve downloaded.
         </p>
-        <a href="${safeUrl}"
-           style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">
-          Get MudiKit
-        </a>
-        <p style="margin: 20px 0 0; font-size: 14px; color: #666; line-height: 1.5;">
-          If you've been piecing things together from free resources — this is the shortcut.
+        <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
+          For context: clients pay €40K–100K to have me install these systems. $47 is what it costs to install them yourself.
+        </p>
+        <p style="margin: 22px 0;">
+          <a href="${safeUrl}"
+             style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">
+            Get the kit
+          </a>
+        </p>
+        <p style="margin: 0; font-size: 15px; color: #555; line-height: 1.6;">
+          If you&rsquo;ve been piecing this together from free posts, this is the shortcut.
         </p>
       `);
     },

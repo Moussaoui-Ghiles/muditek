@@ -188,7 +188,7 @@ export default function OpenClawOutboundPage() {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
-        { "@type": "ListItem", position: 2, name: "Resources", item: "https://muditek.com/resources" },
+        { "@type": "ListItem", position: 2, name: "Portal", item: "https://muditek.com/portal" },
         { "@type": "ListItem", position: 3, name: "The OpenClaw Outbound Playbook", item: url },
       ],
     },
@@ -203,10 +203,10 @@ export default function OpenClawOutboundPage() {
       <section className="pt-36 md:pt-44 pb-16 md:pb-24 px-6 md:px-12">
         <div className="max-w-[860px] mx-auto">
           <Link
-            href="/resources"
+            href="/portal"
             className="text-xs font-bold uppercase tracking-[0.2em] text-foreground/30 hover:text-foreground/60 transition-colors mb-8 inline-block"
           >
-            &larr; Resources
+            &larr; Portal
           </Link>
 
           <SectionTag>

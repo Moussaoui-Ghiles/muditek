@@ -45,7 +45,7 @@ const SUPPRESSED_PATHS = [
   "/admin",
   "/welcome",
   "/preferences",
-  "/buy",
+  "/mudikit",
 ];
 
 function isSuppressed(pathname: string): boolean {

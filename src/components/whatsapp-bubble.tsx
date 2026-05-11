@@ -2,7 +2,19 @@
 
 import { usePathname } from "next/navigation";
 
-const SUPPRESSED = ["/sign-in", "/sign-up", "/portal", "/admin", "/welcome", "/preferences", "/buy"];
+const SUPPRESSED = [
+  "/sign-in",
+  "/sign-up",
+  "/portal",
+  "/admin",
+  "/welcome",
+  "/preferences",
+  "/mudikit",
+  "/newsletter",
+  "/resources",
+  "/r",
+  "/subscribe",
+];
 
 export function WhatsAppBubble() {
   const pathname = usePathname();

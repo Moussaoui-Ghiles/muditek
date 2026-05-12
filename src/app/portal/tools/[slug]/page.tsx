@@ -17,14 +17,12 @@ const TOOL_CATEGORIES = ["tool", "automation", "template"];
 const LABELS: AssetLabels = {
   kindSingular: "Tool",
   kindPlural: "Tools",
-  backHref: "/portal?view=tools",
-  backLabel: "Tools",
-  headerTitle: "Tools",
+  backHref: "/portal/tools",
+  backLabel: "All tools",
   notFoundBody: "No tool exists at this slug, or it is no longer published.",
   lockedTitle: "MudiKit unlocks this tool",
   lockedBody: "MudiKit gives access to every paid tool, automation, and template.",
-  emptyAssetBody:
-    "This tool exists in the library, but no asset has been attached yet.",
+  emptyAssetBody: "This tool exists in the library, but no asset has been attached yet.",
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -39,7 +37,7 @@ export default async function ToolDetailPage({
 }) {
   const { slug: rawSlug } = await params;
   const slug = rawSlug?.trim();
-  if (!slug) redirect("/portal?view=tools");
+  if (!slug) redirect("/portal/tools");
 
   const target = `/portal/tools/${encodeURIComponent(slug)}`;
   const signInHref = `/sign-in?redirect_url=${encodeURIComponent(target)}`;
@@ -53,6 +51,7 @@ export default async function ToolDetailPage({
 
   const access = await buildAssetAccess(email, user.id);
   const item = await loadAssetBySlugAndCategories(slug, TOOL_CATEGORIES);
+  const displayName = user.firstName || email.split("@")[0];
 
   if (!item) {
     const workbench = getPortalTool(slug);
@@ -64,6 +63,7 @@ export default async function ToolDetailPage({
         item={null}
         access={access}
         email={email}
+        displayName={displayName}
         html={null}
         pageImages={[]}
         downloadHref={null}
@@ -82,6 +82,7 @@ export default async function ToolDetailPage({
       item={item}
       access={access}
       email={email}
+      displayName={displayName}
       html={html}
       pageImages={pageImages}
       downloadHref={downloadHref}

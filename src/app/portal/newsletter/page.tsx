@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { buildPortalAccess } from "@/lib/portal-access";
 import NewsletterArchiveContent from "./newsletter-archive-content";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,24 @@ export default async function PortalNewsletterPage() {
   if (!email) redirect("/sign-in?redirect_url=/portal/newsletter");
 
   const sql = getDb();
+
+  const subs = await sql`
+    SELECT id, name, status, clerk_user_id FROM subscribers WHERE email = ${email}
+  `;
+  const paidSub = subs[0];
+  const isPaid = !!paidSub && paidSub.status === "active";
+
+  const membershipRows = await sql`
+    SELECT role FROM portal_memberships
+    WHERE email = ${email} AND status = 'active'
+  `;
+
+  const access = buildPortalAccess({
+    email,
+    membershipRoles: membershipRows.map((row) => String(row.role)),
+    hasActiveSubscription: isPaid,
+  });
+
   const rows = (await sql`
     SELECT slug, subject, sent_at, stats
     FROM newsletter_issues
@@ -42,5 +61,15 @@ export default async function PortalNewsletterPage() {
     preview: r.stats?.preview?.trim() || r.stats?.tldr?.trim() || null,
   }));
 
-  return <NewsletterArchiveContent email={email} issues={issues} />;
+  const displayName =
+    user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
+
+  return (
+    <NewsletterArchiveContent
+      email={email}
+      displayName={displayName}
+      access={access}
+      issues={issues}
+    />
+  );
 }

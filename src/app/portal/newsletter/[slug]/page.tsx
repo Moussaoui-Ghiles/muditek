@@ -2,6 +2,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/db";
+import { buildPortalAccess } from "@/lib/portal-access";
+import { PortalShell } from "@/components/portal/portal-shell";
 import NewsletterDetailContent from "./newsletter-detail-content";
 
 export const dynamic = "force-dynamic";
@@ -95,24 +97,47 @@ export default async function PortalNewsletterDetailPage({
   const issue = await getIssue(slug);
   if (!issue) notFound();
 
+  const sql = getDb();
+  const subs = await sql`
+    SELECT id, name, status FROM subscribers WHERE email = ${email}
+  `;
+  const paidSub = subs[0];
+  const isPaid = !!paidSub && paidSub.status === "active";
+
+  const membershipRows = await sql`
+    SELECT role FROM portal_memberships
+    WHERE email = ${email} AND status = 'active'
+  `;
+
+  const access = buildPortalAccess({
+    email,
+    membershipRoles: membershipRows.map((row) => String(row.role)),
+    hasActiveSubscription: isPaid,
+  });
+
+  const displayName =
+    user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
+
   const sentAtDate = issue.sent_at ? new Date(issue.sent_at) : null;
   const updatedAtDate = issue.updated_at ? new Date(issue.updated_at) : null;
   const { prev, next } = await getNeighbors(sentAtDate);
 
   return (
-    <NewsletterDetailContent
-      email={email}
-      issue={{
-        subject: issue.subject,
-        slug: issue.slug,
-        html: issue.html ?? "",
-        sentAtIso: sentAtDate ? sentAtDate.toISOString() : null,
-        updatedAtIso: updatedAtDate ? updatedAtDate.toISOString() : null,
-        tldr: issue.stats?.tldr ?? null,
-        preview: issue.stats?.preview ?? null,
-      }}
-      prev={prev ? { slug: prev.slug, subject: prev.subject } : null}
-      next={next ? { slug: next.slug, subject: next.subject } : null}
-    />
+    <PortalShell access={access} email={email} displayName={displayName}>
+      <NewsletterDetailContent
+        email={email}
+        issue={{
+          subject: issue.subject,
+          slug: issue.slug,
+          html: issue.html ?? "",
+          sentAtIso: sentAtDate ? sentAtDate.toISOString() : null,
+          updatedAtIso: updatedAtDate ? updatedAtDate.toISOString() : null,
+          tldr: issue.stats?.tldr ?? null,
+          preview: issue.stats?.preview ?? null,
+        }}
+        prev={prev ? { slug: prev.slug, subject: prev.subject } : null}
+        next={next ? { slug: next.slug, subject: next.subject } : null}
+      />
+    </PortalShell>
   );
 }

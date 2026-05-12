@@ -52,6 +52,7 @@ export default async function PortalToolsPage() {
   `) as ContentItem[];
 
   const items = withDerivedThumbnails(rows);
+  const displayName = user.firstName || email.split("@")[0];
 
-  return <ToolsContent items={items} access={access} email={email} />;
+  return <ToolsContent items={items} access={access} email={email} displayName={displayName} />;
 }

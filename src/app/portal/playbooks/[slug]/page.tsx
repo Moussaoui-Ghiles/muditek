@@ -15,15 +15,13 @@ const PLAYBOOK_CATEGORIES = ["playbook", "guide"];
 
 const LABELS: AssetLabels = {
   kindSingular: "Playbook",
-  kindPlural: "Playbooks & guides",
-  backHref: "/portal?view=playbooks",
-  backLabel: "Playbooks",
-  headerTitle: "Playbooks",
+  kindPlural: "Playbooks & Guides",
+  backHref: "/portal/playbooks",
+  backLabel: "All playbooks",
   notFoundBody: "No playbook or guide exists at this slug, or it is no longer published.",
   lockedTitle: "MudiKit unlocks this playbook",
   lockedBody: "MudiKit gives access to every paid playbook and guide, plus future drops.",
-  emptyAssetBody:
-    "This playbook exists in the library, but no asset has been attached yet.",
+  emptyAssetBody: "This playbook exists in the library, but no asset has been attached yet.",
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -38,7 +36,7 @@ export default async function PlaybookDetailPage({
 }) {
   const { slug: rawSlug } = await params;
   const slug = rawSlug?.trim();
-  if (!slug) redirect("/portal?view=playbooks");
+  if (!slug) redirect("/portal/playbooks");
 
   const target = `/portal/playbooks/${encodeURIComponent(slug)}`;
   const signInHref = `/sign-in?redirect_url=${encodeURIComponent(target)}`;
@@ -52,6 +50,7 @@ export default async function PlaybookDetailPage({
 
   const access = await buildAssetAccess(email, user.id);
   const item = await loadAssetBySlugAndCategories(slug, PLAYBOOK_CATEGORIES);
+  const displayName = user.firstName || email.split("@")[0];
 
   if (!item) {
     return (
@@ -59,6 +58,7 @@ export default async function PlaybookDetailPage({
         item={null}
         access={access}
         email={email}
+        displayName={displayName}
         html={null}
         pageImages={[]}
         downloadHref={null}
@@ -77,6 +77,7 @@ export default async function PlaybookDetailPage({
       item={item}
       access={access}
       email={email}
+      displayName={displayName}
       html={html}
       pageImages={pageImages}
       downloadHref={downloadHref}

@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { ArrowLeft, ArrowUpRight, ChevronLeft, ChevronRight, Mail } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
-import { Logo } from "@/components/logo/logo";
 
 interface Neighbor {
   slug: string;
@@ -57,134 +55,115 @@ function rewritePortalLinks(html: string): string {
   });
 }
 
-function PortalHeader({ email }: { email: string }) {
-  return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.07] bg-background/92 px-4 backdrop-blur md:px-6">
-      <Link
-        href="/portal/newsletter"
-        className="inline-flex items-center gap-1.5 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-3.5" />
-        Newsletter
-      </Link>
-      <div className="flex flex-1 items-center justify-center gap-2">
-        <Logo variant="mark" size={22} />
-        <span className="hidden text-[13px] font-semibold tracking-tight sm:inline">Muditek Portal</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="hidden truncate text-[11px] text-muted-foreground sm:inline">{email}</span>
-        <UserButton appearance={{ elements: { avatarBox: "w-7 h-7" } }} />
-      </div>
-    </header>
-  );
-}
-
-export default function NewsletterDetailContent({ email, issue, prev, next }: Props) {
+export default function NewsletterDetailContent({ issue, prev, next }: Props) {
   const safeHtml = useMemo(() => rewritePortalLinks(issue.html), [issue.html]);
   const sentAt = formatDateLong(issue.sentAtIso);
   const updatedAt = formatDateLong(issue.updatedAtIso);
   const showUpdated = updatedAt && updatedAt !== sentAt;
 
   return (
-    <div className="mudikit-dark min-h-[100dvh] bg-background text-foreground">
-      <PortalHeader email={email} />
+    <article className="mx-auto w-full max-w-2xl px-4 pb-20 pt-10 sm:px-6">
+      <Link
+        href="/portal/newsletter"
+        className="inline-flex items-center gap-1.5 text-[11.5px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ChevronLeft className="size-3.5" />
+        Back to archive
+      </Link>
 
-      <article className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
-        <Link
-          href="/portal/newsletter"
-          className="inline-flex items-center gap-1.5 text-[11.5px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-3.5" />
-          Back to archive
-        </Link>
-
-        <header className="mt-6 mb-8">
-          <h1 className="text-balance text-3xl font-semibold tracking-[-0.01em] leading-[1.1] text-foreground md:text-[34px]">
-            {issue.subject}
-          </h1>
-          {(sentAt || showUpdated) && (
-            <p className="mt-4 text-[12.5px] text-muted-foreground">
-              {sentAt && <span>Sent {sentAt}</span>}
-              {sentAt && showUpdated && <span className="mx-2 text-[#636366]">·</span>}
-              {showUpdated && <span>Updated {updatedAt}</span>}
-            </p>
+      <header className="reveal mt-7">
+        <p className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-amber-300/70" />
+          Newsletter issue
+          {sentAt && (
+            <>
+              <span aria-hidden className="text-muted-foreground/40">·</span>
+              <span>{sentAt}</span>
+            </>
           )}
-        </header>
-
-        {issue.tldr && (
-          <aside className="mb-10 rounded-r-[2px] border-l-2 border-white/40 bg-white/[0.03] px-5 py-4">
-            <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              TL;DR
-            </p>
-            <p className="text-[15px] leading-snug font-medium text-foreground">{issue.tldr}</p>
-          </aside>
+        </p>
+        <h1 className="font-serif text-balance text-[36px] font-medium leading-[1.04] tracking-tight text-foreground md:text-[46px]">
+          {issue.subject}
+        </h1>
+        {showUpdated && (
+          <p className="mt-3 text-[12px] text-muted-foreground">
+            Updated {updatedAt}
+          </p>
         )}
+      </header>
 
+      {issue.tldr && (
+        <aside className="reveal reveal-delay-1 mt-9 rounded-r-md border-l-2 border-amber-300/60 bg-amber-300/[0.04] px-5 py-4">
+          <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-amber-200/90">
+            TL;DR
+          </p>
+          <p className="text-[15px] font-medium leading-snug text-foreground">{issue.tldr}</p>
+        </aside>
+      )}
+
+      <div className="reveal reveal-delay-2 mt-10">
         {safeHtml ? (
-          <div className="portal-newsletter-article overflow-hidden rounded-lg bg-white text-black">
-            <div
-              className="newsletter-body"
-              dangerouslySetInnerHTML={{ __html: safeHtml }}
-            />
+          <div className="portal-newsletter-article overflow-hidden rounded-2xl border border-white/[0.06] bg-white text-black shadow-[0_8px_40px_rgba(0,0,0,0.32)]">
+            <div className="newsletter-body" dangerouslySetInnerHTML={{ __html: safeHtml }} />
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-white/[0.1] bg-white/[0.015] p-6 text-[13px] text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-white/[0.1] bg-white/[0.01] p-8 text-[13.5px] leading-7 text-muted-foreground">
             This issue has no rendered body in storage.
           </div>
         )}
+      </div>
 
-        <nav className="mt-12 grid gap-3 border-t border-white/[0.06] pt-8 sm:grid-cols-2">
-          {prev ? (
-            <Link
-              href={`/portal/newsletter/${encodeURIComponent(prev.slug)}`}
-              className="group flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.02] p-4 transition-colors hover:bg-white/[0.04]"
-            >
-              <ChevronLeft className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5 group-hover:text-foreground" />
-              <span className="min-w-0">
-                <span className="block text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">Previous</span>
-                <span className="mt-1 line-clamp-2 block text-[13.5px] font-medium text-foreground">{prev.subject}</span>
-              </span>
-            </Link>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
-          {next ? (
-            <Link
-              href={`/portal/newsletter/${encodeURIComponent(next.slug)}`}
-              className="group flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.02] p-4 text-right transition-colors hover:bg-white/[0.04] sm:text-right"
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">Next</span>
-                <span className="mt-1 line-clamp-2 block text-[13.5px] font-medium text-foreground">{next.subject}</span>
-              </span>
-              <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
-            </Link>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
-        </nav>
-
-        <section className="mt-10 flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
-            <Mail className="size-4" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="text-[13.5px] font-medium text-foreground">Reading inside the portal</div>
-            <p className="mt-0.5 text-[12px] leading-5 text-muted-foreground">
-              The full library is in <Link href="/portal" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">your portal</Link>. MudiKit access lives in <Link href="/portal/mudikit" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">/portal/mudikit</Link>.
-            </p>
-          </div>
+      <nav className="reveal reveal-delay-3 mt-12 grid gap-3 border-t border-white/[0.06] pt-8 sm:grid-cols-2">
+        {prev ? (
           <Link
-            href={`/newsletter/${encodeURIComponent(issue.slug)}`}
-            className="inline-flex items-center gap-1.5 self-start rounded-md border border-white/[0.1] bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.05]"
-            target="_blank"
-            rel="noopener"
+            href={`/portal/newsletter/${encodeURIComponent(prev.slug)}`}
+            className="group flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:bg-white/[0.04]"
           >
-            Public view
-            <ArrowUpRight className="size-3.5" />
+            <ChevronLeft className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5 group-hover:text-foreground" />
+            <span className="min-w-0">
+              <span className="block text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">Previous</span>
+              <span className="mt-1 line-clamp-2 block text-[13.5px] font-medium text-foreground">{prev.subject}</span>
+            </span>
           </Link>
-        </section>
-      </article>
+        ) : (
+          <div className="hidden sm:block" />
+        )}
+        {next ? (
+          <Link
+            href={`/portal/newsletter/${encodeURIComponent(next.slug)}`}
+            className="group flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-right transition-colors hover:bg-white/[0.04] sm:text-right"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">Next</span>
+              <span className="mt-1 line-clamp-2 block text-[13.5px] font-medium text-foreground">{next.subject}</span>
+            </span>
+            <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+          </Link>
+        ) : (
+          <div className="hidden sm:block" />
+        )}
+      </nav>
+
+      <section className="mt-10 flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
+          <Mail className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="text-[13.5px] font-medium text-foreground">Reading inside the portal</div>
+          <p className="mt-0.5 text-[12px] leading-5 text-muted-foreground">
+            The full library is in <Link href="/portal" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">your portal</Link>. MudiKit access lives in <Link href="/portal/mudikit" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">/portal/mudikit</Link>.
+          </p>
+        </div>
+        <Link
+          href={`/newsletter/${encodeURIComponent(issue.slug)}`}
+          className="inline-flex items-center gap-1.5 self-start rounded-md border border-white/[0.1] bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.05]"
+          target="_blank"
+          rel="noopener"
+        >
+          Public view
+          <ArrowUpRight className="size-3.5" />
+        </Link>
+      </section>
 
       <style jsx global>{`
         .portal-newsletter-article .newsletter-body {
@@ -204,12 +183,8 @@ export default function NewsletterDetailContent({ email, issue, prev, next }: Pr
           font-size: 28px;
           letter-spacing: -0.01em;
         }
-        .portal-newsletter-article .newsletter-body h2 {
-          font-size: 22px;
-        }
-        .portal-newsletter-article .newsletter-body h3 {
-          font-size: 18px;
-        }
+        .portal-newsletter-article .newsletter-body h2 { font-size: 22px; }
+        .portal-newsletter-article .newsletter-body h3 { font-size: 18px; }
         .portal-newsletter-article .newsletter-body a {
           color: #0c0c0e;
           text-decoration: underline;
@@ -252,6 +227,6 @@ export default function NewsletterDetailContent({ email, issue, prev, next }: Pr
           margin: 24px 0;
         }
       `}</style>
-    </div>
+    </article>
   );
 }

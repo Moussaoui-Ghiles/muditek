@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/next";
@@ -28,6 +28,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
   display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-serif-display",
+  display: "swap",
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -90,7 +98,7 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`scroll-smooth ${inter.variable} ${geist.variable} ${geistMono.variable}`}
+        className={`scroll-smooth ${inter.variable} ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
       >
         <body className="font-sans noise">
           <JsonLd

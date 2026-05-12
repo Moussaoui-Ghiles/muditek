@@ -52,6 +52,14 @@ export default async function PortalPlaybooksPage() {
   `) as ContentItem[];
 
   const items = withDerivedThumbnails(rows);
+  const displayName = user.firstName || email.split("@")[0];
 
-  return <PlaybooksContent items={items} access={access} email={email} />;
+  return (
+    <PlaybooksContent
+      items={items}
+      access={access}
+      email={email}
+      displayName={displayName}
+    />
+  );
 }

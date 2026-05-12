@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, RotateCcw, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 type LeakResult = {
@@ -149,9 +149,108 @@ function computeLeaks(values: Values): LeakResult[] {
   return leaks;
 }
 
+function LeakLedgerRow({ leak, total, index }: { leak: LeakResult; total: number; index: number }) {
+  const [open, setOpen] = useState(false);
+  const pct = total > 0 ? (leak.amount / total) * 100 : 0;
+
+  return (
+    <div
+      className="group relative isolate overflow-hidden rounded-lg border border-white/[0.06] bg-[#0e0e10]/80 transition-colors hover:border-white/[0.12]"
+      style={{ animation: `wbReveal 380ms ease-out ${index * 60}ms both` }}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-4 px-4 py-3.5 text-left"
+      >
+        <span
+          aria-hidden
+          className="h-12 w-1 shrink-0 rounded-full bg-gradient-to-b from-emerald-300/80 via-emerald-400/70 to-emerald-500/40"
+          style={{ opacity: Math.max(0.35, pct / 100) }}
+        />
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="truncate text-[14px] font-medium tracking-tight text-foreground">
+              {leak.name}
+            </span>
+          </span>
+          <span className="mt-1.5 flex items-center gap-2">
+            <span className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.04]">
+              <span
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-500/70 to-emerald-300/70"
+                style={{ width: `${pct}%`, transition: "width 600ms ease-out" }}
+              />
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80">
+              {pct.toFixed(0)}%
+            </span>
+          </span>
+        </span>
+        <span className="shrink-0 text-right">
+          <span className="block font-[var(--font-serif-display)] text-[22px] leading-none tracking-tight text-foreground">
+            €{leak.amount.toLocaleString()}
+          </span>
+          <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            /year
+          </span>
+        </span>
+      </button>
+
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-white/[0.05] px-4 py-4">
+            <dl className="mb-3 grid grid-cols-1 gap-x-6 gap-y-3 text-[12.5px] sm:grid-cols-3">
+              <div>
+                <dt className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Your value
+                </dt>
+                <dd className="font-medium text-foreground">{leak.yourValue}</dd>
+              </div>
+              <div>
+                <dt className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Benchmark
+                </dt>
+                <dd className="font-medium text-foreground">{leak.benchmark}</dd>
+              </div>
+              <div>
+                <dt className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Gap
+                </dt>
+                <dd className="font-medium text-emerald-300">{leak.gap}</dd>
+              </div>
+            </dl>
+
+            <div className="mb-3 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2.5">
+              <p className="mb-1 font-mono text-[9.5px] uppercase tracking-[0.14em] text-muted-foreground">
+                Formula
+              </p>
+              <code className="block font-mono text-[12px] leading-5 text-foreground/85">
+                {leak.formula}
+              </code>
+            </div>
+
+            <p className="text-[12.5px] italic leading-6 text-muted-foreground">
+              {leak.methodology}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function RevenueLeakWorkbench() {
   const [values, setValues] = useState<Values>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const hasAnyInput = useMemo(
     () => Object.values(values).some((v) => v !== ""),
@@ -160,6 +259,10 @@ export function RevenueLeakWorkbench() {
   const results = useMemo(() => (submitted ? computeLeaks(values) : null), [submitted, values]);
   const totalLeak = results?.reduce((sum, r) => sum + r.amount, 0) ?? 0;
   const responseTimeWarning = parseFloat(values.responseTime) > 100;
+  const filledCount = useMemo(
+    () => Object.values(values).filter((v) => v !== "").length,
+    [values]
+  );
 
   function setField(key: string, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -169,18 +272,27 @@ export function RevenueLeakWorkbench() {
   function reset() {
     setValues(INITIAL);
     setSubmitted(false);
+    setShowAdvanced(false);
   }
 
   function renderField(field: FieldConfig) {
     const value = values[field.key] ?? "";
+    const filled = value !== "";
     return (
       <div key={field.key} className="space-y-1.5">
-        <label className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          {field.label}
-        </label>
+        <div className="flex items-baseline justify-between gap-2">
+          <label className="font-mono text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            {field.label}
+          </label>
+          {filled && (
+            <span aria-hidden className="size-1 rounded-full bg-emerald-400" />
+          )}
+        </div>
         <div className="relative">
           {field.unit === "€" && (
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-muted-foreground">€</span>
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-[13px] text-muted-foreground/80">
+              €
+            </span>
           )}
           <Input
             type="number"
@@ -192,163 +304,256 @@ export function RevenueLeakWorkbench() {
             placeholder={field.placeholder}
             className={
               field.unit === "€"
-                ? "h-9 border-white/[0.08] bg-white/[0.02] pl-7 pr-3 font-mono text-sm"
+                ? "h-10 border-white/[0.08] bg-black/30 pl-8 pr-3 font-mono text-[14px] tabular-nums tracking-tight transition-colors focus-visible:border-emerald-400/40 focus-visible:bg-black/50"
                 : field.unit
-                  ? "h-9 border-white/[0.08] bg-white/[0.02] pl-3 pr-10 font-mono text-sm"
-                  : "h-9 border-white/[0.08] bg-white/[0.02] px-3 font-mono text-sm"
+                  ? "h-10 border-white/[0.08] bg-black/30 pl-3 pr-12 font-mono text-[14px] tabular-nums tracking-tight transition-colors focus-visible:border-emerald-400/40 focus-visible:bg-black/50"
+                  : "h-10 border-white/[0.08] bg-black/30 px-3 font-mono text-[14px] tabular-nums tracking-tight transition-colors focus-visible:border-emerald-400/40 focus-visible:bg-black/50"
             }
           />
           {field.unit && field.unit !== "€" && (
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-mono uppercase tracking-wide text-muted-foreground">
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
               {field.unit}
             </span>
           )}
         </div>
-        <p className="text-[11px] leading-4 text-muted-foreground">{field.hint}</p>
+        <p className="text-[11.5px] leading-5 text-muted-foreground/80">{field.hint}</p>
         {field.key === "responseTime" && responseTimeWarning && (
-          <p className="text-[11px] text-amber-400/80">That looks like minutes. This field is in hours.</p>
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber-300/90">
+            Looks like minutes — this field reads hours.
+          </p>
         )}
       </div>
     );
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="rounded-lg border border-white/[0.08] bg-white/[0.025] p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Inputs</h2>
-          {hasAnyInput && (
-            <button
-              type="button"
-              onClick={reset}
-              className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
-            >
-              Clear
-            </button>
-          )}
-        </div>
+    <>
+      <style>{`
+        @keyframes wbReveal {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes wbTotal {
+          from { opacity: 0; transform: translateY(12px) scale(0.985); letter-spacing: -0.02em; }
+          to { opacity: 1; transform: none; letter-spacing: -0.03em; }
+        }
+      `}</style>
 
-        <div className="space-y-5">
-          <div className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Core metrics</p>
-            <div className="grid gap-4 sm:grid-cols-2">{CORE_FIELDS.map(renderField)}</div>
-          </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        {/* INPUT RAIL */}
+        <section className="relative isolate overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0e0e10] p-6 md:p-7">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{
+              background:
+                "radial-gradient(80% 60% at 100% 0%, rgba(255,255,255,0.04), transparent 60%)",
+            }}
+          />
 
-          <div className="space-y-3 border-t border-white/[0.06] pt-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Channel performance · optional
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2">{ADVANCED_FIELDS.map(renderField)}</div>
-          </div>
-
-          <Button
-            type="button"
-            onClick={() => setSubmitted(true)}
-            disabled={!hasAnyInput}
-            className="w-full"
-          >
-            Run calculation
-          </Button>
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Output</h2>
-          {results !== null && results.length > 0 && (
-            <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-emerald-400">
-              €{totalLeak.toLocaleString()}/yr
-            </span>
-          )}
-        </div>
-
-        {results === null ? (
-          <div className="flex h-full min-h-[260px] flex-col items-start justify-center rounded-md border border-dashed border-white/[0.08] bg-white/[0.01] p-5">
-            <p className="text-sm font-medium text-foreground">No calculation run yet.</p>
-            <p className="mt-1 max-w-sm text-[13px] leading-5 text-muted-foreground">
-              Enter at least one metric on the left, then run the calculation. Output stays empty until inputs exist.
-            </p>
-          </div>
-        ) : results.length === 0 ? (
-          <div className="rounded-md border border-white/[0.08] bg-white/[0.02] p-5">
-            <p className="text-sm font-medium text-foreground">No leaks detected with these numbers.</p>
-            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
-              Your inputs are at or above the benchmarks. Adjust the values to test different scenarios.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="rounded-md border border-emerald-500/15 bg-emerald-500/[0.04] px-4 py-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-400/90">
-                Estimated annual leakage
-              </p>
-              <p className="mt-1 font-mono text-2xl font-semibold text-foreground">
-                €{totalLeak.toLocaleString()}
-              </p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                Across {results.length} leak {results.length === 1 ? "category" : "categories"}.
-              </p>
+          <div className="mb-5 flex items-end justify-between gap-3">
+            <div>
+              <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                01 · Inputs
+              </div>
+              <h3 className="mt-1 font-[var(--font-serif-display)] text-[24px] leading-none tracking-tight text-foreground">
+                Your numbers
+              </h3>
             </div>
-
-            <div className="space-y-2">
-              {results.map((leak) => {
-                const pct = totalLeak > 0 ? (leak.amount / totalLeak) * 100 : 0;
-                return (
-                  <details
-                    key={leak.name}
-                    className="group rounded-md border border-white/[0.08] bg-white/[0.02] open:bg-white/[0.035]"
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
-                      <span className="flex min-w-0 items-center gap-3">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-muted-foreground transition-transform group-open:rotate-90">
-                          <path d="M3 1.5L7 5L3 8.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <span className="truncate text-[13px] font-medium text-foreground">{leak.name}</span>
-                      </span>
-                      <span className="font-mono text-[13px] font-semibold text-emerald-400">
-                        €{leak.amount.toLocaleString()}/yr
-                      </span>
-                    </summary>
-                    <div className="border-t border-white/[0.06] px-4 py-4">
-                      <div className="mb-3">
-                        <div className="mb-1 flex justify-between text-[11px] text-muted-foreground">
-                          <span>Share of total</span>
-                          <span className="font-mono text-emerald-400/80">{pct.toFixed(0)}%</span>
-                        </div>
-                        <div className="h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                          <div className="h-full rounded-full bg-emerald-500/60" style={{ width: `${pct}%` }} />
-                        </div>
-                      </div>
-
-                      <dl className="mb-3 grid grid-cols-1 gap-3 text-[12px] sm:grid-cols-3">
-                        <div>
-                          <dt className="mb-0.5 text-muted-foreground">Your value</dt>
-                          <dd className="font-medium text-foreground">{leak.yourValue}</dd>
-                        </div>
-                        <div>
-                          <dt className="mb-0.5 text-muted-foreground">Benchmark</dt>
-                          <dd className="font-medium text-foreground">{leak.benchmark}</dd>
-                        </div>
-                        <div>
-                          <dt className="mb-0.5 text-muted-foreground">Gap</dt>
-                          <dd className="font-medium text-emerald-400/90">{leak.gap}</dd>
-                        </div>
-                      </dl>
-
-                      <div className="mb-3 rounded-sm border border-white/[0.06] bg-black/20 px-3 py-2">
-                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Formula</p>
-                        <code className="block font-mono text-[12px] leading-5 text-foreground/80">{leak.formula}</code>
-                      </div>
-
-                      <p className="text-[12px] leading-5 text-muted-foreground">{leak.methodology}</p>
-                    </div>
-                  </details>
-                );
-              })}
+            <div className="text-right">
+              <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80">
+                Filled
+              </div>
+              <div className="font-mono text-[14px] tabular-nums text-foreground">
+                {filledCount}
+                <span className="text-muted-foreground/70">
+                  /{CORE_FIELDS.length + ADVANCED_FIELDS.length}
+                </span>
+              </div>
             </div>
           </div>
-        )}
-      </section>
-    </div>
+
+          <div className="space-y-6">
+            <div className="grid gap-5 sm:grid-cols-2">{CORE_FIELDS.map(renderField)}</div>
+
+            <div className="border-t border-white/[0.06] pt-5">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced((v) => !v)}
+                className="flex w-full items-center justify-between gap-2 text-left"
+                aria-expanded={showAdvanced}
+              >
+                <div>
+                  <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                    02 · Channels · optional
+                  </div>
+                  <div className="mt-0.5 text-[12.5px] text-muted-foreground/80">
+                    Add channel + outbound numbers for two extra leak categories.
+                  </div>
+                </div>
+                <span
+                  className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${
+                    showAdvanced ? "text-emerald-300" : "text-muted-foreground"
+                  }`}
+                >
+                  {showAdvanced ? "Hide" : "Add"}
+                </span>
+              </button>
+              <div
+                className={`grid transition-[grid-template-rows] duration-300 ${
+                  showAdvanced ? "mt-4 grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="grid gap-5 sm:grid-cols-2">{ADVANCED_FIELDS.map(renderField)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] pt-5">
+              <button
+                type="button"
+                onClick={reset}
+                disabled={!hasAnyInput && !submitted}
+                className="inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+              >
+                <RotateCcw className="size-3" />
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubmitted(true)}
+                disabled={!hasAnyInput}
+                className="group/run inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-5 py-2.5 text-[13px] font-medium tracking-tight text-emerald-100 shadow-[0_0_0_1px_rgba(16,185,129,0.05),0_20px_40px_-25px_rgba(16,185,129,0.5)] transition-all hover:-translate-y-0.5 hover:bg-emerald-500/15 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.1),0_25px_50px_-20px_rgba(16,185,129,0.55)] disabled:cursor-not-allowed disabled:border-white/[0.08] disabled:bg-white/[0.02] disabled:text-muted-foreground/40 disabled:shadow-none"
+              >
+                Run calculation
+                <ArrowRight className="size-3.5 transition-transform group-hover/run:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* OUTPUT */}
+        <section className="relative isolate overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0c] p-6 md:p-7">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700"
+            style={{
+              background:
+                results && results.length > 0
+                  ? "radial-gradient(70% 50% at 80% 0%, rgba(16,185,129,0.16), transparent 60%), radial-gradient(50% 40% at 0% 100%, rgba(16,185,129,0.06), transparent 60%)"
+                  : "radial-gradient(60% 50% at 80% 0%, rgba(255,255,255,0.03), transparent 60%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent"
+          />
+
+          <div className="mb-5 flex items-end justify-between gap-3">
+            <div>
+              <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
+                03 · Output
+              </div>
+              <h3 className="mt-1 font-[var(--font-serif-display)] text-[24px] leading-none tracking-tight text-foreground">
+                The diagnosis
+              </h3>
+            </div>
+            {results !== null && results.length > 0 && (
+              <span className="rounded-full border border-emerald-400/25 bg-emerald-500/[0.08] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-200">
+                {results.length} leak{results.length === 1 ? "" : "s"}
+              </span>
+            )}
+          </div>
+
+          {results === null ? (
+            <div className="flex min-h-[360px] flex-col">
+              <div className="flex flex-1 flex-col justify-center">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-300/70">
+                  Waiting for input
+                </div>
+                <p className="mt-3 max-w-[28ch] font-[var(--font-serif-display)] text-[28px] italic leading-[1.15] text-foreground/95 md:text-[32px]">
+                  Enter your numbers. The numbers will answer.
+                </p>
+                <p className="mt-4 max-w-[42ch] text-[12.5px] leading-6 text-muted-foreground">
+                  Output stays empty until you run the calculation. Nothing is faked — every euro you
+                  see is derived from your real inputs and the cited benchmark.
+                </p>
+              </div>
+
+              <div className="mt-6 grid grid-cols-5 gap-1.5 opacity-60">
+                {[14, 22, 18, 26, 12].map((h, i) => (
+                  <div key={i} className="relative h-16 overflow-hidden rounded-md bg-white/[0.025]">
+                    <div
+                      className="absolute inset-x-0 bottom-0 rounded-md bg-white/[0.06]"
+                      style={{ height: `${h * 3}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 flex justify-between font-mono text-[9.5px] uppercase tracking-[0.16em] text-muted-foreground/70">
+                <span>Speed</span>
+                <span>Pipe</span>
+                <span>Churn</span>
+                <span>Spend</span>
+                <span>Out.</span>
+              </div>
+            </div>
+          ) : results.length === 0 ? (
+            <div className="flex min-h-[360px] flex-col justify-center">
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-300/80">
+                <Sparkles className="size-3" />
+                No leaks
+              </div>
+              <p className="mt-3 max-w-[34ch] font-[var(--font-serif-display)] text-[28px] italic leading-[1.15] text-foreground/95">
+                Clean.
+              </p>
+              <p className="mt-4 max-w-[44ch] text-[12.5px] leading-6 text-muted-foreground">
+                Your inputs are at or above every benchmark this calculator checks. If your intuition
+                disagrees, the full diagnostic looks at signals this tool can&apos;t see.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="mb-6 border-b border-white/[0.06] pb-6">
+                <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
+                  Estimated annual leakage
+                </div>
+                <div
+                  key={totalLeak}
+                  className="mt-2 flex items-baseline gap-1"
+                  style={{ animation: "wbTotal 600ms ease-out both" }}
+                >
+                  <span className="font-[var(--font-serif-display)] text-[44px] italic leading-none tracking-tight text-foreground md:text-[56px]">
+                    €
+                  </span>
+                  <span className="font-mono text-[44px] font-semibold leading-none tabular-nums tracking-tight text-foreground md:text-[56px]">
+                    {totalLeak.toLocaleString()}
+                  </span>
+                  <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
+                    /yr
+                  </span>
+                </div>
+                <p className="mt-2 text-[12.5px] text-muted-foreground">
+                  Across {results.length} leak {results.length === 1 ? "category" : "categories"} ·
+                  Based on your real inputs.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                {results.map((leak, i) => (
+                  <LeakLedgerRow key={leak.name} leak={leak} total={totalLeak} index={i} />
+                ))}
+              </div>
+
+              <p className="mt-6 text-[11.5px] leading-5 text-muted-foreground/80">
+                These are euro estimates from published benchmarks. The full diagnostic uses your
+                actual CRM and Stripe data to find leaks this calculator can&apos;t detect.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
+    </>
   );
 }

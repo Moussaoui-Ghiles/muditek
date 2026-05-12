@@ -161,11 +161,18 @@ function MudikitHero({
           <h1 className="mt-4 max-w-[18ch] text-balance text-[34px] font-semibold leading-[1.02] tracking-[-0.025em] text-foreground sm:text-[44px] md:text-[52px]">
             {unlocked ? (
               <>
-                Your MudiKit, <span className="text-white">{displayName}</span>.
+                Your MudiKit,{" "}
+                <span className="font-[family-name:var(--font-serif-display)] font-normal italic text-white">
+                  {displayName}
+                </span>
+                .
               </>
             ) : (
               <>
-                The paid library. <span className="text-white/70">One unlock.</span>
+                The paid library.{" "}
+                <span className="font-[family-name:var(--font-serif-display)] font-normal italic text-white/85">
+                  One unlock.
+                </span>
               </>
             )}
           </h1>

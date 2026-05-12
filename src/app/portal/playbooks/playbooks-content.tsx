@@ -338,7 +338,8 @@ export default function PlaybooksContent({
   const grid = featured ? filtered.slice(1) : filtered;
 
   return (
-    <main className="relative">
+    <PortalShell access={access} email={email} displayName={displayName}>
+      <main className="relative">
       <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:px-10">
         {/* Editorial header */}
         <section className="mb-10 grid gap-6 border-b border-white/[0.07] pb-10 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-12">
@@ -474,6 +475,7 @@ export default function PlaybooksContent({
           </>
         )}
       </div>
+      </main>
     </PortalShell>
   );
 }

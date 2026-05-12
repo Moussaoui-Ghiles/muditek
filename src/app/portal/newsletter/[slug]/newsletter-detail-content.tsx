@@ -82,7 +82,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
             </>
           )}
         </p>
-        <h1 className="font-serif text-balance text-[36px] font-medium leading-[1.04] tracking-tight text-foreground md:text-[46px]">
+        <h1 className="font-[family-name:var(--font-serif-display)] text-balance text-[40px] font-normal leading-[1.02] tracking-tight text-foreground md:text-[54px]">
           {issue.subject}
         </h1>
         {showUpdated && (

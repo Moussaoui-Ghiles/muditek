@@ -123,7 +123,7 @@ function FeaturedIssue({
               Latest issue · No. {String(total - index).padStart(3, "0")}
             </div>
 
-            <h2 className="mt-4 max-w-[20ch] text-balance text-[32px] font-semibold leading-[1.05] tracking-[-0.025em] text-foreground transition-colors group-hover:text-white sm:text-[40px] md:text-[46px]">
+            <h2 className="mt-4 max-w-[20ch] font-[family-name:var(--font-serif-display)] text-balance text-[36px] font-normal leading-[1.02] tracking-tight text-foreground transition-colors group-hover:text-white sm:text-[44px] md:text-[52px]">
               {issue.subject}
             </h2>
 
@@ -343,7 +343,10 @@ export default function NewsletterArchiveContent({
               Past editions
             </p>
             <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-[34px]">
-              Muditek <span className="italic font-medium text-foreground/85">newsletter</span>
+              Muditek{" "}
+              <span className="font-[family-name:var(--font-serif-display)] italic font-normal text-foreground/85">
+                newsletter
+              </span>
             </h1>
             <p className="mt-2 max-w-xl text-[13.5px] leading-6 text-muted-foreground">
               Every issue ships a deployable system: prompts, workflows, outreach plays. Browse the

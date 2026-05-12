@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 import { PORTAL_TOOLS, type PortalTool } from "@/app/portal/tools-catalog";
+import { PortalShell } from "@/components/portal/portal-shell";
 
 type AccessFilter = "all" | "free" | "mudikit";
 
@@ -361,7 +362,13 @@ export default function ToolsContent({
   const isSearching = query.trim().length > 0 || accessFilter !== "all";
 
   return (
-    <main className="relative">
+    <PortalShell
+      email={email}
+      displayName={displayName}
+      access={access}
+      pageEyebrow="Library"
+      pageTitle="Tools"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px]"
@@ -593,6 +600,6 @@ export default function ToolsContent({
           </>
         )}
       </section>
-    </main>
+    </PortalShell>
   );
 }

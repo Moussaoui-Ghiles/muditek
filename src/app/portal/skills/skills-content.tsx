@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PortalShell } from "@/components/portal/portal-shell";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
@@ -334,7 +333,7 @@ export default function SkillsContent({
   const remaining = showBento ? filtered.slice(5) : filtered.slice(8);
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
+    <>
       <style dangerouslySetInnerHTML={{ __html: skillsKeyframes }} />
 
       <main className="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
@@ -535,7 +534,7 @@ export default function SkillsContent({
           </>
         )}
       </main>
-    </PortalShell>
+    </>
   );
 }
 

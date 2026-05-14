@@ -8,7 +8,6 @@ import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumb
 import { buildPortalAccess } from "@/lib/portal-access";
 import { categoryPortalPath } from "@/lib/content-item";
 import PortalContent from "./portal-content";
-import { PortalShell } from "@/components/portal/portal-shell";
 
 interface ContentItem {
   id: string;
@@ -244,16 +243,14 @@ export default async function PortalPage({
   const displayName = user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
 
   return (
-    <PortalShell email={email} displayName={displayName} access={access}>
-      <PortalContent
-        displayName={displayName}
-        email={email}
-        access={access}
-        freeItems={freeItems}
-        paidItems={paidItems}
-        playbookGuideItems={playbookGuideItems}
-        issues={issues}
-      />
-    </PortalShell>
+    <PortalContent
+      displayName={displayName}
+      email={email}
+      access={access}
+      freeItems={freeItems}
+      paidItems={paidItems}
+      playbookGuideItems={playbookGuideItems}
+      issues={issues}
+    />
   );
 }

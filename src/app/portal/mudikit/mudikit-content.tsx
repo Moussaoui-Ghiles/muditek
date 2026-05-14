@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
-import { PortalShell } from "@/components/portal/portal-shell";
 
 interface MudikitContentProps {
   access: PortalAccess;
@@ -206,7 +205,7 @@ function MudikitHero({
                   Unlock MudiKit
                 </Button>
                 <Button
-                  render={<Link href="/mudikit" />}
+                  render={<Link href="/portal/mudikit" />}
                   nativeButton={false}
                   variant="outline"
                   size="sm"
@@ -514,15 +513,15 @@ function UnlockBlock({ email }: { email: string }) {
             <ArrowUpRight className="size-4" />
           </Button>
           <Button
-            render={<Link href="/mudikit" />}
+            render={<Link href="/portal/mudikit" />}
             nativeButton={false}
             variant="outline"
             className="h-10 w-full justify-center"
           >
-            See pricing &amp; details
+            See what unlocks
           </Button>
           <p className="mt-1 text-center text-[11px] text-muted-foreground">
-            Price and full inventory live on /mudikit
+            Paid drops unlock here inside the portal.
           </p>
         </div>
       </div>
@@ -545,7 +544,7 @@ export default function MudikitContent({
   const activityItems = paidItems.slice(1);
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
+    <>
       <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <MudikitHero
           unlocked={unlocked}
@@ -624,6 +623,6 @@ export default function MudikitContent({
 
         <FreePointersStrip />
       </main>
-    </PortalShell>
+    </>
   );
 }

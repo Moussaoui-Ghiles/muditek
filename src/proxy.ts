@@ -41,6 +41,8 @@ const isPublicRoute = createRouteMatcher([
   "/c/(.*)",
   // Resource unlock links
   "/r/(.*)",
+  "/resources",
+  "/resources/(.*)",
   // APIs (public or self-authenticating)
   "/api/submit",
   "/api/subscribe",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { resourceDetailHref } from "@/lib/content-item";
+import { resourceShareHref } from "@/lib/content-item";
 import { getContentItemBySlug } from "@/lib/content-library";
 
 const BASE_URL = "https://muditek.com";
@@ -23,12 +23,12 @@ export async function generateMetadata({
     openGraph: {
       title: item.title,
       description: item.description ?? "Free Muditek resource.",
-      url: `${BASE_URL}/resources/${slug}`,
+      url: `${BASE_URL}${resourceShareHref(item)}`,
       type: "article",
       images: item.thumbnail_url ? [item.thumbnail_url] : undefined,
     },
     alternates: {
-      canonical: `${BASE_URL}${resourceDetailHref(item)}`,
+      canonical: `${BASE_URL}${resourceShareHref(item)}`,
     },
   };
 }
@@ -42,5 +42,5 @@ export default async function ResourcePage({
   const item = await getContentItemBySlug(slug);
   if (!item || !item.is_free) notFound();
 
-  redirect(resourceDetailHref(item));
+  redirect(resourceShareHref(item));
 }

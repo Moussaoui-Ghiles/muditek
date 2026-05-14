@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { ArrowLeft, ArrowUpRight, ChevronLeft, ChevronRight, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail } from "lucide-react";
 
 interface Neighbor {
   slug: string;
@@ -154,15 +154,6 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
             The full library is in <Link href="/portal" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">your portal</Link>. MudiKit access lives in <Link href="/portal/mudikit" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">/portal/mudikit</Link>.
           </p>
         </div>
-        <Link
-          href={`/newsletter/${encodeURIComponent(issue.slug)}`}
-          className="inline-flex items-center gap-1.5 self-start rounded-md border border-white/[0.1] bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.05]"
-          target="_blank"
-          rel="noopener"
-        >
-          Public view
-          <ArrowUpRight className="size-3.5" />
-        </Link>
       </section>
 
       <style jsx global>{`

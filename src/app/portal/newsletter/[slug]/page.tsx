@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/db";
 import { buildPortalAccess } from "@/lib/portal-access";
-import { PortalShell } from "@/components/portal/portal-shell";
 import NewsletterDetailContent from "./newsletter-detail-content";
 
 export const dynamic = "force-dynamic";
@@ -123,21 +122,19 @@ export default async function PortalNewsletterDetailPage({
   const { prev, next } = await getNeighbors(sentAtDate);
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
-      <NewsletterDetailContent
-        email={email}
-        issue={{
-          subject: issue.subject,
-          slug: issue.slug,
-          html: issue.html ?? "",
-          sentAtIso: sentAtDate ? sentAtDate.toISOString() : null,
-          updatedAtIso: updatedAtDate ? updatedAtDate.toISOString() : null,
-          tldr: issue.stats?.tldr ?? null,
-          preview: issue.stats?.preview ?? null,
-        }}
-        prev={prev ? { slug: prev.slug, subject: prev.subject } : null}
-        next={next ? { slug: next.slug, subject: next.subject } : null}
-      />
-    </PortalShell>
+    <NewsletterDetailContent
+      email={email}
+      issue={{
+        subject: issue.subject,
+        slug: issue.slug,
+        html: issue.html ?? "",
+        sentAtIso: sentAtDate ? sentAtDate.toISOString() : null,
+        updatedAtIso: updatedAtDate ? updatedAtDate.toISOString() : null,
+        tldr: issue.stats?.tldr ?? null,
+        preview: issue.stats?.preview ?? null,
+      }}
+      prev={prev ? { slug: prev.slug, subject: prev.subject } : null}
+      next={next ? { slug: next.slug, subject: next.subject } : null}
+    />
   );
 }

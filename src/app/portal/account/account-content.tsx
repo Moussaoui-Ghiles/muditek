@@ -5,7 +5,6 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { CreditCard, LogOut, Mail, ShieldCheck, Sparkles, UserCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PortalShell } from "@/components/portal/portal-shell";
 import type { PortalAccess, PortalRole } from "@/lib/portal-access";
 
 const ROLE_LABEL: Record<PortalRole, string> = {
@@ -48,7 +47,7 @@ export default function AccountContent({
   const extraRoles = access.roles.filter((r) => r !== "free");
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
+    <>
     <main className="mx-auto w-full max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
       <header className="reveal mb-10">
         <p className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -162,7 +161,7 @@ export default function AccountContent({
         </section>
       )}
     </main>
-    </PortalShell>
+    </>
   );
 }
 

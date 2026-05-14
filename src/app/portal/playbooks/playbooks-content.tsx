@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PortalShell } from "@/components/portal/portal-shell";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
@@ -252,7 +251,7 @@ function UpgradeBand({ count }: { count: number }) {
             MudiKit unlocks the full long-form library and every new drop, alongside the paid skills and tools.
           </p>
         </div>
-        <Button render={<Link href="/mudikit" />} nativeButton={false} size="lg">
+        <Button render={<Link href="/portal/mudikit" />} nativeButton={false} size="lg">
           Unlock MudiKit
           <ArrowUpRight className="size-4" />
         </Button>
@@ -338,7 +337,7 @@ export default function PlaybooksContent({
   const grid = featured ? filtered.slice(1) : filtered;
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
+    <>
       <main className="relative">
       <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:px-10">
         {/* Editorial header */}
@@ -476,7 +475,7 @@ export default function PlaybooksContent({
         )}
       </div>
       </main>
-    </PortalShell>
+    </>
   );
 }
 

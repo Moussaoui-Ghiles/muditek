@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
   CalendarDays,
+  Check,
+  Copy,
   Download,
   ExternalLink,
   FileText,
@@ -14,8 +17,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PortalShell } from "@/components/portal/portal-shell";
-import type { ContentItem } from "@/lib/content-item";
+import { resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
 export type AssetLabels = {
@@ -158,6 +160,38 @@ function LockedState({
   );
 }
 
+function ShareResourceButton({ item }: { item: ContentItem }) {
+  const [copied, setCopied] = useState(false);
+  const sharePath = resourceShareHref(item);
+
+  async function copyShareLink() {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://muditek.com";
+    const value = `${origin}${sharePath}`;
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      const input = document.createElement("textarea");
+      input.value = value;
+      input.setAttribute("readonly", "");
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <Button type="button" variant="outline" size="sm" onClick={copyShareLink}>
+      {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      {copied ? "Copied" : "Copy lead-magnet link"}
+    </Button>
+  );
+}
+
 export default function AssetDetailContent({
   item,
   access,
@@ -178,20 +212,12 @@ export default function AssetDetailContent({
   labels: AssetLabels;
 }) {
   if (!item) {
-    return (
-      <PortalShell email={email} displayName={displayName} access={access}>
-        <NotFoundState labels={labels} />
-      </PortalShell>
-    );
+    return <NotFoundState labels={labels} />;
   }
 
   const hasAccess = item.is_free || access.isMudikit || access.isAdmin;
   if (!hasAccess) {
-    return (
-      <PortalShell email={email} displayName={displayName} access={access}>
-        <LockedState item={item} labels={labels} />
-      </PortalShell>
-    );
+    return <LockedState item={item} labels={labels} />;
   }
 
   const external = downloadHref ? isExternalHref(downloadHref) : false;
@@ -205,7 +231,7 @@ export default function AssetDetailContent({
   const updated = formatLongDate(item.updated_at ?? null);
 
   return (
-    <PortalShell email={email} displayName={displayName} access={access}>
+    <>
     <main className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6 lg:px-10">
       <Link
         href={labels.backHref}
@@ -303,6 +329,14 @@ export default function AssetDetailContent({
               <dd className="font-mono text-foreground">{item.is_free ? "Free" : "MudiKit"}</dd>
             </div>
           </dl>
+          {item.is_free && (
+            <div className="border-t border-white/[0.06] px-5 py-4">
+              <p className="mb-3 text-[11.5px] leading-5 text-muted-foreground">
+                Share this as a lead magnet. New visitors create a free account before it opens.
+              </p>
+              <ShareResourceButton item={item} />
+            </div>
+          )}
         </aside>
       </header>
 
@@ -382,6 +416,6 @@ export default function AssetDetailContent({
         </Button>
       </div>
     </main>
-    </PortalShell>
+    </>
   );
 }

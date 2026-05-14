@@ -285,7 +285,7 @@ export default function PortalHomeContent({
               <FeaturedCard item={featured} eyebrow={featuredEyebrow} />
             ) : latestIssue ? (
               <Link
-                href={`/newsletter/${latestIssue.slug}`}
+                href={`/portal/newsletter/${latestIssue.slug}`}
                 className="group relative flex min-h-[280px] flex-col justify-end overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0e10] p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 md:min-h-[340px] md:p-8"
               >
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_15%,rgba(255,255,255,0.08),transparent_45%)]" />
@@ -394,7 +394,7 @@ export default function PortalHomeContent({
               </Button>
             </div>
             {latestIssue ? (
-              <Link href={`/newsletter/${latestIssue.slug}`} className="group mt-5 block">
+              <Link href={`/portal/newsletter/${latestIssue.slug}`} className="group mt-5 block">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                   Latest · {formatDate(latestIssue.sent_at)}
                 </p>
@@ -420,7 +420,7 @@ export default function PortalHomeContent({
 
           {isFreeOnly ? (
             <Link
-              href="/mudikit"
+              href="/portal/mudikit"
               className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-[#161217] via-[#0e0c10] to-[#0a0a0c] p-6 transition-colors hover:border-white/[0.22] md:p-7"
             >
               <div

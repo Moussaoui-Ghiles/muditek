@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { ensurePortalMembershipsSchema } from "@/lib/portal-memberships-schema";
 
 type Sql = ReturnType<typeof getDb>;
 
@@ -38,6 +39,7 @@ export async function ensureResourceLeadSchema(sql: Sql = getDb()) {
   await sql`CREATE INDEX IF NOT EXISTS resource_leads_email_idx ON resource_leads (email)`;
   await sql`CREATE INDEX IF NOT EXISTS resource_leads_slug_idx ON resource_leads (resource_slug)`;
   await sql`CREATE INDEX IF NOT EXISTS resource_leads_created_at_idx ON resource_leads (created_at DESC)`;
+  await ensurePortalMembershipsSchema(sql);
 }
 
 export async function trackResourceLead({

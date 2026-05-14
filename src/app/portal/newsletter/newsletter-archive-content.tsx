@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { PortalAccess } from "@/lib/portal-access";
-import { PortalShell } from "@/components/portal/portal-shell";
 
 export interface ArchiveIssue {
   slug: string;
@@ -335,7 +334,7 @@ export default function NewsletterArchiveContent({
   const showSearch = total >= 6;
 
   return (
-    <PortalShell access={access} email={email} displayName={displayName}>
+    <>
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-2 flex items-baseline justify-between gap-4">
           <div>
@@ -471,6 +470,6 @@ export default function NewsletterArchiveContent({
           </section>
         )}
       </main>
-    </PortalShell>
+    </>
   );
 }

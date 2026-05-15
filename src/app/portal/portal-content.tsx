@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { ArrowRight, ArrowUpRight, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PORTAL_TOOLS } from "./tools-catalog";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -39,19 +39,19 @@ const OFFERS = [
   {
     eyebrow: "PE & Finance",
     title: "Investor portals built in weeks.",
-    desc: "Onboarding, KYC, fund operations. €50K platform delivered for a merchant bank.",
+    desc: "Onboarding, KYC, fund operations. €50K platform shipped for a merchant bank.",
     href: "/pe-ops",
   },
   {
     eyebrow: "B2B SaaS",
-    title: "Find €80-180K in revenue leaks.",
+    title: "Find €80–180K in revenue leaks.",
     desc: "5-day diagnostic, €2K. If I don't find €50K+ in annual leakage, you pay nothing.",
     href: "/revenue-leak-audit",
   },
   {
     eyebrow: "Compliance",
     title: "EU AI Act, automated.",
-    desc: "Risk classification, documentation, and ongoing monitoring for companies deploying AI in the EU.",
+    desc: "Risk classification, documentation, monitoring for AI-deploying companies in the EU.",
     href: "/ai-act",
   },
 ];
@@ -71,80 +71,15 @@ function categoryEyebrow(item: ContentItem): string {
   return item.category.charAt(0).toUpperCase() + item.category.slice(1);
 }
 
-function formatMonthDay(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function formatMonthDay(date: Date | string | null): string {
+  if (!date) return "";
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return typeof date === "string" ? date : "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
 }
 
-function ShelfItem({
-  href,
-  eyebrow,
-  title,
-  desc,
-}: {
-  href: string;
-  eyebrow: string;
-  title: string;
-  desc?: string | null;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group relative flex min-h-[150px] w-[260px] shrink-0 snap-start flex-col justify-between rounded-xl border border-white/[0.06] bg-white/[0.012] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.18] hover:bg-white/[0.025]"
-    >
-      <div>
-        <p className="text-[9.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-          {eyebrow}
-        </p>
-        <h3 className="mt-2 line-clamp-2 text-[14px] font-semibold leading-[1.3] tracking-tight text-foreground">
-          {title}
-        </h3>
-        {desc ? (
-          <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-muted-foreground">{desc}</p>
-        ) : null}
-      </div>
-      <ArrowUpRight className="mt-3 size-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
-    </Link>
-  );
-}
-
-function Shelf({
-  eyebrow,
-  seeAllHref,
-  children,
-  empty,
-}: {
-  eyebrow: string;
-  seeAllHref?: string;
-  children?: React.ReactNode;
-  empty?: string;
-}) {
-  return (
-    <section className="mt-14">
-      <div className="mb-4 flex items-end justify-between gap-4">
-        <h2 className="text-[11px] font-medium uppercase tracking-[0.22em] text-foreground/85">
-          {eyebrow}
-        </h2>
-        {seeAllHref && !empty ? (
-          <Link
-            href={seeAllHref}
-            className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            See all
-            <ChevronRight className="size-3.5" />
-          </Link>
-        ) : null}
-      </div>
-      {empty ? (
-        <p className="text-[13px] text-muted-foreground">{empty}</p>
-      ) : (
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-          {children}
-        </div>
-      )}
-    </section>
-  );
+function pad2(n: number): string {
+  return n < 10 ? `0${n}` : String(n);
 }
 
 export default function PortalHomeContent({
@@ -158,15 +93,15 @@ export default function PortalHomeContent({
   upcoming,
 }: HomeContentProps) {
   const isFreeOnly = !access.isMudikit && !access.isAdmin;
+  const tools = PORTAL_TOOLS;
 
   const skills = useMemo(
     () => freeItems.filter((i) => i.category === SKILL_CATEGORY),
     [freeItems]
   );
-  const tools = PORTAL_TOOLS;
+
   const resources = useMemo(
-    () =>
-      (isFreeOnly ? playbookGuideItems.filter((i) => i.is_free) : playbookGuideItems).slice(0, 8),
+    () => (isFreeOnly ? playbookGuideItems.filter((i) => i.is_free) : playbookGuideItems),
     [playbookGuideItems, isFreeOnly]
   );
 
@@ -175,218 +110,346 @@ export default function PortalHomeContent({
     return freeItems[0] ?? null;
   }, [access.isMudikit, paidItems, freeItems]);
 
+  const recentItems = useMemo(() => {
+    const merged: ContentItem[] = [...resources, ...skills];
+    const seen = new Set<string>();
+    return merged
+      .filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      })
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 6);
+  }, [resources, skills]);
+
   const latestIssue = issues[0];
+
+  const today = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).toUpperCase();
+
+  const departments: Array<{
+    eyebrow: string;
+    title: string;
+    desc: string;
+    href: string;
+    isOffer?: boolean;
+  }> = [
+    ...OFFERS.map((o) => ({ ...o, isOffer: true })),
+    {
+      eyebrow: "Tools",
+      title: tools.length === 1 ? "1 tool · ready to use." : `${tools.length} tools · ready to use.`,
+      desc: "Calculators, workbenches, and operator utilities.",
+      href: "/portal/tools",
+    },
+    {
+      eyebrow: "Skills",
+      title:
+        skills.length === 0
+          ? "Skills · first one ships next week."
+          : `${skills.length} ${skills.length === 1 ? "skill" : "skills"} · Claude Code modules.`,
+      desc: "Reusable instruction sets for Claude Code agents.",
+      href: "/portal/skills",
+    },
+    {
+      eyebrow: "Library",
+      title:
+        resources.length === 0
+          ? "Library · the archive opens soon."
+          : `${resources.length} ${resources.length === 1 ? "piece" : "pieces"} · playbooks & guides.`,
+      desc: "Step-by-step operating documents and field notes.",
+      href: "/portal/playbooks",
+    },
+  ];
 
   return (
     <main className="relative">
-      <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-10 sm:px-6 lg:px-10 lg:pt-14">
-        {/* 1. Greeting */}
-        <h1 className="font-[var(--font-serif-display)] text-[40px] leading-[0.98] tracking-tight text-foreground md:text-[56px]">
-          Welcome back, <span className="italic">{displayName}</span>.
-        </h1>
+      {/* fine paper texture behind everything */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.018] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
+      />
 
-        {/* 2. Featured */}
+      <div className="mx-auto w-full max-w-[1180px] px-6 pb-32 pt-12 lg:px-12 lg:pt-16">
+        {/* ──── MASTHEAD ──── */}
+        <header className="flex flex-col gap-5 border-b border-white/[0.09] pb-7 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/40">
+              {today} · Vol. I
+            </p>
+            <p className="mt-3 font-[var(--font-serif-display)] text-[22px] italic leading-none tracking-[-0.01em] text-white/95">
+              The Muditek Portal
+            </p>
+          </div>
+          <div className="font-mono text-[10px] uppercase leading-[1.7] tracking-[0.26em] text-white/40 md:text-right">
+            <p>In this edition</p>
+            <p className="text-white/55">
+              One feature · {departments.length} departments ·{" "}
+              {recentItems.length} in the library
+            </p>
+          </div>
+        </header>
+
+        {/* ──── GREETING (eyebrow, not H1) ──── */}
+        <p className="mt-14 font-mono text-[11px] uppercase tracking-[0.32em] text-amber-300/70">
+          Welcome back, {displayName}.
+        </p>
+
+        {/* ──── FEATURED ──── full-bleed typography ──── */}
         {featured ? (
-          <Link
-            href={categoryHref(featured)}
-            className="group relative mt-10 flex min-h-[260px] flex-col justify-end overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.018] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_30px_60px_-30px_rgba(0,0,0,0.7)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.18] md:min-h-[320px] md:p-10"
-            style={
-              featured.thumbnail_url
-                ? {
-                    backgroundImage: `linear-gradient(180deg, rgba(10,10,12,0.55) 0%, rgba(10,10,12,0.94) 100%), url(${featured.thumbnail_url})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : undefined
-            }
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute right-0 top-0 size-[320px] bg-[radial-gradient(closest-side,rgba(245,158,11,0.10),transparent_70%)]"
-            />
-            <div className="relative flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-foreground/65">
-              <Sparkles className="size-3" />
-              <span>Newest {categoryEyebrow(featured).toLowerCase()}</span>
-              {featured.is_new && (
-                <span className="ml-1 inline-flex items-center rounded-full border border-emerald-300/30 bg-emerald-400/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-emerald-100">
-                  New
-                </span>
+          <section className="mt-5">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+                No. 01
+              </span>
+              <span className="h-px flex-1 bg-white/[0.09]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+                Newest {categoryEyebrow(featured)}
+              </span>
+            </div>
+            <Link href={categoryHref(featured)} className="group block">
+              <h1 className="font-[var(--font-serif-display)] mt-7 max-w-[18ch] text-balance text-[44px] italic leading-[0.94] tracking-[-0.03em] text-white transition-colors md:text-[78px] lg:text-[92px] group-hover:text-amber-50">
+                {featured.title}
+              </h1>
+              {featured.description && (
+                <p className="mt-7 max-w-[56ch] text-[15px] leading-[1.65] text-white/60 md:text-[16px]">
+                  {featured.description}
+                </p>
               )}
-            </div>
-            <h2 className="font-[var(--font-serif-display)] relative mt-3 max-w-[28ch] text-[30px] italic leading-[1.05] tracking-tight text-foreground md:text-[44px]">
-              {featured.title}
-            </h2>
-            {featured.description && (
-              <p className="relative mt-3 max-w-[58ch] text-[13.5px] leading-6 text-muted-foreground">
-                {featured.description}
-              </p>
-            )}
-            <div className="relative mt-6 inline-flex items-center gap-2 text-[12px] font-medium tracking-tight text-foreground transition-transform duration-300 group-hover:translate-x-1">
-              Open {categoryEyebrow(featured).toLowerCase()}
-              <ArrowUpRight className="size-3.5" />
-            </div>
-          </Link>
+              <span className="mt-8 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white transition-colors group-hover:text-amber-300/85">
+                Open {categoryEyebrow(featured).toLowerCase()}
+                <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </span>
+            </Link>
+          </section>
         ) : latestIssue ? (
-          <Link
-            href={`/portal/newsletter/${latestIssue.slug}`}
-            className="group relative mt-10 flex min-h-[260px] flex-col justify-end overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.018] p-7 backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] md:min-h-[320px] md:p-10"
-          >
-            <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-foreground/65">
-              Newest issue
-            </p>
-            <h2 className="font-[var(--font-serif-display)] mt-3 text-[30px] italic leading-[1.05] tracking-tight text-foreground md:text-[44px]">
-              {latestIssue.subject}
-            </h2>
-            <div className="mt-6 inline-flex items-center gap-2 text-[12px] font-medium tracking-tight text-foreground transition-transform group-hover:translate-x-1">
-              Read issue
-              <ArrowUpRight className="size-3.5" />
+          <section className="mt-5">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+                No. 01
+              </span>
+              <span className="h-px flex-1 bg-white/[0.09]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+                Newest Issue
+              </span>
             </div>
-          </Link>
-        ) : null}
-
-        {/* 3. This week + Get in touch */}
-        <section className="mt-14 grid gap-6 md:grid-cols-[1.55fr_1fr] md:gap-10">
-          <article>
-            <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              This week
-            </p>
-            <p className="font-[var(--font-serif-display)] mt-3 text-[22px] italic leading-[1.3] tracking-tight text-foreground md:text-[26px]">
-              {thisWeek}
-            </p>
-          </article>
-          <aside className="rounded-2xl border border-white/[0.07] bg-white/[0.012] p-6 md:p-7">
-            <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              Sounds like your business?
-            </p>
-            <h3 className="mt-2.5 text-[15px] font-semibold leading-snug text-foreground">
-              Reply directly. No call needed.
-            </h3>
-            <p className="mt-1.5 text-[13px] leading-6 text-muted-foreground">
-              Tell me what you&apos;re solving. I&apos;ll send back what I&apos;d build.
-            </p>
-            <a
-              href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20what%20I%27m%20solving"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-400/[0.08] px-4 py-2 text-[12.5px] font-medium tracking-tight text-amber-100 transition-all hover:border-amber-300/55 hover:bg-amber-400/[0.14]"
-            >
-              Get in touch
-              <ArrowRight className="size-3.5" />
-            </a>
-          </aside>
-        </section>
-
-        {/* 4. Features (the offers) */}
-        <section className="mt-16">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                What I build
-              </p>
-              <h2 className="font-[var(--font-serif-display)] mt-2 text-[26px] italic leading-tight tracking-tight text-foreground md:text-[32px]">
-                The systems behind this portal.
-              </h2>
+            <Link href={`/portal/newsletter/${latestIssue.slug}`} className="group block">
+              <h1 className="font-[var(--font-serif-display)] mt-7 max-w-[18ch] text-balance text-[44px] italic leading-[0.94] tracking-[-0.03em] text-white transition-colors md:text-[78px] lg:text-[92px] group-hover:text-amber-50">
+                {latestIssue.subject}
+              </h1>
+              <span className="mt-8 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white transition-colors group-hover:text-amber-300/85">
+                Read issue
+                <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </span>
+            </Link>
+          </section>
+        ) : (
+          <section className="mt-5">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+                No. 01
+              </span>
+              <span className="h-px flex-1 bg-white/[0.09]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+                Opening Issue
+              </span>
             </div>
+            <h1 className="font-[var(--font-serif-display)] mt-7 max-w-[20ch] text-balance text-[44px] italic leading-[0.94] tracking-[-0.03em] text-white md:text-[78px] lg:text-[92px]">
+              The portal opens.
+            </h1>
+            <p className="mt-7 max-w-[56ch] text-[15px] leading-[1.65] text-white/60 md:text-[16px]">
+              First playbooks, skills and tools land here as I ship them. Check back, or read the
+              note below.
+            </p>
+          </section>
+        )}
+
+        {/* ──── NOTE FROM THE OPERATOR ──── */}
+        <section className="mt-28 border-t border-white/[0.09] pt-10">
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+              No. 02
+            </span>
+            <span className="h-px flex-1 bg-white/[0.09]" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+              Note from the operator
+            </span>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            {OFFERS.map((offer) => (
-              <Link
-                key={offer.href}
-                href={offer.href}
-                className="group relative flex h-full flex-col justify-between rounded-2xl border border-white/[0.07] bg-white/[0.012] p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.18] hover:bg-white/[0.025]"
+          <div className="mt-9 grid gap-12 md:grid-cols-[1fr_280px]">
+            <div className="relative">
+              <span
+                aria-hidden
+                className="absolute -left-1 -top-6 font-[var(--font-serif-display)] text-[64px] italic leading-none text-amber-300/30 md:text-[88px]"
               >
-                <div>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-amber-200/85">
-                    {offer.eyebrow}
-                  </p>
-                  <h3 className="mt-3 text-[16.5px] font-semibold leading-[1.3] tracking-tight text-foreground">
-                    {offer.title}
-                  </h3>
-                  <p className="mt-2 text-[12.5px] leading-6 text-muted-foreground">{offer.desc}</p>
-                </div>
-                <div className="mt-6 inline-flex items-center gap-2 text-[11.5px] uppercase tracking-[0.18em] text-foreground/70 transition-colors group-hover:text-foreground">
-                  See the work
-                  <ArrowUpRight className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </div>
-              </Link>
-            ))}
+                “
+              </span>
+              <p className="relative font-[var(--font-serif-display)] text-[22px] italic leading-[1.4] tracking-[-0.01em] text-white/92 md:text-[28px]">
+                {thisWeek || "Quiet week. Heads down on the next drop."}
+              </p>
+              <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.28em] text-white/40">
+                — Ghiles
+              </p>
+            </div>
+            <aside className="border-t border-white/[0.08] pt-7 md:border-l md:border-t-0 md:pl-12 md:pt-0">
+              <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/45">
+                Sounds like
+                <br />
+                your business?
+              </p>
+              <p className="mt-3 text-[13.5px] leading-[1.55] text-white/55">
+                Tell me what you&apos;re solving. I&apos;ll send back what I&apos;d build.
+              </p>
+              <a
+                href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20what%20I%27m%20solving"
+                className="group mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-amber-300/85 transition-colors hover:text-amber-200"
+              >
+                Get in touch
+                <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </aside>
           </div>
         </section>
 
-        {/* 5. Tools */}
-        <Shelf
-          eyebrow="Tools"
-          seeAllHref="/portal/tools"
-          empty={tools.length === 0 ? "Tools arrive soon." : undefined}
-        >
-          {tools.map((tool) => (
-            <ShelfItem
-              key={tool.slug}
-              href={`/portal/tools/${tool.slug}`}
-              eyebrow={tool.category}
-              title={tool.title}
-              desc={tool.short}
-            />
-          ))}
-        </Shelf>
-
-        {/* 6. Skills */}
-        <Shelf
-          eyebrow="Skills"
-          seeAllHref="/portal/skills"
-          empty={skills.length === 0 ? "Skills arrive soon." : undefined}
-        >
-          {skills.slice(0, 8).map((item) => (
-            <ShelfItem
-              key={item.id}
-              href={categoryHref(item)}
-              eyebrow="Skill"
-              title={item.title}
-              desc={item.description}
-            />
-          ))}
-        </Shelf>
-
-        {/* 7. Resources */}
-        <Shelf
-          eyebrow="Resources"
-          seeAllHref="/portal/playbooks"
-          empty={resources.length === 0 ? "Resources arrive soon." : undefined}
-        >
-          {resources.map((item) => (
-            <ShelfItem
-              key={item.id}
-              href={categoryHref(item)}
-              eyebrow={categoryEyebrow(item)}
-              title={item.title}
-              desc={item.description}
-            />
-          ))}
-        </Shelf>
-
-        {/* 8. Upcoming */}
-        {upcoming.length > 0 && (
-          <section className="mt-16">
-            <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              Coming next
-            </p>
-            <ul className="mt-4 divide-y divide-white/[0.06] border-t border-white/[0.06]">
-              {upcoming.map((item, idx) => (
-                <li
-                  key={`${item.date}-${idx}`}
-                  className="flex items-baseline gap-4 py-3.5"
+        {/* ──── DEPARTMENTS — numbered editorial list ──── */}
+        <section className="mt-28">
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+              No. 03
+            </span>
+            <span className="h-px flex-1 bg-white/[0.09]" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+              Departments
+            </span>
+          </div>
+          <ul className="mt-9 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+            {departments.map((dept, i) => (
+              <li key={dept.href}>
+                <Link
+                  href={dept.href}
+                  className="group relative grid grid-cols-[2.5rem_minmax(0,1fr)_1.25rem] items-baseline gap-x-4 gap-y-2 py-7 transition-colors hover:bg-white/[0.018] md:grid-cols-[3rem_9rem_minmax(0,1fr)_1.5rem] md:items-center md:gap-x-7 md:py-8"
                 >
-                  <span className="w-20 shrink-0 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 group-hover:text-amber-300/85">
+                    {pad2(i + 1)}
+                  </span>
+                  <span className="col-span-2 font-mono text-[10px] uppercase tracking-[0.3em] text-amber-300/70 md:col-span-1">
+                    {dept.eyebrow}
+                  </span>
+                  <div className="col-start-2 col-end-4 min-w-0 md:col-start-3 md:col-end-4">
+                    <h3 className="font-[var(--font-serif-display)] text-[22px] italic leading-[1.15] tracking-[-0.015em] text-white transition-colors group-hover:text-amber-50 md:text-[26px]">
+                      {dept.title}
+                    </h3>
+                    <p className="mt-1.5 max-w-[60ch] text-[13px] leading-[1.55] text-white/55">
+                      {dept.desc}
+                    </p>
+                  </div>
+                  <span className="col-start-3 row-start-1 self-center justify-self-end text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85 md:col-start-4 md:row-start-auto">
+                    <ArrowUpRight className="size-4" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ──── FROM THE LIBRARY ──── */}
+        {recentItems.length > 0 && (
+          <section className="mt-28">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+                No. 04
+              </span>
+              <span className="h-px flex-1 bg-white/[0.09]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+                From the library
+              </span>
+            </div>
+            <ul className="mt-9 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+              {recentItems.map((item, i) => (
+                <li key={item.id}>
+                  <Link
+                    href={categoryHref(item)}
+                    className="group grid grid-cols-[2.5rem_minmax(0,1fr)_1rem] items-baseline gap-x-4 py-5 transition-colors hover:bg-white/[0.018] md:grid-cols-[3rem_6rem_7rem_minmax(0,1fr)_1.25rem] md:items-center md:gap-x-6"
+                  >
+                    <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 group-hover:text-amber-300/85">
+                      {pad2(i + 1)}
+                    </span>
+                    <span className="col-span-2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:col-span-1">
+                      {formatMonthDay(item.created_at) || "—"}
+                    </span>
+                    <span className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:inline">
+                      {categoryEyebrow(item)}
+                    </span>
+                    <span className="col-span-2 text-[15px] leading-[1.45] text-white/85 transition-colors group-hover:text-white md:col-span-1 md:text-[16px]">
+                      {item.title}
+                    </span>
+                    <span className="hidden self-center justify-self-end text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85 md:inline">
+                      <ArrowUpRight className="size-3.5" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/portal/playbooks"
+              className="mt-6 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.28em] text-white/50 transition-colors hover:text-white"
+            >
+              Browse the archive
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+          </section>
+        )}
+
+        {/* ──── COMING NEXT ──── */}
+        {upcoming.length > 0 && (
+          <section className="mt-28">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/35">
+                No. {pad2(recentItems.length > 0 ? 5 : 4)}
+              </span>
+              <span className="h-px flex-1 bg-white/[0.09]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/50">
+                Coming next
+              </span>
+            </div>
+            <ul className="mt-9 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+              {upcoming.map((item, i) => (
+                <li
+                  key={`${item.date}-${i}`}
+                  className="grid grid-cols-[2.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-5 md:grid-cols-[3rem_6rem_7rem_minmax(0,1fr)] md:items-center md:gap-x-6"
+                >
+                  <span className="font-mono text-[11px] tracking-[0.26em] text-white/35">
+                    {pad2(i + 1)}
+                  </span>
+                  <span className="col-span-1 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:col-auto">
                     {formatMonthDay(item.date)}
                   </span>
-                  <span className="w-20 shrink-0 text-[10px] uppercase tracking-[0.18em] text-amber-200/75">
+                  <span className="col-span-2 hidden font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:col-auto md:inline">
                     {item.type}
                   </span>
-                  <span className="flex-1 text-[13.5px] text-foreground">{item.title}</span>
+                  <span className="col-span-2 text-[15px] leading-[1.45] text-white/80 md:col-auto md:text-[16px]">
+                    {item.title}
+                  </span>
                 </li>
               ))}
             </ul>
           </section>
         )}
-      </section>
+
+        {/* ──── COLOPHON ──── */}
+        <footer className="mt-32 border-t border-white/[0.09] pt-7">
+          <div className="flex flex-col gap-2 font-mono text-[10px] uppercase leading-[1.8] tracking-[0.28em] text-white/35 md:flex-row md:items-center md:justify-between md:gap-4">
+            <p>Muditek · Operating systems for B2B</p>
+            <p className="text-white/30">Run by Ghiles Moussaoui</p>
+          </div>
+        </footer>
+      </div>
     </main>
   );
 }

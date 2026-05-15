@@ -192,7 +192,6 @@ export function PortalSidebar({
           <UserButton appearance={{ elements: { avatarBox: "w-7 h-7" } }} />
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <div className="truncate text-[12px] font-medium text-foreground">{displayName}</div>
-            <div className="truncate text-[10px] text-muted-foreground">{email}</div>
           </div>
         </div>
       </SidebarFooter>

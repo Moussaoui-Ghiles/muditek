@@ -4,18 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext } from "react";
 import { Menu } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
 import { PortalSidebar } from "./portal-sidebar";
 
 const PortalShellMountedContext = createContext(false);
-
-function tierLabel(access: PortalAccess): string {
-  if (access.isAdmin) return "Admin";
-  if (access.isMudikit) return "MudiKit";
-  return "Free";
-}
 
 type Crumb = { href: string; label: string };
 
@@ -76,7 +69,6 @@ export function PortalShell({
   const alreadyMounted = useContext(PortalShellMountedContext);
   const pathname = usePathname() || "/portal";
   const crumbs = buildCrumbs(pathname);
-  const tier = tierLabel(access);
 
   if (alreadyMounted) {
     if (pageEyebrow || pageTitle || rightSlot) {
@@ -143,13 +135,6 @@ export function PortalShell({
                 })}
               </ol>
             </nav>
-
-            <Badge
-              variant="outline"
-              className="hidden rounded-full border-white/[0.12] bg-white/[0.03] px-2.5 text-[10px] font-medium uppercase tracking-[0.16em] text-foreground/90 sm:inline-flex"
-            >
-              {tier}
-            </Badge>
           </header>
 
           {(pageEyebrow || pageTitle || rightSlot) && (

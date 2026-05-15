@@ -7,7 +7,37 @@ import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { categoryPortalPath } from "@/lib/content-item";
-import PortalContent from "./portal-content";
+import PortalContent, { type UpcomingItem } from "./portal-content";
+
+const PORTAL_CONTENT_DIR = join(process.cwd(), "content/portal");
+
+function readThisWeek(): string {
+  try {
+    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "this-week.md"), "utf-8");
+    return raw.replace(/^---[\s\S]*?---\s*/m, "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function readUpcoming(): UpcomingItem[] {
+  try {
+    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "upcoming.md"), "utf-8");
+    const body = raw.replace(/^---[\s\S]*?---\s*/m, "");
+    return body
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith("- "))
+      .map((line) => {
+        const parts = line.slice(2).split("|").map((p) => p.trim());
+        if (parts.length < 3) return null;
+        return { date: parts[0], type: parts[1], title: parts.slice(2).join(" | ") };
+      })
+      .filter((item): item is UpcomingItem => item !== null);
+  } catch {
+    return [];
+  }
+}
 
 interface ContentItem {
   id: string;
@@ -242,6 +272,9 @@ export default async function PortalPage({
 
   const displayName = user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
 
+  const thisWeek = readThisWeek();
+  const upcoming = readUpcoming();
+
   return (
     <PortalContent
       displayName={displayName}
@@ -251,6 +284,8 @@ export default async function PortalPage({
       paidItems={paidItems}
       playbookGuideItems={playbookGuideItems}
       issues={issues}
+      thisWeek={thisWeek}
+      upcoming={upcoming}
     />
   );
 }

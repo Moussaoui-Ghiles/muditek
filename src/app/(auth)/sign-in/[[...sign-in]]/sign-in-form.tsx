@@ -29,21 +29,52 @@ const CLERK_ELEMENTS = {
   alertText: "text-[12.5px] text-red-400/90",
 } as const;
 
+const HERO = (
+  <div className="max-w-[560px]">
+    <p className="reveal mb-5 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-primary">
+      <span className="h-px w-8 bg-primary/50" />
+      Members access
+    </p>
+    <h1 className="reveal text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white md:text-[64px]">
+      Welcome back to{" "}
+      <span className="text-primary">Muditek</span>.
+    </h1>
+    <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
+      Sign in to the portal — the full playbook library, every newsletter
+      issue archived on-site, your MudiKit content, and direct calendar
+      access for ops audits or a MudiAgent demo.
+    </p>
+    <ul className="reveal reveal-delay-2 mt-10 border-t border-white/[0.07]">
+      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
+        <span className="text-white/80">Every deployable system, shipped weekly</span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Library</span>
+      </li>
+      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
+        <span className="text-white/80">29 newsletter issues, searchable on-site</span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Archive</span>
+      </li>
+      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
+        <span className="text-white/80">PE Ops · Revenue Leak Audit · MudiAgent</span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Calendar</span>
+      </li>
+    </ul>
+    <p className="reveal reveal-delay-3 mt-8 text-[12px] text-white/45">
+      Join 5,000+ B2B operators reading our weekly playbooks.
+    </p>
+  </div>
+);
+
 export default function SignInForm({ redirectUrl = "/portal" }: { redirectUrl?: string }) {
   const encodedRedirect = encodeURIComponent(redirectUrl);
 
   return (
-    <AuthShell variant="sign-in">
-      <div className="reveal reveal-delay-1 mb-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.26em] font-semibold text-white/45">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        Members
+    <AuthShell variant="sign-in" hero={HERO}>
+      <div className="reveal reveal-delay-2 mb-6 hidden lg:block">
+        <p className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/60">
+          <span className="h-px w-8 bg-white/30" />
+          Sign in
+        </p>
       </div>
-      <h1 className="reveal reveal-delay-1 text-4xl font-black tracking-[-0.02em] leading-[1.05] text-white">
-        Welcome back.
-      </h1>
-      <p className="reveal reveal-delay-2 mt-3 mb-7 text-[13.5px] leading-relaxed text-white/55">
-        Sign in to your Muditek portal.
-      </p>
       <div className="reveal reveal-delay-3">
         <SignIn
           appearance={{ elements: CLERK_ELEMENTS }}

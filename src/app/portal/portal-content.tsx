@@ -142,7 +142,7 @@ export default function PortalHomeContent({
           {featured ? (
             <Link
               href={categoryHref(featured)}
-              className="group relative isolate flex min-h-[360px] flex-col justify-end overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-8 transition-all duration-300 hover:from-white/[0.06] md:min-h-[440px] md:p-10"
+              className="group relative isolate flex flex-col justify-between gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-9"
             >
               <div
                 aria-hidden
@@ -156,26 +156,26 @@ export default function PortalHomeContent({
                 <p className="text-[12.5px] uppercase tracking-[0.18em] text-amber-300/70">
                   Latest {categoryLabel(featured).toLowerCase()}
                 </p>
-                <h2 className="mt-4 max-w-[18ch] text-[36px] font-semibold leading-[1.05] tracking-[-0.022em] text-white md:text-[52px]">
+                <h2 className="mt-3 max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
                   {featured.title}
                 </h2>
                 {featured.description && (
-                  <p className="mt-4 max-w-[55ch] text-[15px] leading-[1.6] text-white/60">
+                  <p className="mt-3 max-w-[55ch] text-[14.5px] leading-[1.6] text-white/60">
                     {featured.description}
                   </p>
                 )}
-                <span className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
-                  Open
-                  <ArrowRight className="size-3.5" />
-                </span>
               </div>
+              <span className="relative inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
+                Open
+                <ArrowRight className="size-3.5" />
+              </span>
             </Link>
           ) : (
-            <div className="flex min-h-[360px] flex-col justify-end overflow-hidden rounded-2xl bg-white/[0.02] p-8 md:min-h-[440px] md:p-10">
-              <h2 className="max-w-[18ch] text-[36px] font-semibold leading-[1.05] tracking-[-0.022em] text-white md:text-[48px]">
+            <div className="flex flex-col gap-4 overflow-hidden rounded-2xl bg-white/[0.02] p-7 md:p-9">
+              <h2 className="max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
                 The portal opens here.
               </h2>
-              <p className="mt-4 max-w-[55ch] text-[15px] leading-[1.6] text-white/55">
+              <p className="max-w-[55ch] text-[14.5px] leading-[1.6] text-white/55">
                 First playbooks, skills, and tools land in this spot as they ship.
               </p>
             </div>

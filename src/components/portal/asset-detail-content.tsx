@@ -5,17 +5,14 @@ import { useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
-  CalendarDays,
   Check,
   Copy,
   Download,
   ExternalLink,
   FileText,
   Lock,
-  Sparkles,
   Terminal,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -53,7 +50,7 @@ const playbookResponsiveStyles = `
     margin: 0 auto 24px;
     max-width: 100% !important;
     box-shadow: 0 4px 32px rgba(0,0,0,0.18);
-    border-radius: 12px;
+    border-radius: 4px;
   }
   @media (max-width: 850px) {
     .portal-asset-html .page {
@@ -68,92 +65,95 @@ const playbookResponsiveStyles = `
   }
 `;
 
+function BackLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-2 text-[10.5px] font-black uppercase tracking-[0.25em] text-foreground/55 transition-colors hover:text-foreground"
+    >
+      <ArrowLeft className="size-3" />
+      {label}
+    </Link>
+  );
+}
+
 function NotFoundState({ labels }: { labels: AssetLabels }) {
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 lg:px-10">
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-10">
-        <p className="mb-3 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-          <Sparkles className="size-3" />
+    <main className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 lg:px-10">
+      <BackLink href={labels.backHref} label={labels.backLabel} />
+      <div className="card-lift mt-8 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-12 backdrop-blur-md">
+        <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+          <span aria-hidden className="h-px w-6 bg-primary/50" />
           {labels.kindPlural}
         </p>
-        <h1 className="font-serif text-3xl font-medium leading-[1.1] tracking-tight text-foreground md:text-4xl">
-          {labels.kindSingular} not found
+        <h1 className="mt-5 text-[34px] font-black leading-[0.95] tracking-[-0.03em] text-foreground md:text-[44px]">
+          {labels.kindSingular} not found.
         </h1>
-        <p className="mt-3 max-w-lg text-[14px] leading-7 text-muted-foreground">
+        <p className="mt-5 max-w-lg text-[14.5px] leading-7 text-foreground/65">
           {labels.notFoundBody}
         </p>
-        <div className="mt-7">
-          <Button render={<Link href={labels.backHref} />} nativeButton={false} variant="outline">
-            <ArrowLeft className="size-4" />
-            {labels.backLabel}
-          </Button>
-        </div>
       </div>
     </main>
   );
 }
 
-function LockedState({
-  item,
-  labels,
-}: {
-  item: ContentItem;
-  labels: AssetLabels;
-}) {
+function LockedState({ item, labels }: { item: ContentItem; labels: AssetLabels }) {
   const created = formatLongDate(item.created_at);
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-10">
-      <Link
-        href={labels.backHref}
-        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-3.5" />
-        {labels.backLabel}
-      </Link>
+    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-10">
+      <BackLink href={labels.backHref} label={labels.backLabel} />
 
-      <div className="mt-6 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
         <div className="reveal">
-          <p className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="size-1 rounded-full bg-amber-300/70" />
+          <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+            <span aria-hidden className="h-px w-6 bg-primary/50" />
             {labels.kindSingular} · MudiKit
           </p>
-          <h1 className="font-serif text-[40px] font-medium leading-[1.05] tracking-tight text-foreground md:text-[52px]">
+          <h1 className="mt-6 text-[40px] font-black leading-[0.95] tracking-[-0.035em] text-foreground md:text-[60px]">
             {item.title}
           </h1>
           {item.description && (
-            <p className="mt-5 max-w-2xl text-[15px] leading-7 text-foreground/65">
+            <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-foreground/65">
               {item.description}
             </p>
           )}
-          <div className="mt-7 flex flex-wrap gap-2">
-            <Badge variant="outline" className="rounded-full px-3 py-1 text-[10.5px] uppercase tracking-[0.16em]">
+          <div className="mt-8 flex flex-wrap gap-2">
+            <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
               {labels.kindSingular}
-            </Badge>
-            <Badge variant="outline" className="rounded-full border-amber-300/30 bg-amber-300/[0.05] px-3 py-1 text-[10.5px] uppercase tracking-[0.16em] text-amber-200">
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-primary">
               <Lock className="size-3" />
               MudiKit only
-            </Badge>
+            </span>
             {created && (
-              <Badge variant="outline" className="rounded-full px-3 py-1 text-[10.5px] uppercase tracking-[0.16em]">
-                <CalendarDays className="size-3" />
+              <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
                 {created}
-              </Badge>
+              </span>
             )}
           </div>
         </div>
 
-        <aside className="reveal reveal-delay-1 overflow-hidden rounded-2xl border border-white/[0.08] bg-[radial-gradient(120%_120%_at_0%_0%,rgba(244,209,140,0.12),transparent_55%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-7">
-          <span className="flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-amber-200">
+        <aside className="reveal reveal-delay-1 card-lift relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-8 backdrop-blur-md">
+          <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
+          <span className="relative z-10 flex size-12 items-center justify-center rounded-[2px] border border-primary/30 bg-primary/10 text-primary">
             <Lock className="size-4" />
           </span>
-          <h2 className="mt-5 font-serif text-2xl font-medium leading-tight tracking-tight text-foreground">
+          <h2 className="relative z-10 mt-6 text-[26px] font-black leading-[1] tracking-[-0.02em] text-foreground">
             {labels.lockedTitle}
           </h2>
-          <p className="mt-2 text-[13.5px] leading-6 text-muted-foreground">{labels.lockedBody}</p>
-          <Button render={<Link href="/portal/mudikit" />} nativeButton={false} size="lg" className="mt-7">
-            Unlock MudiKit
-            <ArrowUpRight className="size-4" />
-          </Button>
+          <p className="relative z-10 mt-3 text-[13.5px] leading-7 text-foreground/65">
+            {labels.lockedBody}
+          </p>
+          <Link
+            href="/portal/mudikit"
+            className="group btn-press relative z-10 mt-8 inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-8 py-4 text-[11px] font-black uppercase tracking-[0.22em] text-background"
+          >
+            <span className="relative z-10 inline-flex items-center gap-3">
+              Unlock MudiKit
+              <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+            </span>
+            <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />
+          </Link>
         </aside>
       </div>
     </main>
@@ -195,8 +195,6 @@ function ShareResourceButton({ item }: { item: ContentItem }) {
 export default function AssetDetailContent({
   item,
   access,
-  email = "",
-  displayName = "",
   html,
   pageImages,
   downloadHref,
@@ -229,193 +227,216 @@ export default function AssetDetailContent({
   const ActionIcon = external ? ExternalLink : Download;
   const created = formatLongDate(item.created_at);
   const updated = formatLongDate(item.updated_at ?? null);
+  const accentClass = item.is_free ? "text-emerald-300" : "text-primary";
+  const accentDot = item.is_free ? "bg-emerald-300/80" : "bg-primary/80";
 
   return (
-    <>
-    <main className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6 lg:px-10">
-      <Link
-        href={labels.backHref}
-        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-3.5" />
-        {labels.backLabel}
-      </Link>
+    <main className="relative">
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-white/[0.04]">
+        <div className="mesh-subtle pointer-events-none absolute inset-0 opacity-60" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-4 pb-14 pt-10 sm:px-6 md:pb-20 md:pt-14 lg:px-10">
+          <BackLink href={labels.backHref} label={labels.backLabel} />
 
-      <header className="reveal mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start">
-        <div>
-          <p className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            <span
-              className={`size-1.5 rounded-full ${
-                item.is_free ? "bg-emerald-300/80" : "bg-amber-300/80"
-              }`}
-            />
-            {labels.kindSingular}
-            <span aria-hidden className="text-muted-foreground/40">·</span>
-            {item.is_free ? "Free" : "MudiKit"}
-            {item.is_new && (
-              <>
-                <span aria-hidden className="text-muted-foreground/40">·</span>
-                <span className="text-amber-200">New</span>
-              </>
-            )}
-          </p>
-          <h1 className="font-serif text-[40px] font-medium leading-[1.05] tracking-tight text-foreground md:text-[52px]">
-            {item.title}
-          </h1>
-          {item.description && (
-            <p className="mt-5 max-w-2xl text-[15px] leading-7 text-foreground/65">
-              {item.description}
-            </p>
-          )}
-          <div className="mt-7 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="rounded-full px-3 py-1 text-[10.5px] uppercase tracking-[0.16em]">
-              {labels.kindSingular}
-            </Badge>
-            <Badge
-              variant={item.is_free ? "secondary" : "outline"}
-              className={
-                item.is_free
-                  ? "rounded-full bg-emerald-500/12 px-3 py-1 text-[10.5px] uppercase tracking-[0.16em] text-emerald-200 ring-1 ring-emerald-500/30"
-                  : "rounded-full bg-amber-500/10 px-3 py-1 text-[10.5px] uppercase tracking-[0.16em] text-amber-200 ring-1 ring-amber-400/30"
-              }
-            >
-              {item.is_free ? "Free" : "MudiKit"}
-            </Badge>
-            {item.file_type && (
-              <Badge variant="outline" className="rounded-full px-3 py-1 text-[10.5px] uppercase tracking-[0.16em]">
-                {fileTypeLabel(item.file_type)}
-              </Badge>
-            )}
+          <div className="reveal mt-8 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+            <div>
+              <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+                <span aria-hidden className="h-px w-6 bg-primary/50" />
+                {labels.kindSingular}
+                <span aria-hidden className="text-foreground/30">·</span>
+                <span className={accentClass}>{item.is_free ? "Free" : "MudiKit"}</span>
+                {item.is_new && (
+                  <>
+                    <span aria-hidden className="text-foreground/30">·</span>
+                    <span className="text-emerald-300/90">New</span>
+                  </>
+                )}
+              </p>
+              <h1 className="mt-6 text-[40px] font-black leading-[0.92] tracking-[-0.04em] text-foreground md:text-[68px]">
+                {item.title}
+              </h1>
+              {item.description && (
+                <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-foreground/65">
+                  {item.description}
+                </p>
+              )}
+              <div className="mt-8 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
+                  {labels.kindSingular}
+                </span>
+                <span
+                  className={
+                    item.is_free
+                      ? "inline-flex items-center gap-1.5 rounded-[2px] border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200"
+                      : "inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-primary"
+                  }
+                >
+                  <span className={`inline-block size-1.5 rounded-full ${accentDot}`} />
+                  {item.is_free ? "Free" : "MudiKit"}
+                </span>
+                {item.file_type && (
+                  <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
+                    {fileTypeLabel(item.file_type)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <aside className="card-lift relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] backdrop-blur-md">
+              <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
+              {item.thumbnail_url ? (
+                <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/[0.06]">
+                  <img
+                    src={item.thumbnail_url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(10,10,12,0.7))]" />
+                </div>
+              ) : (
+                <div className="flex aspect-[16/10] items-end border-b border-white/[0.06] bg-[radial-gradient(120%_120%_at_0%_0%,rgba(245,158,11,0.10),transparent_55%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-6">
+                  <span className="flex size-11 items-center justify-center rounded-[2px] border border-white/[0.08] bg-black/30 text-foreground/55">
+                    <FileText className="size-4" />
+                  </span>
+                </div>
+              )}
+              <dl className="relative divide-y divide-white/[0.06] px-5 text-[12px]">
+                {created && (
+                  <div className="flex items-center justify-between gap-4 py-3.5">
+                    <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Published</dt>
+                    <dd className="font-mono text-foreground tnum">{created}</dd>
+                  </div>
+                )}
+                {updated && updated !== created && (
+                  <div className="flex items-center justify-between gap-4 py-3.5">
+                    <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Updated</dt>
+                    <dd className="font-mono text-foreground tnum">{updated}</dd>
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-4 py-3.5">
+                  <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Format</dt>
+                  <dd className="font-mono uppercase text-foreground">{fileTypeLabel(item.file_type) || "Asset"}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-4 py-3.5">
+                  <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Access</dt>
+                  <dd className={`font-mono ${accentClass}`}>{item.is_free ? "Free" : "MudiKit"}</dd>
+                </div>
+              </dl>
+              {item.is_free && (
+                <div className="relative border-t border-white/[0.06] px-5 py-4">
+                  <p className="mb-3 text-[11.5px] leading-5 text-foreground/55">
+                    Share this as a lead magnet. New visitors create a free account before it opens.
+                  </p>
+                  <ShareResourceButton item={item} />
+                </div>
+              )}
+            </aside>
           </div>
         </div>
+      </section>
 
-        <aside className="reveal reveal-delay-1 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.015]">
-          {item.thumbnail_url ? (
-            <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/[0.06]">
-              <img
-                src={item.thumbnail_url}
-                alt=""
-                className="h-full w-full object-cover"
-                loading="eager"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(10,10,12,0.6))]" />
-            </div>
-          ) : (
-            <div className="flex aspect-[16/10] items-end border-b border-white/[0.06] bg-[radial-gradient(120%_120%_at_0%_0%,rgba(244,209,140,0.10),transparent_55%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-6">
-              <span className="flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-black/30 text-muted-foreground">
-                <FileText className="size-4" />
-              </span>
-            </div>
-          )}
-          <dl className="divide-y divide-white/[0.06] px-5 text-[12.5px]">
-            {created && (
-              <div className="flex items-center justify-between gap-4 py-3">
-                <dt className="text-muted-foreground">Published</dt>
-                <dd className="font-mono text-foreground">{created}</dd>
-              </div>
-            )}
-            {updated && updated !== created && (
-              <div className="flex items-center justify-between gap-4 py-3">
-                <dt className="text-muted-foreground">Updated</dt>
-                <dd className="font-mono text-foreground">{updated}</dd>
-              </div>
-            )}
-            <div className="flex items-center justify-between gap-4 py-3">
-              <dt className="text-muted-foreground">Format</dt>
-              <dd className="font-mono uppercase text-foreground">{fileTypeLabel(item.file_type) || "Asset"}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 py-3">
-              <dt className="text-muted-foreground">Access</dt>
-              <dd className="font-mono text-foreground">{item.is_free ? "Free" : "MudiKit"}</dd>
-            </div>
-          </dl>
-          {item.is_free && (
-            <div className="border-t border-white/[0.06] px-5 py-4">
-              <p className="mb-3 text-[11.5px] leading-5 text-muted-foreground">
-                Share this as a lead magnet. New visitors create a free account before it opens.
-              </p>
-              <ShareResourceButton item={item} />
-            </div>
-          )}
-        </aside>
-      </header>
-
-      {downloadHref && actionLabel && (
-        <section className="reveal reveal-delay-2 mt-10 overflow-hidden rounded-2xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]">
-          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-            <div className="flex items-start gap-4">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-foreground/80">
-                <Terminal className="size-4" />
-              </span>
-              <div className="min-w-0">
-                <div className="text-[14.5px] font-medium tracking-tight text-foreground">Ready to use</div>
-                <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
-                  {external
-                    ? "Opens in a new tab."
-                    : "Direct download attached to this resource."}
-                </p>
-              </div>
-            </div>
-            <Button
-              render={
+      {/* BODY */}
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
+        {downloadHref && actionLabel && (
+          <section className="reveal reveal-delay-2 mb-12">
+            <div className="card-lift group relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] backdrop-blur-md">
+              <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
+              <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
+              <div className="relative flex flex-col gap-5 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9">
+                <div className="flex items-start gap-5">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-[2px] border border-white/[0.1] bg-white/[0.04] text-primary">
+                    <Terminal className="size-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+                      Ready to use
+                    </p>
+                    <p className="mt-2 text-[18px] font-black leading-[1.2] tracking-[-0.02em] text-foreground">
+                      {external ? `Open the ${labels.kindSingular.toLowerCase()}` : "Direct download"}
+                    </p>
+                    <p className="mt-1.5 text-[13px] leading-6 text-foreground/65">
+                      {external
+                        ? "Opens in a new tab."
+                        : "Attached to this resource. Yours to keep."}
+                    </p>
+                  </div>
+                </div>
                 <Link
                   href={downloadHref}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                />
-              }
-              nativeButton={false}
-              size="lg"
-            >
-              <ActionIcon className="size-4" />
-              {actionLabel}
-            </Button>
-          </div>
-        </section>
-      )}
-
-      <section className="reveal reveal-delay-3 mt-10">
-        {html ? (
-          <>
-            <style dangerouslySetInnerHTML={{ __html: html.styles }} />
-            <style dangerouslySetInnerHTML={{ __html: playbookResponsiveStyles }} />
-            <div
-              className="portal-asset-html rounded-2xl border border-white/[0.06] bg-white/[0.015] p-3 sm:p-5"
-              dangerouslySetInnerHTML={{ __html: html.body }}
-            />
-          </>
-        ) : pageImages.length > 0 ? (
-          <div className="mx-auto flex max-w-[920px] flex-col gap-5 md:gap-7">
-            {pageImages.map((src, index) => (
-              <div
-                key={src}
-                className="w-full overflow-hidden rounded-2xl border border-white/[0.06] shadow-[0_8px_40px_rgba(0,0,0,0.32)]"
-              >
-                <img
-                  src={src}
-                  alt={`${item.title} — Page ${index + 1}`}
-                  className="block h-auto w-full"
-                  loading={index < 3 ? "eager" : "lazy"}
-                />
+                  className="group/btn btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[11px] font-black uppercase tracking-[0.22em] text-background"
+                >
+                  <span className="relative z-10 inline-flex items-center gap-3">
+                    <ActionIcon className="size-3.5" />
+                    {actionLabel}
+                  </span>
+                  <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover/btn:w-full" />
+                </Link>
               </div>
-            ))}
-          </div>
-        ) : (
-          !downloadHref && (
-            <div className="rounded-2xl border border-dashed border-white/[0.1] bg-white/[0.01] p-8 text-[13.5px] leading-7 text-muted-foreground">
-              {labels.emptyAssetBody}
             </div>
-          )
+          </section>
         )}
-      </section>
 
-      <div className="mt-12 border-t border-white/[0.06] pt-6">
-        <Button render={<Link href={labels.backHref} />} nativeButton={false} variant="outline" size="sm">
-          <ArrowLeft className="size-3.5" />
-          {labels.backLabel}
-        </Button>
+        <section className="reveal reveal-delay-3">
+          {html ? (
+            <>
+              <style dangerouslySetInnerHTML={{ __html: html.styles }} />
+              <style dangerouslySetInnerHTML={{ __html: playbookResponsiveStyles }} />
+              <div className="mb-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                <span aria-hidden className="h-px w-6 bg-white/20" />
+                Read in portal
+              </div>
+              <div
+                className="portal-asset-html rounded-[2px] border border-white/[0.08] bg-card/[0.3] p-3 backdrop-blur-md sm:p-6"
+                dangerouslySetInnerHTML={{ __html: html.body }}
+              />
+            </>
+          ) : pageImages.length > 0 ? (
+            <>
+              <div className="mb-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                <span aria-hidden className="h-px w-6 bg-white/20" />
+                Pages · {pageImages.length}
+              </div>
+              <div className="mx-auto flex max-w-[920px] flex-col gap-5 md:gap-7">
+                {pageImages.map((src, index) => (
+                  <div
+                    key={src}
+                    className="overflow-hidden rounded-[2px] border border-white/[0.08] shadow-[0_8px_40px_rgba(0,0,0,0.32)]"
+                  >
+                    <img
+                      src={src}
+                      alt={`${item.title} — Page ${index + 1}`}
+                      className="block h-auto w-full"
+                      loading={index < 3 ? "eager" : "lazy"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            !downloadHref && (
+              <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.01] p-10 text-[13.5px] leading-7 text-foreground/65">
+                {labels.emptyAssetBody}
+              </div>
+            )
+          )}
+        </section>
+
+        <div className="mt-16 border-t border-white/[0.06] pt-8">
+          <BackLink href={labels.backHref} label={labels.backLabel} />
+        </div>
       </div>
     </main>
-    </>
   );
 }

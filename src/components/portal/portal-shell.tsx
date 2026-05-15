@@ -78,12 +78,13 @@ export function PortalShell({
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-5 sm:px-6 md:flex-row md:items-end md:justify-between md:py-7 lg:px-10">
               <div className="min-w-0">
                 {pageEyebrow && (
-                  <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                  <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+                    <span aria-hidden className="h-px w-6 bg-primary/50" />
                     {pageEyebrow}
                   </p>
                 )}
                 {pageTitle && (
-                  <h1 className="font-[var(--font-serif-display)] mt-2 text-[34px] italic leading-[1.02] tracking-tight text-foreground md:text-[44px]">
+                  <h1 className="mt-3 text-[34px] font-black leading-[0.92] tracking-[-0.035em] text-foreground md:text-[48px]">
                     {pageTitle}
                   </h1>
                 )}
@@ -142,12 +143,13 @@ export function PortalShell({
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-5 sm:px-6 md:flex-row md:items-end md:justify-between md:py-7 lg:px-10">
                 <div className="min-w-0">
                   {pageEyebrow && (
-                    <p className="text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                    <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+                      <span aria-hidden className="h-px w-6 bg-primary/50" />
                       {pageEyebrow}
                     </p>
                   )}
                   {pageTitle && (
-                    <h1 className="font-[var(--font-serif-display)] mt-2 text-[34px] italic leading-[1.02] tracking-tight text-foreground md:text-[44px]">
+                    <h1 className="mt-3 text-[34px] font-black leading-[0.92] tracking-[-0.035em] text-foreground md:text-[48px]">
                       {pageTitle}
                     </h1>
                   )}

@@ -29,11 +29,6 @@ import {
 } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
 
-function statusLabel(access: PortalAccess): string {
-  if (access.isAdmin) return "Admin";
-  if (access.isMudikit) return "MudiKit";
-  return "Free";
-}
 
 type NavItem = {
   href: string;
@@ -91,7 +86,7 @@ export function PortalSidebar({
               Muditek
             </div>
             <div className="truncate text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              Portal · {statusLabel(access)}
+              Portal
             </div>
           </div>
         </Link>

@@ -16,7 +16,7 @@ export function AuthShell({
 }) {
   const { isSignedIn, isLoaded } = useUser();
   const altHref = variant === "sign-in" ? "/sign-up" : "/sign-in";
-  const altLabel = variant === "sign-in" ? "Create free account" : "Sign in";
+  const altLabel = variant === "sign-in" ? "Create account" : "Sign in";
 
   return (
     <div className="mudikit-dark relative flex min-h-[100dvh] flex-col bg-[#0c0c0e] text-[#e8e8ec]">
@@ -30,7 +30,7 @@ export function AuthShell({
           backgroundSize: "72px 72px",
         }}
       />
-      {/* top-right amber radial — single accent moment */}
+      {/* top-right amber radial / single accent moment */}
       <div
         aria-hidden
         className="pointer-events-none absolute top-0 right-0 h-[520px] w-[520px] opacity-60"
@@ -68,12 +68,12 @@ export function AuthShell({
 
       <main className="relative z-10 flex-1">
         <div className="mx-auto grid w-full max-w-[1320px] gap-x-16 gap-y-14 px-6 pb-14 pt-6 md:px-12 md:pt-10 md:pb-20 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-x-24">
-          {/* LEFT — typography hero */}
+          {/* LEFT / typography hero */}
           <section className="flex flex-col justify-center">
             {!isLoaded || !isSignedIn ? hero : null}
           </section>
 
-          {/* RIGHT — form */}
+          {/* RIGHT / form */}
           <section className="flex flex-col justify-center">
             {!isLoaded ? (
               <div className="h-[420px] w-full max-w-[440px] animate-pulse rounded-[12px] border border-white/[0.07] bg-white/[0.015]" />

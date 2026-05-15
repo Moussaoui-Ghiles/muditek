@@ -3,7 +3,7 @@ import { safeRedirectUrl } from "@/lib/auth-redirect";
 import SignInForm from "./sign-in-form";
 
 export const metadata: Metadata = {
-  title: "Sign in — Muditek",
+  title: "Sign in · Muditek",
   description: "Sign in to your Muditek portal.",
 };
 

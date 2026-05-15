@@ -41,17 +41,15 @@ const HERO = (
       <span className="text-primary">Muditek</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Free portal access. One deployable AI system in your inbox every
-      week. The playbook library, the full newsletter archive, and direct
-      calendar access — all unlocked the moment you sign up.
+      Free portal access. One AI system in your inbox every week. Library, archive, calendar.
     </p>
     <ul className="reveal reveal-delay-2 mt-10 border-t border-white/[0.07]">
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">One deployable system, every week</span>
+        <span className="text-white/80">One deployable system, weekly</span>
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Inbox</span>
       </li>
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">Library + 29 issues, searchable on-site</span>
+        <span className="text-white/80">Library + 29 issues, searchable</span>
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Portal</span>
       </li>
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
@@ -96,7 +94,7 @@ export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: 
         />
       </div>
       <p className="reveal reveal-delay-3 mt-5 text-[11.5px] leading-relaxed text-white/35">
-        Signing up subscribes you to the Muditek newsletter — one email a week, unsubscribe anytime.
+        Subscribes you to the newsletter. One email a week. Unsubscribe anytime.
       </p>
     </AuthShell>
   );

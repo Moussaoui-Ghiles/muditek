@@ -3,8 +3,8 @@ import { safeRedirectUrl } from "@/lib/auth-redirect";
 import SignUpForm from "./sign-up-form";
 
 export const metadata: Metadata = {
-  title: "Create your free account — Muditek",
-  description: "Free Muditek account: 14 playbooks, full newsletter archive, book-a-call access.",
+  title: "Create account · Muditek",
+  description: "Free Muditek account. Weekly playbooks, full newsletter archive, direct calendar access.",
 };
 
 export default async function SignUpPage({

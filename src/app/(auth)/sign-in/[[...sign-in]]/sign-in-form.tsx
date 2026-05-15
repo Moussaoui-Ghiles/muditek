@@ -40,17 +40,15 @@ const HERO = (
       <span className="text-primary">Muditek</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Sign in to the portal — the full playbook library, every newsletter
-      issue archived on-site, your MudiKit content, and direct calendar
-      access for ops audits or a MudiAgent demo.
+      Sign in for the playbook library, newsletter archive, MudiKit, and direct calendar.
     </p>
     <ul className="reveal reveal-delay-2 mt-10 border-t border-white/[0.07]">
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">Every deployable system, shipped weekly</span>
+        <span className="text-white/80">One deployable system, weekly</span>
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Library</span>
       </li>
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">29 newsletter issues, searchable on-site</span>
+        <span className="text-white/80">29 issues, searchable archive</span>
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Archive</span>
       </li>
       <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
@@ -59,7 +57,7 @@ const HERO = (
       </li>
     </ul>
     <p className="reveal reveal-delay-3 mt-8 text-[12px] text-white/45">
-      Join 5,000+ B2B operators reading our weekly playbooks.
+      Read by 5,000+ B2B operators.
     </p>
   </div>
 );

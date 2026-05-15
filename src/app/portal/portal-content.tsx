@@ -137,12 +137,12 @@ export default function PortalHomeContent({
         </header>
 
         {/* HERO REGION — 3:1 split */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
+        <section className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
           {/* Featured */}
           {featured ? (
             <Link
               href={categoryHref(featured)}
-              className="group relative isolate flex flex-col justify-between gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-9"
+              className="group relative isolate flex flex-col gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-8"
             >
               <div
                 aria-hidden

@@ -3,6 +3,8 @@
 import { SignUp, useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
 
 const CLERK_ELEMENTS = {
   rootBox: "w-full!",
@@ -41,24 +43,14 @@ const HERO = (
       <span className="text-primary">Muditek</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Free portal access. One AI system in your inbox every week. Library, archive, calendar.
+      Free portal access. One deployable AI system in your inbox every week.
     </p>
-    <ul className="reveal reveal-delay-2 mt-10 border-t border-white/[0.07]">
-      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">One deployable system, weekly</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Inbox</span>
-      </li>
-      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">Library + 29 issues, searchable</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Portal</span>
-      </li>
-      <li className="flex items-center justify-between gap-6 border-b border-white/[0.07] py-4 text-[14px]">
-        <span className="text-white/80">No card. Unsubscribe anytime.</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">Free</span>
-      </li>
-    </ul>
-    <p className="reveal reveal-delay-3 mt-8 text-[12px] text-white/45">
-      5,000+ B2B operators already inside.
+    <p className="reveal reveal-delay-2 mt-8 text-[13px] text-white/55">
+      <DataCitation
+        claim="Read by 5,000+ B2B operators"
+        source={DATA_POINTS.newsletterSubscribers.source}
+        n={DATA_POINTS.newsletterSubscribers.n}
+      />
     </p>
   </div>
 );
@@ -94,7 +86,7 @@ export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: 
         />
       </div>
       <p className="reveal reveal-delay-3 mt-5 text-[11.5px] leading-relaxed text-white/35">
-        Subscribes you to the newsletter. One email a week. Unsubscribe anytime.
+        Subscribes you to the newsletter. Unsubscribe anytime.
       </p>
     </AuthShell>
   );

@@ -181,14 +181,14 @@ export default function PortalHomeContent({
         {/* ──── MASTHEAD ──── */}
         <header className="flex flex-col gap-5 border-b border-white/[0.09] pb-7 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/40">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 md:tracking-[0.32em]">
               {today} · Vol. I
             </p>
             <p className="mt-3 font-[var(--font-serif-display)] text-[22px] italic leading-none tracking-[-0.01em] text-white/95">
               The Muditek Portal
             </p>
           </div>
-          <div className="font-mono text-[10px] uppercase leading-[1.7] tracking-[0.26em] text-white/40 md:text-right">
+          <div className="font-mono text-[10px] uppercase leading-[1.7] tracking-[0.2em] text-white/40 md:tracking-[0.26em] md:text-right">
             <p>In this edition</p>
             <p className="text-white/55">
               One feature · {departments.length} departments ·{" "}
@@ -333,25 +333,33 @@ export default function PortalHomeContent({
               <li key={dept.href}>
                 <Link
                   href={dept.href}
-                  className="group relative grid grid-cols-[2.5rem_minmax(0,1fr)_1.25rem] items-baseline gap-x-4 gap-y-2 py-7 transition-colors hover:bg-white/[0.018] md:grid-cols-[3rem_9rem_minmax(0,1fr)_1.5rem] md:items-center md:gap-x-7 md:py-8"
+                  className="group block py-6 transition-colors hover:bg-white/[0.018] md:py-7"
                 >
-                  <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 group-hover:text-amber-300/85">
-                    {pad2(i + 1)}
-                  </span>
-                  <span className="col-span-2 font-mono text-[10px] uppercase tracking-[0.3em] text-amber-300/70 md:col-span-1">
-                    {dept.eyebrow}
-                  </span>
-                  <div className="col-start-2 col-end-4 min-w-0 md:col-start-3 md:col-end-4">
-                    <h3 className="font-[var(--font-serif-display)] text-[22px] italic leading-[1.15] tracking-[-0.015em] text-white transition-colors group-hover:text-amber-50 md:text-[26px]">
+                  <div className="flex items-baseline gap-4 md:gap-7">
+                    <span className="w-7 shrink-0 font-mono text-[11px] tracking-[0.26em] text-white/35 transition-colors group-hover:text-amber-300/85 md:w-10">
+                      {pad2(i + 1)}
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.3em] text-amber-300/70 md:w-36">
+                      {dept.eyebrow}
+                    </span>
+                    <div className="hidden min-w-0 flex-1 md:block">
+                      <h3 className="font-[var(--font-serif-display)] text-[26px] italic leading-[1.15] tracking-[-0.015em] text-white transition-colors group-hover:text-amber-50">
+                        {dept.title}
+                      </h3>
+                      <p className="mt-1.5 max-w-[60ch] text-[13px] leading-[1.55] text-white/55">
+                        {dept.desc}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="ml-auto size-4 shrink-0 self-center text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
+                  </div>
+                  <div className="mt-3 md:hidden">
+                    <h3 className="font-[var(--font-serif-display)] text-[22px] italic leading-[1.18] tracking-[-0.015em] text-white">
                       {dept.title}
                     </h3>
-                    <p className="mt-1.5 max-w-[60ch] text-[13px] leading-[1.55] text-white/55">
+                    <p className="mt-1.5 text-[13px] leading-[1.55] text-white/55">
                       {dept.desc}
                     </p>
                   </div>
-                  <span className="col-start-3 row-start-1 self-center justify-self-end text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85 md:col-start-4 md:row-start-auto">
-                    <ArrowUpRight className="size-4" />
-                  </span>
                 </Link>
               </li>
             ))}
@@ -375,23 +383,29 @@ export default function PortalHomeContent({
                 <li key={item.id}>
                   <Link
                     href={categoryHref(item)}
-                    className="group grid grid-cols-[2.5rem_minmax(0,1fr)_1rem] items-baseline gap-x-4 py-5 transition-colors hover:bg-white/[0.018] md:grid-cols-[3rem_6rem_7rem_minmax(0,1fr)_1.25rem] md:items-center md:gap-x-6"
+                    className="group block py-5 transition-colors hover:bg-white/[0.018]"
                   >
-                    <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 group-hover:text-amber-300/85">
-                      {pad2(i + 1)}
-                    </span>
-                    <span className="col-span-2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:col-span-1">
-                      {formatMonthDay(item.created_at) || "—"}
-                    </span>
-                    <span className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:inline">
-                      {categoryEyebrow(item)}
-                    </span>
-                    <span className="col-span-2 text-[15px] leading-[1.45] text-white/85 transition-colors group-hover:text-white md:col-span-1 md:text-[16px]">
-                      {item.title}
-                    </span>
-                    <span className="hidden self-center justify-self-end text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85 md:inline">
-                      <ArrowUpRight className="size-3.5" />
-                    </span>
+                    <div className="flex items-baseline gap-3 md:gap-6">
+                      <span className="w-7 shrink-0 font-mono text-[11px] tracking-[0.26em] text-white/35 transition-colors group-hover:text-amber-300/85 md:w-10">
+                        {pad2(i + 1)}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:w-20">
+                        {formatMonthDay(item.created_at) || "—"}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:w-24">
+                        {categoryEyebrow(item)}
+                      </span>
+                      <span className="hidden min-w-0 flex-1 text-[16px] leading-[1.45] text-white/85 transition-colors group-hover:text-white md:block">
+                        {item.title}
+                      </span>
+                      <ArrowUpRight className="ml-auto hidden size-3.5 shrink-0 self-center text-white/25 transition-all group-hover:translate-x-0.5 group-hover:text-amber-300/85 md:block" />
+                    </div>
+                    <div className="mt-2 flex items-baseline gap-3 md:hidden">
+                      <span className="flex-1 text-[15px] leading-[1.4] text-white/85">
+                        {item.title}
+                      </span>
+                      <ArrowUpRight className="size-3.5 shrink-0 text-white/25" />
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -420,22 +434,24 @@ export default function PortalHomeContent({
             </div>
             <ul className="mt-9 divide-y divide-white/[0.07] border-y border-white/[0.07]">
               {upcoming.map((item, i) => (
-                <li
-                  key={`${item.date}-${i}`}
-                  className="grid grid-cols-[2.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-5 md:grid-cols-[3rem_6rem_7rem_minmax(0,1fr)] md:items-center md:gap-x-6"
-                >
-                  <span className="font-mono text-[11px] tracking-[0.26em] text-white/35">
-                    {pad2(i + 1)}
-                  </span>
-                  <span className="col-span-1 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:col-auto">
-                    {formatMonthDay(item.date)}
-                  </span>
-                  <span className="col-span-2 hidden font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:col-auto md:inline">
-                    {item.type}
-                  </span>
-                  <span className="col-span-2 text-[15px] leading-[1.45] text-white/80 md:col-auto md:text-[16px]">
-                    {item.title}
-                  </span>
+                <li key={`${item.date}-${i}`} className="block py-5">
+                  <div className="flex items-baseline gap-3 md:gap-6">
+                    <span className="w-7 shrink-0 font-mono text-[11px] tracking-[0.26em] text-white/35 md:w-10">
+                      {pad2(i + 1)}
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:w-20">
+                      {formatMonthDay(item.date)}
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.28em] text-amber-300/65 md:w-24">
+                      {item.type}
+                    </span>
+                    <span className="hidden min-w-0 flex-1 text-[16px] leading-[1.45] text-white/80 md:block">
+                      {item.title}
+                    </span>
+                  </div>
+                  <div className="mt-2 md:hidden">
+                    <span className="text-[15px] leading-[1.4] text-white/80">{item.title}</span>
+                  </div>
                 </li>
               ))}
             </ul>

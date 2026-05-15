@@ -40,21 +40,18 @@ const OFFERS = [
     accent: "from-amber-400/[0.08]",
     title: "PE & finance operations",
     desc: "Investor portals, KYC, fund ops. €50K platform shipped for a merchant bank.",
-    proof: "Verso Holdings",
     href: "/pe-ops",
   },
   {
     accent: "from-emerald-400/[0.07]",
     title: "Revenue leak audit",
     desc: "5-day diagnostic, €2K. Find €80–180K in annual leakage or pay nothing.",
-    proof: "B2B SaaS",
     href: "/revenue-leak-audit",
   },
   {
     accent: "from-sky-400/[0.06]",
     title: "EU AI Act compliance",
     desc: "Risk classification, documentation, monitoring for AI-deploying companies.",
-    proof: "Compliance",
     href: "/ai-act",
   },
 ];
@@ -136,10 +133,6 @@ export default function PortalHomeContent({
             <p className="mt-2 text-[14px] text-white/45">
               Your room inside Muditek — what shipped, what&apos;s coming, and the systems behind it.
             </p>
-          </div>
-          <div className="flex items-center gap-2 text-[12.5px] text-white/45">
-            <span className="size-1.5 rounded-full bg-emerald-400/80" />
-            Operator online
           </div>
         </header>
 
@@ -248,10 +241,7 @@ export default function PortalHomeContent({
                   className={`pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-gradient-to-br ${offer.accent} to-transparent blur-3xl`}
                 />
                 <div className="relative">
-                  <p className="text-[11.5px] uppercase tracking-[0.16em] text-white/45">
-                    {offer.proof}
-                  </p>
-                  <h3 className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
+                  <h3 className="text-[20px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
                     {offer.title}
                   </h3>
                   <p className="mt-3 text-[13.5px] leading-[1.55] text-white/55">{offer.desc}</p>

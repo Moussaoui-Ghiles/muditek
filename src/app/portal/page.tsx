@@ -7,7 +7,7 @@ import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { categoryPortalPath } from "@/lib/content-item";
-import PortalContent, { type UpcomingItem } from "./portal-content";
+import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
 
 const PORTAL_CONTENT_DIR = join(process.cwd(), "content/portal");
 
@@ -36,6 +36,28 @@ function readUpcoming(): UpcomingItem[] {
       .filter((item): item is UpcomingItem => item !== null);
   } catch {
     return [];
+  }
+}
+
+function readHero(): PortalHero | null {
+  try {
+    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "hero.md"), "utf-8");
+    const fmMatch = raw.match(/^---\s*([\s\S]*?)---\s*([\s\S]*)$/);
+    if (!fmMatch) return null;
+    const frontmatter: Record<string, string> = {};
+    for (const line of fmMatch[1].split("\n")) {
+      const m = line.match(/^([a-z_]+)\s*:\s*(.*)$/i);
+      if (m) frontmatter[m[1].trim()] = m[2].trim();
+    }
+    return {
+      eyebrow: frontmatter.eyebrow || "",
+      title: frontmatter.title || "",
+      body: fmMatch[2].trim(),
+      ctaLabel: frontmatter.cta_label || "",
+      ctaHref: frontmatter.cta_href || "",
+    };
+  } catch {
+    return null;
   }
 }
 
@@ -274,6 +296,7 @@ export default async function PortalPage({
 
   const thisWeek = readThisWeek();
   const upcoming = readUpcoming();
+  const hero = readHero();
 
   return (
     <PortalContent
@@ -286,6 +309,7 @@ export default async function PortalPage({
       issues={issues}
       thisWeek={thisWeek}
       upcoming={upcoming}
+      hero={hero}
     />
   );
 }

@@ -137,12 +137,12 @@ export default function PortalHomeContent({
         </header>
 
         {/* HERO REGION — 3:1 split */}
-        <section className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
+        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
           {/* Featured */}
           {featured ? (
             <Link
               href={categoryHref(featured)}
-              className="group relative isolate flex flex-col gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-8"
+              className="group relative isolate flex flex-col justify-between gap-10 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-10"
             >
               <div
                 aria-hidden
@@ -156,11 +156,11 @@ export default function PortalHomeContent({
                 <p className="text-[12.5px] uppercase tracking-[0.18em] text-amber-300/70">
                   Latest {categoryLabel(featured).toLowerCase()}
                 </p>
-                <h2 className="mt-3 max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
+                <h2 className="mt-4 max-w-[18ch] text-[36px] font-semibold leading-[1.04] tracking-[-0.025em] text-white md:text-[52px]">
                   {featured.title}
                 </h2>
                 {featured.description && (
-                  <p className="mt-3 max-w-[55ch] text-[14.5px] leading-[1.6] text-white/60">
+                  <p className="mt-4 max-w-[55ch] text-[15px] leading-[1.6] text-white/60">
                     {featured.description}
                   </p>
                 )}
@@ -205,7 +205,7 @@ export default function PortalHomeContent({
                   Coming next
                 </h3>
                 <ul className="mt-4 space-y-4">
-                  {upcoming.slice(0, 4).map((item, i) => (
+                  {upcoming.slice(0, 3).map((item, i) => (
                     <li key={`${item.date}-${i}`}>
                       <p className="text-[14px] font-medium leading-snug text-white/85">
                         {item.title}

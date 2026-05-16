@@ -198,7 +198,7 @@ function MudikitHero({
             ) : (
               <>
                 <Button
-                  render={<Link href={`/buy?email=${encodeURIComponent(email)}`} />}
+                  render={<Link href={`/mudikit?email=${encodeURIComponent(email)}`} />}
                   nativeButton={false}
                 >
                   <ShoppingBag className="size-4" />
@@ -503,7 +503,7 @@ function UnlockBlock({ email }: { email: string }) {
         </div>
         <div className="flex flex-col gap-2.5">
           <Button
-            render={<Link href={`/buy?email=${encodeURIComponent(email)}`} />}
+            render={<Link href={`/mudikit?email=${encodeURIComponent(email)}`} />}
             nativeButton={false}
             size="lg"
             className="h-11 w-full justify-center px-4"

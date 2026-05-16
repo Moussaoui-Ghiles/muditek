@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import { ArrowRight, ArrowUpRight, CreditCard, LogOut, Mail, ShieldCheck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { PortalAccess, PortalRole } from "@/lib/portal-access";
 
 const ROLE_LABEL: Record<PortalRole, string> = {
@@ -25,6 +23,20 @@ function formatLongDate(iso: string | null): string | null {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+function Arrow() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="transition-transform group-hover:translate-x-1">
+      <path
+        d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 export default function AccountContent({
@@ -48,257 +60,356 @@ export default function AccountContent({
   const hasBilling = !!stripeCustomerId;
 
   return (
-    <main className="relative">
-      <div className="mx-auto w-full max-w-[1340px] px-6 pb-24 pt-10 md:px-10 md:pt-12 lg:px-14">
-        {/* Header strip */}
-        <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] pb-7">
-          <div>
-            <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/40">
-              <ShieldCheck className="size-3" />
-              Settings · Account
-            </p>
-            <h1 className="text-[36px] font-semibold leading-[1.05] tracking-[-0.02em] text-white md:text-[44px]">
-              Hi, {displayName}.
+    <div className="relative w-full overflow-hidden">
+      {/* Ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] bg-amber-500/[0.06] rounded-full blur-[140px]"
+      />
+      {/* Subtle grid */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.022]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
+      <main className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pb-32 pt-20 md:px-12">
+        {/* HERO */}
+        <header className="mb-24">
+          <ScrollReveal>
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-amber-400 mb-6 flex items-center gap-3">
+              <span className="w-8 h-[1px] bg-amber-400/50" />
+              Account
+            </h2>
+            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground text-balance max-w-4xl drop-shadow-2xl">
+              Hi, {displayName}.{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-400/40 italic font-medium">
+                Your portal.
+              </span>
             </h1>
-            <p className="mt-2 text-[14px] text-white/45">
-              Identity, access, and billing — anything that shapes what you see in the portal.
+            <p className="mt-8 max-w-2xl text-base md:text-lg text-foreground/70 leading-relaxed">
+              Identity, access, billing. Everything that controls what you see in the portal.
+              Profile edits live in the user menu, top right.
             </p>
-          </div>
+          </ScrollReveal>
         </header>
 
-        {/* HERO REGION — 2.2:1 split (matches home) */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
-          {/* Identity */}
-          <div className="group relative isolate flex flex-col justify-between gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 md:p-9">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.08] blur-3xl"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 -bottom-1/2 h-full bg-gradient-to-t from-amber-500/[0.05] via-transparent to-transparent"
-            />
-            <div className="relative">
-              <p className="text-[12.5px] uppercase tracking-[0.18em] text-amber-300/70">
-                {tierLine(access)}
-              </p>
-              <h2 className="mt-3 max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
-                {email}
-              </h2>
-              <dl className="relative mt-6 divide-y divide-white/[0.05] border-y border-white/[0.05]">
-                <Row label="Email" value={email} icon={<Mail className="size-3.5" />} />
-                <Row label="Access" value={tierLine(access)} />
-                {memberSince && <Row label="Member since" value={memberSince} />}
-              </dl>
-            </div>
+        {/* TWO CARDS — IDENTITY + BILLING */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          {/* IDENTITY */}
+          <ScrollReveal delay={100}>
+            <div className="group relative h-full min-h-[480px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-400/0 to-transparent group-hover:via-amber-400/70 transition-all duration-[1.2s]" />
+              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-amber-400/[0.05] rounded-full blur-[80px] group-hover:bg-amber-400/[0.12] transition-colors" />
 
-            <div className="relative flex flex-wrap items-center gap-3">
-              <SignOutButton redirectUrl="/">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 hover:gap-3 hover:bg-amber-50"
-                >
-                  <LogOut className="size-3.5" />
-                  Sign out
-                </button>
-              </SignOutButton>
-              <p className="text-[12.5px] text-white/40">
-                Edit name, email, and password in the user menu (top right).
-              </p>
-            </div>
-          </div>
-
-          {/* Side aside */}
-          <aside className="flex flex-col gap-7 rounded-2xl bg-white/[0.018] p-7">
-            <div>
-              <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
-                Roles
-              </h3>
-              {extraRoles.length > 0 ? (
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {extraRoles.map((role) => (
-                    <Badge
-                      key={role}
-                      variant="outline"
-                      className="rounded-full border-white/15 bg-white/[0.03] px-2.5 py-0.5 text-[10.5px] uppercase tracking-[0.16em] text-white/80"
-                    >
-                      {ROLE_LABEL[role]}
-                    </Badge>
-                  ))}
+              <div className="relative z-10">
+                <div className="text-sm font-semibold text-amber-400 mb-6 tracking-wider uppercase">
+                  Identity
                 </div>
-              ) : (
-                <p className="mt-3 text-[14px] leading-[1.6] text-white/55">
-                  Free portal access. MudiKit unlocks the paid library.
-                </p>
-              )}
-            </div>
+                <h4 className="text-3xl md:text-4xl font-black tracking-[-0.02em] text-foreground mb-8 group-hover:text-amber-400 transition-colors">
+                  Who the portal sees.
+                </h4>
 
-            <div className="border-t border-white/[0.06] pt-6">
-              <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
-                Need a hand
-              </h3>
-              <a
-                href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20account%20question"
-                className="group mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-amber-300/85 transition-colors hover:text-amber-200"
-              >
-                Email biz@ghiless.com
-                <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </a>
-            </div>
-          </aside>
-        </section>
-
-        {/* BILLING */}
-        <section className="mt-14">
-          <div className="mb-5 flex items-baseline justify-between">
-            <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">Billing</h2>
-            <p className="text-[13px] text-white/40">
-              {hasBilling ? "Stripe on file" : "No paid subscription"}
-            </p>
-          </div>
-
-          {hasBilling ? (
-            <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.035] via-white/[0.015] to-transparent p-7">
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-emerald-400/[0.06] blur-3xl"
-                />
-                <p className="relative text-[12.5px] uppercase tracking-[0.18em] text-emerald-300/75">
-                  MudiKit · Active
-                </p>
-                <h3 className="relative mt-3 text-[22px] font-semibold leading-[1.15] tracking-[-0.015em] text-white">
-                  Subscription is live.
-                </h3>
-                <dl className="relative mt-6 divide-y divide-white/[0.05] border-y border-white/[0.05]">
-                  <Row label="Customer ID" value={stripeCustomerId!} mono />
+                <dl className="divide-y divide-white/[0.06]">
+                  <Row label="Email" value={email} />
+                  <Row label="Access" value={tierLine(access)} />
+                  {extraRoles.length > 0 && (
+                    <div className="flex items-center justify-between gap-4 py-5">
+                      <dt className="text-xs font-bold uppercase tracking-[0.15em] text-foreground/50">
+                        Roles
+                      </dt>
+                      <dd className="flex flex-wrap justify-end gap-1.5">
+                        {extraRoles.map((role) => (
+                          <span
+                            key={role}
+                            className="inline-flex items-center rounded-full border border-amber-400/30 bg-amber-400/[0.06] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-amber-200"
+                          >
+                            {ROLE_LABEL[role]}
+                          </span>
+                        ))}
+                      </dd>
+                    </div>
+                  )}
+                  {memberSince && <Row label="Member since" value={memberSince} />}
                 </dl>
-                <div className="relative mt-6">
-                  <Button
-                    render={<Link href="/api/portal/billing" prefetch={false} />}
-                    nativeButton={false}
-                    size="sm"
-                    className="rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 hover:bg-amber-50"
+              </div>
+
+              <div className="relative z-10 pt-6 border-t border-white/[0.08] flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/45">
+                  Profile in topbar menu
+                </p>
+                <SignOutButton redirectUrl="/">
+                  <button
+                    type="button"
+                    className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground/80 hover:text-amber-400 transition-colors"
                   >
-                    <CreditCard className="size-3.5" />
+                    Sign out
+                    <Arrow />
+                  </button>
+                </SignOutButton>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* BILLING */}
+          <ScrollReveal delay={200}>
+            {hasBilling ? (
+              <div className="group relative h-full min-h-[480px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-400/0 to-transparent group-hover:via-emerald-400/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-400/[0.05] rounded-full blur-[80px] group-hover:bg-emerald-400/[0.12] transition-colors" />
+
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold text-emerald-400 mb-6 tracking-wider uppercase">
+                    Billing
+                  </div>
+                  <h4 className="text-3xl md:text-4xl font-black tracking-[-0.02em] text-foreground mb-8 group-hover:text-emerald-400 transition-colors">
+                    Subscription on file.
+                  </h4>
+
+                  <dl className="divide-y divide-white/[0.06]">
+                    <Row label="Subscription" value="MudiKit — Active" emphasis />
+                    <Row label="Customer ID" value={stripeCustomerId!} mono />
+                  </dl>
+                </div>
+
+                <div className="relative z-10 pt-6 border-t border-white/[0.08] flex items-center justify-between gap-4">
+                  <span className="text-[11px] uppercase tracking-[0.18em] text-foreground/45">
+                    Managed by Stripe
+                  </span>
+                  <Link
+                    href="/api/portal/billing"
+                    prefetch={false}
+                    className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-emerald-400 transition-colors"
+                  >
                     Manage in Stripe
-                  </Button>
+                    <Arrow />
+                  </Link>
                 </div>
               </div>
+            ) : (
+              <div className="group relative h-full min-h-[480px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-400/0 to-transparent group-hover:via-sky-400/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-sky-400/[0.05] rounded-full blur-[80px] group-hover:bg-sky-400/[0.12] transition-colors" />
 
-              <aside className="self-start rounded-2xl bg-white/[0.018] p-7">
-                <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
-                  What MudiKit unlocks
-                </h3>
-                <ul className="mt-4 space-y-3 text-[14px] leading-[1.55] text-white/75">
-                  <li>Paid skills, playbooks, and tools as they drop.</li>
-                  <li>Every newsletter issue, archived in the portal.</li>
-                  <li>Direct access to systems behind the offers.</li>
-                </ul>
-                <Link
-                  href="/portal/mudikit"
-                  className="group mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-amber-300/85 transition-colors hover:text-amber-200"
-                >
-                  Open MudiKit
-                  <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Link>
-              </aside>
-            </div>
-          ) : (
-            <Link
-              href="/portal/mudikit"
-              className="group relative isolate flex flex-col justify-between gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:flex-row md:items-center md:p-9"
-            >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.08] blur-3xl"
-              />
-              <div className="relative max-w-[55ch]">
-                <p className="text-[12.5px] uppercase tracking-[0.18em] text-amber-300/70">
-                  No active subscription
-                </p>
-                <h3 className="mt-3 text-[26px] font-semibold leading-[1.1] tracking-[-0.02em] text-white md:text-[32px]">
-                  You&apos;re on the free portal.
-                </h3>
-                <p className="mt-3 text-[14.5px] leading-[1.6] text-white/55">
-                  MudiKit unlocks the paid library — skills, playbooks, tools, and newsletter archive.
-                  Billing controls appear here when a subscription is active.
-                </p>
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold text-sky-400 mb-6 tracking-wider uppercase">
+                    No subscription
+                  </div>
+                  <h4 className="text-3xl md:text-4xl font-black tracking-[-0.02em] text-foreground mb-6 group-hover:text-sky-400 transition-colors">
+                    You&apos;re on the free portal.
+                  </h4>
+                  <p className="text-base text-foreground/75 leading-relaxed max-w-md">
+                    MudiKit unlocks the paid library — playbooks, skills, tools, and templates
+                    we use to run Muditek. Billing controls appear here when a subscription is active.
+                  </p>
+                </div>
+
+                <div className="relative z-10 pt-6 border-t border-white/[0.08] flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xs uppercase tracking-[0.18em] text-foreground/50">
+                      Membership
+                    </span>
+                    <span className="text-sky-400 text-2xl font-black tracking-tight">
+                      $47<span className="text-foreground/40 text-sm font-bold">/mo</span>
+                    </span>
+                  </div>
+                  <Link
+                    href="/portal/mudikit"
+                    className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-sky-400 transition-colors"
+                  >
+                    See MudiKit
+                    <Arrow />
+                  </Link>
+                </div>
               </div>
-              <span className="relative inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
-                See MudiKit
-                <ArrowUpRight className="size-3.5" />
-              </span>
-            </Link>
-          )}
-        </section>
+            )}
+          </ScrollReveal>
+        </div>
 
-        {/* BROWSE — echoes home page footer cluster */}
-        <section className="mt-14">
-          <div className="mb-5 flex items-baseline justify-between">
-            <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">Jump back in</h2>
-            <Link
-              href="/portal"
-              className="group inline-flex items-center gap-1 text-[13px] text-white/50 transition-colors hover:text-white"
-            >
-              Portal home
-              <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-          <ul className="divide-y divide-white/[0.05]">
-            {[
-              { href: "/portal/mudikit", title: "MudiKit", meta: access.isMudikit ? "Active" : "Locked" },
-              { href: "/portal/newsletter", title: "Newsletter", meta: "Archive" },
-              { href: "/portal/playbooks", title: "Playbooks & guides", meta: "Library" },
-              { href: "/portal/skills", title: "Skills", meta: "Library" },
-              { href: "/portal/tools", title: "Tools", meta: "Library" },
-            ].map((row) => (
-              <li key={row.href}>
-                <Link
-                  href={row.href}
-                  className="group flex items-center justify-between gap-6 py-4 transition-colors hover:bg-white/[0.018]"
-                >
-                  <span className="text-[15px] font-medium text-white transition-colors group-hover:text-white">
-                    {row.title}
-                  </span>
-                  <span className="flex items-center gap-2 text-[12.5px] text-white/40">
-                    {row.meta}
-                    <ArrowRight className="size-3.5 text-white/30 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-    </main>
+        {/* SHORTCUTS — echo home page proof block layout */}
+        <ScrollReveal delay={300}>
+          <section className="mt-24 border-t border-white/[0.05] pt-16">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12 gap-6">
+              <div>
+                <h2 className="text-sm font-black tracking-[0.3em] uppercase text-amber-400 mb-5 flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-amber-400/50" />
+                  Shortcuts
+                </h2>
+                <h3 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[0.95] text-foreground text-balance max-w-2xl">
+                  Jump back into the <span className="text-amber-400 italic font-medium">library.</span>
+                </h3>
+              </div>
+              <Link
+                href="/portal"
+                className="btn-press group inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.18em] text-foreground/70 hover:text-amber-400 transition-colors"
+              >
+                Portal home
+                <Arrow />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <ShortcutCard
+                href={access.isMudikit ? "/portal/mudikit" : "/portal/mudikit"}
+                eyebrow={access.isMudikit ? "Active" : "Locked"}
+                title="MudiKit"
+                hint={access.isMudikit ? "Paid library access" : "Upgrade to unlock"}
+                accent="amber"
+              />
+              <ShortcutCard
+                href="/portal/newsletter"
+                eyebrow="Archive"
+                title="Newsletter"
+                hint="Every past issue"
+                accent="emerald"
+              />
+              <ShortcutCard
+                href="/portal/playbooks"
+                eyebrow="Library"
+                title="Playbooks & guides"
+                hint="How we ship"
+                accent="sky"
+              />
+              <ShortcutCard
+                href="/portal/skills"
+                eyebrow="Library"
+                title="Skills"
+                hint="Claude Code skills"
+                accent="amber"
+              />
+              <ShortcutCard
+                href="/portal/tools"
+                eyebrow="Library"
+                title="Tools"
+                hint="Scripts & utilities"
+                accent="emerald"
+              />
+              <ShortcutCard
+                href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20account%20question"
+                eyebrow="Support"
+                title="Email Ghiles"
+                hint="biz@ghiless.com"
+                accent="sky"
+                external
+              />
+            </div>
+          </section>
+        </ScrollReveal>
+      </main>
+    </div>
   );
 }
 
 function Row({
   label,
   value,
-  icon,
   mono,
+  emphasis,
 }: {
   label: string;
   value: string;
-  icon?: React.ReactNode;
   mono?: boolean;
+  emphasis?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4 text-sm">
-      <dt className="flex items-center gap-2 text-white/45">
-        {icon}
+    <div className="flex items-center justify-between gap-4 py-5">
+      <dt className="text-xs font-bold uppercase tracking-[0.15em] text-foreground/50">
         {label}
       </dt>
       <dd
-        className={`min-w-0 truncate text-right text-white/90 ${
-          mono ? "font-mono text-[12px]" : "font-medium"
+        className={`min-w-0 truncate text-right ${
+          mono
+            ? "font-mono text-[12px] text-foreground/80"
+            : emphasis
+              ? "text-base font-black text-foreground"
+              : "text-sm font-bold text-foreground"
         }`}
       >
         {value}
       </dd>
     </div>
+  );
+}
+
+const ACCENT: Record<string, { text: string; barFrom: string; glow: string; ring: string }> = {
+  amber: {
+    text: "group-hover:text-amber-400",
+    barFrom: "group-hover:via-amber-400/70",
+    glow: "group-hover:bg-amber-400/[0.12]",
+    ring: "text-amber-400",
+  },
+  emerald: {
+    text: "group-hover:text-emerald-400",
+    barFrom: "group-hover:via-emerald-400/70",
+    glow: "group-hover:bg-emerald-400/[0.12]",
+    ring: "text-emerald-400",
+  },
+  sky: {
+    text: "group-hover:text-sky-400",
+    barFrom: "group-hover:via-sky-400/70",
+    glow: "group-hover:bg-sky-400/[0.12]",
+    ring: "text-sky-400",
+  },
+};
+
+function ShortcutCard({
+  href,
+  eyebrow,
+  title,
+  hint,
+  accent,
+  external,
+}: {
+  href: string;
+  eyebrow: string;
+  title: string;
+  hint: string;
+  accent: "amber" | "emerald" | "sky";
+  external?: boolean;
+}) {
+  const a = ACCENT[accent];
+  const cls =
+    "group relative h-[180px] border border-white/[0.08] bg-card/[0.35] hover:bg-card/[0.55] backdrop-blur-md p-7 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift";
+
+  const inner = (
+    <>
+      <div className={`absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-transparent to-transparent ${a.barFrom} transition-all duration-[1.2s]`} />
+      <div className={`absolute -bottom-10 -right-10 w-48 h-48 bg-white/[0.02] rounded-full blur-[60px] transition-colors ${a.glow}`} />
+
+      <div className="relative z-10 flex items-center justify-between">
+        <span className={`text-[10px] font-black uppercase tracking-[0.22em] ${a.ring}`}>
+          {eyebrow}
+        </span>
+        <span className={`text-foreground/40 ${a.text} transition-colors`}>
+          <Arrow />
+        </span>
+      </div>
+
+      <div className="relative z-10">
+        <div className={`text-xl font-black tracking-[-0.01em] text-foreground ${a.text} transition-colors`}>
+          {title}
+        </div>
+        <div className="mt-1.5 text-[11.5px] uppercase tracking-[0.18em] text-foreground/50">
+          {hint}
+        </div>
+      </div>
+    </>
+  );
+
+  if (external) {
+    return (
+      <a href={href} className={cls}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={cls}>
+      {inner}
+    </Link>
   );
 }

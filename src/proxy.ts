@@ -33,6 +33,7 @@ const isPublicRoute = createRouteMatcher([
   "/(.*)/twitter-image",
   // Product
   "/mudikit",
+  "/buy",
   "/welcome",
   "/sign-in(.*)",
   "/sign-up(.*)",

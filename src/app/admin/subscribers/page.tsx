@@ -101,7 +101,7 @@ export default function SubscribersPage() {
             Paying customers
           </h1>
           <p className="text-[13px] text-muted-foreground max-w-prose">
-            People who checked out through <span className="font-mono text-foreground/80">/buy</span>. Not to be confused with newsletter subscribers — see <a href="/admin/newsletter" className="underline underline-offset-2 text-foreground">Newsletter</a>.
+            People who checked out through <span className="font-mono text-foreground/80">/mudikit</span>. Not to be confused with newsletter subscribers — see <a href="/admin/newsletter" className="underline underline-offset-2 text-foreground">Newsletter</a>.
           </p>
         </div>
         <Button variant="outline" onClick={() => setTestOpen(true)}>
@@ -164,16 +164,16 @@ export default function SubscribersPage() {
               </p>
               <p className="mt-1 text-[12px] text-muted-foreground max-w-md">
                 {subscribers.length === 0
-                  ? "When someone checks out through /buy, the Stripe webhook inserts them here."
+                  ? "When someone checks out through /mudikit, the Stripe webhook inserts them here."
                   : "Clear search or switch status filter to see all rows."}
               </p>
             </div>
             {subscribers.length === 0 && (
               <a
-                href="/buy"
+                href="/mudikit"
                 className="mt-1 inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-card px-3 py-1.5 text-[11px] font-medium hover:bg-secondary/60"
               >
-                Open /buy page
+                Open MudiKit page
                 <ExternalLink className="size-3" />
               </a>
             )}

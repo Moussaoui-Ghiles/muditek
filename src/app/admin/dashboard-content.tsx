@@ -392,10 +392,10 @@ function RevenueCard({
             />
           </div>
           <Link
-            href="/buy"
+            href="/mudikit"
             className="mt-2 inline-flex w-full items-center justify-between rounded-md border border-border/60 bg-secondary/40 px-3 py-2 text-[12px] font-medium transition-colors hover:bg-secondary hover:border-border"
           >
-            Open /buy
+            Open MudiKit
             <ArrowUpRight className="size-3.5 text-muted-foreground" />
           </Link>
         </div>
@@ -696,4 +696,3 @@ function ErrorState() {
     </div>
   );
 }
-

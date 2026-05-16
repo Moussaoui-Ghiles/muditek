@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
+  ArrowRight,
   ArrowUpRight,
   Lock,
   Search,
   Sparkles,
   Terminal,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -28,23 +28,36 @@ function isRecent(skill: ContentItem, days = 30): boolean {
   return Date.now() - created < days * 24 * 60 * 60 * 1000;
 }
 
-function SkillThumb({
+function formatShortDate(date: Date | string | null): string {
+  if (!date) return "";
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return typeof date === "string" ? date : "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function accessLabel(skill: ContentItem, accessible: boolean): {
+  text: string;
+  tone: "free" | "mudikit" | "locked";
+} {
+  if (skill.is_free) return { text: "Free", tone: "free" };
+  if (accessible) return { text: "MudiKit", tone: "mudikit" };
+  return { text: "Locked", tone: "locked" };
+}
+
+function SkillThumbBanner({
   skill,
   accessible,
-  size = "md",
 }: {
   skill: ContentItem;
   accessible: boolean;
-  size?: "md" | "lg";
 }) {
-  const sizing = size === "lg" ? "h-32 sm:h-40" : "h-24";
   if (skill.thumbnail_url) {
     return (
-      <div className={`relative ${sizing} w-full overflow-hidden rounded-md border border-white/[0.06]`}>
+      <div className="relative h-32 w-full overflow-hidden rounded-lg border border-white/[0.05]">
         <img
           src={skill.thumbnail_url}
           alt=""
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           loading="lazy"
         />
         {!accessible && (
@@ -52,19 +65,20 @@ function SkillThumb({
             <Lock className="size-4 text-white/85" />
           </div>
         )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#0a0a0c]/40 to-transparent" />
       </div>
     );
   }
 
   return (
     <div
-      className={`relative ${sizing} w-full overflow-hidden rounded-md border border-white/[0.06]`}
+      className="relative h-32 w-full overflow-hidden rounded-lg border border-white/[0.05]"
       style={{
         background:
-          "radial-gradient(120% 90% at 18% 12%, rgba(255,255,255,0.10), transparent 52%), linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0.005))",
+          "radial-gradient(120% 90% at 18% 12%, rgba(255,255,255,0.08), transparent 52%), linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.005))",
       }}
     >
-      <div className="absolute inset-0 opacity-[0.18] mix-blend-overlay [background-image:repeating-linear-gradient(0deg,rgba(255,255,255,0.5)_0px,rgba(255,255,255,0.5)_1px,transparent_1px,transparent_3px)]" />
+      <div className="absolute inset-0 opacity-[0.14] mix-blend-overlay [background-image:repeating-linear-gradient(0deg,rgba(255,255,255,0.5)_0px,rgba(255,255,255,0.5)_1px,transparent_1px,transparent_3px)]" />
       <div className="absolute bottom-3 left-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
           {skill.file_type ? `.${skill.file_type.toLowerCase()}` : "skill"}
@@ -77,195 +91,250 @@ function SkillThumb({
   );
 }
 
-function SkillCard({
+function FeaturedSkill({
   skill,
   access,
-  index,
-  variant = "standard",
 }: {
   skill: ContentItem;
   access: PortalAccess;
-  index: number;
-  variant?: "feature" | "standard" | "compact";
 }) {
   const accessible = isAccessible(skill, access);
-  const new30d = isRecent(skill) && skill.is_new;
-
-  if (variant === "compact") {
-    return (
-      <Link
-        href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
-        style={{ animationDelay: `${index * 55}ms` }}
-        className="group/card skill-card-in relative flex items-center gap-3.5 rounded-lg border border-white/[0.06] bg-white/[0.018] p-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-white/[0.16] hover:bg-white/[0.035]"
-      >
-        <div className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/[0.06] bg-white/[0.02]">
-          {skill.thumbnail_url ? (
-            <img src={skill.thumbnail_url} alt="" className="h-full w-full object-cover" loading="lazy" />
-          ) : accessible ? (
-            <Terminal className="size-4 text-white/65" />
-          ) : (
-            <Lock className="size-4 text-white/55" />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h3 className="truncate text-[13.5px] font-medium text-foreground">{skill.title}</h3>
-            {new30d && (
-              <span className="relative inline-flex size-1.5 shrink-0 rounded-full bg-amber-400">
-                <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
-              </span>
-            )}
-          </div>
-          {skill.description && (
-            <p className="mt-0.5 line-clamp-1 text-[12px] leading-5 text-muted-foreground">
-              {skill.description}
-            </p>
-          )}
-        </div>
-        <div className="hidden items-center gap-1.5 sm:flex">
-          {skill.file_type && (
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
-              .{skill.file_type.toLowerCase()}
-            </span>
-          )}
-          {!skill.is_free && !accessible && (
-            <Lock className="size-3.5 text-white/45" />
-          )}
-        </div>
-      </Link>
-    );
-  }
-
-  const isFeature = variant === "feature";
+  const label = accessLabel(skill, accessible);
+  const isNew = isRecent(skill) && skill.is_new;
 
   return (
     <Link
       href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
-      style={{ animationDelay: `${index * 65}ms` }}
-      className={`group/card skill-card-in relative flex flex-col overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.018] p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-white/[0.18] hover:bg-white/[0.035] ${
-        isFeature ? "min-h-72" : "min-h-56"
-      }`}
+      className="group relative isolate flex flex-col gap-6 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-8"
     >
       <div
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
-        style={{
-          background:
-            "radial-gradient(640px circle at var(--mx,50%) var(--my,0%), rgba(245,158,11,0.07), transparent 42%)",
-        }}
+        aria-hidden
+        className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.08] blur-3xl"
       />
-      <SkillThumb skill={skill} accessible={accessible} size={isFeature ? "lg" : "md"} />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-1/2 h-full bg-gradient-to-t from-amber-500/[0.05] via-transparent to-transparent"
+      />
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+      <div className="relative flex items-center gap-2">
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-amber-300/85">
+          {isNew ? "New skill" : "Featured skill"}
+        </span>
+        {isNew && (
+          <span className="relative inline-flex size-1.5 rounded-full bg-amber-400">
+            <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
+          </span>
+        )}
+      </div>
+
+      <div className="relative">
+        <h2 className="max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
+          {skill.title}
+        </h2>
+        {skill.description && (
+          <p className="mt-3 max-w-[55ch] text-[14.5px] leading-[1.6] text-white/60">
+            {skill.description}
+          </p>
+        )}
+      </div>
+
+      <div className="relative flex flex-wrap items-center gap-4">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
+          {accessible ? "Open skill" : "Preview"}
+          <ArrowRight className="size-3.5" />
+        </span>
+        <div className="flex items-center gap-3 text-[12px] text-white/45">
+          {skill.file_type && (
+            <span className="font-mono uppercase tracking-[0.18em]">
+              .{skill.file_type.toLowerCase()}
+            </span>
+          )}
+          <span
+            className={`font-mono uppercase tracking-[0.18em] ${
+              label.tone === "free"
+                ? "text-emerald-300/85"
+                : label.tone === "mudikit"
+                  ? "text-amber-300/85"
+                  : "text-white/50"
+            }`}
+          >
+            {label.text}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function EmptyFeatured() {
+  return (
+    <div className="relative isolate flex flex-col gap-4 overflow-hidden rounded-2xl bg-white/[0.02] p-7 md:p-9">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.06] blur-3xl"
+      />
+      <span className="relative font-mono text-[10.5px] uppercase tracking-[0.22em] text-amber-300/85">
+        Skills
+      </span>
+      <h2 className="relative max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
+        The shelf opens with the first drop.
+      </h2>
+      <p className="relative max-w-[55ch] text-[14.5px] leading-[1.6] text-white/55">
+        Each skill is a working asset for Claude, Codex, GTM, research, or
+        outreach. Nothing fake gets seeded — when there is something real to
+        install, it lands here.
+      </p>
+    </div>
+  );
+}
+
+function SkillCard({
+  skill,
+  access,
+  index,
+}: {
+  skill: ContentItem;
+  access: PortalAccess;
+  index: number;
+}) {
+  const accessible = isAccessible(skill, access);
+  const label = accessLabel(skill, accessible);
+  const isNew = isRecent(skill) && skill.is_new;
+
+  const accent =
+    label.tone === "free"
+      ? "from-emerald-400/[0.07]"
+      : label.tone === "mudikit"
+        ? "from-amber-400/[0.08]"
+        : "from-sky-400/[0.06]";
+
+  return (
+    <Link
+      href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
+      style={{ animationDelay: `${index * 55}ms` }}
+      className={`skill-card-in group relative isolate flex h-full flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br p-6 transition-all duration-300 hover:bg-white/[0.03] md:p-7 ${accent} to-transparent`}
+    >
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-gradient-to-br ${accent} to-transparent blur-3xl`}
+      />
+
+      <div className="relative flex flex-col gap-5">
+        <SkillThumbBanner skill={skill} accessible={accessible} />
+
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3
-              className={`truncate font-semibold tracking-tight text-foreground ${
-                isFeature ? "text-[18px]" : "text-[15px]"
-              }`}
-            >
+            <h3 className="text-[18px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
               {skill.title}
             </h3>
-            {new30d && (
+            {isNew && (
               <span className="relative inline-flex size-1.5 shrink-0 rounded-full bg-amber-400">
                 <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
               </span>
             )}
           </div>
           {skill.description && (
-            <p
-              className={`mt-1.5 leading-5 text-muted-foreground ${
-                isFeature ? "line-clamp-3 text-[13.5px]" : "line-clamp-2 text-[12.5px]"
-              }`}
-            >
+            <p className="mt-2 line-clamp-3 text-[13.5px] leading-[1.55] text-white/55">
               {skill.description}
             </p>
           )}
         </div>
       </div>
 
-      <div className="mt-auto flex items-center justify-between pt-4">
-        <div className="flex items-center gap-2">
+      <div className="relative mt-6 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-[11px]">
           {skill.file_type && (
-            <span className="rounded-md border border-white/[0.08] bg-black/20 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/65">
+            <span className="font-mono uppercase tracking-[0.16em] text-white/45">
               .{skill.file_type.toLowerCase()}
             </span>
           )}
           <span
-            className={`text-[10.5px] font-medium uppercase tracking-[0.16em] ${
-              skill.is_free
+            className={`font-mono uppercase tracking-[0.16em] ${
+              label.tone === "free"
                 ? "text-emerald-300/85"
-                : accessible
+                : label.tone === "mudikit"
                   ? "text-amber-300/85"
                   : "text-white/45"
             }`}
           >
-            {skill.is_free ? "Free" : accessible ? "MudiKit" : "Locked"}
+            {label.text}
           </span>
         </div>
-        <span className="flex size-7 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.025] text-white/55 transition-all duration-300 group-hover/card:border-white/[0.22] group-hover/card:bg-white/[0.06] group-hover/card:text-foreground group-hover/card:translate-x-0.5">
-          <ArrowUpRight className="size-3.5" />
+        <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-white/70 transition-colors group-hover:text-amber-300/85">
+          Open
+          <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </span>
       </div>
     </Link>
   );
 }
 
-function EmptyState() {
+function RecentRow({
+  skill,
+  access,
+}: {
+  skill: ContentItem;
+  access: PortalAccess;
+}) {
+  const accessible = isAccessible(skill, access);
+  const label = accessLabel(skill, accessible);
+
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-10">
-      <div
-        className="absolute inset-0 opacity-50"
-        style={{
-          background:
-            "radial-gradient(60% 70% at 20% 0%, rgba(255,255,255,0.05), transparent 55%)",
-        }}
-      />
-      <div className="relative max-w-md">
-        <div className="mb-5 flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/70">
-          <Sparkles className="size-4" />
+    <li>
+      <Link
+        href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
+        className="group flex items-center justify-between gap-6 py-4 transition-colors hover:bg-white/[0.018]"
+      >
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="truncate text-[15px] font-medium leading-snug text-white">
+              {skill.title}
+            </p>
+            {isRecent(skill) && skill.is_new && (
+              <span className="relative inline-flex size-1.5 shrink-0 rounded-full bg-amber-400">
+                <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-[12.5px] text-white/40">
+            {label.text}
+            {skill.file_type ? ` · .${skill.file_type.toLowerCase()}` : ""}
+            {skill.created_at ? ` · ${formatShortDate(skill.created_at)}` : ""}
+          </p>
         </div>
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">
-          The shelf is empty — for now
-        </h3>
-        <p className="mt-2 text-[13.5px] leading-6 text-muted-foreground">
-          Skills land here as they ship. Nothing fake gets seeded — when there is
-          something real to install, it shows up.
-        </p>
-      </div>
-    </div>
+        <ArrowRight className="size-4 shrink-0 text-white/25 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
+      </Link>
+    </li>
   );
 }
 
 function LockedTeaser({ count }: { count: number }) {
   return (
-    <div className="relative mt-10 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
+    <Link
+      href="/portal/mudikit"
+      className="group relative isolate mt-14 flex flex-col gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400/[0.06] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-amber-400/[0.09] sm:flex-row sm:items-center sm:justify-between md:p-8"
+    >
       <div
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          background:
-            "radial-gradient(40% 80% at 95% 50%, rgba(245,158,11,0.10), transparent 55%)",
-        }}
+        aria-hidden
+        className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-amber-400/[0.1] blur-3xl"
       />
-      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-300/85">
-            MudiKit · locked
-          </span>
-          <h3 className="mt-2 text-lg font-semibold tracking-tight text-foreground">
-            {count} {count === 1 ? "skill is" : "skills are"} sitting behind the
-            membrane.
-          </h3>
-          <p className="mt-1.5 max-w-md text-[13px] leading-6 text-muted-foreground">
-            MudiKit drops every paid skill into your shelf, plus everything new
-            as it ships. One subscription, no per-asset friction.
-          </p>
-        </div>
-        <Button render={<Link href="/buy" />} nativeButton={false} size="lg">
-          Unlock MudiKit
-          <ArrowUpRight className="size-4" />
-        </Button>
+      <div className="relative min-w-0">
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-amber-300/85">
+          MudiKit · locked
+        </span>
+        <h3 className="mt-2 max-w-[28ch] text-[22px] font-semibold leading-[1.15] tracking-[-0.015em] text-white">
+          {count} {count === 1 ? "skill needs" : "skills need"} MudiKit.
+        </h3>
+        <p className="mt-2 max-w-md text-[13.5px] leading-[1.55] text-white/55">
+          MudiKit drops every paid skill into your shelf, plus everything new as it ships.
+          One subscription, no per-asset friction.
+        </p>
       </div>
-    </div>
+      <span className="relative inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
+        Unlock MudiKit
+        <ArrowUpRight className="size-3.5" />
+      </span>
+    </Link>
   );
 }
 
@@ -286,8 +355,6 @@ const skillsKeyframes = `
 export default function SkillsContent({
   skills,
   access,
-  email,
-  displayName,
 }: {
   skills: ContentItem[];
   access: PortalAccess;
@@ -309,6 +376,20 @@ export default function SkillsContent({
     [skills, access]
   );
 
+  const featured: ContentItem | null = useMemo(() => {
+    if (access.isMudikit || access.isAdmin) {
+      return skills.find((s) => isRecent(s) && s.is_new) ?? skills[0] ?? null;
+    }
+    return skills.find((s) => s.is_free) ?? skills[0] ?? null;
+  }, [skills, access]);
+
+  const newest = useMemo(() => {
+    return [...skills]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .filter((s) => s.id !== featured?.id)
+      .slice(0, 4);
+  }, [skills, featured]);
+
   const showAccessFilter = freeCount > 0 && paidCount > 0;
   const showSearch = total >= 5;
 
@@ -326,110 +407,158 @@ export default function SkillsContent({
     });
   }, [skills, filter, query]);
 
-  // Bento split: when 6+ items and no active filter, feature first 1, grid next 4, list the rest
-  const showBento = filtered.length >= 6 && !query && filter === "all";
-  const featured = showBento ? filtered[0] : null;
-  const gridItems = showBento ? filtered.slice(1, 5) : filtered.slice(0, 8);
-  const remaining = showBento ? filtered.slice(5) : filtered.slice(8);
+  // When idle (no search/filter), hide featured from the grid below to avoid duplication
+  const gridSkills = useMemo(() => {
+    if (query || filter !== "all" || !featured) return filtered;
+    return filtered.filter((s) => s.id !== featured.id);
+  }, [filtered, featured, query, filter]);
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: skillsKeyframes }} />
 
-      <main className="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        {/* Hero */}
-        <section className="relative mb-9 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] px-5 py-7 sm:px-8 sm:py-9">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(55% 100% at 12% 0%, rgba(245,158,11,0.08), transparent 55%), radial-gradient(40% 80% at 90% 100%, rgba(255,255,255,0.04), transparent 60%)",
-            }}
-          />
-          <div className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay [background-image:repeating-linear-gradient(45deg,#fff_0px,#fff_1px,transparent_1px,transparent_4px)]" />
-          <div className="relative grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-end">
+      <main className="relative">
+        <div className="mx-auto w-full max-w-[1340px] px-6 pb-24 pt-10 md:px-10 md:pt-12 lg:px-14">
+          {/* Header strip */}
+          <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] pb-7">
             <div>
-              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-300/85">
-                <span className="relative inline-flex size-1.5 rounded-full bg-amber-400">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
-                </span>
-                Operator Shelf
-              </div>
-              <h1 className="mt-3 text-[34px] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-[44px] md:text-5xl">
-                Skills you can drop
-                <br className="hidden sm:block" />
-                into any session.
+              <h1 className="text-[36px] font-semibold leading-[1.05] tracking-[-0.02em] text-white md:text-[44px]">
+                Skills
               </h1>
-              <p className="mt-4 max-w-xl text-[14px] leading-6 text-muted-foreground">
-                Each skill is a working asset — for Claude, Codex, GTM motions,
-                research and outreach. Free skills come with every portal account.
-                MudiKit unlocks the rest.
+              <p className="mt-2 max-w-[60ch] text-[14px] text-white/45">
+                Working assets you can drop into Claude, Codex, GTM motions, research and outreach.
+                Free ones come with every portal account. MudiKit unlocks the rest.
               </p>
             </div>
+            <div className="flex items-center gap-5 text-[12px] text-white/40">
+              <span className="flex items-baseline gap-1.5">
+                <span className="text-[18px] font-semibold tabular-nums text-white/85">{total}</span>
+                <span className="font-mono uppercase tracking-[0.16em]">Total</span>
+              </span>
+              {freeCount > 0 && (
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-[18px] font-semibold tabular-nums text-emerald-300/85">{freeCount}</span>
+                  <span className="font-mono uppercase tracking-[0.16em]">Free</span>
+                </span>
+              )}
+              {(access.isMudikit || access.isAdmin) && paidCount > 0 ? (
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-[18px] font-semibold tabular-nums text-amber-300/85">{paidCount}</span>
+                  <span className="font-mono uppercase tracking-[0.16em]">MudiKit</span>
+                </span>
+              ) : (
+                lockedCount > 0 && (
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="text-[18px] font-semibold tabular-nums text-amber-300/85">{lockedCount}</span>
+                    <span className="font-mono uppercase tracking-[0.16em]">Locked</span>
+                  </span>
+                )
+              )}
+            </div>
+          </header>
 
-            {total > 0 && (
-              <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02]">
-                <StatCell label="Total" value={total} />
-                <StatCell label="Free" value={freeCount} accent="emerald" />
-                <StatCell
-                  label={access.isMudikit || access.isAdmin ? "MudiKit" : "Locked"}
-                  value={access.isMudikit || access.isAdmin ? paidCount : lockedCount}
-                  accent="amber"
-                />
+          {/* HERO — 3:1 split, mirrors portal home */}
+          <section className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
+            {featured ? <FeaturedSkill skill={featured} access={access} /> : <EmptyFeatured />}
+
+            <aside className="flex flex-col gap-7 rounded-2xl bg-white/[0.018] p-7">
+              <div>
+                <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
+                  What&apos;s inside
+                </h3>
+                <p className="mt-3 text-[14px] leading-[1.6] text-white/75">
+                  Each skill is a self-contained markdown asset with prompts, frameworks,
+                  and rules — ready to install in any session.
+                </p>
                 {newCount > 0 && (
-                  <div className="col-span-3 border-t border-white/[0.06] bg-black/15 px-4 py-2">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-300/85">
-                      {newCount} new in the last 30 days
+                  <p className="mt-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.2em] text-amber-300/85">
+                    <span className="relative inline-flex size-1.5 rounded-full bg-amber-400">
+                      <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
                     </span>
-                  </div>
+                    {newCount} new in the last 30 days
+                  </p>
                 )}
               </div>
-            )}
-          </div>
-        </section>
 
-        {total === 0 ? (
-          <EmptyState />
-        ) : (
-          <>
-            {/* Controls */}
-            {(showSearch || showAccessFilter) && (
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {newest.length > 0 && (
+                <div className="border-t border-white/[0.06] pt-6">
+                  <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
+                    Newest
+                  </h3>
+                  <ul className="mt-4 space-y-3.5">
+                    {newest.map((skill) => {
+                      const accessible = isAccessible(skill, access);
+                      return (
+                        <li key={skill.id}>
+                          <Link
+                            href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
+                            className="group block"
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <p className="line-clamp-1 text-[14px] font-medium leading-snug text-white/85 transition-colors group-hover:text-white">
+                                {skill.title}
+                              </p>
+                              {!accessible && <Lock className="size-3 shrink-0 text-white/35" />}
+                            </div>
+                            <p className="mt-0.5 text-[11.5px] text-white/40">
+                              {skill.is_free
+                                ? "Free"
+                                : accessible
+                                  ? "MudiKit"
+                                  : "Locked"}
+                              {skill.created_at
+                                ? ` · ${formatShortDate(skill.created_at)}`
+                                : ""}
+                            </p>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </aside>
+          </section>
+
+          {/* CONTROLS */}
+          {total > 0 && (showSearch || showAccessFilter) && (
+            <section className="mt-14">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 {showSearch ? (
-                  <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.018] px-3 transition-colors focus-within:border-white/[0.18]">
-                    <Search className="size-4 shrink-0 text-muted-foreground" />
+                  <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-white/[0.018] px-4 transition-colors focus-within:bg-white/[0.03]">
+                    <Search className="size-4 shrink-0 text-white/40" />
                     <Input
                       value={query}
                       onChange={(event) => setQuery(event.target.value)}
                       placeholder="Search skills, file types, descriptions…"
-                      className="h-10 w-full border-0 bg-transparent px-0 text-[13.5px] focus-visible:ring-0"
+                      className="h-11 w-full border-0 bg-transparent px-0 text-[14px] text-white placeholder:text-white/35 focus-visible:ring-0"
                     />
                     {query && (
                       <button
                         type="button"
                         onClick={() => setQuery("")}
-                        className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+                        className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-white/40 transition-colors hover:text-white"
                       >
                         Clear
                       </button>
                     )}
                   </div>
                 ) : (
-                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                  <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-white/40">
                     {total} {total === 1 ? "skill" : "skills"}
                   </span>
                 )}
                 {showAccessFilter && (
-                  <div className="inline-flex rounded-lg border border-white/[0.07] bg-white/[0.015] p-0.5">
+                  <div className="inline-flex rounded-xl bg-white/[0.018] p-1">
                     {(["all", "free", "mudikit"] as AccessFilter[]).map((f) => (
                       <button
                         key={f}
                         type="button"
                         onClick={() => setFilter(f)}
-                        className={`rounded-md px-3 py-1.5 text-[12px] font-medium uppercase tracking-[0.12em] transition-all duration-200 ${
+                        className={`rounded-lg px-3.5 py-1.5 text-[12px] font-medium uppercase tracking-[0.12em] transition-all duration-200 ${
                           filter === f
-                            ? "bg-white/[0.09] text-foreground"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "bg-white/[0.09] text-white"
+                            : "text-white/45 hover:text-white/80"
                         }`}
                       >
                         {f === "all" ? "All" : f === "free" ? "Free" : "MudiKit"}
@@ -438,129 +567,123 @@ export default function SkillsContent({
                   </div>
                 )}
               </div>
-            )}
+            </section>
+          )}
 
-            {filtered.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-white/[0.1] bg-white/[0.012] p-10 text-center">
-                <p className="text-[13.5px] text-muted-foreground">
+          {/* GRID + RECENT LIST */}
+          {total > 0 ? (
+            filtered.length === 0 ? (
+              <section className="mt-10 rounded-2xl bg-white/[0.012] p-10 text-center">
+                <p className="text-[13.5px] text-white/55">
                   Nothing matches{" "}
                   {query ? (
                     <>
-                      “<span className="text-foreground">{query}</span>”
+                      &ldquo;<span className="text-white">{query}</span>&rdquo;
                     </>
                   ) : (
                     "this filter"
                   )}
                   .
                 </p>
-              </div>
+              </section>
             ) : (
-              <div className="space-y-8">
-                {/* Featured + bento */}
-                {showBento && featured && (
-                  <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-                    <SkillCard skill={featured} access={access} index={0} variant="feature" />
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                      {gridItems.slice(0, 2).map((skill, idx) => (
-                        <SkillCard
-                          key={skill.id}
-                          skill={skill}
-                          access={access}
-                          index={idx + 1}
-                          variant="standard"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {showBento && gridItems.length > 2 && (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {gridItems.slice(2).map((skill, idx) => (
-                      <SkillCard
-                        key={skill.id}
-                        skill={skill}
-                        access={access}
-                        index={idx + 3}
-                        variant="standard"
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {!showBento && (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {gridItems.map((skill, idx) => (
-                      <SkillCard
-                        key={skill.id}
-                        skill={skill}
-                        access={access}
-                        index={idx}
-                        variant="standard"
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {remaining.length > 0 && (
-                  <section>
-                    <div className="mb-3 flex items-end justify-between border-b border-white/[0.06] pb-3">
-                      <h2 className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
-                        More on the shelf
+              <section className={total > 0 && (showSearch || showAccessFilter) ? "mt-6" : "mt-14"}>
+                {gridSkills.length > 0 && (
+                  <>
+                    <div className="mb-5 flex items-baseline justify-between">
+                      <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">
+                        {query || filter !== "all" ? "Matches" : "All skills"}
                       </h2>
-                      <span className="font-mono text-[10.5px] tabular-nums text-muted-foreground/70">
-                        {remaining.length}
-                      </span>
+                      <p className="text-[13px] text-white/40">
+                        {gridSkills.length} {gridSkills.length === 1 ? "skill" : "skills"}
+                      </p>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {remaining.map((skill, idx) => (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {gridSkills.map((skill, idx) => (
                         <SkillCard
                           key={skill.id}
                           skill={skill}
                           access={access}
-                          index={idx + gridItems.length + 1}
-                          variant="compact"
+                          index={idx}
                         />
                       ))}
                     </div>
-                  </section>
+                  </>
                 )}
-              </div>
-            )}
 
-            {!access.isMudikit && !access.isAdmin && lockedCount > 0 && filter !== "free" && (
-              <LockedTeaser count={lockedCount} />
-            )}
-          </>
-        )}
+                {/* Recent stream + activity aside — only when idle */}
+                {!query && filter === "all" && skills.length >= 4 && (
+                  <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-10">
+                    <div>
+                      <div className="mb-4 flex items-baseline justify-between">
+                        <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">
+                          Recent
+                        </h2>
+                        <span className="text-[13px] text-white/40">By date</span>
+                      </div>
+                      <ul className="divide-y divide-white/[0.05]">
+                        {[...skills]
+                          .sort(
+                            (a, b) =>
+                              new Date(b.created_at).getTime() -
+                              new Date(a.created_at).getTime()
+                          )
+                          .slice(0, 7)
+                          .map((skill) => (
+                            <RecentRow key={skill.id} skill={skill} access={access} />
+                          ))}
+                      </ul>
+                    </div>
+
+                    <aside className="self-start rounded-2xl bg-white/[0.018] p-7">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="size-3.5 text-amber-300/85" />
+                        <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
+                          Activity
+                        </h2>
+                      </div>
+                      <ul className="mt-5 space-y-4">
+                        <li>
+                          <p className="text-[14px] font-medium leading-snug text-white/85">
+                            {total} {total === 1 ? "skill" : "skills"} on the shelf
+                          </p>
+                          <p className="mt-0.5 text-[12px] text-white/40">
+                            {freeCount} free · {paidCount} MudiKit
+                          </p>
+                        </li>
+                        {newCount > 0 && (
+                          <li>
+                            <p className="text-[14px] font-medium leading-snug text-white/85">
+                              {newCount} {newCount === 1 ? "drop" : "drops"} in the last 30 days
+                            </p>
+                            <p className="mt-0.5 text-[12px] text-white/40">
+                              Fresh installs marked with an amber dot
+                            </p>
+                          </li>
+                        )}
+                        {!access.isMudikit && !access.isAdmin && lockedCount > 0 && (
+                          <li>
+                            <p className="text-[14px] font-medium leading-snug text-white/85">
+                              {lockedCount} {lockedCount === 1 ? "is" : "are"} sitting behind MudiKit
+                            </p>
+                            <p className="mt-0.5 text-[12px] text-white/40">
+                              One unlock, every paid skill — plus future drops
+                            </p>
+                          </li>
+                        )}
+                      </ul>
+                    </aside>
+                  </div>
+                )}
+              </section>
+            )
+          ) : null}
+
+          {!access.isMudikit && !access.isAdmin && lockedCount > 0 && filter !== "free" && (
+            <LockedTeaser count={lockedCount} />
+          )}
+        </div>
       </main>
     </>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent?: "emerald" | "amber";
-}) {
-  const accentClass =
-    accent === "emerald"
-      ? "text-emerald-300/90"
-      : accent === "amber"
-        ? "text-amber-300/90"
-        : "text-foreground";
-  return (
-    <div className="bg-black/15 px-4 py-3">
-      <div className={`text-[22px] font-semibold tabular-nums leading-none tracking-tight ${accentClass}`}>
-        {value}
-      </div>
-      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-      </div>
-    </div>
   );
 }

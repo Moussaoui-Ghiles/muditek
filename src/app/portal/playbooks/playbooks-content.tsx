@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, Filter, Lock, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
@@ -391,9 +392,20 @@ export default function PlaybooksContent({
           <>
             {/* Featured */}
             {featured && (
-              <section className="reveal reveal-delay-2 mb-14">
-                <FeaturedItem item={featured} access={access} />
-              </section>
+              <ScrollReveal>
+                <section className="mb-14">
+                  <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
+                    <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                      <span aria-hidden className="h-px w-6 bg-white/20" />
+                      Featured drop
+                    </h2>
+                    <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                      Long-form · in portal
+                    </span>
+                  </div>
+                  <FeaturedItem item={featured} access={access} />
+                </section>
+              </ScrollReveal>
             )}
 
             {/* Filter strip */}
@@ -467,8 +479,10 @@ export default function PlaybooksContent({
                   )}
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                  {grid.map((item) => (
-                    <LibraryCard key={item.id} item={item} access={access} />
+                  {grid.map((item, i) => (
+                    <ScrollReveal key={item.id} delay={Math.min(i * 60, 360)}>
+                      <LibraryCard item={item} access={access} />
+                    </ScrollReveal>
                   ))}
                 </div>
               </section>

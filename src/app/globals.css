@@ -93,7 +93,7 @@
   --sidebar-ring: hsl(210 15% 45%);
 }
 
-/* MudiKit admin/portal — monochrome override (scoped) */
+/* MudiKit admin/portal — homepage-aligned amber primary (scoped) */
 .mudikit-dark {
   --background: #0c0c0e;
   --foreground: #e8e8ec;
@@ -101,7 +101,7 @@
   --card-foreground: #e8e8ec;
   --popover: #151517;
   --popover-foreground: #e8e8ec;
-  --primary: #e8e8ec;
+  --primary: #F59E0B;
   --primary-foreground: #0c0c0e;
   --secondary: #232326;
   --secondary-foreground: #e8e8ec;

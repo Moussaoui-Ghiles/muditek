@@ -14,6 +14,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
@@ -348,7 +349,8 @@ export default function AssetDetailContent({
       {/* BODY */}
       <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
         {downloadHref && actionLabel && (
-          <section className="reveal reveal-delay-2 mb-12">
+          <ScrollReveal>
+          <section className="mb-12">
             <div className="card-lift group relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] backdrop-blur-md">
               <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
               <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
@@ -386,9 +388,11 @@ export default function AssetDetailContent({
               </div>
             </div>
           </section>
+          </ScrollReveal>
         )}
 
-        <section className="reveal reveal-delay-3">
+        <ScrollReveal>
+        <section>
           {html ? (
             <>
               <style dangerouslySetInnerHTML={{ __html: html.styles }} />
@@ -432,6 +436,7 @@ export default function AssetDetailContent({
             )
           )}
         </section>
+        </ScrollReveal>
 
         <div className="mt-16 border-t border-white/[0.06] pt-8">
           <BackLink href={labels.backHref} label={labels.backLabel} />

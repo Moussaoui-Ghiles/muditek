@@ -351,13 +351,14 @@ export function RevenueLeakWorkbench() {
             }}
           />
 
-          <div className="mb-5 flex items-end justify-between gap-3">
+          <div className="mb-7 flex items-end justify-between gap-3 border-b border-white/[0.06] pb-5">
             <div>
-              <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              <p className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+                <span aria-hidden className="h-px w-6 bg-primary/50" />
                 01 · Inputs
-              </div>
-              <h3 className="mt-1 font-[var(--font-serif-display)] text-[24px] leading-none tracking-tight text-foreground">
-                Your numbers
+              </p>
+              <h3 className="mt-3 text-[26px] font-black leading-[1] tracking-[-0.02em] text-foreground md:text-[30px]">
+                Your <span className="text-primary italic font-medium">numbers.</span>
               </h3>
             </div>
             <div className="text-right">
@@ -384,16 +385,17 @@ export function RevenueLeakWorkbench() {
                 aria-expanded={showAdvanced}
               >
                 <div>
-                  <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                  <p className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                    <span aria-hidden className="h-px w-6 bg-white/15" />
                     02 · Channels · optional
-                  </div>
-                  <div className="mt-0.5 text-[12.5px] text-muted-foreground/80">
+                  </p>
+                  <div className="mt-2 text-[12.5px] text-foreground/65">
                     Add channel + outbound numbers for two extra leak categories.
                   </div>
                 </div>
                 <span
-                  className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${
-                    showAdvanced ? "text-emerald-300" : "text-muted-foreground"
+                  className={`shrink-0 text-[10.5px] font-black uppercase tracking-[0.22em] transition-colors ${
+                    showAdvanced ? "text-emerald-300" : "text-foreground/55"
                   }`}
                 >
                   {showAdvanced ? "Hide" : "Add"}
@@ -415,7 +417,7 @@ export function RevenueLeakWorkbench() {
                 type="button"
                 onClick={reset}
                 disabled={!hasAnyInput && !submitted}
-                className="inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 text-[10.5px] font-black uppercase tracking-[0.22em] text-foreground/55 transition-colors hover:text-foreground disabled:opacity-40"
               >
                 <RotateCcw className="size-3" />
                 Reset
@@ -424,10 +426,13 @@ export function RevenueLeakWorkbench() {
                 type="button"
                 onClick={() => setSubmitted(true)}
                 disabled={!hasAnyInput}
-                className="group/run inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-5 py-2.5 text-[13px] font-medium tracking-tight text-emerald-100 shadow-[0_0_0_1px_rgba(16,185,129,0.05),0_20px_40px_-25px_rgba(16,185,129,0.5)] transition-all hover:-translate-y-0.5 hover:bg-emerald-500/15 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.1),0_25px_50px_-20px_rgba(16,185,129,0.55)] disabled:cursor-not-allowed disabled:border-white/[0.08] disabled:bg-white/[0.02] disabled:text-muted-foreground/40 disabled:shadow-none"
+                className="group/run btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-8 py-4 text-[11px] font-black uppercase tracking-[0.22em] text-background disabled:cursor-not-allowed disabled:bg-white/[0.04] disabled:text-foreground/40"
               >
-                Run calculation
-                <ArrowRight className="size-3.5 transition-transform group-hover/run:translate-x-0.5" />
+                <span className="relative z-10 inline-flex items-center gap-3">
+                  Run calculation
+                  <ArrowRight className="size-3.5 transition-transform group-hover/run:translate-x-0.5" />
+                </span>
+                <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover/run:w-full" />
               </button>
             </div>
           </div>
@@ -450,17 +455,18 @@ export function RevenueLeakWorkbench() {
             className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent"
           />
 
-          <div className="mb-5 flex items-end justify-between gap-3">
+          <div className="mb-7 flex items-end justify-between gap-3 border-b border-white/[0.06] pb-5">
             <div>
-              <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
+              <p className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-emerald-300">
+                <span aria-hidden className="h-px w-6 bg-emerald-400/50" />
                 03 · Output
-              </div>
-              <h3 className="mt-1 font-[var(--font-serif-display)] text-[24px] leading-none tracking-tight text-foreground">
-                The diagnosis
+              </p>
+              <h3 className="mt-3 text-[26px] font-black leading-[1] tracking-[-0.02em] text-foreground md:text-[30px]">
+                The <span className="text-emerald-300 italic font-medium">diagnosis.</span>
               </h3>
             </div>
             {results !== null && results.length > 0 && (
-              <span className="rounded-full border border-emerald-400/25 bg-emerald-500/[0.08] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-200">
+              <span className="rounded-full border border-emerald-400/25 bg-emerald-500/[0.08] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200">
                 {results.length} leak{results.length === 1 ? "" : "s"}
               </span>
             )}
@@ -516,25 +522,26 @@ export function RevenueLeakWorkbench() {
           ) : (
             <div>
               <div className="mb-6 border-b border-white/[0.06] pb-6">
-                <div className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
+                <p className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+                  <span aria-hidden className="h-px w-6 bg-primary/50" />
                   Estimated annual leakage
-                </div>
+                </p>
                 <div
                   key={totalLeak}
-                  className="mt-2 flex items-baseline gap-1"
+                  className="mt-3 flex items-baseline gap-1 drop-shadow-[0_0_40px_rgba(245,158,11,0.16)]"
                   style={{ animation: "wbTotal 600ms ease-out both" }}
                 >
-                  <span className="font-[var(--font-serif-display)] text-[44px] italic leading-none tracking-tight text-foreground md:text-[56px]">
+                  <span className="font-[family-name:var(--font-serif-display)] text-[48px] italic leading-none tracking-tight text-primary md:text-[64px]">
                     €
                   </span>
-                  <span className="font-mono text-[44px] font-semibold leading-none tabular-nums tracking-tight text-foreground md:text-[56px]">
+                  <span className="font-mono text-[48px] font-black leading-none tabular-nums tracking-[-0.03em] text-foreground md:text-[64px]">
                     {totalLeak.toLocaleString()}
                   </span>
-                  <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
+                  <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-foreground/55">
                     /yr
                   </span>
                 </div>
-                <p className="mt-2 text-[12.5px] text-muted-foreground">
+                <p className="mt-3 text-[12.5px] text-foreground/65">
                   Across {results.length} leak {results.length === 1 ? "category" : "categories"} ·
                   Based on your real inputs.
                 </p>

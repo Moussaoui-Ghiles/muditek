@@ -5,26 +5,30 @@ import { useMemo, useState } from "react";
 import {
   ArrowUpRight,
   Calculator,
-  ChevronRight,
   Filter,
   Gauge,
   Lock,
   Search,
-  Sparkles,
   Wrench,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 import { PORTAL_TOOLS, type PortalTool } from "@/app/portal/tools-catalog";
 
 type AccessFilter = "all" | "free" | "mudikit";
+type ShelfEntry =
+  | { kind: "workbench"; tool: PortalTool }
+  | { kind: "asset"; item: ContentItem };
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
   if (item.is_free) return true;
   return access.isMudikit || access.isAdmin;
+}
+
+function isToolLocked(tool: PortalTool, access: PortalAccess): boolean {
+  return tool.access === "mudikit" && !access.isMudikit && !access.isAdmin;
 }
 
 function formatDate(value: string | Date | null | undefined): string {
@@ -40,259 +44,415 @@ function categoryLabel(category: string): string {
     .join(" ");
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function iconForCategory(category: string): React.ReactNode {
+  const c = category.toLowerCase();
+  if (c.includes("automation")) return <Gauge className="size-4" />;
+  if (c.includes("template")) return <Calculator className="size-4" />;
+  if (c.includes("diagnostic")) return <Calculator className="size-4" />;
+  return <Wrench className="size-4" />;
+}
+
+function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
   return (
-    <div>
-      <div className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="flex flex-col gap-1">
+      <dt className="text-[9.5px] font-black uppercase tracking-[0.25em] text-foreground/55">
         {label}
-      </div>
-      <div className="mt-1 font-[var(--font-serif-display)] text-[28px] leading-none tracking-tight text-foreground">
+      </dt>
+      <dd
+        className={
+          accent
+            ? "text-[28px] font-black tracking-[-0.03em] text-emerald-300 tnum"
+            : "text-[28px] font-black tracking-[-0.03em] text-foreground tnum"
+        }
+      >
         {value}
-      </div>
+      </dd>
     </div>
   );
 }
 
 function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalAccess }) {
-  const locked = tool.access === "mudikit" && !access.isMudikit;
+  const locked = isToolLocked(tool, access);
+  const parts = tool.title.split(" ");
+  const lastWord = parts.pop() ?? tool.title;
+  const restWords = parts.join(" ");
+  const previewBars = [22, 38, 28, 44, 18];
+  const previewLabels = ["Speed", "Pipe", "Churn", "Spend", "Out."];
+
   return (
     <Link
       href={`/portal/tools/${encodeURIComponent(tool.slug)}`}
-      className="group relative isolate flex min-h-[360px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0e10] p-7 transition-all duration-500 hover:-translate-y-0.5 hover:border-emerald-400/40 md:min-h-[420px] md:p-10"
+      className="group card-lift relative grid items-stretch gap-0 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] md:grid-cols-[1.1fr_1fr] md:gap-10 md:p-4"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-80 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(120% 80% at 85% 0%, rgba(16,185,129,0.14), transparent 55%), radial-gradient(80% 60% at 0% 100%, rgba(255,255,255,0.04), transparent 60%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent opacity-60"
-      />
+      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-400/0 to-transparent transition-all duration-[1.2s] group-hover:via-emerald-400/70" />
+      <div className="pointer-events-none absolute -bottom-16 -right-16 h-80 w-80 rounded-full bg-emerald-500/[0.07] blur-[110px] transition-colors duration-700 group-hover:bg-emerald-500/[0.16]" />
+      <div className="pointer-events-none absolute -top-24 -left-24 h-60 w-60 rounded-full bg-primary/[0.05] blur-[100px]" />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-mono text-[10.5px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
-          <span className="inline-flex size-1.5 animate-pulse rounded-full bg-emerald-400" />
-          Live · Workbench
-        </div>
-        <Badge
-          variant="outline"
-          className={
-            locked
-              ? "rounded-full border-white/[0.12] bg-white/[0.04] text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
-              : "rounded-full border-emerald-400/30 bg-emerald-500/[0.08] text-[10px] uppercase tracking-[0.18em] text-emerald-200"
-          }
-        >
-          {tool.access === "free" ? "Free" : locked ? "MudiKit only" : "MudiKit"}
-        </Badge>
-      </div>
-
-      <div className="mt-10 grid flex-1 gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
-        <div className="min-w-0">
-          <h2 className="text-[40px] leading-[0.96] tracking-tight text-foreground md:text-[56px]">
-            {tool.title.split(" ").map((word, i, arr) => {
-              if (i === arr.length - 1) {
-                return (
-                  <span key={i} className="font-[var(--font-serif-display)] italic text-foreground/90">
-                    {word}
-                  </span>
-                );
-              }
-              return <span key={i}>{word} </span>;
-            })}
+      <div className="relative z-10 flex min-w-0 flex-col justify-between gap-7 p-5 md:py-10 md:pl-8 md:pr-2">
+        <div>
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+            <span aria-hidden className="h-px w-8 bg-primary/50" />
+            Live · Workbench
+            <span className="inline-flex items-center gap-1.5 text-emerald-300/85">
+              <span aria-hidden className="inline-flex size-1.5 animate-pulse rounded-full bg-emerald-400" />
+              In production
+            </span>
+          </div>
+          <h2 className="mt-6 text-[40px] font-black leading-[0.95] tracking-[-0.035em] text-foreground sm:text-[52px] md:text-[64px]">
+            {restWords ? <>{restWords} </> : null}
+            <span className="text-primary italic font-medium">{lastWord}.</span>
           </h2>
-          <p className="mt-5 max-w-[42ch] text-[14.5px] leading-7 text-muted-foreground">
+          <p className="mt-5 max-w-[44ch] text-[14.5px] leading-[1.7] text-foreground/65">
             {tool.description}
           </p>
-          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted-foreground">
-            <span>{tool.category}</span>
-            <span className="h-3 w-px bg-white/15" />
-            <span>5 leak categories</span>
-            <span className="h-3 w-px bg-white/15" />
-            <span>OpenView · HBR · Bessemer</span>
-          </div>
         </div>
 
-        <div className="relative">
-          <div className="rounded-xl border border-white/[0.08] bg-black/40 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_30px_60px_-30px_rgba(16,185,129,0.35)] backdrop-blur">
-            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-300/80">
+        <div className="flex flex-col gap-5 border-t border-white/[0.06] pt-6">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10.5px] font-black uppercase tracking-[0.22em] text-foreground/55">
+            <span>{tool.category}</span>
+            <span aria-hidden className="h-3 w-px bg-white/15" />
+            <span>5 leak categories</span>
+            <span aria-hidden className="h-3 w-px bg-white/15" />
+            <span>OpenView · HBR · Bessemer</span>
+          </div>
+          <span className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+            {locked ? "View details" : "Open workbench"}
+            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+          </span>
+        </div>
+      </div>
+
+      <div className="relative z-10 flex items-center p-4 md:p-6">
+        <div className="relative w-full">
+          <div className="relative rounded-[2px] border border-white/[0.08] bg-black/40 p-6 shadow-[0_30px_80px_-30px_rgba(16,185,129,0.4)] backdrop-blur md:p-7">
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-300/80">
               Estimated annual leakage
             </div>
-            <div className="mt-2 flex items-baseline gap-1">
-              <span className="font-[var(--font-serif-display)] text-[56px] leading-none tracking-tight text-foreground">
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-[family-name:var(--font-serif-display)] text-[64px] italic leading-none tracking-tight text-foreground">
                 €
               </span>
-              <span className="font-mono text-[40px] leading-none tracking-tight text-muted-foreground">
+              <span className="font-mono text-[44px] font-bold leading-none tracking-tight tabular-nums text-muted-foreground">
                 ───
               </span>
-              <span className="ml-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
                 /yr
               </span>
             </div>
-            <div className="mt-4 grid grid-cols-5 gap-1">
-              {[14, 24, 20, 28, 14].map((h, i) => (
-                <div key={i} className="h-12 w-full rounded-sm bg-white/[0.04]">
+            <div className="mt-7 grid grid-cols-5 gap-1.5">
+              {previewBars.map((h, i) => (
+                <div key={i} className="relative h-20 w-full overflow-hidden rounded-sm bg-white/[0.04]">
                   <div
-                    className="h-full rounded-sm bg-gradient-to-t from-emerald-500/60 to-emerald-300/30 transition-all duration-700 group-hover:h-full"
-                    style={{ height: `${h * 1.3}%` }}
+                    className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-emerald-500/70 to-emerald-300/30"
+                    style={{ height: `${h * 1.8}%` }}
                   />
                 </div>
               ))}
             </div>
-            <div className="mt-3 flex justify-between font-mono text-[9.5px] uppercase tracking-[0.18em] text-muted-foreground">
-              <span>Speed</span>
-              <span>Pipe</span>
-              <span>Churn</span>
-              <span>Spend</span>
-              <span>Out.</span>
+            <div className="mt-3 flex justify-between font-mono text-[9.5px] uppercase tracking-[0.2em] text-muted-foreground/80">
+              {previewLabels.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
             </div>
           </div>
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+            <span
+              className={
+                locked
+                  ? "inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-[#0a0a0c] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/60"
+                  : tool.access === "free"
+                    ? "inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-[#0a0a0c] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200"
+                    : "inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-[#0a0a0c] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-primary"
+              }
+            >
+              {locked ? (
+                <>
+                  <Lock className="size-3" />
+                  MudiKit only
+                </>
+              ) : tool.access === "free" ? (
+                <>
+                  <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
+                  Free · No email
+                </>
+              ) : (
+                <>MudiKit</>
+              )}
+            </span>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-10 flex items-center justify-between border-t border-white/[0.06] pt-5">
-        <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
-          {locked ? "MudiKit unlocks this workbench" : "No email required · runs in your browser"}
-        </span>
-        <span className="inline-flex items-center gap-2 text-[13px] font-medium text-foreground transition-transform duration-500 group-hover:translate-x-1">
-          {locked ? "View details" : "Open workbench"}
-          <ArrowUpRight className="size-4" />
-        </span>
       </div>
     </Link>
   );
 }
 
-function CompactToolRow({
-  href,
-  title,
-  description,
-  badge,
-  meta,
-  locked,
-  icon,
-  isNew,
-}: {
-  href: string;
-  title: string;
-  description: string | null;
-  badge: { label: string; tone: "free" | "mudikit" | "locked" };
-  meta: string[];
-  locked?: boolean;
-  icon?: React.ReactNode;
-  isNew?: boolean;
-}) {
-  const toneClass =
-    badge.tone === "free"
-      ? "border-emerald-400/25 bg-emerald-500/[0.06] text-emerald-200"
-      : badge.tone === "mudikit"
-        ? "border-white/[0.12] bg-white/[0.04] text-foreground/80"
-        : "border-white/[0.08] bg-white/[0.02] text-muted-foreground";
+function ShelfCardSurface({ kind }: { kind: "workbench" | "asset" }) {
+  return (
+    <div className="absolute inset-0">
+      <div
+        className={
+          kind === "workbench"
+            ? "absolute inset-0 bg-[radial-gradient(900px_400px_at_20%_-10%,rgba(16,185,129,0.12),transparent_55%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]"
+            : "absolute inset-0 bg-[radial-gradient(900px_400px_at_20%_-10%,rgba(245,158,11,0.12),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]"
+        }
+      />
+      <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.025)_0_1px,transparent_1px_14px)]" />
+    </div>
+  );
+}
 
+function WorkbenchShelfCard({ tool, access }: { tool: PortalTool; access: PortalAccess }) {
+  const locked = isToolLocked(tool, access);
   return (
     <Link
-      href={href}
-      className="group relative flex items-stretch gap-5 rounded-xl border border-white/[0.06] bg-[#0e0e10] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-[#111114] md:p-5"
+      href={`/portal/tools/${encodeURIComponent(tool.slug)}`}
+      className="group card-lift relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6]"
     >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-muted-foreground transition-colors group-hover:border-white/15 group-hover:text-foreground">
-        {locked ? <Lock className="size-4" /> : icon ?? <Wrench className="size-4" />}
+      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-400/0 to-transparent transition-all duration-[1.2s] group-hover:via-emerald-400/70" />
+      <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-emerald-500/[0.06] blur-[60px] transition-colors group-hover:bg-emerald-500/[0.14]" />
+
+      <div className="relative overflow-hidden rounded-[2px] border border-white/[0.08]" style={{ aspectRatio: "16/10" }}>
+        <ShelfCardSurface kind="workbench" />
+        <div className="absolute inset-0 flex flex-col justify-between p-5">
+          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-foreground/60">
+            <span>WORKBENCH</span>
+            <span aria-hidden>{tool.slug.slice(0, 3).toUpperCase()}</span>
+          </div>
+          <div>
+            <p className="line-clamp-2 text-[17px] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
+              {tool.title}
+            </p>
+            <div className="mt-3 h-px w-12 bg-emerald-300/60" />
+          </div>
+        </div>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2">
-          <h3 className="truncate text-[14px] font-medium tracking-tight text-foreground">{title}</h3>
-          {isNew && (
-            <Badge variant="default" className="h-4 rounded-md px-1.5 text-[10px]">
-              New
-            </Badge>
+
+      <div className="relative z-10 flex flex-1 flex-col px-1 pb-2 pt-4">
+        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
+          <span>{tool.category}</span>
+          {locked && (
+            <>
+              <span aria-hidden>·</span>
+              <span className="inline-flex items-center gap-1 text-primary/80">
+                <Lock className="size-3" /> Locked
+              </span>
+            </>
           )}
         </div>
-        {description && (
-          <p className="mt-1 line-clamp-2 text-[12.5px] leading-5 text-muted-foreground">
-            {description}
-          </p>
+        <h3 className="mt-3 text-[17px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+          {tool.title}
+        </h3>
+        {tool.short && (
+          <p className="mt-3 line-clamp-3 text-[13.5px] leading-6 text-foreground/65">{tool.short}</p>
         )}
-        {meta.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/80">
-            {meta.map((m, i) => (
-              <span key={i}>{m}</span>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col items-end justify-between gap-3">
-        <Badge variant="outline" className={`rounded-full px-2.5 text-[10px] uppercase tracking-[0.14em] ${toneClass}`}>
-          {badge.label}
-        </Badge>
-        <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
+        <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+          <span className="inline-flex items-center gap-1.5">
+            {locked ? (
+              <span className="inline-flex items-center gap-1">
+                <Lock className="size-3" /> MudiKit
+              </span>
+            ) : (
+              <>
+                <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
+                {tool.access === "free" ? "Free" : "MudiKit"}
+              </>
+            )}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
+            Open
+            <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </div>
       </div>
     </Link>
   );
+}
+
+function AssetShelfCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
+  const accessible = isAccessible(item, access);
+  const href = `/portal/tools/${encodeURIComponent(item.slug)}`;
+  return (
+    <Link
+      href={href}
+      className="group card-lift relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6]"
+    >
+      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
+      <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px] transition-colors group-hover:bg-primary/10" />
+
+      <div className="relative overflow-hidden rounded-[2px] border border-white/[0.08]" style={{ aspectRatio: "16/10" }}>
+        {item.thumbnail_url ? (
+          <>
+            <img
+              src={item.thumbnail_url}
+              alt=""
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              loading="lazy"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          </>
+        ) : (
+          <>
+            <ShelfCardSurface kind="asset" />
+            <div className="absolute inset-0 flex flex-col justify-between p-5">
+              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-foreground/60">
+                <span>{categoryLabel(item.category).toUpperCase()}</span>
+                <span aria-hidden>{(item.slug || "").slice(0, 3).toUpperCase() || "···"}</span>
+              </div>
+              <div>
+                <p className="line-clamp-2 text-[17px] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
+                  {item.title}
+                </p>
+                <div className="mt-3 h-px w-12 bg-primary/60" />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="relative z-10 flex flex-1 flex-col px-1 pb-2 pt-4">
+        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
+          <span className="inline-flex items-center gap-1.5">
+            {iconForCategory(item.category)}
+            {categoryLabel(item.category)}
+          </span>
+          {item.is_new && (
+            <>
+              <span aria-hidden>·</span>
+              <span className="text-emerald-300/90">New</span>
+            </>
+          )}
+          {!accessible && (
+            <>
+              <span aria-hidden>·</span>
+              <span className="inline-flex items-center gap-1 text-primary/80">
+                <Lock className="size-3" /> Locked
+              </span>
+            </>
+          )}
+        </div>
+        <h3 className="mt-3 text-[17px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+          {item.title}
+        </h3>
+        {item.description && (
+          <p className="mt-3 line-clamp-3 text-[13.5px] leading-6 text-foreground/65">{item.description}</p>
+        )}
+        <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+          <span className="inline-flex items-center gap-1.5">
+            {accessible ? (
+              <>
+                <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
+                {item.is_free ? "Free" : "MudiKit"}
+              </>
+            ) : (
+              <span className="inline-flex items-center gap-1">
+                <Lock className="size-3" /> MudiKit
+              </span>
+            )}
+            {item.file_type && (
+              <>
+                <span aria-hidden className="ml-1 h-3 w-px bg-white/10" />
+                <span>{item.file_type.toUpperCase()}</span>
+              </>
+            )}
+            {item.created_at && (
+              <>
+                <span aria-hidden className="ml-1 h-3 w-px bg-white/10" />
+                <span>{formatDate(item.created_at)}</span>
+              </>
+            )}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
+            Open
+            <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function ShelfCard({ entry, access }: { entry: ShelfEntry; access: PortalAccess }) {
+  if (entry.kind === "workbench") {
+    return <WorkbenchShelfCard tool={entry.tool} access={access} />;
+  }
+  return <AssetShelfCard item={entry.item} access={access} />;
 }
 
 function EmptyShelf({ message, hint }: { message: string; hint: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-white/[0.1] bg-white/[0.012] p-6">
-      <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
-          <Sparkles className="size-4" />
-        </span>
-        <div>
-          <div className="text-[13px] font-medium text-foreground">{message}</div>
-          <p className="mt-1 max-w-md text-[12.5px] leading-5 text-muted-foreground">{hint}</p>
-        </div>
-      </div>
+    <div className="mt-10 flex min-h-64 flex-col items-start justify-center rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.015] p-10">
+      <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+        <span aria-hidden className="h-px w-6 bg-primary/50" />
+        The workbench
+      </p>
+      <h3 className="mt-4 text-[24px] font-black leading-[1] tracking-[-0.02em] text-foreground">
+        {message}
+      </h3>
+      <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-foreground/65">{hint}</p>
     </div>
   );
 }
 
-function UpgradeBanner({ count }: { count: number }) {
+function UpgradeBand({ count }: { count: number }) {
   return (
-    <div className="relative isolate overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0e10] p-5 md:p-6">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(80% 60% at 100% 0%, rgba(244,209,140,0.06), transparent 60%)",
-        }}
-      />
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
-            <Lock className="size-4" />
-          </span>
-          <div>
-            <div className="text-[14px] font-medium text-foreground">
-              {count} {count === 1 ? "tool requires" : "tools require"} MudiKit
-            </div>
-            <p className="mt-1 max-w-md text-[12.5px] leading-5 text-muted-foreground">
-              MudiKit unlocks every paid workbench, automation, and template attached to this portal.
-            </p>
-          </div>
+    <section className="mesh-subtle relative mt-20 overflow-hidden rounded-[2px] border border-primary/20 bg-card/[0.4] backdrop-blur-md">
+      <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-primary/10 blur-[80px]" />
+      <div className="relative grid gap-8 p-10 md:grid-cols-[1.1fr_auto] md:items-center md:p-12">
+        <div>
+          <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+            <Lock className="size-3.5" />
+            MudiKit
+          </p>
+          <h3 className="mt-5 max-w-xl text-[26px] font-black leading-[1] tracking-[-0.025em] text-foreground md:text-[34px]">
+            {count} {count === 1 ? "tool is" : "tools are"} part of{" "}
+            <span className="text-primary italic font-medium">MudiKit</span>.
+          </h3>
+          <p className="mt-4 max-w-lg text-[13.5px] leading-7 text-foreground/65">
+            MudiKit unlocks every paid workbench, automation, and template attached to this portal.
+          </p>
         </div>
-        <Button render={<Link href="/portal/mudikit" />} nativeButton={false} size="lg">
-          Unlock MudiKit
-          <ArrowUpRight className="size-4" />
-        </Button>
+        <Link
+          href="/portal/mudikit"
+          className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background"
+        >
+          <span className="relative z-10 inline-flex items-center gap-3">
+            Unlock MudiKit
+            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+          </span>
+          <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />
+        </Link>
       </div>
-    </div>
+    </section>
   );
 }
 
-function iconForCategory(category: string): React.ReactNode {
-  if (category === "automation") return <Gauge className="size-4" />;
-  if (category === "template") return <Calculator className="size-4" />;
-  return <Wrench className="size-4" />;
+function FilterPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        active
+          ? "inline-flex h-9 items-center rounded-[2px] border border-primary/40 bg-primary/15 px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-primary transition-colors"
+          : "inline-flex h-9 items-center rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/60 transition-colors hover:border-white/[0.2] hover:bg-white/[0.05] hover:text-foreground"
+      }
+    >
+      {children}
+    </button>
+  );
 }
 
 export default function ToolsContent({
   items,
   access,
-  email,
-  displayName,
 }: {
   items: ContentItem[];
   access: PortalAccess;
@@ -313,16 +473,18 @@ export default function ToolsContent({
       total: items.length + workbenches.length,
       free: dbFree + wbFree,
       paid: dbPaid + wbPaid,
+      workbenches: workbenches.length,
     };
   }, [items, workbenches]);
 
   const lockedCount = useMemo(() => {
     const dbLocked = items.filter((i) => !i.is_free && !isAccessible(i, access)).length;
-    const wbLocked = workbenches.filter((w) => w.access === "mudikit" && !access.isMudikit).length;
+    const wbLocked = workbenches.filter((w) => isToolLocked(w, access)).length;
     return dbLocked + wbLocked;
   }, [items, workbenches, access]);
 
-  const showFilters = counts.total >= 4;
+  const hasBothAccess = counts.free > 0 && counts.paid > 0;
+  const showSearch = counts.total >= 5;
 
   const filteredWorkbenches = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -352,247 +514,161 @@ export default function ToolsContent({
     });
   }, [items, query, accessFilter]);
 
-  const featured = filteredWorkbenches[0] ?? workbenches[0] ?? null;
-  const remainingWorkbenches = featured
-    ? filteredWorkbenches.filter((w) => w.slug !== featured.slug)
-    : filteredWorkbenches;
+  const isFilteredView = query.trim().length > 0 || accessFilter !== "all";
+  const featured = !isFilteredView ? filteredWorkbenches[0] ?? null : null;
 
-  const totalFiltered = filteredWorkbenches.length + filteredItems.length;
-  const isSearching = query.trim().length > 0 || accessFilter !== "all";
+  const shelfEntries: ShelfEntry[] = useMemo(() => {
+    const entries: ShelfEntry[] = [];
+    filteredWorkbenches.forEach((tool) => {
+      if (!featured || tool.slug !== featured.slug) {
+        entries.push({ kind: "workbench", tool });
+      }
+    });
+    filteredItems.forEach((item) => {
+      entries.push({ kind: "asset", item });
+    });
+    return entries;
+  }, [filteredWorkbenches, filteredItems, featured]);
 
   return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px]"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 12% 0%, rgba(16,185,129,0.06), transparent 60%), radial-gradient(50% 40% at 95% 5%, rgba(255,255,255,0.04), transparent 60%)",
-        }}
-      />
-
-      <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:px-10 lg:pt-12">
-        {/* Editorial header */}
-        <header className="grid gap-8 border-b border-white/[0.06] pb-10 md:grid-cols-[1.5fr_1fr] md:items-end md:gap-12">
-          <div>
-            <div className="flex items-center gap-2 font-mono text-[10.5px] font-medium uppercase tracking-[0.22em] text-emerald-300/80">
-              <Wrench className="size-3.5" />
-              <span>Tools · Workbench</span>
-            </div>
-            <h1 className="mt-5 text-[44px] leading-[0.96] tracking-[-0.03em] text-foreground sm:text-[56px] md:text-[68px]">
-              Run the{" "}
-              <span className="font-[var(--font-serif-display)] italic text-foreground/90">
-                numbers.
-              </span>
+    <main className="relative">
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-white/[0.04]">
+        <div className="mesh-subtle pointer-events-none absolute inset-0 opacity-60" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-16 md:pb-20 md:pt-20 lg:px-10">
+          <div className="reveal">
+            <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
+              <span aria-hidden className="h-px w-8 bg-primary/50" />
+              The workbench
+            </p>
+            <h1 className="mt-6 text-[44px] font-black leading-[0.92] tracking-[-0.04em] text-foreground sm:text-[60px] md:text-[78px]">
+              Run the <span className="text-primary italic font-medium">numbers.</span>
             </h1>
-            <p className="mt-5 max-w-[58ch] text-[14.5px] leading-7 text-muted-foreground">
+            <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
               Interactive instruments that turn your real metrics into euro-denominated answers.
-              Workbenches run inside the portal; downloadable tools open from the shelf.
-              Nothing fake. Nothing demoed.
+              Workbenches run inside the portal. Downloadable tools open from the shelf. Nothing
+              fake. Nothing demoed.
             </p>
           </div>
-          <dl className="grid grid-cols-3 gap-x-6 gap-y-2 self-end border-l border-white/[0.06] pl-6 md:pl-10">
+          <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
             <Stat label="Total" value={counts.total} />
+            <Stat label="Workbenches" value={counts.workbenches} />
             <Stat label="Free" value={counts.free} />
             <Stat label="MudiKit" value={counts.paid} />
+            <Stat label="Locked" value={lockedCount} accent={lockedCount > 0} />
+            <Stat label="New" value={items.filter((i) => i.is_new).length} />
           </dl>
-        </header>
+        </div>
+      </section>
 
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
         {counts.total === 0 ? (
-          <div className="mt-10">
-            <EmptyShelf
-              message="The workbench is empty."
-              hint="Interactive tools and calculators will appear here as they ship. This page only lists real, working tools — never placeholders."
-            />
-          </div>
+          <EmptyShelf
+            message="The workbench is empty."
+            hint="Interactive tools and calculators will appear here as they ship. This page only lists real, working tools — never placeholders."
+          />
         ) : (
           <>
-            {/* Featured + secondary rail */}
-            <div className="mt-10 grid gap-6 md:grid-cols-12">
-              <div className="md:col-span-7 xl:col-span-8">
-                {featured ? (
+            {featured && (
+              <ScrollReveal>
+                <section className="mb-14">
+                  <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
+                    <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                      <span aria-hidden className="h-px w-6 bg-white/20" />
+                      Featured workbench
+                    </h2>
+                    <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                      Live · runs in your browser
+                    </span>
+                  </div>
                   <FeaturedWorkbench tool={featured} access={access} />
-                ) : (
-                  <EmptyShelf
-                    message="No workbenches in this filter."
-                    hint="Adjust filters above to see the live workbench."
-                  />
-                )}
-              </div>
+                </section>
+              </ScrollReveal>
+            )}
 
-              <aside className="flex flex-col gap-4 md:col-span-5 xl:col-span-4">
-                <div className="flex items-center justify-between">
-                  <div className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-muted-foreground">
-                    Library shelf
-                  </div>
-                  <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted-foreground/70">
-                    {filteredItems.length + remainingWorkbenches.length}{" "}
-                    {filteredItems.length + remainingWorkbenches.length === 1 ? "item" : "items"}
-                  </div>
-                </div>
-
-                {remainingWorkbenches.length === 0 && filteredItems.length === 0 ? (
-                  <EmptyShelf
-                    message={isSearching ? "Nothing matches this filter." : "The shelf is bare."}
-                    hint={
-                      isSearching
-                        ? "Try a different keyword or switch the access filter."
-                        : "Additional tools, templates, and automations will appear here as they ship."
-                    }
-                  />
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    {remainingWorkbenches.map((tool) => {
-                      const locked = tool.access === "mudikit" && !access.isMudikit;
-                      return (
-                        <CompactToolRow
-                          key={tool.slug}
-                          href={`/portal/tools/${encodeURIComponent(tool.slug)}`}
-                          title={tool.title}
-                          description={tool.short}
-                          icon={<Wrench className="size-4" />}
-                          locked={locked}
-                          badge={{
-                            label:
-                              tool.access === "free" ? "Free" : locked ? "MudiKit only" : "MudiKit",
-                            tone: tool.access === "free" ? "free" : locked ? "locked" : "mudikit",
-                          }}
-                          meta={[tool.category, "Workbench"]}
-                        />
-                      );
-                    })}
-
-                    {filteredItems.slice(0, 6).map((item) => {
-                      const accessible = isAccessible(item, access);
-                      return (
-                        <CompactToolRow
-                          key={item.id}
-                          href={`/portal/tools/${encodeURIComponent(item.slug)}`}
-                          title={item.title}
-                          description={item.description}
-                          icon={iconForCategory(item.category)}
-                          locked={!accessible}
-                          isNew={item.is_new}
-                          badge={{
-                            label: item.is_free
-                              ? "Free"
-                              : accessible
-                                ? "MudiKit"
-                                : "Locked",
-                            tone: item.is_free
-                              ? "free"
-                              : accessible
-                                ? "mudikit"
-                                : "locked",
-                          }}
-                          meta={[
-                            categoryLabel(item.category),
-                            item.file_type ? item.file_type.toUpperCase() : "",
-                            `Added ${formatDate(item.created_at)}`,
-                          ].filter(Boolean)}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-
-                {showFilters && (
-                  <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.015] p-3">
-                    <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                      <Filter className="size-3" /> Filter
-                    </div>
-                    <div className="flex flex-col gap-2.5">
-                      <div className="flex min-w-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-black/30 px-2.5">
-                        <Search className="size-3.5 shrink-0 text-muted-foreground" />
-                        <Input
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                          placeholder="Search tools"
-                          className="h-8 w-full border-0 bg-transparent px-0 text-[12.5px] focus-visible:ring-0"
-                        />
+            {(hasBothAccess || showSearch) && (
+              <section className="sticky top-14 z-20 -mx-4 mb-10 border-y border-white/[0.06] bg-[#0a0a0c]/85 px-4 py-3.5 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
+                      <Filter className="size-3" />
+                      Browse
+                    </span>
+                    {hasBothAccess && (
+                      <div className="flex items-center gap-1.5">
+                        <FilterPill active={accessFilter === "all"} onClick={() => setAccessFilter("all")}>
+                          All
+                        </FilterPill>
+                        <FilterPill active={accessFilter === "free"} onClick={() => setAccessFilter("free")}>
+                          Free <span className="ml-2 opacity-60">{counts.free}</span>
+                        </FilterPill>
+                        <FilterPill active={accessFilter === "mudikit"} onClick={() => setAccessFilter("mudikit")}>
+                          MudiKit <span className="ml-2 opacity-60">{counts.paid}</span>
+                        </FilterPill>
                       </div>
-                      <div className="flex gap-1.5">
-                        {(["all", "free", "mudikit"] as const).map((key) => (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => setAccessFilter(key)}
-                            className={`flex-1 rounded-md border px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition-colors ${
-                              accessFilter === key
-                                ? "border-emerald-400/30 bg-emerald-500/[0.08] text-emerald-200"
-                                : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
-                            }`}
-                          >
-                            {key === "all" ? "All" : key === "free" ? "Free" : "MudiKit"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </aside>
-            </div>
-
-            {/* Remaining DB items as full-width rows when shelf overflows */}
-            {filteredItems.length > 6 && (
-              <section className="mt-12">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
-                    More on the shelf
-                  </h2>
-                  <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground/70">
-                    {filteredItems.length - 6} more
-                  </span>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {filteredItems.slice(6).map((item) => {
-                    const accessible = isAccessible(item, access);
-                    return (
-                      <CompactToolRow
-                        key={item.id}
-                        href={`/portal/tools/${encodeURIComponent(item.slug)}`}
-                        title={item.title}
-                        description={item.description}
-                        icon={iconForCategory(item.category)}
-                        locked={!accessible}
-                        isNew={item.is_new}
-                        badge={{
-                          label: item.is_free
-                            ? "Free"
-                            : accessible
-                              ? "MudiKit"
-                              : "Locked",
-                          tone: item.is_free ? "free" : accessible ? "mudikit" : "locked",
-                        }}
-                        meta={[
-                          categoryLabel(item.category),
-                          item.file_type ? item.file_type.toUpperCase() : "",
-                          `Added ${formatDate(item.created_at)}`,
-                        ].filter(Boolean)}
+                  {showSearch && (
+                    <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-3 lg:w-[300px]">
+                      <Search className="size-3.5 shrink-0 text-foreground/55" />
+                      <Input
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="Search the shelf"
+                        className="h-9 w-full border-0 bg-transparent px-0 text-[13px] focus-visible:ring-0"
                       />
-                    );
-                  })}
+                    </div>
+                  )}
                 </div>
               </section>
             )}
 
-            {totalFiltered === 0 && (
-              <div className="mt-8">
-                <EmptyShelf
-                  message="Nothing matches this filter."
-                  hint="Adjust the search query or access filter on the right."
-                />
+            <section>
+              <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
+                <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                  <span aria-hidden className="h-px w-6 bg-white/20" />
+                  {isFilteredView ? `Results · ${shelfEntries.length}` : "Everything on the shelf"}
+                </h2>
+                {!isFilteredView && lockedCount > 0 && (
+                  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                    {lockedCount} {lockedCount === 1 ? "item" : "items"} need MudiKit
+                  </span>
+                )}
               </div>
-            )}
+
+              {shelfEntries.length === 0 ? (
+                <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.015] p-10 text-[13.5px] text-foreground/65">
+                  Nothing matches the current search and filters. Try removing one or two.
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+                  {shelfEntries.map((entry, i) => (
+                    <ScrollReveal
+                      key={entry.kind === "workbench" ? `wb-${entry.tool.slug}` : `ai-${entry.item.id}`}
+                      delay={Math.min(i * 60, 360)}
+                    >
+                      <ShelfCard entry={entry} access={access} />
+                    </ScrollReveal>
+                  ))}
+                </div>
+              )}
+            </section>
 
             {!access.isMudikit && !access.isAdmin && lockedCount > 0 && accessFilter !== "free" && (
-              <div className="mt-12">
-                <UpgradeBanner count={lockedCount} />
-              </div>
+              <UpgradeBand count={lockedCount} />
             )}
           </>
         )}
-      </section>
-    </>
+      </div>
+    </main>
   );
 }

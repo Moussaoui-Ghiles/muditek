@@ -101,13 +101,12 @@ export default function PortalHomeContent({
     [playbookGuideItems, isFreeOnly]
   );
 
-  const featured: ContentItem | null = useMemo(() => {
-    if (access.isMudikit && paidItems[0]) return paidItems[0];
-    return freeItems[0] ?? null;
-  }, [access.isMudikit, paidItems, freeItems]);
-
-  const recentItems = useMemo(() => {
-    const merged: ContentItem[] = [...resources, ...skills];
+  const latestFirst = useMemo(() => {
+    const merged: ContentItem[] = [
+      ...(access.isMudikit ? paidItems : []),
+      ...resources,
+      ...skills,
+    ];
     const seen = new Set<string>();
     return merged
       .filter((item) => {
@@ -115,114 +114,155 @@ export default function PortalHomeContent({
         seen.add(item.id);
         return true;
       })
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 7);
-  }, [resources, skills]);
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [resources, skills, paidItems, access.isMudikit]);
 
+  const latestItem = latestFirst[0] ?? null;
+  const recentList = latestFirst.slice(0, 6);
   const latestIssue = issues[0];
+
+  const browseLinks = [
+    {
+      href: "/portal/tools",
+      title: "Tools",
+      count: tools.length === 1 ? "1 tool" : `${tools.length} tools`,
+    },
+    {
+      href: "/portal/skills",
+      title: "Skills",
+      count: skills.length === 0 ? "Soon" : `${skills.length}`,
+    },
+    {
+      href: "/portal/playbooks",
+      title: "Playbooks & guides",
+      count: resources.length === 0 ? "Soon" : `${resources.length}`,
+    },
+    {
+      href: "/portal/newsletter",
+      title: "Newsletter",
+      count: latestIssue ? "Latest issue" : "Soon",
+    },
+    {
+      href: "/portal/mudikit",
+      title: "MudiKit",
+      count: access.isMudikit ? "Active" : "Locked",
+    },
+  ];
 
   return (
     <main className="relative">
       <div className="mx-auto w-full max-w-[1340px] px-6 pb-24 pt-10 md:px-10 md:pt-12 lg:px-14">
-        {/* Header strip */}
-        <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] pb-7">
-          <div>
-            <h1 className="text-[36px] font-semibold leading-[1.05] tracking-[-0.02em] text-white md:text-[44px]">
-              Hey, {displayName}.
-            </h1>
-            <p className="mt-2 text-[14px] text-white/45">
-              Your room inside Muditek — what shipped, what&apos;s coming, and the systems behind it.
-            </p>
-          </div>
+        {/* Header */}
+        <header className="border-b border-white/[0.06] pb-7">
+          <h1 className="text-[34px] font-semibold leading-[1.05] tracking-[-0.02em] text-white md:text-[42px]">
+            Hey, {displayName}.
+          </h1>
+          <p className="mt-2 text-[14px] text-white/45">
+            Your room inside Muditek — what shipped, what&apos;s coming, and the systems behind it.
+          </p>
         </header>
 
-        {/* HERO REGION — 3:1 split */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
-          {/* Featured */}
-          {featured ? (
-            <Link
-              href={categoryHref(featured)}
-              className="group relative isolate flex flex-col justify-between gap-10 overflow-hidden rounded-2xl bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-7 transition-all duration-300 hover:from-white/[0.06] md:p-10"
-            >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.08] blur-3xl"
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 -bottom-1/2 h-full bg-gradient-to-t from-amber-500/[0.05] via-transparent to-transparent"
-              />
-              <div className="relative">
-                <p className="text-[12.5px] uppercase tracking-[0.18em] text-amber-300/70">
-                  Latest {categoryLabel(featured).toLowerCase()}
-                </p>
-                <h2 className="mt-4 max-w-[18ch] text-[36px] font-semibold leading-[1.04] tracking-[-0.025em] text-white md:text-[52px]">
-                  {featured.title}
-                </h2>
-                {featured.description && (
-                  <p className="mt-4 max-w-[55ch] text-[15px] leading-[1.6] text-white/60">
-                    {featured.description}
-                  </p>
-                )}
-              </div>
-              <span className="relative inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 group-hover:gap-3 group-hover:bg-amber-50">
-                Open
-                <ArrowRight className="size-3.5" />
-              </span>
-            </Link>
-          ) : (
-            <div className="flex flex-col gap-4 overflow-hidden rounded-2xl bg-white/[0.02] p-7 md:p-9">
-              <h2 className="max-w-[20ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.022em] text-white md:text-[38px]">
-                The portal opens here.
-              </h2>
-              <p className="max-w-[55ch] text-[14.5px] leading-[1.6] text-white/55">
-                First playbooks, skills, and tools land in this spot as they ship.
-              </p>
-            </div>
-          )}
-
-          {/* Side panel */}
-          <aside className="flex flex-col gap-7 rounded-2xl bg-white/[0.018] p-7">
-            <div>
-              <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
+        {/* TOP REGION — 1:1 panel pair, no giant empty hero */}
+        <section className="mt-8 grid gap-6 lg:grid-cols-2">
+          {/* Operator panel */}
+          <div className="rounded-2xl bg-white/[0.018] p-7 md:p-8">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
                 This week
-              </h3>
-              <p className="mt-3 text-[15px] leading-[1.6] text-white/85">
-                {thisWeek || "Heads down on the next drop."}
-              </p>
-              <a
-                href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20what%20I%27m%20solving"
-                className="group mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-amber-300/85 transition-colors hover:text-amber-200"
-              >
-                Sounds like your business? Get in touch
-                <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </a>
+              </h2>
+              <span className="text-[11.5px] text-white/35">From Ghiles</span>
             </div>
+            <p className="mt-4 text-[16px] leading-[1.6] text-white/85">
+              {thisWeek || "Heads down on the next drop."}
+            </p>
+            <a
+              href="mailto:biz@ghiless.com?subject=Muditek%20portal%20%E2%80%94%20what%20I%27m%20solving"
+              className="group mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-amber-300/85 transition-colors hover:text-amber-200"
+            >
+              Sounds like your business? Get in touch
+              <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </a>
 
             {upcoming.length > 0 && (
-              <div className="border-t border-white/[0.06] pt-6">
+              <div className="mt-7 border-t border-white/[0.06] pt-6">
                 <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
                   Coming next
                 </h3>
-                <ul className="mt-4 space-y-4">
+                <ul className="mt-4 divide-y divide-white/[0.05]">
                   {upcoming.slice(0, 3).map((item, i) => (
-                    <li key={`${item.date}-${i}`}>
-                      <p className="text-[14px] font-medium leading-snug text-white/85">
+                    <li
+                      key={`${item.date}-${i}`}
+                      className="flex items-center justify-between gap-4 py-3"
+                    >
+                      <span className="min-w-0 flex-1 truncate text-[14px] text-white/85">
                         {item.title}
-                      </p>
-                      <p className="mt-0.5 text-[12px] text-white/40">
-                        {formatShortDate(item.date)} · {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                      </p>
+                      </span>
+                      <span className="shrink-0 text-[12px] text-white/40">
+                        {formatShortDate(item.date)} ·{" "}
+                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
-          </aside>
+          </div>
+
+          {/* Latest from the library panel */}
+          <div className="rounded-2xl bg-white/[0.018] p-7 md:p-8">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-white/40">
+                Latest from the library
+              </h2>
+              <Link
+                href="/portal/playbooks"
+                className="group inline-flex items-center gap-1 text-[12px] text-white/50 transition-colors hover:text-white"
+              >
+                Browse all
+                <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+            {recentList.length > 0 ? (
+              <ul className="mt-4 divide-y divide-white/[0.05]">
+                {recentList.map((item, idx) => {
+                  const isLatest = idx === 0 && latestItem?.id === item.id;
+                  return (
+                    <li key={item.id}>
+                      <Link
+                        href={categoryHref(item)}
+                        className="group -mx-3 flex items-center justify-between gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-white/[0.025]"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2.5">
+                            <span className="truncate text-[14.5px] font-medium text-white">
+                              {item.title}
+                            </span>
+                            {isLatest && (
+                              <span className="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-200">
+                                New
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-0.5 text-[12px] text-white/40">
+                            {categoryLabel(item)} · {formatShortDate(item.created_at)}
+                          </p>
+                        </div>
+                        <ArrowRight className="size-4 shrink-0 text-white/25 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="mt-4 text-[13.5px] text-white/45">
+                The library opens with the first drop.
+              </p>
+            )}
+          </div>
         </section>
 
-        {/* OFFERS — what I build */}
-        <section className="mt-14">
+        {/* What I build — 3 offers */}
+        <section className="mt-12">
           <div className="mb-5 flex items-baseline justify-between">
             <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">
               What I build
@@ -241,12 +281,12 @@ export default function PortalHomeContent({
                   className={`pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-gradient-to-br ${offer.accent} to-transparent blur-3xl`}
                 />
                 <div className="relative">
-                  <h3 className="text-[20px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
+                  <h3 className="text-[19px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
                     {offer.title}
                   </h3>
                   <p className="mt-3 text-[13.5px] leading-[1.55] text-white/55">{offer.desc}</p>
                 </div>
-                <span className="relative mt-7 inline-flex items-center gap-1.5 text-[13px] font-medium text-white/80 transition-colors group-hover:text-amber-300/85">
+                <span className="relative mt-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-white/80 transition-colors group-hover:text-amber-300/85">
                   See the work
                   <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </span>
@@ -255,101 +295,27 @@ export default function PortalHomeContent({
           </div>
         </section>
 
-        {/* RECENT + BROWSE — 2-col split */}
-        <section className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-10">
-          {/* Recent */}
-          <div>
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">Recent</h2>
-              <Link
-                href="/portal/playbooks"
-                className="group inline-flex items-center gap-1 text-[13px] text-white/50 transition-colors hover:text-white"
-              >
-                Browse all
-                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-            {recentItems.length > 0 ? (
-              <ul className="divide-y divide-white/[0.05]">
-                {recentItems.map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={categoryHref(item)}
-                      className="group flex items-center justify-between gap-6 py-4 transition-colors hover:bg-white/[0.018]"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[15px] font-medium leading-snug text-white transition-colors group-hover:text-white">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 text-[12.5px] text-white/40">
-                          {categoryLabel(item)} · {formatShortDate(item.created_at)}
-                        </p>
-                      </div>
-                      <ArrowRight className="size-4 shrink-0 text-white/25 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-[13.5px] text-white/45">Library opens with the first drop.</p>
-            )}
-          </div>
-
-          {/* Browse cluster */}
-          <aside className="self-start rounded-2xl bg-white/[0.018] p-7">
+        {/* Browse strip — compact horizontal nav */}
+        <section className="mt-12">
+          <div className="mb-5 flex items-baseline justify-between">
             <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">Browse</h2>
-            <p className="mt-1 text-[13px] text-white/40">Everything in the portal.</p>
-            <ul className="mt-5 space-y-1">
-              {[
-                {
-                  href: "/portal/tools",
-                  title: "Tools",
-                  meta: tools.length === 1 ? "1 tool" : `${tools.length} tools`,
-                },
-                {
-                  href: "/portal/skills",
-                  title: "Skills",
-                  meta:
-                    skills.length === 0
-                      ? "Soon"
-                      : `${skills.length} ${skills.length === 1 ? "skill" : "skills"}`,
-                },
-                {
-                  href: "/portal/playbooks",
-                  title: "Playbooks & guides",
-                  meta:
-                    resources.length === 0
-                      ? "Soon"
-                      : `${resources.length} ${resources.length === 1 ? "piece" : "pieces"}`,
-                },
-                {
-                  href: "/portal/newsletter",
-                  title: "Newsletter",
-                  meta: latestIssue ? "Latest issue" : "Soon",
-                },
-                {
-                  href: "/portal/mudikit",
-                  title: "MudiKit",
-                  meta: access.isMudikit ? "Active" : "Locked",
-                },
-              ].map((row) => (
-                <li key={row.href}>
-                  <Link
-                    href={row.href}
-                    className="group -mx-3 flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-white/[0.03]"
-                  >
-                    <span className="text-[14.5px] font-medium text-white/90 transition-colors group-hover:text-white">
-                      {row.title}
-                    </span>
-                    <span className="flex items-center gap-2 text-[12px] text-white/40">
-                      {row.meta}
-                      <ArrowRight className="size-3.5 text-white/30 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </aside>
+            <p className="text-[13px] text-white/40">Everything in the portal</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {browseLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex items-center justify-between gap-3 rounded-xl bg-white/[0.02] px-5 py-4 transition-colors hover:bg-white/[0.04]"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-[14px] font-medium text-white">{link.title}</p>
+                  <p className="mt-0.5 text-[12px] text-white/40">{link.count}</p>
+                </div>
+                <ArrowRight className="size-4 shrink-0 text-white/25 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-amber-300/85" />
+              </Link>
+            ))}
+          </div>
         </section>
       </div>
     </main>

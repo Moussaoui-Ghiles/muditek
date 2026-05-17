@@ -36,7 +36,7 @@ const GROUP_ORDER: GroupKey[] = ["skills", "playbooks", "resources", "other"];
 const GROUP_LABEL: Record<GroupKey, string> = {
   skills: "Skills",
   playbooks: "Playbooks & guides",
-  resources: "Resource files",
+  resources: "Templates & scorecards",
   other: "Other",
 };
 const GROUP_BLURB: Record<GroupKey, string> = {
@@ -436,8 +436,8 @@ function IncludedPointersStrip() {
       href: "/portal/skills",
     },
     {
-      title: "Playbooks & guides",
-      body: "Included systems on your account.",
+      title: "Resources",
+      body: "Playbooks, guides, and scorecards.",
       href: "/portal/playbooks",
     },
     {

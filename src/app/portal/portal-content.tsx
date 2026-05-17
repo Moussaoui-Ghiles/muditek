@@ -80,7 +80,7 @@ function categoryLabel(item: ContentItem): string {
   if (item.category === SKILL_CATEGORY) return "Skill";
   if (item.category === "guide") return "Guide";
   if (item.category === "playbook") return "Playbook";
-  if (item.category === "tool") return "Tool file";
+  if (item.category === "tool") return "Scorecard";
   if (item.category === "automation") return "Automation";
   if (item.category === "template") return "Template";
   return contentCategoryLabel(item.category);

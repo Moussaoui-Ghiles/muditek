@@ -14,6 +14,11 @@ export interface ContentItem {
 }
 
 export function categoryLabel(category: string): string {
+  const value = category.trim().toLowerCase();
+  if (value === "tool") return "Scorecard";
+  if (value === "automation") return "Automation";
+  if (value === "template") return "Template";
+
   return category
     .split(/[-_\s]+/)
     .filter(Boolean)

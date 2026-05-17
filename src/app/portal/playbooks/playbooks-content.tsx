@@ -33,7 +33,7 @@ function typeLabel(item: ContentItem): string {
   if (item.category === "playbook") return "Playbook";
   if (item.category === "automation") return "Automation";
   if (item.category === "template") return "Template";
-  if (item.category === "tool") return "Tool file";
+  if (item.category === "tool") return "Scorecard";
   return "Resource";
 }
 

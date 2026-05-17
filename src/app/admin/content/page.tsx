@@ -53,7 +53,14 @@ interface Draft {
   isNew: boolean;
 }
 
-const CATEGORIES = ["skill", "playbook", "guide", "tool", "automation", "template"];
+const CATEGORIES = [
+  { value: "skill", label: "Skill" },
+  { value: "playbook", label: "Playbook" },
+  { value: "guide", label: "Guide" },
+  { value: "tool", label: "Scorecard" },
+  { value: "automation", label: "Automation" },
+  { value: "template", label: "Template" },
+];
 const FILE_TYPES = ["zip", "pdf", "md", "html", "url"];
 const EMPTY_DRAFT: Draft = {
   title: "",
@@ -104,6 +111,10 @@ function formatDate(value: string | null | undefined) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function categoryLabel(value: string) {
+  return CATEGORIES.find((category) => category.value === value)?.label ?? value;
 }
 
 function VisibilityBadge({ item }: { item: ContentItem }) {
@@ -430,7 +441,7 @@ export default function ContentPage() {
                       <VisibilityBadge item={item} />
                       {item.is_new && <Badge className="rounded-md">New</Badge>}
                       <Badge variant="outline" className="rounded-md">
-                        {item.category}
+                        {categoryLabel(item.category)}
                       </Badge>
                       {isFileBackedSkill(item) && (
                         <Badge variant="outline" className="rounded-md border-violet-400/30 text-violet-200">
@@ -570,8 +581,8 @@ export default function ContentPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

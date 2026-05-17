@@ -7,7 +7,13 @@ export const alt = "Muditek newsletter issue";
 
 interface IssueRow {
   subject: string;
-  stats: { tldr?: string | null; preview?: string | null } | null;
+  stats: {
+    tldr?: string | null;
+    preview?: string | null;
+    portal_article?: boolean | string;
+    portalArticle?: boolean | string;
+    source?: string;
+  } | null;
 }
 
 async function getIssue(slug: string): Promise<IssueRow | null> {
@@ -17,7 +23,18 @@ async function getIssue(slug: string): Promise<IssueRow | null> {
     const rows = (await sql`
       SELECT subject, stats
       FROM newsletter_issues
-      WHERE slug = ${slug} AND status = 'sent'
+      WHERE slug = ${slug}
+        AND status = 'sent'
+        AND html IS NOT NULL
+        AND length(trim(html)) > 0
+        AND (
+          stats->>'portal_article' = 'true'
+          OR stats->>'portalArticle' = 'true'
+          OR (
+            stats->>'source' = 'beehiiv'
+            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+          )
+        )
       LIMIT 1
     `) as IssueRow[];
     return rows[0] ?? null;

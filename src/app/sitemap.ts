@@ -55,7 +55,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const sql = getDb();
-    const issues = (await sql`SELECT slug, sent_at, updated_at FROM newsletter_issues WHERE status = 'sent' AND slug IS NOT NULL ORDER BY sent_at DESC`) as Array<{
+    const issues = (await sql`
+      SELECT slug, sent_at, updated_at
+      FROM newsletter_issues
+      WHERE status = 'sent'
+        AND slug IS NOT NULL
+        AND html IS NOT NULL
+        AND length(trim(html)) > 0
+        AND (
+          stats->>'portal_article' = 'true'
+          OR stats->>'portalArticle' = 'true'
+          OR (
+            stats->>'source' = 'beehiiv'
+            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+          )
+        )
+      ORDER BY sent_at DESC
+    `) as Array<{
       slug: string;
       sent_at: Date | null;
       updated_at: Date | null;

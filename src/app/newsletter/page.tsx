@@ -49,7 +49,13 @@ interface Issue {
   slug: string;
   subject: string;
   sent_at: string | null;
-  stats: { preview?: string | null } | null;
+  stats: {
+    preview?: string | null;
+    tldr?: string | null;
+    thumbnail_url?: string | null;
+    image?: string | null;
+    hero_image?: string | null;
+  } | null;
 }
 
 async function getIssues(): Promise<Issue[]> {
@@ -58,7 +64,18 @@ async function getIssues(): Promise<Issue[]> {
     const rows = (await sql`
       SELECT slug, subject, sent_at, stats
       FROM newsletter_issues
-      WHERE status = 'sent' AND slug IS NOT NULL
+      WHERE status = 'sent'
+        AND slug IS NOT NULL
+        AND html IS NOT NULL
+        AND length(trim(html)) > 0
+        AND (
+          stats->>'portal_article' = 'true'
+          OR stats->>'portalArticle' = 'true'
+          OR (
+            stats->>'source' = 'beehiiv'
+            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+          )
+        )
       ORDER BY sent_at DESC
       LIMIT 30
     `) as Issue[];
@@ -66,6 +83,51 @@ async function getIssues(): Promise<Issue[]> {
   } catch {
     return [];
   }
+}
+
+function issueImage(issue: Issue): string | null {
+  return (
+    issue.stats?.thumbnail_url?.trim() ||
+    issue.stats?.hero_image?.trim() ||
+    issue.stats?.image?.trim() ||
+    null
+  );
+}
+
+function NewsletterCardCover({ issue, index }: { issue: Issue; index: number }) {
+  const image = issueImage(issue);
+  if (image) {
+    return (
+      <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08] bg-card">
+        <img
+          src={image}
+          alt=""
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          loading="lazy"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/75 via-background/10 to-transparent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08] bg-[#101014]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(245,158,11,0.24),transparent_30%),radial-gradient(circle_at_80%_30%,rgba(16,185,129,0.16),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.07),rgba(255,255,255,0.01))]" />
+      <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.035)_0_1px,transparent_1px_13px)]" />
+      <div className="absolute inset-0 flex flex-col justify-between p-5">
+        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/45">
+          <span>Article</span>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div>
+          <p className="line-clamp-2 text-[18px] font-black leading-[1.05] tracking-[-0.02em] text-foreground">
+            {issue.subject}
+          </p>
+          <div className="mt-4 h-px w-12 bg-primary/70" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function formatDate(iso: string | null): string {
@@ -159,6 +221,7 @@ export default async function NewsletterPage() {
                     className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
                   >
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
+                    <NewsletterCardCover issue={issue} index={i} />
                     <div className="p-6 flex flex-col flex-1">
                       <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
                         {formatDate(issue.sent_at)}

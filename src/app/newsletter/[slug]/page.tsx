@@ -11,6 +11,8 @@ export const revalidate = 3600;
 interface IssueStats {
   source?: string;
   beehiiv_id?: string;
+  portal_article?: boolean | string;
+  portalArticle?: boolean | string;
   preview?: string | null;
   tldr?: string | null;
 }
@@ -80,7 +82,18 @@ async function getIssue(slug: string): Promise<Issue | null> {
   const rows = await sql`
     SELECT id, subject, slug, html, sent_at, updated_at, stats
     FROM newsletter_issues
-    WHERE slug = ${slug} AND status = 'sent'
+    WHERE slug = ${slug}
+      AND status = 'sent'
+      AND html IS NOT NULL
+      AND length(trim(html)) > 0
+      AND (
+        stats->>'portal_article' = 'true'
+        OR stats->>'portalArticle' = 'true'
+        OR (
+          stats->>'source' = 'beehiiv'
+          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+        )
+      )
     LIMIT 1
   `;
   return (rows[0] as Issue) ?? null;

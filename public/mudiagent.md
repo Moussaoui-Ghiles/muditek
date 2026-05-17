@@ -9,7 +9,7 @@ Last updated: 2026-05-04
 
 ## Pricing
 
-- **Free Discovery Audit** — €0. Written automation roadmap in 1 week. No commitment.
+- **Discovery Audit** — €0. Written automation roadmap in 1 week. No commitment.
 - **Pilot Deployment** — Starting at €15,000. One agent, one workflow. Live in 4 weeks. You own the system.
 - **Monthly Retainer** — From €3,000/mo. Monitoring, optimization, support, scaling.
 
@@ -75,7 +75,7 @@ Compared to alternatives:
 
 ## Process
 
-- **Week 1 — Free Discovery Audit.** Map workflows that eat your team's time. Identify top 3 highest-impact automation targets. Estimate hours and cost recoverable. Written roadmap delivered, even if you go no further. Your effort: 30 minutes.
+- **Week 1 — Discovery Audit.** Map workflows that eat your team's time. Identify top 3 highest-impact automation targets. Estimate hours and cost recoverable. Written roadmap delivered, even if you go no further. Your effort: 30 minutes.
 - **Week 2-4 — Configure & Deploy.** mudiAgent arrives pre-configured. Connected to your email, WhatsApp, CRM, ticketing, file servers. Trained on your documents. First agents go live doing real work — not demos, not POCs.
 - **Month 2-3 — Prove & Scale.** Hours saved measured. Reports produced. Response times cut. You see the numbers. Then we scale. More workflows, more departments, more sites.
 
@@ -99,7 +99,7 @@ Everything runs on a device in your office. Your data never touches the internet
 If mudiAgent doesn't save your team at least 40 hours in the first 90 days, we reconfigure until it does, at no additional cost.
 
 **How long does deployment take?**
-Week 1: free discovery audit. Week 2-4: configure and deploy. First agents go live doing real work within the first month.
+Week 1: discovery audit. Week 2-4: configure and deploy. First agents go live doing real work within the first month.
 
 **What systems does it connect to?**
 CRM, ERP, ticketing systems (ServiceNow, Jira), NMS, OSS/BSS, Google Workspace, SharePoint, email, WhatsApp, Telegram, Slack, databases, vendor portals, browsers. If a human can use it at a desk, mudiAgent can operate it.
@@ -109,7 +109,7 @@ CRM, ERP, ticketing systems (ServiceNow, Jira), NMS, OSS/BSS, Google Workspace, 
 50-person regional telco cut weekly SLA report production from 2-3 days to under 1 hour. Knowledge search 30 min → 10 sec. ROI in month 1.
 Full case: https://muditek.com/case-studies/telecom-noc-automation
 
-## Book a Free Discovery Audit
+## Book a Discovery Audit
 
 30-minute call. We identify your top 3 automation targets and estimate the hours you'd recover. No pitch, no commitment.
 Booking: https://muditek.com/about

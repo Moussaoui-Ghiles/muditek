@@ -96,7 +96,7 @@ Great. The diagnostic shows exactly what to fix and how. You get the architectur
 €800K ARR B2B SaaS found €120K/year in pipeline leakage in 2 weeks. Speed-to-lead, conversion, and churn fixed with three targeted AI systems.
 Full case: https://muditek.com/case-studies/saas-revenue-leak
 
-## Free Tools
+## Tools
 
 - Revenue Leak Calculator: https://muditek.com/tools/revenue-leak-calculator
 - The 5-Leak Diagnostic Framework (lead magnet)

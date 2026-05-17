@@ -53,7 +53,7 @@ We built mudiAgent to run Muditek. When clients saw the results, they asked us t
 
 ## Three Doors to Get Started
 
-1. **Free newsletter** for weekly systems and playbooks. https://muditek.com/newsletter
+1. **Newsletter** for weekly systems and playbooks. https://muditek.com/newsletter
 2. **MudiKit ($47/mo)** for the full skills library. https://muditek.com/buy
 3. **30-minute call** to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure). https://muditek.com/about
 

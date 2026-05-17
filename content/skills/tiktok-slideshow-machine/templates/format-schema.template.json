@@ -1,0 +1,28 @@
+{
+  "format_name": "<short_snake_case_name>",
+  "niche": "<niche-slug>",
+  "version": 1,
+  "status": "active",
+  "source_url": "<original tiktok URL>",
+  "source_metrics": {
+    "likes": 0,
+    "estimated_views": "<range>",
+    "scraped_date": "YYYY-MM-DD"
+  },
+  "total_slides": 7,
+  "narrative_arc": "<one sentence>",
+  "slides": [
+    {
+      "slide_number": 1,
+      "role": "hook",
+      "text_template": "<{placeholders}>",
+      "visual_style_notes": "<concrete>",
+      "image_prompt_template": "<image-gen prompt>",
+      "text_position": "top|center|bottom|top-left|bottom-third",
+      "text_emphasis": "<which words highlighted>"
+    }
+  ],
+  "caption_template": "<caption with {placeholders} and #hashtags>",
+  "audio_recommendation": "<audio type>",
+  "do_not": ["<banned phrasings>"]
+}

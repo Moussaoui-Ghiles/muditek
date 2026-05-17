@@ -38,7 +38,7 @@ function typeLabel(item: ContentItem): string {
 }
 
 function accessLabel(item: ContentItem): string {
-  return item.is_free ? "Included" : "MudiKit";
+  return item.is_free ? "Open" : "MudiKit";
 }
 
 function topicForItem(item: ContentItem): Exclude<TopicFilter, "all"> {
@@ -419,7 +419,7 @@ export default function PlaybooksContent({
             <Stat label="Playbooks" value={counts.playbooks} />
             <Stat label="Guides" value={counts.guides} />
             <Stat label="Resources" value={counts.resources} />
-            <Stat label="Included" value={counts.included} />
+            <Stat label="Open" value={counts.included} />
             <Stat label="MudiKit" value={counts.paid} />
           </dl>
         </div>

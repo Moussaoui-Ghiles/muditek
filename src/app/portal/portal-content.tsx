@@ -158,7 +158,7 @@ function CategoryTile({
               </span>
             ) : (
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-emerald-300/80">
-                Included
+                Open
               </span>
             )}
           </div>
@@ -334,7 +334,7 @@ export default function PortalHomeContent({
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
-            <StatPill label="Included" value={allItems.filter((item) => item.is_free).length + PORTAL_TOOLS.filter((tool) => tool.access !== "mudikit").length} />
+            <StatPill label="Open" value={allItems.filter((item) => item.is_free).length + PORTAL_TOOLS.filter((tool) => tool.access !== "mudikit").length} />
             <StatPill label="MudiKit" value={paidCount} />
             <StatPill label="Articles" value={issues.length} />
           </div>

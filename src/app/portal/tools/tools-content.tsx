@@ -74,13 +74,32 @@ function FilterPill({
   );
 }
 
-function PreviewBars({ locked }: { locked: boolean }) {
-  const bars = [34, 52, 28, 64, 40, 74, 48];
+function toolFields(tool: PortalTool): { inputs: string; output: string } {
+  if (tool.slug === "google-maps-lead-finder") {
+    return {
+      inputs: "Business type, location, max results",
+      output: "Businesses, websites, phones, ratings, reviews, returned emails",
+    };
+  }
+  if (tool.slug === "linkedin-serper-lead-finder") {
+    return {
+      inputs: "Role, market, company keyword, max results",
+      output: "LinkedIn profile results returned by Serper",
+    };
+  }
+  return {
+    inputs: "Revenue, pipeline, churn, response time, channel spend",
+    output: "Estimated annual leakage by category",
+  };
+}
+
+function WorkbenchPreview({ tool, locked }: { tool: PortalTool; locked: boolean }) {
+  const fields = toolFields(tool);
   return (
     <div className="relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-black/35 p-5">
       <div className="mb-5 flex items-center justify-between gap-4">
         <span className="text-[10px] font-black uppercase tracking-[0.28em] text-foreground/45">
-          Live output
+          Workbench
         </span>
         <span
           className={
@@ -93,20 +112,20 @@ function PreviewBars({ locked }: { locked: boolean }) {
           {locked ? "Locked" : "Ready"}
         </span>
       </div>
-      <div className="flex h-28 items-end gap-2">
-        {bars.map((height, index) => (
-          <span
-            key={`${height}-${index}`}
-            className="flex-1 rounded-sm bg-gradient-to-t from-emerald-400/70 to-primary/25"
-            style={{ height: `${height}%` }}
-          />
-        ))}
-      </div>
-      <div className="mt-4 h-px w-full bg-white/[0.07]" />
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <span className="h-2 rounded-sm bg-white/[0.08]" />
-        <span className="h-2 rounded-sm bg-white/[0.05]" />
-        <span className="h-2 rounded-sm bg-white/[0.08]" />
+      <div className="space-y-4">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-foreground/38">
+            Inputs
+          </p>
+          <p className="mt-1 text-[13px] leading-6 text-foreground/72">{fields.inputs}</p>
+        </div>
+        <div className="h-px w-full bg-white/[0.07]" />
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-foreground/38">
+            Output
+          </p>
+          <p className="mt-1 text-[13px] leading-6 text-foreground/72">{fields.output}</p>
+        </div>
       </div>
     </div>
   );
@@ -152,7 +171,7 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10.5px] font-black uppercase tracking-[0.22em] text-foreground/55">
             <span>{tool.category}</span>
             <span aria-hidden className="h-3 w-px bg-white/15" />
-            <span>{tool.access === "free" ? "Included" : "MudiKit"}</span>
+            <span>{tool.access === "free" ? "Open" : "MudiKit"}</span>
             <span aria-hidden className="h-3 w-px bg-white/15" />
             <span>Runs in portal</span>
           </div>
@@ -164,7 +183,7 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
       </div>
 
       <div className="relative z-10 flex items-center p-4 md:p-6">
-        <PreviewBars locked={locked} />
+        <WorkbenchPreview tool={tool} locked={locked} />
       </div>
     </Link>
   );
@@ -196,7 +215,7 @@ function WorkbenchCard({ tool, access }: { tool: PortalTool; access: PortalAcces
               <Lock className="size-3" /> MudiKit
             </>
           ) : (
-            "Included"
+            "Open"
           )}
         </span>
       </div>
@@ -308,7 +327,7 @@ export default function ToolsContent({
           </div>
           <dl className="reveal reveal-delay-1 grid grid-cols-2 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:grid-cols-2 md:pl-10">
             <Stat label="Live" value={counts.total} />
-            <Stat label="Included" value={counts.included} />
+            <Stat label="Open" value={counts.included} />
             <Stat label="MudiKit" value={counts.paid} />
             <Stat label="Locked" value={counts.locked} accent={counts.locked > 0} />
           </dl>
@@ -354,7 +373,7 @@ export default function ToolsContent({
                           All
                         </FilterPill>
                         <FilterPill active={accessFilter === "included"} onClick={() => setAccessFilter("included")}>
-                          Included <span className="ml-2 opacity-60">{counts.included}</span>
+                          Open <span className="ml-2 opacity-60">{counts.included}</span>
                         </FilterPill>
                         <FilterPill active={accessFilter === "mudikit"} onClick={() => setAccessFilter("mudikit")}>
                           MudiKit <span className="ml-2 opacity-60">{counts.paid}</span>
@@ -418,7 +437,7 @@ export default function ToolsContent({
                       Unlock the paid workbenches when they ship.
                     </h3>
                     <p className="mt-4 max-w-lg text-[13.5px] leading-7 text-foreground/65">
-                      Included tools stay open. Paid tools appear here as part of the same MudiKit account.
+                      Open tools stay open. Paid tools appear here as part of the same MudiKit account.
                     </p>
                   </div>
                   <Link

@@ -28,7 +28,7 @@ interface IssueRow {
 function sanitizePreview(value: string | null | undefined): string | null {
   const preview = value?.trim();
   if (!preview) return null;
-  return preview.replace(/\bFree\b/g, "Included");
+  return preview.replace(/\bFree\b/g, "Open");
 }
 
 export default async function PortalNewsletterPage() {

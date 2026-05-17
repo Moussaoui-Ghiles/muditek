@@ -77,6 +77,13 @@ function WorkbenchHeroAside({ slug }: { slug: string }) {
   );
 }
 
+function toolTrustLabel(slug: string): string {
+  if (slug === "revenue-leak-calculator") return "Cited benchmarks";
+  if (slug === "google-maps-lead-finder") return "Apify backed";
+  if (slug === "linkedin-serper-lead-finder") return "Serper backed";
+  return "Portal workbench";
+}
+
 function WorkbenchPage({
   slug,
   title,
@@ -153,7 +160,7 @@ function WorkbenchPage({
                   Portal account
                 </span>
                 <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
-                  Cited benchmarks
+                  {toolTrustLabel(slug)}
                 </span>
               </div>
             </div>
@@ -177,7 +184,7 @@ function WorkbenchPage({
                 <span className="text-primary italic font-medium">MudiKit</span>.
               </h2>
               <p className="max-w-xl text-[14px] leading-7 text-foreground/65">
-                This tool is attached to the paid library. Included workbenches stay open to every
+                This tool is attached to the paid library. Open workbenches stay open to every
                 portal account.
               </p>
               <Link

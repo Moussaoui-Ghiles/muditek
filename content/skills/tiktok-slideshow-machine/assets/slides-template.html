@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TESTED.AI · Issue 027 · Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #EFEAE0;
+    --cream-soft: #F5F1E6;
+    --ink: #1F1C18;
+    --ink-mid: #5B554D;
+    --ink-low: #8C857A;
+    --line: rgba(31,28,24,0.10);
+    --line-strong: rgba(31,28,24,0.18);
+    --accent: #D26A3D;
+    --logo-bg: #FAFAF6;
+    --logo-border: rgba(31,28,24,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #18181B; }
+  body { display: flex; flex-direction: column; gap: 32px; padding: 32px; align-items: center; font-family: 'Geist', system-ui, sans-serif; }
+
+  .slide {
+    width: 1080px; height: 1920px;
+    position: relative; overflow: hidden;
+    flex-shrink: 0;
+    background: var(--cream);
+    color: var(--ink);
+  }
+  .pad { position: absolute; inset: 0; padding: 80px; display: flex; flex-direction: column; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'Geist Mono', monospace; font-size: 24px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-low);
+  }
+  .tab { width: 96px; height: 4px; background: var(--ink); margin: 64px 0 56px; }
+
+  /* SLIDE 1 — Hook */
+  .h1 {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-weight: 700; font-size: 156px; line-height: 0.94;
+    letter-spacing: -0.035em; color: var(--ink);
+    max-width: 920px;
+  }
+  .h1 .italic { font-style: italic; font-weight: 600; color: var(--accent); }
+  .h1 .num { font-feature-settings: "lnum"; }
+
+  .sub-block {
+    margin-top: 56px;
+    display: flex; align-items: flex-start; gap: 22px;
+  }
+  .sub-block .bar { width: 5px; min-height: 64px; background: var(--accent); flex-shrink: 0; margin-top: 8px; }
+  .sub-block .text {
+    font-family: 'Geist', sans-serif; font-weight: 700; font-size: 42px;
+    line-height: 1.2; letter-spacing: -0.015em; color: var(--ink);
+  }
+
+  .body {
+    margin-top: 36px;
+    font-family: 'Geist', sans-serif; font-weight: 500; font-size: 30px;
+    line-height: 1.5; color: var(--ink-mid);
+    max-width: 760px;
+  }
+  .body em { font-style: italic; color: var(--ink); }
+
+  .swipe-arrow {
+    margin-top: auto;
+    display: flex; align-items: center; gap: 18px;
+    padding-top: 24px; border-top: 1px solid var(--line-strong);
+    font-family: 'Geist Mono', monospace; font-size: 22px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-low);
+  }
+  .swipe-arrow .arr {
+    color: var(--accent); font-family: 'Fraunces', serif; font-size: 36px;
+  }
+
+  /* SLIDE 2 — Pyramid */
+  .h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 84px; line-height: 0.96;
+    letter-spacing: -0.03em; color: var(--ink);
+    max-width: 800px;
+    margin-top: 24px;
+  }
+  .h2 .italic { font-style: italic; color: var(--accent); }
+
+  .h2-sub {
+    margin-top: 16px;
+    font-family: 'Geist', sans-serif; font-weight: 500; font-size: 24px;
+    color: var(--ink-mid); letter-spacing: -0.005em;
+    max-width: 700px;
+  }
+
+  /* pyramid */
+  .pyramid-wrap {
+    margin-top: 56px;
+    flex: 1;
+    display: flex; flex-direction: column; align-items: stretch;
+    gap: 14px;
+    position: relative;
+  }
+  .tier {
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .tier .cat {
+    font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 10px;
+  }
+  .tier .cat .dot { display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 999px; vertical-align: middle; margin-right: 8px; }
+  .row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px;
+    position: relative;
+  }
+
+  .logo {
+    width: 92px; height: 92px;
+    background: var(--logo-bg);
+    border: 1px solid var(--logo-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 12px -4px rgba(31,28,24,0.10);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .logo img {
+    width: 76%; height: 76%; object-fit: contain;
+  }
+  .logo .name {
+    position: absolute;
+    margin-top: 102px;
+    font-family: 'Geist', sans-serif; font-weight: 600; font-size: 14px;
+    color: var(--ink-mid); letter-spacing: -0.01em; white-space: nowrap;
+  }
+  .logo-cell { position: relative; display: flex; flex-direction: column; align-items: center; }
+
+  .row.r1 { gap: 0; } /* solo */
+  .row.r1 .logo { width: 124px; height: 124px; border-radius: 22px; box-shadow: 0 8px 24px -8px rgba(210,106,61,0.25); border: 1.5px solid rgba(210,106,61,0.25); }
+
+  .bottom-tier {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px dashed var(--line-strong);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .bottom-tier .cat {
+    font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mid);
+    margin-bottom: 12px;
+  }
+  .bottom-tier .cat .dot { display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 999px; vertical-align: middle; margin-right: 8px; }
+  .bottom-tier .row { gap: 14px; flex-wrap: wrap; max-width: 920px; }
+
+  .footer {
+    margin-top: auto;
+    padding-top: 28px; border-top: 1px solid var(--line-strong);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'Geist Mono', monospace; font-size: 22px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-low);
+  }
+  .footer .accent { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ========== SLIDE 1 — HOOK ========== -->
+<section class="slide" id="slide-1">
+  <div class="pad">
+    <div class="topbar"><span>Tested.AI</span><span>Issue N°027 · 2026</span></div>
+    <div class="tab"></div>
+    <h1 class="h1">The <span class="num">30</span><br>AI tools<br>worth paying<br>for <span class="italic">in 2026.</span></h1>
+    <div class="sub-block">
+      <div class="bar"></div>
+      <div class="text">Everything else is noise.</div>
+    </div>
+    <div class="body">
+      I tested 200+ AI tools across writing, building, design, research, and ops over the last 18 months.<br>
+      <em>Only 30 stayed on my desktop.</em>
+    </div>
+    <div class="swipe-arrow"><span class="arr">→</span><span>Swipe for the full pyramid</span></div>
+  </div>
+</section>
+
+<!-- ========== SLIDE 2 — PYRAMID ========== -->
+<section class="slide" id="slide-2">
+  <div class="pad">
+    <div class="topbar"><span>Tested.AI</span><span>Issue N°027 · 02 / 02</span></div>
+    <div class="tab"></div>
+    <h1 class="h2">The <span class="italic">stack</span> in 2026.<br>Pyramid of survivors.</h1>
+    <p class="h2-sub">Sorted by leverage. Top tier = irreplaceable. Bottom = high-utility, swap-friendly.</p>
+
+    <div class="pyramid-wrap">
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>S · The model itself</div>
+        <div class="row r1">
+          <div class="logo-cell">
+            <div class="logo"><img src="../../../../asset-library/logos/claude.png" alt="Claude"></div>
+            <div class="name">Claude</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>General assistants</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/chatgpt.png" alt="ChatGPT"></div><div class="name">ChatGPT</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/perplexity.png" alt="Perplexity"></div><div class="name">Perplexity</div></div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>Development</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/cursor.png" alt="Cursor"></div><div class="name">Cursor</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/lovable.png" alt="Lovable"></div><div class="name">Lovable</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/replit.png" alt="Replit"></div><div class="name">Replit</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/base44.png" alt="Base44"></div><div class="name">Base44</div></div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>Content creation</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/manus.png" alt="Manus"></div><div class="name">Manus</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/heygen.png" alt="HeyGen"></div><div class="name">HeyGen</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/synthesia.png" alt="Synthesia"></div><div class="name">Synthesia</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/descript.png" alt="Descript"></div><div class="name">Descript</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/beehiiv.png" alt="Beehiiv"></div><div class="name">Beehiiv</div></div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>Productivity</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/grammarly.png" alt="Grammarly"></div><div class="name">Grammarly</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/notebooklm.png" alt="NotebookLM"></div><div class="name">NotebookLM</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/gamma.png" alt="Gamma"></div><div class="name">Gamma</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/granola.png" alt="Granola"></div><div class="name">Granola</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/superhuman.png" alt="Superhuman"></div><div class="name">Superhuman</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/wispr.png" alt="Wispr"></div><div class="name">Wispr</div></div>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="cat"><span class="dot"></span>Creativity</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/elevenlabs.png" alt="ElevenLabs"></div><div class="name">ElevenLabs</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/suno.png" alt="Suno"></div><div class="name">Suno</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/midjourney.png" alt="Midjourney"></div><div class="name">Midjourney</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/runway.png" alt="Runway"></div><div class="name">Runway</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/kling.png" alt="Kling"></div><div class="name">Kling</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/figma.png" alt="Figma"></div><div class="name">Figma</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/canva.png" alt="Canva"></div><div class="name">Canva</div></div>
+        </div>
+      </div>
+
+      <div class="bottom-tier">
+        <div class="cat"><span class="dot"></span>Automation · the layer beneath everything</div>
+        <div class="row">
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/n8n.png" alt="n8n"></div><div class="name">n8n</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/zapier.png" alt="Zapier"></div><div class="name">Zapier</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/lindy.png" alt="Lindy"></div><div class="name">Lindy</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/notion.png" alt="Notion"></div><div class="name">Notion</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/apify.png" alt="Apify"></div><div class="name">Apify</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/clay.png" alt="Clay"></div><div class="name">Clay</div></div>
+          <div class="logo-cell"><div class="logo"><img src="../../../../asset-library/logos/gemini.png" alt="Gemini"></div><div class="name">Gemini</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span>Save · Share</span>
+      <span class="accent">→ Tested.AI in bio</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

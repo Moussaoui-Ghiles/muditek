@@ -8,7 +8,7 @@ import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
 function accessText(item: ContentItem): string {
-  return item.is_free ? "Included" : "MudiKit";
+  return item.is_free ? "Open" : "MudiKit";
 }
 
 function stripFrontmatter(markdown: string): string {

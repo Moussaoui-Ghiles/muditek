@@ -36,7 +36,7 @@ interface ResourceUnlock {
 function accessLine(access: PortalAccess): string {
   if (access.isAdmin) return "Admin";
   if (access.isMudikit) return "MudiKit";
-  return "Included";
+  return "Portal";
 }
 
 function formatDate(iso: string | null): string {

@@ -39,7 +39,7 @@ function fileTypeLabel(value: string): string {
 }
 
 function accessLabel(item: ContentItem): string {
-  return item.is_free ? "Included" : "MudiKit";
+  return item.is_free ? "Open" : "MudiKit";
 }
 
 function formatLongDate(value: string | Date | null | undefined): string | null {

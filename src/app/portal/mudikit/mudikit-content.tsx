@@ -189,7 +189,7 @@ function MudikitHero({
           <p className="mt-4 max-w-xl text-[14.5px] leading-7 text-muted-foreground">
             {unlocked
               ? "Paid skills, playbooks, and resource files attached to your account. New drops continue to land here."
-              : "MudiKit unlocks paid skills, playbooks, resource files, and every new drop. Included access stays exactly where it is."}
+              : "MudiKit unlocks paid skills, playbooks, resource files, and every new drop. Portal access stays exactly where it is."}
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-2">
@@ -428,11 +428,11 @@ function GroupColumn({
   );
 }
 
-function IncludedPointersStrip() {
+function PortalPointersStrip() {
   const items = [
     {
       title: "Skills",
-      body: "Included Claude Code skills.",
+      body: "Open Claude Code skills.",
       href: "/portal/skills",
     },
     {
@@ -455,7 +455,7 @@ function IncludedPointersStrip() {
     <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015]">
       <header className="border-b border-white/[0.05] px-5 py-3">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Included access stays open
+          Portal access stays open
         </p>
       </header>
       <div className="grid divide-y divide-white/[0.05] sm:grid-cols-2 sm:divide-y-0 sm:divide-x lg:grid-cols-4">
@@ -503,7 +503,7 @@ function UnlockBlock({ email }: { email: string }) {
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-foreground/70" />
-              Included access on this account stays exactly as it is
+              Portal access on this account stays exactly as it is
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-foreground/70" />
@@ -631,7 +631,7 @@ export default function MudikitContent({
 
         {!unlocked && <UnlockBlock email={email} />}
 
-        <IncludedPointersStrip />
+        <PortalPointersStrip />
       </main>
     </>
   );

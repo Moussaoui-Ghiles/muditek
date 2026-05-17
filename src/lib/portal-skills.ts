@@ -89,10 +89,10 @@ function cleanDescription(description?: string): string | null {
     .replace(/[—–]/g, "-")
     .replace(/\bfree tools\b/gi, "public tools")
     .replace(/\bfree tool\b/gi, "public tool")
-    .replace(/\bfree resource\b/gi, "included resource")
+    .replace(/\bfree resource\b/gi, "portal resource")
     .replace(/\bfree account\b/gi, "portal account")
     .replace(/\bfree trial\b/gi, "trial")
-    .replace(/\bfree plan\b/gi, "included plan")
+    .replace(/\bfree plan\b/gi, "portal plan")
     .trim();
 
   if (!compact) return null;

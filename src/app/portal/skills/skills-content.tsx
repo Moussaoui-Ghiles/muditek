@@ -39,7 +39,7 @@ function accessLabel(skill: ContentItem, accessible: boolean): {
   text: string;
   tone: "free" | "mudikit" | "locked";
 } {
-  if (skill.is_free) return { text: "Included", tone: "free" };
+  if (skill.is_free) return { text: "Open", tone: "free" };
   if (accessible) return { text: "MudiKit", tone: "mudikit" };
   return { text: "Locked", tone: "locked" };
 }
@@ -426,7 +426,7 @@ export default function SkillsContent({
               </h1>
               <p className="mt-2 max-w-[60ch] text-[14px] text-white/45">
                 Working assets you can drop into Claude, Codex, GTM motions, research and outreach.
-                Included skills come with every portal account. MudiKit unlocks the rest.
+                Open skills come with every portal account. MudiKit unlocks the rest.
               </p>
             </div>
             <div className="flex items-center gap-5 text-[12px] text-white/40">
@@ -437,7 +437,7 @@ export default function SkillsContent({
               {freeCount > 0 && (
                 <span className="flex items-baseline gap-1.5">
                   <span className="text-[18px] font-semibold tabular-nums text-emerald-300/85">{freeCount}</span>
-                  <span className="font-mono uppercase tracking-[0.16em]">Included</span>
+                  <span className="font-mono uppercase tracking-[0.16em]">Open</span>
                 </span>
               )}
               {(access.isMudikit || access.isAdmin) && paidCount > 0 ? (
@@ -501,7 +501,7 @@ export default function SkillsContent({
                             </div>
                             <p className="mt-0.5 text-[11.5px] text-white/40">
                               {skill.is_free
-                                ? "Included"
+                                ? "Open"
                                 : accessible
                                   ? "MudiKit"
                                   : "Locked"}
@@ -560,7 +560,7 @@ export default function SkillsContent({
                             : "text-white/45 hover:text-white/80"
                         }`}
                       >
-                        {f === "all" ? "All" : f === "free" ? "Included" : "MudiKit"}
+                        {f === "all" ? "All" : f === "free" ? "Open" : "MudiKit"}
                       </button>
                     ))}
                   </div>
@@ -647,7 +647,7 @@ export default function SkillsContent({
                             {total} {total === 1 ? "skill" : "skills"} on the shelf
                           </p>
                           <p className="mt-0.5 text-[12px] text-white/40">
-                            {freeCount} included · {paidCount} MudiKit
+                            {freeCount} open · {paidCount} MudiKit
                           </p>
                         </li>
                         {newCount > 0 && (

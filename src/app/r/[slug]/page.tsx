@@ -124,7 +124,7 @@ export default async function ResourceUnlockPage({
             </div>
 
             <p className="mt-4 max-w-xl text-xs leading-5 text-foreground/35">
-              Included portal account. Unlock this resource and the Muditek library.
+              Portal account. Unlock this resource and the Muditek library.
             </p>
           </div>
 
@@ -144,7 +144,7 @@ export default async function ResourceUnlockPage({
                 </p>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground/50">
                   <li>Open this resource immediately after signup.</li>
-                  <li>Access the rest of the included resource library.</li>
+                  <li>Access the rest of the portal resource library.</li>
                   <li>Get future Muditek drops through the newsletter.</li>
                 </ul>
               </div>

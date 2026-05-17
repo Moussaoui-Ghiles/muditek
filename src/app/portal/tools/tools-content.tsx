@@ -24,11 +24,11 @@ function isToolLocked(tool: PortalTool, access: PortalAccess): boolean {
   return tool.access === "mudikit" && !access.isMudikit && !access.isAdmin;
 }
 
-function toolIcon(slug: string) {
-  if (slug.includes("maps")) return MapPinned;
-  if (slug.includes("linkedin")) return UserSearch;
-  if (slug.includes("calculator")) return Calculator;
-  return Wrench;
+function ToolIcon({ slug, className }: { slug: string; className?: string }) {
+  if (slug.includes("maps")) return <MapPinned className={className} />;
+  if (slug.includes("linkedin")) return <UserSearch className={className} />;
+  if (slug.includes("calculator")) return <Calculator className={className} />;
+  return <Wrench className={className} />;
 }
 
 function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
@@ -136,7 +136,6 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
   const parts = tool.title.split(" ");
   const lastWord = parts.pop() ?? tool.title;
   const restWords = parts.join(" ");
-  const Icon = toolIcon(tool.slug);
 
   return (
     <Link
@@ -150,7 +149,7 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
         <div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
             <span className="flex size-9 items-center justify-center rounded-[2px] border border-white/[0.08] bg-black/25 text-primary">
-              <Icon className="size-4" />
+              <ToolIcon slug={tool.slug} className="size-4" />
             </span>
             Featured workbench
             <span className="inline-flex items-center gap-1.5 text-emerald-300/85">
@@ -191,7 +190,6 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
 
 function WorkbenchCard({ tool, access }: { tool: PortalTool; access: PortalAccess }) {
   const locked = isToolLocked(tool, access);
-  const Icon = toolIcon(tool.slug);
 
   return (
     <Link
@@ -201,7 +199,7 @@ function WorkbenchCard({ tool, access }: { tool: PortalTool; access: PortalAcces
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(620px_260px_at_18%_-10%,rgba(16,185,129,0.10),transparent_58%)] opacity-80 transition-opacity group-hover:opacity-100" />
       <div className="relative flex items-center justify-between gap-4">
         <span className="flex size-10 items-center justify-center rounded-[2px] border border-white/[0.08] bg-black/25 text-primary">
-          <Icon className="size-4" />
+          <ToolIcon slug={tool.slug} className="size-4" />
         </span>
         <span
           className={

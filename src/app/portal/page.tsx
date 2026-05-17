@@ -1,10 +1,10 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { readFileSync, readdirSync } from "fs";
+import { readFileSync } from "fs";
 import { redirect } from "next/navigation";
 import { join } from "path";
 import { getDb } from "@/lib/db";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
-import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumbnails";
+import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
 import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
@@ -102,9 +102,6 @@ const LEGACY_VIEW_MAP: Record<string, string> = {
   client: "home",
 };
 
-const CONTENT_DIR = join(process.cwd(), "content/playbooks");
-const BASE_URL = "https://muditek.com";
-
 function normalizeView(value: unknown): string {
   const view = Array.isArray(value) ? value[0] : value;
   if (typeof view !== "string") return "home";
@@ -117,51 +114,6 @@ function normalizeSlug(value: unknown): string | null {
   if (typeof slug !== "string") return null;
   const normalized = slug.trim();
   return normalized ? normalized : null;
-}
-
-function getHTMLContent(slug: string): { styles: string; body: string } | null {
-  try {
-    const html = readFileSync(join(CONTENT_DIR, `${slug}.html`), "utf-8");
-    const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/);
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/);
-    return {
-      styles: styleMatch ? styleMatch[1] : "",
-      body: bodyMatch ? bodyMatch[1].replace(/<script[\s\S]*?<\/script>/g, "") : "",
-    };
-  } catch {
-    return null;
-  }
-}
-
-function getPdfPageImages(slug: string): string[] {
-  try {
-    const dir = join(process.cwd(), "public/playbooks", slug);
-    return readdirSync(dir)
-      .filter((file) => /^page-\d+\.jpe?g$/i.test(file))
-      .sort((a, b) => {
-        const numA = parseInt(a.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
-        const numB = parseInt(b.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
-        return numA - numB;
-      })
-      .map((file) => `/playbooks/${slug}/${file}`);
-  } catch {
-    return [];
-  }
-}
-
-function getDownloadHref(item: ContentItem): string | null {
-  if (item.file_type?.toLowerCase() === "html") return null;
-
-  const href = item.download_url?.trim();
-  if (!href) return null;
-
-  const publicPath = `/resources/${item.slug}`;
-  const portalPath = `/portal?view=resource&slug=${encodeURIComponent(item.slug)}`;
-  if (href === publicPath || href === `${BASE_URL}${publicPath}` || href === portalPath) {
-    return null;
-  }
-
-  return href;
 }
 
 export default async function PortalPage({
@@ -292,26 +244,6 @@ export default async function PortalPage({
     ORDER BY sent_at DESC NULLS LAST
     LIMIT 40
   `) as NewsletterIssue[];
-
-  const selectedRows = activeSlug
-    ? ((await sql`
-        SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
-        FROM content_items
-        WHERE slug = ${activeSlug}
-        LIMIT 1
-      `) as ContentItem[])
-    : [];
-  const selectedResource = selectedRows[0] ? withDerivedThumbnail(selectedRows[0]) : null;
-  const canAccessSelectedResource =
-    !!selectedResource && (selectedResource.is_free || access.isMudikit || access.isAdmin);
-  const selectedResourceContent =
-    selectedResource && canAccessSelectedResource
-      ? {
-          html: getHTMLContent(selectedResource.slug),
-          pageImages: getPdfPageImages(selectedResource.slug),
-          downloadHref: getDownloadHref(selectedResource),
-        }
-      : null;
 
   const displayName = user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
 

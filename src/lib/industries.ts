@@ -69,7 +69,7 @@ export const INDUSTRIES: Record<IndustrySlug, IndustryConfig> = {
     oneLiner:
       "Marketing and dev agencies recovering 20+ hours/week from manual content, reporting, and client ops — with MudiKit and targeted custom builds.",
     primaryServicePath: "/mudikit",
-    primaryServiceLabel: "Get MudiKit — $47/mo",
+    primaryServiceLabel: "Get MudiKit - $47/mo",
     caseStudySlug: "agency-content-engine",
     relatedIndustries: ["b2b-saas", "telecom"],
     showMudikit: true,

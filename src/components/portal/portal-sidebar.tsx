@@ -47,11 +47,9 @@ function isItemActive(item: NavItem, pathname: string): boolean {
 
 export function PortalSidebar({
   access,
-  email,
   displayName,
 }: {
   access: PortalAccess;
-  email: string;
   displayName: string;
 }) {
   const pathname = usePathname() || "/portal";

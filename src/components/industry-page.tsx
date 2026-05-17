@@ -412,7 +412,7 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
       {config.showMudikit ? (
         <MudikitCta
           headline={`Ship a ${config.shortLabel.toLowerCase()} system this weekend with MudiKit · $47/mo`}
-          body="The same library I run my own business on. 15+ Claude Code skills, 6 implementation playbooks, the vault template, 20+ outreach templates with A/B variants. New drops every month."
+          body="The same library I run my own business on: 64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New drops every month."
         />
       ) : null}
 

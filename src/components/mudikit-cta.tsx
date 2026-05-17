@@ -10,8 +10,8 @@ interface MudikitCtaProps {
 
 const DEFAULT_HEADLINE = "Get MudiKit · $47/mo";
 const DEFAULT_BODY =
-  "15+ Claude Code skills, 6 implementation playbooks, the vault template, 20+ outreach templates. New drops every week.";
-const DEFAULT_CTA_LABEL = "Get MudiKit — $47/mo";
+  "64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New drops every month.";
+const DEFAULT_CTA_LABEL = "Get MudiKit - $47/mo";
 
 export function MudikitCta({
   variant = "section",

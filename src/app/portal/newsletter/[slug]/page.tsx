@@ -2,7 +2,6 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getDb } from "@/lib/db";
-import { buildPortalAccess } from "@/lib/portal-access";
 import NewsletterDetailContent from "./newsletter-detail-content";
 
 export const dynamic = "force-dynamic";
@@ -130,27 +129,6 @@ export default async function PortalNewsletterDetailPage({
 
   const issue = await getIssue(slug);
   if (!issue) notFound();
-
-  const sql = getDb();
-  const subs = await sql`
-    SELECT id, name, status FROM subscribers WHERE email = ${email}
-  `;
-  const paidSub = subs[0];
-  const isPaid = !!paidSub && paidSub.status === "active";
-
-  const membershipRows = await sql`
-    SELECT role FROM portal_memberships
-    WHERE email = ${email} AND status = 'active'
-  `;
-
-  const access = buildPortalAccess({
-    email,
-    membershipRoles: membershipRows.map((row) => String(row.role)),
-    hasActiveSubscription: isPaid,
-  });
-
-  const displayName =
-    user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
 
   const sentAtDate = issue.sent_at ? new Date(issue.sent_at) : null;
   const updatedAtDate = issue.updated_at ? new Date(issue.updated_at) : null;

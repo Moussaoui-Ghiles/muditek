@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 import { getOrCreatePreferenceHref } from "@/lib/newsletter-preferences";
-import { buildPortalAccess } from "@/lib/portal-access";
 import NewsletterArchiveContent from "./newsletter-archive-content";
 
 export const dynamic = "force-dynamic";
@@ -45,23 +44,6 @@ export default async function PortalNewsletterPage() {
 
   const sql = getDb();
 
-  const subs = await sql`
-    SELECT id, name, status, clerk_user_id FROM subscribers WHERE email = ${email}
-  `;
-  const paidSub = subs[0];
-  const isPaid = !!paidSub && paidSub.status === "active";
-
-  const membershipRows = await sql`
-    SELECT role FROM portal_memberships
-    WHERE email = ${email} AND status = 'active'
-  `;
-
-  const access = buildPortalAccess({
-    email,
-    membershipRoles: membershipRows.map((row) => String(row.role)),
-    hasActiveSubscription: isPaid,
-  });
-
   const rows = (await sql`
     SELECT slug, subject, sent_at, html, stats
     FROM newsletter_issues
@@ -93,8 +75,6 @@ export default async function PortalNewsletterPage() {
       null,
   }));
 
-  const displayName =
-    user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
   const preferencesHref = await getOrCreatePreferenceHref({
     email,
     clerkUserId: user.id,
@@ -104,8 +84,6 @@ export default async function PortalNewsletterPage() {
   return (
     <NewsletterArchiveContent
       email={email}
-      displayName={displayName}
-      access={access}
       issues={issues}
       preferencesHref={preferencesHref}
     />

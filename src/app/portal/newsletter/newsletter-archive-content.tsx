@@ -15,7 +15,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { PortalAccess } from "@/lib/portal-access";
 
 export interface ArchiveIssue {
   slug: string;
@@ -27,8 +26,6 @@ export interface ArchiveIssue {
 
 interface Props {
   email: string;
-  displayName: string;
-  access: PortalAccess;
   issues: ArchiveIssue[];
   preferencesHref: string | null;
 }
@@ -368,8 +365,6 @@ function EmptyState() {
 
 export default function NewsletterArchiveContent({
   email,
-  displayName,
-  access,
   issues,
   preferencesHref,
 }: Props) {

@@ -253,7 +253,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     quoteAttribution: "Anonymous Founder, 5-person marketing agency",
     isAnonymizedQuote: true,
     primaryServicePath: "/mudikit",
-    primaryServiceLabel: "Get MudiKit — $47/mo",
+    primaryServiceLabel: "Get MudiKit - $47/mo",
     buildTimeline: "2 weeks (configure + deploy)",
     ownership: "Custom voice configs + review queue owned by agency; MudiKit subscription for the underlying skills",
   },

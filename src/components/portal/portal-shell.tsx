@@ -64,7 +64,7 @@ export interface PortalShellProps {
   displayName: string;
   access: PortalAccess;
   children: React.ReactNode;
-  /** Deprecated — active route resolved from pathname. Accepted for legacy callers. */
+  /** Deprecated: active route resolved from pathname. Accepted for legacy callers. */
   activeView?: string;
   /** Optional small caps eyebrow rendered below the sticky breadcrumb header. */
   pageEyebrow?: string;

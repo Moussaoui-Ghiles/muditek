@@ -529,7 +529,7 @@ export default function SkillsContent({
                     <Input
                       value={query}
                       onChange={(event) => setQuery(event.target.value)}
-                      placeholder="Search skills, file types, descriptions…"
+                      placeholder="Search skills, file types, descriptions..."
                       className="h-11 w-full border-0 bg-transparent px-0 text-[14px] text-white placeholder:text-white/35 focus-visible:ring-0"
                     />
                     {query && (

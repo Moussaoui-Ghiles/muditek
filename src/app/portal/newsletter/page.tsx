@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 import { getOrCreatePreferenceHref } from "@/lib/newsletter-preferences";
 import { buildPortalAccess } from "@/lib/portal-access";
 import NewsletterArchiveContent from "./newsletter-archive-content";
@@ -16,6 +17,7 @@ interface IssueRow {
   slug: string;
   subject: string;
   sent_at: string | Date | null;
+  html: string | null;
   stats: {
     preview?: string | null;
     tldr?: string | null;
@@ -61,7 +63,7 @@ export default async function PortalNewsletterPage() {
   });
 
   const rows = (await sql`
-    SELECT slug, subject, sent_at, stats
+    SELECT slug, subject, sent_at, html, stats
     FROM newsletter_issues
     WHERE status = 'sent'
       AND slug IS NOT NULL
@@ -87,6 +89,7 @@ export default async function PortalNewsletterPage() {
       r.stats?.thumbnail_url?.trim() ||
       r.stats?.hero_image?.trim() ||
       r.stats?.image?.trim() ||
+      extractNewsletterThumbnailFromHtml(r.html) ||
       null,
   }));
 

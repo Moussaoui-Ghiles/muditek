@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 const COMPARISON = [
   { category: "Product type", mudikit: "Working skills library you install. Production-grade Claude Code skills, prompts, and configs you clone and run.", skool: "Hosted community platform with courses, discussion feed, calendar, and gamification. Owner posts content; members consume and chat." },
-  { category: "What you get", mudikit: "15+ Claude Code skills (outreach, lead gen, content writing, scraping, inbox SDR), 6 implementation playbooks, vault template, 20+ outreach templates, open-source lead capture system.", skool: "Access to a single creator's community: courses, group threads, weekly calls, and a points/levels system. Content depth depends on the host." },
+  { category: "What you get", mudikit: "64 Claude Code skills, implementation playbooks, vault template, outreach operating files, open-source lead capture system.", skool: "Access to a single creator's community: courses, group threads, weekly calls, and a points/levels system. Content depth depends on the host." },
   { category: "Time to first deploy", mudikit: "Minutes. Each skill is a working system. Clone, configure, ship. Most subscribers ship something within their first weekend.", skool: "Hours to days. You watch lessons, take notes, and then build. Implementation is on you." },
   { category: "Maintenance & updates", mudikit: "New skill or playbook every month. Existing items updated as Claude Code evolves. Subscribers notified when something drops.", skool: "Depends entirely on the community owner. Some are actively updated, many go dormant after the launch cohort." },
   { category: "Pricing model", mudikit: "Flat $47/month. Cancel anytime via Stripe customer portal. No setup fees, no annual commitment.", skool: "Members pay whatever the community owner sets (often $50-200/month for AI/automation communities). Skool itself charges owners $99/month flat." },
@@ -257,7 +257,7 @@ export default function MudikitVsSkoolPage() {
                   <div className="pt-4 border-t border-primary/[0.1]">
                     <span className="text-lg font-black text-foreground font-mono">$564</span>
                     <span className="text-sm text-foreground/50 font-light"> / 12 months</span>
-                    <p className="text-sm text-foreground/50 font-light mt-1">15+ skills, 6 playbooks, vault template, 20+ outreach templates, monthly drops. Cancel anytime.</p>
+                    <p className="text-sm text-foreground/50 font-light mt-1">64 skills, playbooks, vault template, outreach files, monthly drops. Cancel anytime.</p>
                   </div>
                 </div>
               </div>

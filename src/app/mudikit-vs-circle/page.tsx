@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 const COMPARISON = [
   { category: "Product type", mudikit: "Working skills library you install. Production-grade Claude Code skills, prompts, and configs you clone and run.", circle: "Tiered community software platform. Owners build hosted communities with spaces, events, courses, and member directories." },
-  { category: "What you buy", mudikit: "A subscription to one curated library: 15+ skills, 6 playbooks, vault template, 20+ outreach templates, open-source lead capture system.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are open; many are paid." },
+  { category: "What you buy", mudikit: "A subscription to one curated library: 64 skills, playbooks, vault template, outreach files, open-source lead capture system.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are open; many are paid." },
   { category: "Time to first deploy", mudikit: "Minutes. Each skill is a working system. Clone, configure, ship. Most subscribers ship something within their first weekend.", circle: "Hours to days. You browse spaces, watch lessons, take notes, then build. Implementation is on you." },
   { category: "Update cadence", mudikit: "New skill or playbook every month, plus updates to existing ones as Claude Code evolves. Subscribers notified by email.", circle: "Depends on the host. Active communities ship weekly content; many go quiet after the launch period." },
   { category: "Pricing model", mudikit: "Flat $47/month. Cancel anytime via Stripe portal. No tiers, no setup fees, no annual lock-in.", circle: "Members pay whatever the host sets. Circle itself sells tiered admin plans (Basic, Plus, Premium, Business) that scale with features and member count." },
@@ -257,7 +257,7 @@ export default function MudikitVsCirclePage() {
                   <div className="pt-4 border-t border-primary/[0.1]">
                     <span className="text-lg font-black text-foreground font-mono">$564</span>
                     <span className="text-sm text-foreground/50 font-light"> / 12 months</span>
-                    <p className="text-sm text-foreground/50 font-light mt-1">15+ skills, 6 playbooks, vault template, 20+ outreach templates, monthly drops. Cancel anytime.</p>
+                    <p className="text-sm text-foreground/50 font-light mt-1">64 skills, playbooks, vault template, outreach files, monthly drops. Cancel anytime.</p>
                   </div>
                 </div>
               </div>

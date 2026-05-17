@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "MudiKit · $47/mo",
     title: "The kit I run my business with.",
     subtitle:
-      "Claude Code skills. 6 playbooks. 1 vault template. 20+ outreach DMs. New drops every week.",
+      "Claude Code skills. Playbooks. Vault template. Outreach files. New drops every week.",
   });
 }

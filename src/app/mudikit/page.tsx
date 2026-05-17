@@ -151,7 +151,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           What&rsquo;s inside
         </p>
         <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.02em] mb-14 max-w-2xl">
-          {skillCount} skills. 6 playbooks. 1 vault. 20+ outreach templates.
+          {skillCount} skills. Playbooks. Vault. Outreach templates.
         </h2>
 
         {/* Skills */}
@@ -184,7 +184,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           <div className="flex items-baseline justify-between mb-6">
             <h3 className="text-xl md:text-2xl font-semibold">Implementation playbooks</h3>
             <span className="text-xs font-mono uppercase tracking-[0.18em] text-[#636366]">
-              6 systems
+              {PLAYBOOKS.length} systems
             </span>
           </div>
           <p className="text-[#a0a0a6] text-base leading-relaxed mb-6 max-w-2xl">
@@ -223,7 +223,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
             <div className="flex items-baseline justify-between mb-4">
               <h3 className="text-xl md:text-2xl font-semibold">Outreach templates</h3>
               <span className="text-xs font-mono uppercase tracking-[0.18em] text-[#636366]">
-                20+ DMs
+                Templates
               </span>
             </div>
             <p className="text-[#a0a0a6] text-[15px] leading-relaxed">

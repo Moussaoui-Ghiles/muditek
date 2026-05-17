@@ -262,7 +262,7 @@ export default async function NewsletterPage() {
       {/* MUDIKIT CTA */}
       <MudikitCta
         headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
-        body="The newsletter is what I write publicly. MudiKit is what I install: 15+ Claude Code skills (outreach, lead gen, content, scrapers, inbox SDR), 6 implementation playbooks, the vault template, 20+ outreach templates. New skills drop every month."
+        body="The newsletter is what I write publicly. MudiKit is what I install: 64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New skills drop every month."
       />
 
       {/* BOTTOM CTA */}

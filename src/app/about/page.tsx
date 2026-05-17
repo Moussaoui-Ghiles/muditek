@@ -286,7 +286,7 @@ export default function AboutPage() {
       {/* ══════ MUDIKIT CTA ══════ */}
       <MudikitCta
         headline="Or skip the call. Subscribe to MudiKit · $47/mo"
-        body="Want the systems without the engagement? MudiKit is the operator library: 15+ Claude Code skills, 6 playbooks, the vault template that runs Muditek, 20+ outreach templates with A/B variants. Updated monthly."
+        body="Want the systems without the engagement? MudiKit is the operator library: 64 Claude Code skills, implementation playbooks, the vault template that runs Muditek, and outreach operating files. Updated monthly."
       />
 
       {/* ══════ CTA ══════ */}

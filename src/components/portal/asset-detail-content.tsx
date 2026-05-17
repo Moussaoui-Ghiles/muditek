@@ -192,7 +192,7 @@ function ShareResourceButton({ item }: { item: ContentItem }) {
   return (
     <Button type="button" variant="outline" size="sm" onClick={copyShareLink}>
       {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-      {copied ? "Copied" : "Copy lead-magnet link"}
+      {copied ? "Copied" : "Copy share link"}
     </Button>
   );
 }

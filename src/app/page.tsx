@@ -378,7 +378,7 @@ export default function Home() {
       {/* MUDIKIT CTA */}
       <MudikitCta
         headline="Ship a system this weekend with MudiKit · $47/mo"
-        body="The same library I run my own business on. 15+ Claude Code skills (outreach, lead gen, content, scrapers, inbox SDR), 6 implementation playbooks, the vault template, 20+ outreach templates. New drops every month."
+        body="The same library I run my own business on: 64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New drops every month."
       />
 
       {/* FINAL CTA */}

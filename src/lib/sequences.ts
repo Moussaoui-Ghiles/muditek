@@ -131,10 +131,10 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           I packaged it.
         </p>
         <ul style="margin: 0 0 18px; padding-left: 20px; font-size: 15.5px; line-height: 1.85;">
-          <li>15+ Claude Code skills</li>
-          <li>6 implementation playbooks</li>
+          <li>64 shipped Claude Code skills</li>
+          <li>Implementation playbooks and portal resources</li>
           <li>The vault template: CLAUDE.md hierarchy + decision rules</li>
-          <li>20+ outreach DMs with A/B variants</li>
+          <li>Outreach templates and operating files</li>
           <li>New drops every week</li>
         </ul>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">

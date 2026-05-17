@@ -46,7 +46,7 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 ## Newsletter & Resources
 
 - [Muditek Newsletter](https://muditek.com/newsletter): Weekly playbooks for AI operators, B2B operators, and investment professionals. 5,000+ subscribers across telecom, SaaS, and finance. Archive of 29+ issues.
-- [Resources](https://muditek.com/resources): Free playbooks and guides — Chief of Staff Blueprint, Claude Code self-evolving system, Judgment Moat, Google Maps outbound, Agentic SDR setup, and more.
+- [Portal Resources](https://muditek.com/portal): Signed-in library for playbooks, guides, skills, tools, newsletter articles, and MudiKit drops. Public resource links now use tracked unlock routes like `https://muditek.com/r/ai-data-agent-guide` and require account creation before opening inside the portal.
 - [About / Founder](https://muditek.com/about): Background on Ghiles Moussaoui, the methodology, and how to book a call.
 
 ## Target Audiences

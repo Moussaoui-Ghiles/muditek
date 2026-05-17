@@ -349,19 +349,19 @@ Recent issue topics (representative): Claude Code self-evolving system. Outbound
 
 ---
 
-## Resources
+## Portal Resources
 
-URL: https://muditek.com/resources
-Free playbooks and guides — published as living documents, updated as the systems evolve.
+URL: https://muditek.com/portal
+Signed-in library for playbooks, guides, skills, tools, newsletter articles, and MudiKit drops. Public `/resources` routes redirect into the portal-first flow. Shareable lead-magnet links use `/r/[slug]`, for example https://muditek.com/r/ai-data-agent-guide, then route signed-in users to the matching portal item.
 
-- **Chief of Staff Blueprint** — the operating manual for using Claude Code as a chief of staff for solo operators (https://muditek.com/resources/chief-of-staff-blueprint)
-- **Claude Code Self-Evolving System** — how to wire Claude Code so it improves its own skills over time (https://muditek.com/resources/openclaw-outbound and related slugs)
+- **Chief of Staff Blueprint** — the operating manual for using Claude Code as a chief of staff for solo operators
+- **Claude Code Self-Evolving System** — how to wire Claude Code so it improves its own skills over time
 - **Judgment Moat** — why human judgment is the moat in agent-built businesses
 - **Google Maps Outbound** — the OpenClaw playbook for scraping local-business outbound at scale
 - **Agentic SDR Setup** — full inbox SDR playbook with prompts, workflows, A/B variants
 - **Free Revenue Leak Calculator** — https://muditek.com/tools/revenue-leak-calculator estimates annual revenue leakage from speed-to-lead decay, pipeline conversion gaps, and excess churn
 
-All resource pages ship Article + BreadcrumbList schema with @id refs to the sitewide Person + Organization + WebSite. Each is a self-contained Markdown-style document with citable summary, core features, and where applicable, install commands.
+Portal resource pages are read inside the authenticated portal shell. Lead-magnet unlock pages are tracked entry points that create the account/login step before sending the reader to the relevant playbook, guide, skill, or tool.
 
 ---
 
@@ -438,7 +438,7 @@ Muditek ships content across owned channels and a small set of external surfaces
 - **Newsletter**: https://muditek.com/newsletter — 5,000+ subscribers, 29+ issues, weekly cadence in 2026.
 - **LinkedIn**: 35,000+ followers. Daily posts. Primary distribution surface for new playbooks and lead magnets.
 - **Personal site**: https://ghiless.com — Ghiles's broader writing and projects.
-- **Resources hub**: https://muditek.com/resources — free playbooks and guides.
+- **Portal resources**: https://muditek.com/portal — signed-in library for playbooks, guides, skills, tools, newsletter articles, and MudiKit drops.
 
 Lead magnets feed into a 5-email nurture sequence (built on the open-source lead capture system shipped with MudiKit) that introduces the relevant offer based on which lead magnet was downloaded.
 
@@ -502,11 +502,10 @@ Comparison pages:
 - https://muditek.com/mudikit-vs-skool
 - https://muditek.com/mudikit-vs-circle
 
-Tools & resources:
+Tools & portal resources:
 - https://muditek.com/tools/revenue-leak-calculator — free calculator
-- https://muditek.com/resources — free playbooks index
-- https://muditek.com/resources/chief-of-staff-blueprint
-- https://muditek.com/resources/openclaw-outbound
+- https://muditek.com/portal — signed-in portal library
+- https://muditek.com/r/ai-data-agent-guide — tracked lead-magnet unlock link example
 - https://muditek.com/newsletter — newsletter index + archive
 
 Standards files:

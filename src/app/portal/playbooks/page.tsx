@@ -4,15 +4,15 @@ import { getDb } from "@/lib/db";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
-import type { ContentItem } from "@/lib/content-item";
+import { PLAYBOOK_RESOURCE_CATEGORIES, type ContentItem } from "@/lib/content-item";
 import PlaybooksContent from "./playbooks-content";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Playbooks & Guides · Muditek Portal",
+  title: "Playbooks & Resources · Muditek Portal",
   description:
-    "Long-form playbooks, guides, frameworks, and implementation docs attached to your Muditek portal account.",
+    "Portal playbooks, guides, scorecards, templates, and implementation resources attached to your Muditek account.",
 };
 
 export default async function PortalPlaybooksPage() {
@@ -47,7 +47,7 @@ export default async function PortalPlaybooksPage() {
   const rows = (await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
-    WHERE category IN ('playbook', 'guide')
+    WHERE category = ANY(${[...PLAYBOOK_RESOURCE_CATEGORIES]})
     ORDER BY is_new DESC NULLS LAST, created_at DESC
   `) as ContentItem[];
 

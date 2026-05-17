@@ -8,7 +8,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
-type TypeFilter = "all" | "playbook" | "guide";
+type TypeFilter = "all" | "playbook" | "guide" | "resource";
 type TopicFilter = "all" | "lead-gen" | "sales" | "marketing" | "gtm";
 
 const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
@@ -24,8 +24,17 @@ function isAccessible(item: ContentItem, access: PortalAccess): boolean {
   return access.isMudikit || access.isAdmin;
 }
 
-function typeLabel(item: ContentItem): "Playbook" | "Guide" {
-  return item.category === "guide" ? "Guide" : "Playbook";
+function isResourceFile(item: ContentItem): boolean {
+  return item.category !== "playbook" && item.category !== "guide";
+}
+
+function typeLabel(item: ContentItem): string {
+  if (item.category === "guide") return "Guide";
+  if (item.category === "playbook") return "Playbook";
+  if (item.category === "automation") return "Automation";
+  if (item.category === "template") return "Template";
+  if (item.category === "tool") return "Tool file";
+  return "Resource";
 }
 
 function accessLabel(item: ContentItem): string {
@@ -253,10 +262,10 @@ function UpgradeBand({ count }: { count: number }) {
             MudiKit
           </p>
           <h3 className="mt-5 max-w-xl text-[26px] font-black leading-[1] tracking-[-0.025em] text-foreground md:text-[34px]">
-            {count} {count === 1 ? "playbook is" : "playbooks are"} part of <span className="text-primary italic font-medium">MudiKit</span>.
+            {count} {count === 1 ? "resource is" : "resources are"} part of <span className="text-primary italic font-medium">MudiKit</span>.
           </h3>
           <p className="mt-4 max-w-lg text-[13.5px] leading-7 text-foreground/65">
-            MudiKit unlocks the full long-form library and every new drop, alongside the paid skills and tools.
+            MudiKit unlocks the full resource library and every new drop, alongside the paid skills.
           </p>
         </div>
         <Link
@@ -335,15 +344,20 @@ export default function PlaybooksContent({
       total: items.length,
       playbooks: items.filter((item) => item.category === "playbook").length,
       guides: items.filter((item) => item.category === "guide").length,
+      resources: items.filter(isResourceFile).length,
       included: items.filter((item) => item.is_free).length,
       paid: items.filter((item) => !item.is_free).length,
       locked: items.filter((item) => !item.is_free && !(access.isMudikit || access.isAdmin)).length,
-      newDrops: items.filter((item) => item.is_new).length,
     }),
     [items, access]
   );
 
-  const hasBothTypes = counts.playbooks > 0 && counts.guides > 0;
+  const visibleTypes = [
+    { value: "playbook" as const, label: "Playbooks", count: counts.playbooks },
+    { value: "guide" as const, label: "Guides", count: counts.guides },
+    { value: "resource" as const, label: "Resources", count: counts.resources },
+  ].filter((type) => type.count > 0);
+  const hasMultipleTypes = visibleTypes.length > 1;
   const topicCounts = useMemo(() => {
     const map: Record<TopicFilter, number> = { all: items.length, "lead-gen": 0, sales: 0, marketing: 0, gtm: 0 };
     for (const item of items) map[topicForItem(item)] += 1;
@@ -355,7 +369,9 @@ export default function PlaybooksContent({
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
-      if (typeFilter !== "all" && item.category !== typeFilter) return false;
+      if (typeFilter === "playbook" && item.category !== "playbook") return false;
+      if (typeFilter === "guide" && item.category !== "guide") return false;
+      if (typeFilter === "resource" && !isResourceFile(item)) return false;
       if (topicFilter !== "all" && topicForItem(item) !== topicFilter) return false;
       if (!needle) return true;
       const haystack = [item.title, item.description, item.category, item.file_type]
@@ -389,22 +405,22 @@ export default function PlaybooksContent({
           <div className="reveal">
             <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
               <span aria-hidden className="h-px w-8 bg-primary/50" />
-              The long-form shelf
+              The resource shelf
             </p>
             <h1 className="mt-6 text-[44px] font-black leading-[0.92] tracking-[-0.04em] text-foreground sm:text-[60px] md:text-[78px]">
-              Playbooks <span className="text-primary italic font-medium">&amp;</span> Guides.
+              Playbooks <span className="text-primary italic font-medium">&amp;</span> Resources.
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
-              Deeper documents, frameworks, and implementation playbooks. Read them in the portal, grouped by the motion they help you ship. MudiKit unlocks the full shelf.
+              Deeper docs, scorecards, templates, and implementation assets. Read HTML in the portal, open PDFs cleanly, and keep every lead magnet inside the same logged-in system.
             </p>
           </div>
           <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
             <Stat label="Total" value={counts.total} />
             <Stat label="Playbooks" value={counts.playbooks} />
             <Stat label="Guides" value={counts.guides} />
+            <Stat label="Resources" value={counts.resources} />
             <Stat label="Included" value={counts.included} />
             <Stat label="MudiKit" value={counts.paid} />
-            <Stat label="New" value={counts.newDrops} accent={counts.newDrops > 0} />
           </dl>
         </div>
       </section>
@@ -424,7 +440,7 @@ export default function PlaybooksContent({
                       Featured drop
                     </h2>
                     <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-                      Long-form · in portal
+                      Resource · in portal
                     </span>
                   </div>
                   <FeaturedItem item={featured} access={access} />
@@ -440,20 +456,23 @@ export default function PlaybooksContent({
                     <Filter className="size-3" />
                     Browse
                   </span>
-                  {hasBothTypes && (
+                  {hasMultipleTypes && (
                     <div className="flex flex-wrap items-center gap-1.5">
                       <FilterPill active={typeFilter === "all"} onClick={() => setTypeFilter("all")}>
                         All
                       </FilterPill>
-                      <FilterPill active={typeFilter === "playbook"} onClick={() => setTypeFilter("playbook")}>
-                        Playbooks <span className="ml-2 opacity-60">{counts.playbooks}</span>
-                      </FilterPill>
-                      <FilterPill active={typeFilter === "guide"} onClick={() => setTypeFilter("guide")}>
-                        Guides <span className="ml-2 opacity-60">{counts.guides}</span>
-                      </FilterPill>
+                      {visibleTypes.map((type) => (
+                        <FilterPill
+                          key={type.value}
+                          active={typeFilter === type.value}
+                          onClick={() => setTypeFilter(type.value)}
+                        >
+                          {type.label} <span className="ml-2 opacity-60">{type.count}</span>
+                        </FilterPill>
+                      ))}
                     </div>
                   )}
-                  {hasBothTypes && visibleTopics.length > 1 && (
+                  {hasMultipleTypes && visibleTopics.length > 1 && (
                     <span aria-hidden className="hidden h-4 w-px bg-white/10 lg:inline-block" />
                   )}
                   {visibleTopics.length > 1 && (

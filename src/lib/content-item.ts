@@ -32,11 +32,25 @@ export function formatContentDate(date: Date | string | null): string {
 
 export type PortalAssetKind = "skills" | "playbooks" | "tools";
 
+export const PLAYBOOK_RESOURCE_CATEGORIES = [
+  "playbook",
+  "guide",
+  "tool",
+  "automation",
+  "template",
+] as const;
+
+export function isPlaybookResourceCategory(category: string): boolean {
+  const value = (category ?? "").trim().toLowerCase();
+  return PLAYBOOK_RESOURCE_CATEGORIES.includes(
+    value as (typeof PLAYBOOK_RESOURCE_CATEGORIES)[number]
+  );
+}
+
 export function categoryPortalPath(category: string): PortalAssetKind {
   const value = (category ?? "").trim().toLowerCase();
   if (value === "skill") return "skills";
-  if (value === "playbook" || value === "guide") return "playbooks";
-  return "tools";
+  return "playbooks";
 }
 
 export function resourceDetailHref(item: Pick<ContentItem, "slug" | "category">): string {

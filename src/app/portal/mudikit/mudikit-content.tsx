@@ -23,7 +23,7 @@ interface MudikitContentProps {
   displayName: string;
 }
 
-type GroupKey = "skills" | "playbooks" | "tools" | "other";
+type GroupKey = "skills" | "playbooks" | "resources" | "other";
 
 interface Group {
   key: GroupKey;
@@ -32,17 +32,17 @@ interface Group {
   items: ContentItem[];
 }
 
-const GROUP_ORDER: GroupKey[] = ["skills", "playbooks", "tools", "other"];
+const GROUP_ORDER: GroupKey[] = ["skills", "playbooks", "resources", "other"];
 const GROUP_LABEL: Record<GroupKey, string> = {
   skills: "Skills",
   playbooks: "Playbooks & guides",
-  tools: "Tools",
+  resources: "Resource files",
   other: "Other",
 };
 const GROUP_BLURB: Record<GroupKey, string> = {
   skills: "Claude Code skills you can drop in and run.",
   playbooks: "Step-by-step systems and operating guides.",
-  tools: "Calculators, scorecards, and interactive tools.",
+  resources: "Scorecards, templates, and downloadable assets.",
   other: "Other paid assets attached to your account.",
 };
 
@@ -50,7 +50,16 @@ function classifyCategory(category: string): GroupKey {
   const c = (category || "").toLowerCase().trim();
   if (c === "skill" || c === "skills") return "skills";
   if (c === "playbook" || c === "playbooks" || c === "guide" || c === "guides") return "playbooks";
-  if (c === "tool" || c === "tools" || c === "template" || c === "templates") return "tools";
+  if (
+    c === "tool" ||
+    c === "tools" ||
+    c === "automation" ||
+    c === "automations" ||
+    c === "template" ||
+    c === "templates"
+  ) {
+    return "resources";
+  }
   return "other";
 }
 
@@ -58,7 +67,7 @@ function groupItems(items: ContentItem[]): Group[] {
   const buckets: Record<GroupKey, ContentItem[]> = {
     skills: [],
     playbooks: [],
-    tools: [],
+    resources: [],
     other: [],
   };
   for (const item of items) {
@@ -77,8 +86,9 @@ function groupItems(items: ContentItem[]): Group[] {
 function itemHref(item: Pick<ContentItem, "slug" | "category">): string {
   const group = classifyCategory(item.category);
   if (group === "skills") return `/portal/skills/${encodeURIComponent(item.slug)}`;
-  if (group === "playbooks") return `/portal/playbooks/${encodeURIComponent(item.slug)}`;
-  if (group === "tools") return `/portal/tools/${encodeURIComponent(item.slug)}`;
+  if (group === "playbooks" || group === "resources") {
+    return `/portal/playbooks/${encodeURIComponent(item.slug)}`;
+  }
   return `/portal?view=resource&slug=${encodeURIComponent(item.slug)}`;
 }
 
@@ -178,8 +188,8 @@ function MudikitHero({
 
           <p className="mt-4 max-w-xl text-[14.5px] leading-7 text-muted-foreground">
             {unlocked
-              ? "Paid skills, playbooks, and tools attached to your account. New drops continue to land here."
-              : "MudiKit unlocks paid skills, playbooks, and tools, plus every new drop. Included access stays exactly where it is."}
+              ? "Paid skills, playbooks, and resource files attached to your account. New drops continue to land here."
+              : "MudiKit unlocks paid skills, playbooks, resource files, and every new drop. Included access stays exactly where it is."}
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-2">
@@ -432,7 +442,7 @@ function IncludedPointersStrip() {
     },
     {
       title: "Tools",
-      body: "Calculators and scorecards.",
+      body: "Live workbenches.",
       href: "/portal/tools",
     },
     {
@@ -489,7 +499,7 @@ function UnlockBlock({ email }: { email: string }) {
           <ul className="mt-5 space-y-2 text-[13.5px] text-muted-foreground">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-foreground/70" />
-              Paid skills, playbooks, and tools added over time
+              Paid skills, playbooks, and resource files added over time
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-foreground/70" />

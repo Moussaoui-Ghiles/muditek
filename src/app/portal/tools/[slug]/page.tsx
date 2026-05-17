@@ -2,42 +2,18 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Lock } from "lucide-react";
-import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-detail-content";
 import { getPortalTool } from "@/app/portal/tools-catalog";
 import { GoogleMapsLeadWorkbench } from "@/components/portal/google-maps-lead-workbench";
 import { LinkedInSerperLeadWorkbench } from "@/components/portal/linkedin-serper-lead-workbench";
 import { RevenueLeakWorkbench } from "@/components/portal/revenue-leak-workbench";
-import {
-  buildAssetAccess,
-  getDownloadHref,
-  getHTMLContent,
-  getPdfPageImages,
-  loadAssetBySlugAndCategories,
-} from "@/lib/portal-asset-loader";
+import { buildAssetAccess } from "@/lib/portal-asset-loader";
 
 export const dynamic = "force-dynamic";
 
-const TOOL_CATEGORIES = ["tool", "automation", "template"];
-
-const LABELS: AssetLabels = {
-  kindSingular: "Tool",
-  kindPlural: "Tools",
-  backHref: "/portal/tools",
-  backLabel: "All tools",
-  notFoundBody: "No tool exists at this slug, or it is no longer published.",
-  lockedTitle: "MudiKit unlocks this tool",
-  lockedBody: "MudiKit gives access to every paid tool, automation, and template.",
-  emptyAssetBody: "This tool exists in the library, but no asset has been attached yet.",
-};
-
 function ToolWorkbench({
   slug,
-  title,
-  description,
 }: {
   slug: string;
-  title: string;
-  description: string;
 }) {
   if (slug === "revenue-leak-calculator") {
     return <RevenueLeakWorkbench />;
@@ -227,7 +203,7 @@ function WorkbenchPage({
                 Inputs to diagnosis
               </span>
             </div>
-            <ToolWorkbench slug={slug} title={title} description={description} />
+            <ToolWorkbench slug={slug} />
           </section>
         )}
       </div>
@@ -260,52 +236,18 @@ export default async function ToolDetailPage({
   if (!email) redirect(signInHref);
 
   const access = await buildAssetAccess(email, user.id);
-  const item = await loadAssetBySlugAndCategories(slug, TOOL_CATEGORIES);
-  const displayName = user.firstName || email.split("@")[0];
+  const workbench = getPortalTool(slug);
 
-  if (!item) {
-    const workbench = getPortalTool(slug);
-    if (workbench) {
-      const locked = workbench.access === "mudikit" && !access.isMudikit && !access.isAdmin;
-      return (
-        <WorkbenchPage
-          slug={workbench.slug}
-          title={workbench.title}
-          description={workbench.description}
-          category={workbench.category}
-          locked={locked}
-        />
-      );
-    }
-    return (
-      <AssetDetailContent
-        item={null}
-        access={access}
-        email={email}
-        displayName={displayName}
-        html={null}
-        pageImages={[]}
-        downloadHref={null}
-        labels={LABELS}
-      />
-    );
-  }
+  if (!workbench) redirect(`/portal/playbooks/${encodeURIComponent(slug)}`);
 
-  const hasAccess = item.is_free || access.isMudikit || access.isAdmin;
-  const html = hasAccess ? getHTMLContent(item.slug) : null;
-  const pageImages = hasAccess ? getPdfPageImages(item.slug) : [];
-  const downloadHref = hasAccess ? getDownloadHref(item) : null;
-
+  const locked = workbench.access === "mudikit" && !access.isMudikit && !access.isAdmin;
   return (
-    <AssetDetailContent
-      item={item}
-      access={access}
-      email={email}
-      displayName={displayName}
-      html={html}
-      pageImages={pageImages}
-      downloadHref={downloadHref}
-      labels={LABELS}
+    <WorkbenchPage
+      slug={workbench.slug}
+      title={workbench.title}
+      description={workbench.description}
+      category={workbench.category}
+      locked={locked}
     />
   );
 }

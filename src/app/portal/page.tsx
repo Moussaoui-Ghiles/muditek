@@ -7,7 +7,7 @@ import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
-import { categoryPortalPath } from "@/lib/content-item";
+import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
 import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
 
 const PORTAL_CONTENT_DIR = join(process.cwd(), "content/portal");
@@ -270,7 +270,7 @@ export default async function PortalPage({
   const playbookGuideItems = withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
-    WHERE category IN ('playbook', 'guide')
+    WHERE category = ANY(${[...PLAYBOOK_RESOURCE_CATEGORIES]})
     ORDER BY is_new DESC NULLS LAST, created_at DESC
   `) as ContentItem[]);
 

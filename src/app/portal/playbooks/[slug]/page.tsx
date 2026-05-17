@@ -8,25 +8,24 @@ import {
   getPdfPageImages,
   loadAssetBySlugAndCategories,
 } from "@/lib/portal-asset-loader";
+import { PLAYBOOK_RESOURCE_CATEGORIES } from "@/lib/content-item";
 
 export const dynamic = "force-dynamic";
 
-const PLAYBOOK_CATEGORIES = ["playbook", "guide"];
-
 const LABELS: AssetLabels = {
-  kindSingular: "Playbook",
-  kindPlural: "Playbooks & Guides",
+  kindSingular: "Resource",
+  kindPlural: "Playbooks & Resources",
   backHref: "/portal/playbooks",
-  backLabel: "All playbooks",
-  notFoundBody: "No playbook or guide exists at this slug, or it is no longer published.",
-  lockedTitle: "MudiKit unlocks this playbook",
-  lockedBody: "MudiKit gives access to every paid playbook and guide, plus future drops.",
-  emptyAssetBody: "This playbook exists in the library, but no asset has been attached yet.",
+  backLabel: "All resources",
+  notFoundBody: "No portal resource exists at this slug, or it is no longer published.",
+  lockedTitle: "MudiKit unlocks this resource",
+  lockedBody: "MudiKit gives access to every paid resource, playbook, and future drop.",
+  emptyAssetBody: "This resource exists in the library, but no asset has been attached yet.",
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return { title: `${slug} · Playbooks · Muditek Portal` };
+  return { title: `${slug} · Resources · Muditek Portal` };
 }
 
 export default async function PlaybookDetailPage({
@@ -49,7 +48,7 @@ export default async function PlaybookDetailPage({
   if (!email) redirect(signInHref);
 
   const access = await buildAssetAccess(email, user.id);
-  const item = await loadAssetBySlugAndCategories(slug, PLAYBOOK_CATEGORIES);
+  const item = await loadAssetBySlugAndCategories(slug, [...PLAYBOOK_RESOURCE_CATEGORIES]);
   const displayName = user.firstName || email.split("@")[0];
 
   if (!item) {

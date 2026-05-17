@@ -14,7 +14,12 @@ import {
   Wrench,
 } from "lucide-react";
 import { PORTAL_TOOLS } from "@/app/portal/tools-catalog";
-import type { ContentItem } from "@/lib/content-item";
+import {
+  categoryLabel as contentCategoryLabel,
+  isPlaybookResourceCategory,
+  resourceDetailHref,
+  type ContentItem,
+} from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
 interface NewsletterIssue {
@@ -51,8 +56,6 @@ interface HomeContentProps {
 }
 
 const SKILL_CATEGORY = "skill";
-const PLAYBOOK_GUIDE = new Set(["playbook", "guide"]);
-const TOOL_CATEGORIES = new Set(["tool", "automation", "template"]);
 
 function uniqueItems(items: ContentItem[]): ContentItem[] {
   const seen = new Set<string>();
@@ -70,17 +73,17 @@ function isAccessible(item: ContentItem, access: PortalAccess): boolean {
 
 function itemHref(item: ContentItem): string {
   if (item.category === SKILL_CATEGORY) return `/portal/skills/${encodeURIComponent(item.slug)}`;
-  if (TOOL_CATEGORIES.has(item.category)) return `/portal/tools/${encodeURIComponent(item.slug)}`;
-  if (PLAYBOOK_GUIDE.has(item.category)) return `/portal/playbooks/${encodeURIComponent(item.slug)}`;
-  return `/portal?view=resource&slug=${encodeURIComponent(item.slug)}`;
+  return resourceDetailHref(item);
 }
 
 function categoryLabel(item: ContentItem): string {
   if (item.category === SKILL_CATEGORY) return "Skill";
   if (item.category === "guide") return "Guide";
   if (item.category === "playbook") return "Playbook";
-  if (TOOL_CATEGORIES.has(item.category)) return "Tool";
-  return item.category.charAt(0).toUpperCase() + item.category.slice(1);
+  if (item.category === "tool") return "Tool file";
+  if (item.category === "automation") return "Automation";
+  if (item.category === "template") return "Template";
+  return contentCategoryLabel(item.category);
 }
 
 function formatShortDate(date: Date | string | null): string {
@@ -282,13 +285,8 @@ export default function PortalHomeContent({
   );
 
   const playbooks = useMemo(
-    () => playbookGuideItems.filter((item) => PLAYBOOK_GUIDE.has(item.category)),
+    () => playbookGuideItems.filter((item) => isPlaybookResourceCategory(item.category)),
     [playbookGuideItems]
-  );
-
-  const contentTools = useMemo(
-    () => allItems.filter((item) => TOOL_CATEGORIES.has(item.category)),
-    [allItems]
   );
 
   const paidCount = useMemo(
@@ -308,12 +306,11 @@ export default function PortalHomeContent({
       return uniqueItems([
         ...byDate(playbooks).slice(0, 2),
         ...byDate(skills).slice(0, 2),
-        ...byDate(contentTools).slice(0, 1),
         ...byDate(paidItems).slice(0, 2),
         ...byDate(allItems),
       ]).slice(0, 6);
     },
-    [allItems, contentTools, paidItems, playbooks, skills]
+    [allItems, paidItems, playbooks, skills]
   );
 
   const latestIssue = issues[0];
@@ -408,7 +405,7 @@ export default function PortalHomeContent({
             <CategoryTile
               href="/portal/playbooks"
               title="Playbooks"
-              body="Long-form guides, frameworks, and implementation docs grouped by motion."
+              body="Guides, scorecards, templates, and implementation docs grouped by motion."
               count={playbooks.length}
               latest={latestTitle(playbooks, "Playbook shelf")}
               icon={BookText}
@@ -416,8 +413,8 @@ export default function PortalHomeContent({
             <CategoryTile
               href="/portal/tools"
               title="Tools"
-              body="Interactive workbenches and downloadable tools built to produce usable answers."
-              count={PORTAL_TOOLS.length + contentTools.length}
+              body="Live workbenches that run searches, calculators, and lead workflows inside the portal."
+              count={PORTAL_TOOLS.length}
               latest={latestTool}
               icon={Wrench}
             />

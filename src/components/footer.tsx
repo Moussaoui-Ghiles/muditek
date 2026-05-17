@@ -13,7 +13,7 @@ export function Footer() {
               B2B Agents
             </span>
             <span className="text-sm text-foreground/50 font-light">
-              One deployable system per week. No paywall.
+              One deployable system per week for B2B operators.
             </span>
           </div>
           <EmailCapture

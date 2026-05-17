@@ -3,11 +3,8 @@ import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
-
-interface ContentItem {
-  slug: string;
-  thumbnail_url: string | null;
-}
+import { listPortalSkills } from "@/lib/portal-skills";
+import type { ContentItem } from "@/lib/content-item";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
@@ -20,8 +17,19 @@ export async function GET(request: Request) {
     FROM content_items
     ORDER BY is_free ASC, category ASC, created_at DESC
   `;
+  const dbItems = withDerivedThumbnails(items as ContentItem[]);
+  const dbSkillSlugs = new Set(
+    dbItems.filter((item) => item.category === "skill").map((item) => item.slug)
+  );
+  const localSkills = listPortalSkills().filter((item) => !dbSkillSlugs.has(item.slug));
 
-  return NextResponse.json(withDerivedThumbnails(items as ContentItem[]));
+  return NextResponse.json(
+    withDerivedThumbnails([...dbItems, ...localSkills]).sort((a, b) => {
+      if (a.is_free !== b.is_free) return a.is_free ? -1 : 1;
+      if (a.category !== b.category) return a.category.localeCompare(b.category);
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    })
+  );
 }
 
 export async function POST(request: Request) {

@@ -93,6 +93,10 @@ function itemToDraft(item: ContentItem): Draft {
   };
 }
 
+function isFileBackedSkill(item: Pick<ContentItem, "id">) {
+  return item.id.startsWith("local-skill-");
+}
+
 function formatDate(value: string | null | undefined) {
   if (!value) return "Never";
   return new Date(value).toLocaleDateString("en-US", {
@@ -262,7 +266,13 @@ export default function ContentPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Save failed");
 
-      setMessage(editingId ? "Resource updated." : "Resource created.");
+      setMessage(
+        editingId
+          ? editingId.startsWith("local-skill-")
+            ? "Skill imported into the CMS."
+            : "Resource updated."
+          : "Resource created."
+      );
       if (!editingId) resetDraft();
       await fetchData();
     } catch (error) {
@@ -421,6 +431,11 @@ export default function ContentPage() {
                       <Badge variant="outline" className="rounded-md">
                         {item.category}
                       </Badge>
+                      {isFileBackedSkill(item) && (
+                        <Badge variant="outline" className="rounded-md border-violet-400/30 text-violet-200">
+                          File skill
+                        </Badge>
+                      )}
                       {!item.thumbnail_url && <MissingThumbBadge />}
                     </div>
                     {item.description && (
@@ -445,21 +460,23 @@ export default function ContentPage() {
                       Portal
                     </Button>
                     {item.is_free && <CopyButton value={unlockHref(item)} label="Unlock link" />}
-                    <Button
-                      type="button"
-                      size="icon-sm"
-                      variant={deleteArmedId === item.id ? "destructive" : "ghost"}
-                      onClick={() => handleDelete(item)}
-                      className={
-                        deleteArmedId === item.id
-                          ? ""
-                          : "text-muted-foreground hover:text-destructive"
-                      }
-                      aria-label={deleteArmedId === item.id ? "Confirm delete" : "Delete content item"}
-                      title={deleteArmedId === item.id ? "Click again to confirm" : "Delete"}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
+                    {!isFileBackedSkill(item) && (
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant={deleteArmedId === item.id ? "destructive" : "ghost"}
+                        onClick={() => handleDelete(item)}
+                        className={
+                          deleteArmedId === item.id
+                            ? ""
+                            : "text-muted-foreground hover:text-destructive"
+                        }
+                        aria-label={deleteArmedId === item.id ? "Confirm delete" : "Delete content item"}
+                        title={deleteArmedId === item.id ? "Click again to confirm" : "Delete"}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card>

@@ -50,6 +50,31 @@ function formatMonthDay(iso: string | null): string {
   });
 }
 
+function fallbackCoverSrc(issue: ArchiveIssue): string {
+  const safeSubject = issue.subject
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const shortSubject =
+    safeSubject.length > 76 ? `${safeSubject.slice(0, 73).trim()}...` : safeSubject;
+  const date = formatMonthDay(issue.sent_at).toUpperCase();
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="675" viewBox="0 0 900 675">
+  <rect width="900" height="675" fill="#0a0a0c"/>
+  <rect x="1" y="1" width="898" height="673" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+  <circle cx="760" cy="74" r="260" fill="rgba(245,158,11,0.16)"/>
+  <circle cx="88" cy="660" r="220" fill="rgba(255,255,255,0.055)"/>
+  <path d="M64 88H256" stroke="rgba(245,158,11,0.78)" stroke-width="4"/>
+  <text x="64" y="150" fill="rgba(255,255,255,0.58)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24" font-weight="800" letter-spacing="7">NEWSLETTER ARTICLE</text>
+  <foreignObject x="64" y="208" width="720" height="230">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #f5f5f7; font-size: 54px; line-height: 1.02; letter-spacing: -1.6px; font-weight: 900;">${shortSubject}</div>
+  </foreignObject>
+  <text x="64" y="584" fill="rgba(255,255,255,0.46)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22" font-weight="800" letter-spacing="6">${date || "MUDITEK"}</text>
+</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 function IssueCover({ issue, compact = false }: { issue: ArchiveIssue; compact?: boolean }) {
   if (issue.thumbnailUrl) {
     return (
@@ -62,11 +87,10 @@ function IssueCover({ issue, compact = false }: { issue: ArchiveIssue; compact?:
 
   return (
     <div className={compact ? "relative size-16 overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.025]" : "relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]"}>
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_20%_10%,rgba(245,158,11,0.16),transparent_55%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
-      <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.035)_0_1px,transparent_1px_12px)]" />
+      <img src={fallbackCoverSrc(issue)} alt="" className="h-full w-full object-cover" loading="lazy" />
       <div className={compact ? "absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/65" : "absolute inset-0 flex flex-col justify-between p-5"}>
         {compact ? (
-          "Article"
+          <span className="rounded-full bg-black/45 px-2 py-1 backdrop-blur">Article</span>
         ) : (
           <>
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/55">

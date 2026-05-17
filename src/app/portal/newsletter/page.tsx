@@ -25,6 +25,12 @@ interface IssueRow {
   } | null;
 }
 
+function sanitizePreview(value: string | null | undefined): string | null {
+  const preview = value?.trim();
+  if (!preview) return null;
+  return preview.replace(/\bFree\b/g, "Included");
+}
+
 export default async function PortalNewsletterPage() {
   const { isAuthenticated } = await auth();
   if (!isAuthenticated) redirect("/sign-in?redirect_url=/portal/newsletter");
@@ -68,7 +74,7 @@ export default async function PortalNewsletterPage() {
     slug: r.slug,
     subject: r.subject,
     sent_at: r.sent_at ? new Date(r.sent_at).toISOString() : null,
-    preview: r.stats?.preview?.trim() || r.stats?.tldr?.trim() || null,
+    preview: sanitizePreview(r.stats?.preview) || sanitizePreview(r.stats?.tldr),
     thumbnailUrl:
       r.stats?.thumbnail_url?.trim() ||
       r.stats?.hero_image?.trim() ||

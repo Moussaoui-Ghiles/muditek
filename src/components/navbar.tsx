@@ -75,7 +75,7 @@ export function Navbar() {
               <div className="h-px bg-white/[0.04] mx-5 my-2" />
               <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Revenue Leak Calculator
-                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Free</span>
+                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Included</span>
               </Link>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function Navbar() {
               href="/sign-up"
               className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-primary text-background hover:scale-[1.03] transition-transform btn-press"
             >
-              Join Free
+              Join Portal
             </Link>
           )}
           <a
@@ -215,7 +215,7 @@ export function Navbar() {
                 }`}
                 style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
               >
-                Join Free
+                Join Portal
               </Link>
               <Link
                 href="/sign-in?redirect_url=/portal"

@@ -55,7 +55,7 @@ export function LeadMagnetGate({
                 <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span className={`text-sm font-black uppercase tracking-[0.2em] ${style.badge}`}>
-                Free Download
+                Resource Download
               </span>
             </div>
 
@@ -92,7 +92,7 @@ export function LeadMagnetGate({
               <EmailCapture
                 tags={tags}
                 accentColor={accentColor}
-                buttonText="Get It Free"
+                buttonText="Get It"
                 successMessage={downloadUrl ? "Unlocked! Click download below." : "We'll email it to you shortly."}
                 onSuccess={() => setUnlocked(true)}
               />

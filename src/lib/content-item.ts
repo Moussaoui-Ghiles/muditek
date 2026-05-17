@@ -24,6 +24,7 @@ export function categoryLabel(category: string): string {
 export function formatContentDate(date: Date | string | null): string {
   if (!date) return "";
   return new Date(date).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     month: "long",
     year: "numeric",
   });

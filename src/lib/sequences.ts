@@ -20,7 +20,7 @@ function wrapEmail(content: string): string {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 540px; margin: 0 auto; padding: 40px 20px; color: #111;">
       ${content}
       <p style="margin: 32px 0 0; font-size: 15px; color: #444; line-height: 1.6;">
-        — Ghiles
+        - Ghiles
       </p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 28px 0 18px;" />
       <p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;">
@@ -49,7 +49,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           Hey ${safeName},
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          That resource you grabbed — it&rsquo;s one piece of how I actually run Muditek.
+          That resource you grabbed is one piece of how I actually run Muditek.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           The setup: skills sit in <code style="font-family: ui-monospace, monospace; background: #f5f5f5; padding: 1px 5px; border-radius: 3px; font-size: 14px;">~/.claude/skills/</code>. Claude Code reads them and does the work. Outreach, content, lead capture, client delivery. Most of my day is reviewing what an agent already drafted, not drafting from scratch.
@@ -74,7 +74,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           Quick story, ${safeName}.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          One of my clients is a merchant banking firm. They needed investor onboarding, KYC automation, document generation, e-signatures — the whole stack, multi-jurisdiction, compliant.
+          One of my clients is a merchant banking firm. They needed investor onboarding, KYC automation, document generation, e-signatures, the whole stack, multi-jurisdiction, compliant.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           We built and shipped it in weeks. They paid $50K, kept the source code, no SaaS lock-in.
@@ -94,7 +94,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 4,
     delayDays: 8,
-    subject: "Most people stop at the free download",
+    subject: "Most people stop at the download",
     buildHtml: (name: string) => {
       const safeName = escapeHtml(name);
       return wrapEmail(`
@@ -102,10 +102,10 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           ${safeName},
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          Most people grab a free resource and move on. Some try to build one piece of it. Almost no one connects them.
+          Most people grab a resource and move on. Some try to build one piece of it. Almost no one connects them.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          Not because they can&rsquo;t — because the <em>connections</em> are the part nobody ships in a free PDF. The vault structure. The naming conventions skills use to find each other. The decision rules that tell an agent what to do when context is missing.
+          Not because they can&rsquo;t. The <em>connections</em> are the part nobody ships in the PDF. The vault structure. The naming conventions skills use to find each other. The decision rules that tell an agent what to do when context is missing.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           That&rsquo;s the difference between &ldquo;AI helps me&rdquo; and &ldquo;AI runs the work.&rdquo;
@@ -119,7 +119,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 5,
     delayDays: 12,
-    subject: "MudiKit — same files I work from",
+    subject: "MudiKit: same files I work from",
     buildHtml: (name: string, checkoutUrl?: string) => {
       const safeName = escapeHtml(name);
       const safeUrl = escapeHtml(checkoutUrl || "https://muditek.com/mudikit");
@@ -133,7 +133,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
         <ul style="margin: 0 0 18px; padding-left: 20px; font-size: 15.5px; line-height: 1.85;">
           <li>15+ Claude Code skills</li>
           <li>6 implementation playbooks</li>
-          <li>The vault template — CLAUDE.md hierarchy + decision rules</li>
+          <li>The vault template: CLAUDE.md hierarchy + decision rules</li>
           <li>20+ outreach DMs with A/B variants</li>
           <li>New drops every week</li>
         </ul>
@@ -141,7 +141,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           $47 a month. Cancel anytime. Keep what you&rsquo;ve downloaded.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          For context: clients pay €40K–100K to have me install these systems. $47 is what it costs to install them yourself.
+          For context: clients pay €40K-100K to have me install these systems. $47 is what it costs to install them yourself.
         </p>
         <p style="margin: 22px 0;">
           <a href="${safeUrl}"
@@ -150,7 +150,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           </a>
         </p>
         <p style="margin: 0; font-size: 15px; color: #555; line-height: 1.6;">
-          If you&rsquo;ve been piecing this together from free posts, this is the shortcut.
+          If you&rsquo;ve been piecing this together from public posts, this is the shortcut.
         </p>
       `);
     },

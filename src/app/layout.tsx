@@ -94,8 +94,8 @@ export default function RootLayout({
         },
         signUp: {
           start: {
-            title: "Create your free Muditek account",
-            subtitle: "One email. Free portal + newsletter archive. Unsubscribe anytime.",
+            title: "Create your Muditek account",
+            subtitle: "One email. Portal + newsletter archive. Unsubscribe anytime.",
           },
         },
       }}

@@ -13,7 +13,7 @@ const PAGE_CONFIG: Record<string, { heading: string; description: string; tags: 
   },
   "/mudiagent": {
     heading: "Get the 3 workflows every telecom can automate.",
-    description: "A free guide to the highest-ROI automation targets for telecom and enterprise operations.",
+    description: "A guide to the highest-ROI automation targets for telecom and enterprise operations.",
     tags: ["source:exit-intent", "segment:telecom", "exit:mudiagent"],
     accent: "primary",
   },

@@ -37,7 +37,7 @@ function accessLabel(isIncluded: boolean): string {
 
 function formatDate(value: string | Date | null | undefined): string {
   if (!value) return "";
-  return new Date(value).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return new Date(value).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "numeric" });
 }
 
 function categoryLabel(category: string): string {

@@ -52,6 +52,6 @@ export default async function Image({
     accent: "primary",
     eyebrow: "Newsletter",
     title: trim(issue.subject, 110),
-    subtitle: tldr ? trim(tldr, 180) : "Muditek B2B Agents Newsletter — read by 5,000+ operators.",
+    subtitle: tldr ? trim(tldr, 180) : "Muditek B2B Agents Newsletter. Read by 5,000+ operators.",
   });
 }

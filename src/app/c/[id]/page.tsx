@@ -45,7 +45,7 @@ export default async function CampaignPage({
         </div>
 
         <div className="bg-[#151517] border border-[#232326] rounded-xl p-6 sm:p-8">
-          <p className="text-xs font-bold tracking-wider uppercase text-[#636366] font-[family-name:var(--font-geist-mono)] mb-3">Free Resource</p>
+          <p className="text-xs font-bold tracking-wider uppercase text-[#636366] font-[family-name:var(--font-geist-mono)] mb-3">Resource</p>
           <h1 className="text-2xl font-bold tracking-tight mb-2">{campaign.title}</h1>
           <p className="text-sm text-[#a0a0a6] mb-6">Enter your name and email. We verify your comment and send it to your inbox.</p>
           <SubmitForm campaignId={id} title={campaign.title} keyword={campaign.keyword} postUrl={campaign.post_url} />

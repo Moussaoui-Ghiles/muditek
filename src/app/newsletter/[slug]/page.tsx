@@ -30,7 +30,7 @@ type RelatedLink = { href: string; tag: string; title: string; body: string };
 const RELATED_BUY: RelatedLink = {
   href: "/mudikit",
   tag: "MudiKit",
-  title: "Get the operator library — $47/mo",
+  title: "Get the operator library: $47/mo",
   body: "Skills, playbooks, vault template, outreach templates. New drops monthly.",
 };
 
@@ -91,11 +91,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { slug } = await params;
   const issue = await getIssue(slug);
-  if (!issue) return { title: "Not found — Muditek" };
+  if (!issue) return { title: "Not found | Muditek" };
   const desc = issue.stats?.tldr || issue.stats?.preview || issue.subject;
   const url = `https://muditek.com/newsletter/${slug}`;
   return {
-    title: `${issue.subject} — Muditek Newsletter`,
+    title: `${issue.subject} | Muditek Newsletter`,
     description: desc,
     alternates: { canonical: url },
     openGraph: {
@@ -272,7 +272,7 @@ export default async function IssuePage({
             href="/subscribe"
             className="inline-block px-6 py-3 bg-[#e8e8ec] text-[#0c0c0e] font-semibold rounded-lg hover:bg-white"
           >
-            Subscribe — free
+            Subscribe
           </Link>
         </div>
       </section>

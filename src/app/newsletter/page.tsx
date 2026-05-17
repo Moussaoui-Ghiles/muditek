@@ -13,15 +13,15 @@ import { getDb } from "@/lib/db";
 const NEWSLETTER_FAQ = [
   {
     q: "What does the Muditek newsletter cover?",
-    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype — only systems that have run in production.",
+    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype. Only systems that have run in production.",
   },
   {
     q: "How often does it send?",
     a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
   },
   {
-    q: "Is it really free?",
-    a: "Yes. Free forever. The newsletter is the front door — paid options (MudiKit subscription, audits, builds) live separately. You will never be paywalled out of an issue.",
+    q: "Will issues be paywalled later?",
+    a: "No. The newsletter is the front door. Paid options like MudiKit, audits, and builds live separately. You will never be paywalled out of an issue.",
   },
   {
     q: "Who reads it?",
@@ -32,12 +32,12 @@ const NEWSLETTER_FAQ = [
 export const metadata: Metadata = {
   title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
   description:
-    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Free, unsubscribe anytime.",
+    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Unsubscribe anytime.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
     title: "B2B Agents Newsletter | Muditek",
     description:
-      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy. Free.",
+      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy.",
     url: "https://muditek.com/newsletter",
     type: "website",
   },
@@ -127,7 +127,7 @@ export default async function NewsletterPage() {
             <div className="max-w-md mx-auto">
               <EmailCapture
                 source="newsletter-hero"
-                buttonText="Subscribe Free"
+                buttonText="Subscribe"
                 successMessage="You're in. Check your inbox."
                 accentColor="primary"
               />
@@ -210,12 +210,12 @@ export default async function NewsletterPage() {
               Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build — every week, free.
+              153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build every week.
             </p>
             <div className="max-w-md mx-auto">
               <EmailCapture
                 source="newsletter-footer"
-                buttonText="Subscribe Free"
+                buttonText="Subscribe"
                 successMessage="You're in. Check your inbox."
                 accentColor="primary"
               />

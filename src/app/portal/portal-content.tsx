@@ -87,7 +87,7 @@ function formatShortDate(date: Date | string | null): string {
   if (!date) return "";
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short", day: "numeric" });
 }
 
 function latestTitle(items: ContentItem[], fallback: string): string {

@@ -204,7 +204,7 @@ export default function RevenueLeakCalculatorPage() {
               <Image src="/icon.svg" alt="Muditek" width={32} height={32} />
               <h2 className="text-sm font-black tracking-[0.3em] uppercase text-emerald-400 flex items-center gap-3">
                 <span className="w-8 h-[1px] bg-emerald-400/50" />
-                Muditek / Free Tool
+                Muditek / Tool
               </h2>
             </div>
           </ScrollReveal>

@@ -71,7 +71,7 @@ export function EmailCapture({
   accentColor = "primary",
   heading,
   description,
-  buttonText = "Get It Free",
+  buttonText = "Get It",
   successMessage = "Check your inbox.",
   className = "",
   compact = false,

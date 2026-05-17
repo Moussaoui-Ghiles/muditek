@@ -36,14 +36,14 @@ const HERO = (
   <div className="max-w-[560px]">
     <p className="reveal mb-5 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-primary">
       <span className="h-px w-8 bg-primary/50" />
-      Free account
+      Portal account
     </p>
     <h1 className="reveal text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white md:text-[64px]">
       Join{" "}
       <span className="text-primary">Muditek</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Free portal access. One deployable AI system in your inbox every week.
+      Portal access. One deployable AI system in your inbox every week.
     </p>
     <p className="reveal reveal-delay-2 mt-8 text-[13px] text-white/55">
       <DataCitation

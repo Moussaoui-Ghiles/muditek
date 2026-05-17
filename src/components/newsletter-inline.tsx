@@ -43,7 +43,7 @@ export function NewsletterInline({
           <EmailCapture
             tags={allTags}
             accentColor={accentColor}
-            buttonText="Subscribe Free"
+            buttonText="Subscribe"
             successMessage="You're in. Check your inbox."
             compact
             className="max-w-md mx-auto"

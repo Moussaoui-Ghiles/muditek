@@ -44,6 +44,8 @@ const PORTAL_ROUTE_REWRITES: Array<[RegExp, string]> = [
   [/^https?:\/\/(?:www\.)?muditek\.com\/r\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
   [/^https?:\/\/(?:www\.)?muditek\.com\/playbooks\/([\w-]+)\.pdf(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
   [/^\/playbooks\/([\w-]+)\.pdf(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/playbooks\/([\w-]+)\.html(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^\/playbooks\/([\w-]+)\.html(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
   [/^https?:\/\/(?:www\.)?muditek\.com\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
   [/^\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
   [/^https?:\/\/(?:www\.)?muditek\.com\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/mudikit"],

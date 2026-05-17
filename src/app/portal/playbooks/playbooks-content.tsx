@@ -8,8 +8,16 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
-type AccessFilter = "all" | "free" | "mudikit";
 type TypeFilter = "all" | "playbook" | "guide";
+type TopicFilter = "all" | "lead-gen" | "sales" | "marketing" | "gtm";
+
+const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
+  { value: "all", label: "All" },
+  { value: "lead-gen", label: "Lead gen" },
+  { value: "sales", label: "Sales" },
+  { value: "marketing", label: "Marketing" },
+  { value: "gtm", label: "GTM" },
+];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
   if (item.is_free) return true;
@@ -18,6 +26,18 @@ function isAccessible(item: ContentItem, access: PortalAccess): boolean {
 
 function typeLabel(item: ContentItem): "Playbook" | "Guide" {
   return item.category === "guide" ? "Guide" : "Playbook";
+}
+
+function accessLabel(item: ContentItem): string {
+  return item.is_free ? "Included" : "MudiKit";
+}
+
+function topicForItem(item: ContentItem): Exclude<TopicFilter, "all"> {
+  const text = `${item.title} ${item.description ?? ""} ${item.slug} ${item.category}`.toLowerCase();
+  if (/(lead|outbound|apollo|maps|scrap|prospect|sdr)/.test(text)) return "lead-gen";
+  if (/(sales|call|crm|pipeline|deal|revenue)/.test(text)) return "sales";
+  if (/(content|creative|marketing|newsletter|viral|media)/.test(text)) return "marketing";
+  return "gtm";
 }
 
 function formatDate(value: Date | string | null | undefined): string {
@@ -116,7 +136,7 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
               {accessible ? (
                 <>
                   <span className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                  {item.is_free ? "Free" : "MudiKit"}
+                  {accessLabel(item)}
                 </>
               ) : (
                 <>
@@ -187,7 +207,7 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
             {accessible ? (
               <>
                 <span className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                {item.is_free ? "Free" : "MudiKit"}
+                {accessLabel(item)}
               </>
             ) : (
               <span className="inline-flex items-center gap-1">
@@ -307,15 +327,15 @@ export default function PlaybooksContent({
   displayName: string;
 }) {
   const [query, setQuery] = useState("");
-  const [accessFilter, setAccessFilter] = useState<AccessFilter>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [topicFilter, setTopicFilter] = useState<TopicFilter>("all");
 
   const counts = useMemo(
     () => ({
       total: items.length,
       playbooks: items.filter((item) => item.category === "playbook").length,
       guides: items.filter((item) => item.category === "guide").length,
-      free: items.filter((item) => item.is_free).length,
+      included: items.filter((item) => item.is_free).length,
       paid: items.filter((item) => !item.is_free).length,
       locked: items.filter((item) => !item.is_free && !(access.isMudikit || access.isAdmin)).length,
       newDrops: items.filter((item) => item.is_new).length,
@@ -324,15 +344,19 @@ export default function PlaybooksContent({
   );
 
   const hasBothTypes = counts.playbooks > 0 && counts.guides > 0;
-  const hasBothAccess = counts.free > 0 && counts.paid > 0;
+  const topicCounts = useMemo(() => {
+    const map: Record<TopicFilter, number> = { all: items.length, "lead-gen": 0, sales: 0, marketing: 0, gtm: 0 };
+    for (const item of items) map[topicForItem(item)] += 1;
+    return map;
+  }, [items]);
+  const visibleTopics = TOPIC_OPTIONS.filter((topic) => topic.value === "all" || topicCounts[topic.value] > 0);
   const showSearch = items.length >= 5;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
       if (typeFilter !== "all" && item.category !== typeFilter) return false;
-      if (accessFilter === "free" && !item.is_free) return false;
-      if (accessFilter === "mudikit" && item.is_free) return false;
+      if (topicFilter !== "all" && topicForItem(item) !== topicFilter) return false;
       if (!needle) return true;
       const haystack = [item.title, item.description, item.category, item.file_type]
         .filter(Boolean)
@@ -340,10 +364,10 @@ export default function PlaybooksContent({
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [items, query, typeFilter, accessFilter]);
+  }, [items, query, typeFilter, topicFilter]);
 
   const isFilteredView =
-    query.trim().length > 0 || typeFilter !== "all" || accessFilter !== "all";
+    query.trim().length > 0 || typeFilter !== "all" || topicFilter !== "all";
   const featured = !isFilteredView ? filtered[0] ?? null : null;
   const grid = featured ? filtered.slice(1) : filtered;
 
@@ -371,14 +395,14 @@ export default function PlaybooksContent({
               Playbooks <span className="text-primary italic font-medium">&amp;</span> Guides.
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
-              Deeper documents, frameworks, and implementation playbooks. Read them in the portal or open the source. Free items are attached to every account. MudiKit unlocks the full shelf.
+              Deeper documents, frameworks, and implementation playbooks. Read them in the portal, grouped by the motion they help you ship. MudiKit unlocks the full shelf.
             </p>
           </div>
           <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
             <Stat label="Total" value={counts.total} />
             <Stat label="Playbooks" value={counts.playbooks} />
             <Stat label="Guides" value={counts.guides} />
-            <Stat label="Free" value={counts.free} />
+            <Stat label="Included" value={counts.included} />
             <Stat label="MudiKit" value={counts.paid} />
             <Stat label="New" value={counts.newDrops} accent={counts.newDrops > 0} />
           </dl>
@@ -429,20 +453,20 @@ export default function PlaybooksContent({
                       </FilterPill>
                     </div>
                   )}
-                  {hasBothTypes && hasBothAccess && (
+                  {hasBothTypes && visibleTopics.length > 1 && (
                     <span aria-hidden className="hidden h-4 w-px bg-white/10 lg:inline-block" />
                   )}
-                  {hasBothAccess && (
+                  {visibleTopics.length > 1 && (
                     <div className="flex items-center gap-1.5">
-                      <FilterPill active={accessFilter === "all"} onClick={() => setAccessFilter("all")}>
-                        Any access
-                      </FilterPill>
-                      <FilterPill active={accessFilter === "free"} onClick={() => setAccessFilter("free")}>
-                        Free <span className="ml-2 opacity-60">{counts.free}</span>
-                      </FilterPill>
-                      <FilterPill active={accessFilter === "mudikit"} onClick={() => setAccessFilter("mudikit")}>
-                        MudiKit <span className="ml-2 opacity-60">{counts.paid}</span>
-                      </FilterPill>
+                      {visibleTopics.map((topic) => (
+                        <FilterPill
+                          key={topic.value}
+                          active={topicFilter === topic.value}
+                          onClick={() => setTopicFilter(topic.value)}
+                        >
+                          {topic.label} <span className="ml-2 opacity-60">{topicCounts[topic.value]}</span>
+                        </FilterPill>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -488,7 +512,7 @@ export default function PlaybooksContent({
               </section>
             )}
 
-            {!access.isMudikit && !access.isAdmin && counts.locked > 0 && accessFilter !== "free" && (
+            {!access.isMudikit && !access.isAdmin && counts.locked > 0 && (
               <UpgradeBand count={counts.locked} />
             )}
           </>

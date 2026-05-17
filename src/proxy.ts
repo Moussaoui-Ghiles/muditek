@@ -26,7 +26,6 @@ const isPublicRoute = createRouteMatcher([
   "/llms.txt",
   "/llms-full.txt",
   "/(.*).md",
-  "/playbooks/(.*)",
   "/opengraph-image",
   "/twitter-image",
   "/(.*)/opengraph-image",

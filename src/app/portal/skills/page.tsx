@@ -5,6 +5,7 @@ import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import type { ContentItem } from "@/lib/content-item";
+import { mergePortalSkills } from "@/lib/portal-skills";
 import SkillsContent from "./skills-content";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +53,7 @@ export default async function SkillsPage() {
     ORDER BY is_free DESC, created_at DESC
   `) as ContentItem[];
 
-  const skills = withDerivedThumbnails(rows);
+  const skills = withDerivedThumbnails(mergePortalSkills(rows));
   const displayName = user.firstName || email.split("@")[0];
 
   return <SkillsContent skills={skills} access={access} email={email} displayName={displayName} />;

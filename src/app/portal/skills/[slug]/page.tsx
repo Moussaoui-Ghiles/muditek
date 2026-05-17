@@ -1,6 +1,8 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-detail-content";
+import { SkillMarkdownDetailContent } from "@/components/portal/skill-markdown-detail-content";
+import { getPortalSkill, portalSkillToContentItem } from "@/lib/portal-skills";
 import {
   buildAssetAccess,
   getDownloadHref,
@@ -49,8 +51,20 @@ export default async function SkillDetailPage({
 
   const access = await buildAssetAccess(email, user.id);
   const item = await loadAssetBySlugAndCategories(slug, ["skill"]);
+  const localSkill = item ? null : getPortalSkill(slug);
 
   const displayName = user.firstName || email.split("@")[0];
+
+  if (!item && localSkill) {
+    const localItem = portalSkillToContentItem(localSkill);
+    return (
+      <SkillMarkdownDetailContent
+        item={localItem}
+        markdown={localSkill.markdown}
+        access={access}
+      />
+    );
+  }
 
   if (!item) {
     return (

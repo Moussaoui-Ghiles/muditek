@@ -25,7 +25,7 @@ export default async function Image({
       accent: "primary",
       eyebrow: "Resource",
       title: "Muditek Resource",
-      subtitle: "Free playbooks, guides, and tools for B2B operators.",
+      subtitle: "Portal playbooks, guides, and tools for B2B operators.",
     });
   }
 
@@ -33,6 +33,6 @@ export default async function Image({
     accent: "primary",
     eyebrow: categoryLabel(item.category),
     title: trim(item.title, 100),
-    subtitle: trim(item.description ?? "Free Muditek resource.", 180),
+    subtitle: trim(item.description ?? "Muditek portal resource.", 180),
   });
 }

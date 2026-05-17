@@ -21,6 +21,24 @@ export const PORTAL_TOOLS: PortalTool[] = [
     access: "free",
     publicHref: "/tools/revenue-leak-calculator",
   },
+  {
+    slug: "google-maps-lead-finder",
+    title: "Google Maps Lead Finder",
+    short: "Pull local business leads from Google Maps through Apify.",
+    description:
+      "Enter a business type and location. The workbench runs the Google Maps Apify actor and returns real businesses, websites, phones, ratings, review counts, and any emails returned by the scraper.",
+    category: "Lead gen",
+    access: "free",
+  },
+  {
+    slug: "linkedin-serper-lead-finder",
+    title: "LinkedIn Serper Lead Finder",
+    short: "Search LinkedIn profiles through programmable Google queries.",
+    description:
+      "Build targeted LinkedIn profile searches with role, market, and company keywords. The workbench uses Serper to return live Google results for LinkedIn profiles.",
+    category: "Lead gen",
+    access: "free",
+  },
 ];
 
 export function getPortalTool(slug: string | null | undefined): PortalTool | null {

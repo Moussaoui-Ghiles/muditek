@@ -39,7 +39,7 @@ function accessLabel(skill: ContentItem, accessible: boolean): {
   text: string;
   tone: "free" | "mudikit" | "locked";
 } {
-  if (skill.is_free) return { text: "Free", tone: "free" };
+  if (skill.is_free) return { text: "Included", tone: "free" };
   if (accessible) return { text: "MudiKit", tone: "mudikit" };
   return { text: "Locked", tone: "locked" };
 }
@@ -181,7 +181,7 @@ function EmptyFeatured() {
       </h2>
       <p className="relative max-w-[55ch] text-[14.5px] leading-[1.6] text-white/55">
         Each skill is a working asset for Claude, Codex, GTM, research, or
-        outreach. Nothing fake gets seeded — when there is something real to
+        outreach. Nothing fake gets seeded. When there is something real to
         install, it lands here.
       </p>
     </div>
@@ -427,7 +427,7 @@ export default function SkillsContent({
               </h1>
               <p className="mt-2 max-w-[60ch] text-[14px] text-white/45">
                 Working assets you can drop into Claude, Codex, GTM motions, research and outreach.
-                Free ones come with every portal account. MudiKit unlocks the rest.
+                Included skills come with every portal account. MudiKit unlocks the rest.
               </p>
             </div>
             <div className="flex items-center gap-5 text-[12px] text-white/40">
@@ -438,7 +438,7 @@ export default function SkillsContent({
               {freeCount > 0 && (
                 <span className="flex items-baseline gap-1.5">
                   <span className="text-[18px] font-semibold tabular-nums text-emerald-300/85">{freeCount}</span>
-                  <span className="font-mono uppercase tracking-[0.16em]">Free</span>
+                  <span className="font-mono uppercase tracking-[0.16em]">Included</span>
                 </span>
               )}
               {(access.isMudikit || access.isAdmin) && paidCount > 0 ? (
@@ -457,7 +457,7 @@ export default function SkillsContent({
             </div>
           </header>
 
-          {/* HERO — 3:1 split, mirrors portal home */}
+          {/* HERO */}
           <section className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)] lg:gap-7">
             {featured ? <FeaturedSkill skill={featured} access={access} /> : <EmptyFeatured />}
 
@@ -468,7 +468,7 @@ export default function SkillsContent({
                 </h3>
                 <p className="mt-3 text-[14px] leading-[1.6] text-white/75">
                   Each skill is a self-contained markdown asset with prompts, frameworks,
-                  and rules — ready to install in any session.
+                  and rules, ready to install in any session.
                 </p>
                 {newCount > 0 && (
                   <p className="mt-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.2em] text-amber-300/85">
@@ -502,7 +502,7 @@ export default function SkillsContent({
                             </div>
                             <p className="mt-0.5 text-[11.5px] text-white/40">
                               {skill.is_free
-                                ? "Free"
+                                ? "Included"
                                 : accessible
                                   ? "MudiKit"
                                   : "Locked"}
@@ -561,7 +561,7 @@ export default function SkillsContent({
                             : "text-white/45 hover:text-white/80"
                         }`}
                       >
-                        {f === "all" ? "All" : f === "free" ? "Free" : "MudiKit"}
+                        {f === "all" ? "All" : f === "free" ? "Included" : "MudiKit"}
                       </button>
                     ))}
                   </div>
@@ -611,7 +611,7 @@ export default function SkillsContent({
                   </>
                 )}
 
-                {/* Recent stream + activity aside — only when idle */}
+                {/* Recent stream and activity aside */}
                 {!query && filter === "all" && skills.length >= 4 && (
                   <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-10">
                     <div>
@@ -648,7 +648,7 @@ export default function SkillsContent({
                             {total} {total === 1 ? "skill" : "skills"} on the shelf
                           </p>
                           <p className="mt-0.5 text-[12px] text-white/40">
-                            {freeCount} free · {paidCount} MudiKit
+                            {freeCount} included · {paidCount} MudiKit
                           </p>
                         </li>
                         {newCount > 0 && (
@@ -667,7 +667,7 @@ export default function SkillsContent({
                               {lockedCount} {lockedCount === 1 ? "is" : "are"} sitting behind MudiKit
                             </p>
                             <p className="mt-0.5 text-[12px] text-white/40">
-                              One unlock, every paid skill — plus future drops
+                              One unlock, every paid skill, plus future drops
                             </p>
                           </li>
                         )}

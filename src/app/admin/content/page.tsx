@@ -112,7 +112,7 @@ function VisibilityBadge({ item }: { item: ContentItem }) {
           : "rounded-md bg-sky-500/15 text-sky-200 ring-1 ring-sky-500/30 hover:bg-sky-500/20"
       }
     >
-      {item.is_free ? "Free" : "MudiKit"}
+      {item.is_free ? "Included" : "MudiKit"}
     </Badge>
   );
 }
@@ -348,7 +348,7 @@ export default function ContentPage() {
         </div>
 
         <div className="mb-6 grid border-y border-white/[0.07] md:grid-cols-4 md:divide-x md:divide-white/[0.07]">
-          <ShelfStat label="Free portal" value={freeCount} />
+          <ShelfStat label="Included" value={freeCount} />
           <ShelfStat label="MudiKit" value={paidCount} />
           <ShelfStat label="New paid" value={newPaidCount} />
           <ShelfStat label="No thumbnail" value={missingThumbCount} />
@@ -370,7 +370,7 @@ export default function ContentPage() {
                 variant={visibility === value ? "default" : "outline"}
                 onClick={() => setVisibility(value)}
               >
-                {value === "all" ? "All" : value === "free" ? "Free" : "MudiKit"}
+                {value === "all" ? "All" : value === "free" ? "Included" : "MudiKit"}
               </Button>
             ))}
           </div>
@@ -474,7 +474,7 @@ export default function ContentPage() {
             <div>
               <h2 className="text-base font-semibold">{editingId ? "Edit resource" : "Add resource"}</h2>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                This feeds the signed-in portal and the tracked free unlock links.
+                This feeds the signed-in portal and tracked unlock links.
               </p>
             </div>
             {editingId ? (
@@ -603,8 +603,8 @@ export default function ContentPage() {
             <div className="grid gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] p-3">
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span>
-                  <span className="block font-medium">Free portal item</span>
-                  <span className="block text-xs text-muted-foreground">Free items get tracked `/r/slug` unlock links.</span>
+                  <span className="block font-medium">Included portal item</span>
+                  <span className="block text-xs text-muted-foreground">Included items get tracked `/r/slug` unlock links.</span>
                 </span>
                 <input
                   type="checkbox"

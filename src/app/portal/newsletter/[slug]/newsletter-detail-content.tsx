@@ -74,7 +74,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
       <header className="reveal mt-7">
         <p className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
           <span className="size-1.5 rounded-full bg-amber-300/70" />
-          Newsletter issue
+          Newsletter article
           {sentAt && (
             <>
               <span aria-hidden className="text-muted-foreground/40">·</span>
@@ -108,7 +108,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-white/[0.1] bg-white/[0.01] p-8 text-[13.5px] leading-7 text-muted-foreground">
-            This issue has no rendered body in storage.
+            This article has no rendered body in storage.
           </div>
         )}
       </div>

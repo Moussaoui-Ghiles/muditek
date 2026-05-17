@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { join } from "path";
 
 type ThumbnailItem = {
@@ -9,13 +9,34 @@ type ThumbnailItem = {
 export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (item.thumbnail_url) return item;
 
-  const firstPagePath = join(process.cwd(), "public/playbooks", item.slug, "page-1.jpg");
-  if (!existsSync(firstPagePath)) return item;
+  const dir = join(process.cwd(), "public/playbooks", item.slug);
+  const preferred = ["page-1.jpg", "page-01.jpg", "page-001.jpg"];
+  const preferredFile = preferred.find((file) => existsSync(join(dir, file)));
+  if (preferredFile) {
+    return {
+      ...item,
+      thumbnail_url: `/playbooks/${item.slug}/${preferredFile}`,
+    };
+  }
 
-  return {
-    ...item,
-    thumbnail_url: `/playbooks/${item.slug}/page-1.jpg`,
-  };
+  try {
+    const firstPage = readdirSync(dir)
+      .filter((file) => /^page-\d+\.jpe?g$/i.test(file))
+      .sort((a, b) => {
+        const aNum = Number.parseInt(a.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
+        const bNum = Number.parseInt(b.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
+        return aNum - bNum;
+      })[0];
+
+    if (!firstPage) return item;
+
+    return {
+      ...item,
+      thumbnail_url: `/playbooks/${item.slug}/${firstPage}`,
+    };
+  } catch {
+    return item;
+  }
 }
 
 export function withDerivedThumbnails<T extends ThumbnailItem>(items: T[]): T[] {

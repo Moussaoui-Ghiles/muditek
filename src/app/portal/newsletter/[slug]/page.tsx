@@ -27,7 +27,10 @@ async function getIssue(slug: string) {
   const rows = (await sql`
     SELECT id, subject, slug, html, sent_at, updated_at, stats
     FROM newsletter_issues
-    WHERE slug = ${slug} AND status = 'sent'
+    WHERE slug = ${slug}
+      AND status = 'sent'
+      AND html IS NOT NULL
+      AND length(trim(html)) > 0
     LIMIT 1
   `) as IssueRow[];
   return rows[0] ?? null;
@@ -40,13 +43,21 @@ async function getNeighbors(sentAt: Date | null) {
   const [nextRows, prevRows] = await Promise.all([
     sql`
       SELECT slug, subject FROM newsletter_issues
-      WHERE status = 'sent' AND slug IS NOT NULL AND sent_at > ${iso}
+      WHERE status = 'sent'
+        AND slug IS NOT NULL
+        AND html IS NOT NULL
+        AND length(trim(html)) > 0
+        AND sent_at > ${iso}
       ORDER BY sent_at ASC
       LIMIT 1
     `,
     sql`
       SELECT slug, subject FROM newsletter_issues
-      WHERE status = 'sent' AND slug IS NOT NULL AND sent_at < ${iso}
+      WHERE status = 'sent'
+        AND slug IS NOT NULL
+        AND html IS NOT NULL
+        AND length(trim(html)) > 0
+        AND sent_at < ${iso}
       ORDER BY sent_at DESC
       LIMIT 1
     `,
@@ -64,7 +75,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const issue = await getIssue(slug);
-  if (!issue) return { title: "Issue not found · Muditek Portal" };
+  if (!issue) return { title: "Article not found · Muditek Portal" };
   return {
     title: `${issue.subject} · Newsletter · Muditek Portal`,
     description: issue.stats?.tldr || issue.stats?.preview || issue.subject,

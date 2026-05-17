@@ -22,6 +22,7 @@ export interface ArchiveIssue {
   subject: string;
   sent_at: string | null;
   preview: string | null;
+  thumbnailUrl: string | null;
 }
 
 interface Props {
@@ -41,11 +42,43 @@ function formatLong(iso: string | null): string {
 }
 
 function formatMonthDay(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
   });
+}
+
+function IssueCover({ issue, compact = false }: { issue: ArchiveIssue; compact?: boolean }) {
+  if (issue.thumbnailUrl) {
+    return (
+      <div className={compact ? "relative size-16 overflow-hidden rounded-md border border-white/[0.08]" : "relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/[0.08]"}>
+        <img src={issue.thumbnailUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={compact ? "relative size-16 overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.025]" : "relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]"}>
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_20%_10%,rgba(245,158,11,0.16),transparent_55%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
+      <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.035)_0_1px,transparent_1px_12px)]" />
+      <div className={compact ? "absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/65" : "absolute inset-0 flex flex-col justify-between p-5"}>
+        {compact ? (
+          "Article"
+        ) : (
+          <>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/55">
+              Newsletter article
+            </span>
+            <span className="line-clamp-3 text-[19px] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
+              {issue.subject}
+            </span>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function readTime(text: string | null): string | null {
@@ -110,7 +143,7 @@ function FeaturedIssue({
       />
 
       <Link href={`/portal/newsletter/${encodeURIComponent(issue.slug)}`} className="group relative block">
-        <div className="grid gap-8 px-6 py-10 sm:px-10 sm:py-14 md:grid-cols-[1.1fr_0.9fr] md:items-end">
+        <div className="grid gap-8 px-6 py-10 sm:px-10 sm:py-14 md:grid-cols-[1.05fr_0.95fr] md:items-end">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <span className="relative inline-flex size-1.5 rounded-full bg-amber-200/95 shadow-[0_0_12px_rgba(252,211,77,0.5)]">
@@ -119,7 +152,7 @@ function FeaturedIssue({
                   className="absolute inset-0 animate-ping rounded-full bg-amber-200/60"
                 />
               </span>
-              Latest issue · No. {String(total - index).padStart(3, "0")}
+              Latest article · No. {String(total - index).padStart(3, "0")}
             </div>
 
             <h2 className="mt-4 max-w-[20ch] font-[family-name:var(--font-serif-display)] text-balance text-[36px] font-normal leading-[1.02] tracking-tight text-foreground transition-colors group-hover:text-white sm:text-[44px] md:text-[52px]">
@@ -139,13 +172,14 @@ function FeaturedIssue({
           </div>
 
           <div className="relative">
+            <IssueCover issue={issue} />
             {issue.preview && (
-              <p className="line-clamp-4 max-w-[44ch] text-[15px] leading-7 text-muted-foreground/95">
+              <p className="mt-5 line-clamp-3 max-w-[44ch] text-[15px] leading-7 text-muted-foreground/95">
                 &ldquo;{issue.preview}&rdquo;
               </p>
             )}
             <div className="mt-6 inline-flex items-center gap-2 text-[13px] font-medium text-foreground/85 transition-colors group-hover:text-white">
-              Read this issue
+              Read article
               <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
           </div>
@@ -181,7 +215,7 @@ function YearRail({
                 : "text-muted-foreground hover:bg-white/[0.025] hover:text-foreground")
             }
           >
-            <span className="font-medium">All issues</span>
+            <span className="font-medium">All articles</span>
             <span className="font-mono tabular-nums text-[11px]">
               {buckets.reduce((acc, b) => acc + b.count, 0)}
             </span>
@@ -222,20 +256,23 @@ function IssueRow({
   return (
     <Link
       href={`/portal/newsletter/${encodeURIComponent(issue.slug)}`}
-      className="group relative grid grid-cols-[64px_minmax(0,1fr)_auto] items-baseline gap-x-6 border-t border-white/[0.05] py-6 transition-colors hover:bg-white/[0.012] sm:grid-cols-[88px_minmax(0,1fr)_auto]"
+      className="group relative grid grid-cols-[72px_minmax(0,1fr)_auto] items-center gap-x-5 border-t border-white/[0.05] py-5 transition-colors hover:bg-white/[0.012] sm:grid-cols-[88px_minmax(0,1fr)_auto]"
     >
       <span
         aria-hidden
         className="absolute -left-px top-0 h-full w-px bg-foreground/0 transition-colors group-hover:bg-foreground/40"
       />
-      <span className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-muted-foreground tabular-nums">
-        <span className="block text-[10.5px] text-muted-foreground/60">
-          No. {String(total - index).padStart(3, "0")}
+      <span className="flex flex-col gap-2">
+        <IssueCover issue={issue} compact />
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground/70 tabular-nums">
+          {formatMonthDay(issue.sent_at)}
         </span>
-        <span className="mt-1 block text-foreground/80">{formatMonthDay(issue.sent_at)}</span>
       </span>
 
       <span className="min-w-0">
+        <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/55">
+          Newsletter article · No. {String(total - index).padStart(3, "0")}
+        </span>
         <span className="block text-balance text-[18px] font-semibold leading-snug tracking-[-0.005em] text-foreground transition-colors group-hover:text-white sm:text-[19px]">
           {issue.subject}
         </span>
@@ -296,7 +333,7 @@ function EmptyState() {
         Archive will fill here
       </h2>
       <p className="mx-auto mt-2 max-w-md text-[13.5px] leading-6 text-muted-foreground">
-        Once the next issue sends, you&rsquo;ll be able to browse every past edition from this page.
+        Once the next article sends, you&rsquo;ll be able to browse it from this page.
       </p>
     </section>
   );
@@ -348,8 +385,7 @@ export default function NewsletterArchiveContent({
               </span>
             </h1>
             <p className="mt-2 max-w-xl text-[13.5px] leading-6 text-muted-foreground">
-              Every issue ships a deployable system: prompts, workflows, outreach plays. Browse the
-              archive or jump straight to a past edition.
+              Articles from the newsletter, cleaned into a portal archive so resources and internal links stay connected.
             </p>
           </div>
         </div>
@@ -373,7 +409,7 @@ export default function NewsletterArchiveContent({
                 <header className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-baseline gap-3">
                     <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
-                      {activeYear === "all" ? "All issues" : activeYear}
+                      {activeYear === "all" ? "All articles" : activeYear}
                     </h2>
                     <span className="text-[11.5px] font-mono tabular-nums text-muted-foreground">
                       {filteredCount} of {total}
@@ -385,7 +421,7 @@ export default function NewsletterArchiveContent({
                       <Input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search issues"
+                        placeholder="Search articles"
                         className="h-8 w-full border-0 bg-transparent px-0 text-[12.5px] focus-visible:ring-0"
                       />
                     </div>
@@ -394,7 +430,7 @@ export default function NewsletterArchiveContent({
 
                 {filteredCount === 0 ? (
                   <div className="mt-4 rounded-xl border border-dashed border-white/[0.08] bg-white/[0.012] px-6 py-10 text-center text-[13px] text-muted-foreground">
-                    No issues match this filter.
+                    No articles match this filter.
                   </div>
                 ) : (
                   <ol className="border-b border-white/[0.05]">
@@ -425,7 +461,7 @@ export default function NewsletterArchiveContent({
                     <PointerCard
                       href="/portal/playbooks"
                       title="Playbooks & guides"
-                      body="Free systems and guides."
+                      body="Included systems and guides."
                       icon={<BookText className="size-4" />}
                     />
                     <PointerCard
@@ -456,7 +492,7 @@ export default function NewsletterArchiveContent({
               <div className="min-w-0">
                 <div className="text-[13px] font-medium text-foreground">Subscribed as {email}</div>
                 <p className="mt-0.5 text-[11.5px] leading-5 text-muted-foreground">
-                  Next issue lands in your inbox. Reading in-portal keeps everything in one place.
+                  Next article lands in your inbox. Reading in-portal keeps everything in one place.
                 </p>
               </div>
             </div>

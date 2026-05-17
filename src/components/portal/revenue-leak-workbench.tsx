@@ -97,7 +97,7 @@ function computeLeaks(values: Values): LeakResult[] {
       amount: Math.round(amount),
       formula: `(22% − ${(closeRate * 100).toFixed(1)}%) × ${annualOpportunities.toLocaleString()} annual opps × €${acv.toLocaleString()} ACV`,
       methodology:
-        "OpenView SaaS Benchmarks, HubSpot State of Sales — 20-25% demo-to-close range, midpoint 22%. Each pp gap × deal volume × deal size = quantifiable lost revenue.",
+        "OpenView SaaS Benchmarks, HubSpot State of Sales: 20-25% demo-to-close range, midpoint 22%. Each pp gap × deal volume × deal size = quantifiable lost revenue.",
     });
   }
 
@@ -111,7 +111,7 @@ function computeLeaks(values: Values): LeakResult[] {
       amount: Math.round(amount),
       formula: `(${(churnRate * 100).toFixed(1)}% − 0.5%) × €${mrr.toLocaleString()} MRR × 12 months`,
       methodology:
-        "Bessemer Cloud Index / SaaS Capital — best-in-class B2B SaaS holds ~0.5% monthly churn. Excess churn compounds against the whole MRR base.",
+        "Bessemer Cloud Index / SaaS Capital: best-in-class B2B SaaS holds ~0.5% monthly churn. Excess churn compounds against the whole MRR base.",
     });
   }
 
@@ -119,7 +119,7 @@ function computeLeaks(values: Values): LeakResult[] {
     const waste = (channelSpend - channelRevenue) * 12;
     leaks.push({
       name: "Lead Source ROI",
-      yourValue: `€${channelSpend.toLocaleString()}/mo spend → €${channelRevenue.toLocaleString()}/mo pipeline`,
+      yourValue: `€${channelSpend.toLocaleString()}/mo spend to €${channelRevenue.toLocaleString()}/mo pipeline`,
       benchmark: "Spend < pipeline generated",
       gap: `€${(channelSpend - channelRevenue).toLocaleString()}/mo wasted`,
       amount: Math.round(waste),
@@ -319,7 +319,7 @@ export function RevenueLeakWorkbench() {
         <p className="text-[11.5px] leading-5 text-muted-foreground/80">{field.hint}</p>
         {field.key === "responseTime" && responseTimeWarning && (
           <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber-300/90">
-            Looks like minutes — this field reads hours.
+            Looks like minutes. This field reads hours.
           </p>
         )}
       </div>
@@ -482,7 +482,7 @@ export function RevenueLeakWorkbench() {
                   Enter your numbers. The numbers will answer.
                 </p>
                 <p className="mt-4 max-w-[42ch] text-[12.5px] leading-6 text-muted-foreground">
-                  Output stays empty until you run the calculation. Nothing is faked — every euro you
+                  Output stays empty until you run the calculation. Nothing is faked. Every euro you
                   see is derived from your real inputs and the cited benchmark.
                 </p>
               </div>

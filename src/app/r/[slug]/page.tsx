@@ -13,6 +13,11 @@ const BASE_URL = "https://muditek.com";
 
 export const dynamic = "force-dynamic";
 
+function publicPreviewImage(thumbnailUrl: string | null): string | null {
+  if (!thumbnailUrl) return null;
+  return thumbnailUrl.startsWith("/playbooks/") ? null : thumbnailUrl;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -23,14 +28,14 @@ export async function generateMetadata({
   if (!item || !item.is_free) return {};
 
   return {
-    title: `${item.title} | Free Muditek Resource`,
+    title: `${item.title} | Muditek Resource`,
     description:
-      item.description ?? "Create a free Muditek account to unlock this resource.",
+      item.description ?? "Create a Muditek account to unlock this resource.",
     robots: { index: false, follow: false },
     openGraph: {
       title: item.title,
       description:
-        item.description ?? "Create a free Muditek account to unlock this resource.",
+        item.description ?? "Create a Muditek account to unlock this resource.",
       url: `${BASE_URL}/r/${slug}`,
       type: "website",
     },
@@ -48,6 +53,7 @@ export default async function ResourceUnlockPage({
   const { slug } = await params;
   const item = await getContentItemBySlug(slug);
   if (!item || !item.is_free) notFound();
+  const image = publicPreviewImage(item.thumbnail_url);
 
   const { isAuthenticated } = await auth();
 
@@ -101,7 +107,7 @@ export default async function ResourceUnlockPage({
                 href={`/sign-up?redirect_url=${encodedRedirect}`}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-[4px] bg-foreground px-6 text-sm font-black uppercase tracking-[0.16em] text-background transition-transform hover:scale-[1.02]"
               >
-                Create free account
+                Create account
                 <ArrowRight className="size-4" strokeWidth={2} />
               </Link>
               <Link
@@ -113,14 +119,14 @@ export default async function ResourceUnlockPage({
             </div>
 
             <p className="mt-4 max-w-xl text-xs leading-5 text-foreground/35">
-              Free portal account. Unlock this resource and the full Muditek library.
+              Included portal account. Unlock this resource and the Muditek library.
             </p>
           </div>
 
           <div className="border-y border-white/[0.06] py-8 md:py-12">
-            {item.thumbnail_url && (
+            {image && (
               <div className="mb-8 overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.03]">
-                <img src={item.thumbnail_url} alt="" className="aspect-[16/10] w-full object-cover" />
+                <img src={image} alt="" className="aspect-[16/10] w-full object-cover" />
               </div>
             )}
             <div className="flex items-start gap-4">
@@ -133,7 +139,7 @@ export default async function ResourceUnlockPage({
                 </p>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground/50">
                   <li>Open this resource immediately after signup.</li>
-                  <li>Access the rest of the free resource library.</li>
+                  <li>Access the rest of the included resource library.</li>
                   <li>Get future Muditek drops through the newsletter.</li>
                 </ul>
               </div>

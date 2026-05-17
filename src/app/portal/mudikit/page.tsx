@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
+import { listPortalSkills } from "@/lib/portal-skills";
 import type { ContentItem } from "@/lib/content-item";
 import MudikitContent from "./mudikit-content";
 
@@ -47,12 +48,17 @@ export default async function PortalMudikitPage() {
     hasActiveSubscription: isPaid,
   });
 
-  const paidItems = withDerivedThumbnails((await sql`
+  const dbPaidItems = withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE is_free = false
     ORDER BY is_new DESC, created_at DESC
   `) as ContentItem[]);
+  const dbSlugs = new Set(dbPaidItems.map((item) => item.slug));
+  const paidItems = [
+    ...dbPaidItems,
+    ...listPortalSkills().filter((item) => !item.is_free && !dbSlugs.has(item.slug)),
+  ];
 
   return (
     <MudikitContent

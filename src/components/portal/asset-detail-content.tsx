@@ -38,6 +38,10 @@ function fileTypeLabel(value: string): string {
   return value.toUpperCase();
 }
 
+function accessLabel(item: ContentItem): string {
+  return item.is_free ? "Included" : "MudiKit";
+}
+
 function formatLongDate(value: string | Date | null | undefined): string | null {
   if (!value) return null;
   const date = new Date(value);
@@ -254,7 +258,7 @@ export default function AssetDetailContent({
                 <span aria-hidden className="h-px w-6 bg-primary/50" />
                 {labels.kindSingular}
                 <span aria-hidden className="text-foreground/30">·</span>
-                <span className={accentClass}>{item.is_free ? "Free" : "MudiKit"}</span>
+                <span className={accentClass}>{accessLabel(item)}</span>
                 {item.is_new && (
                   <>
                     <span aria-hidden className="text-foreground/30">·</span>
@@ -282,7 +286,7 @@ export default function AssetDetailContent({
                   }
                 >
                   <span className={`inline-block size-1.5 rounded-full ${accentDot}`} />
-                  {item.is_free ? "Free" : "MudiKit"}
+                  {accessLabel(item)}
                 </span>
                 {item.file_type && (
                   <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
@@ -330,13 +334,13 @@ export default function AssetDetailContent({
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3.5">
                   <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Access</dt>
-                  <dd className={`font-mono ${accentClass}`}>{item.is_free ? "Free" : "MudiKit"}</dd>
+                  <dd className={`font-mono ${accentClass}`}>{accessLabel(item)}</dd>
                 </div>
               </dl>
               {item.is_free && (
                 <div className="relative border-t border-white/[0.06] px-5 py-4">
                   <p className="mb-3 text-[11.5px] leading-5 text-foreground/55">
-                    Share this as a lead magnet. New visitors create a free account before it opens.
+                    Share this as a lead magnet. New visitors create an account before it opens.
                   </p>
                   <ShareResourceButton item={item} />
                 </div>
@@ -420,7 +424,7 @@ export default function AssetDetailContent({
                   >
                     <img
                       src={src}
-                      alt={`${item.title} — Page ${index + 1}`}
+                      alt={`${item.title} - Page ${index + 1}`}
                       className="block h-auto w-full"
                       loading={index < 3 ? "eager" : "lazy"}
                     />

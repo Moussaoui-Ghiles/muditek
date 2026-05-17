@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Lock } from "lucide-react";
 import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-detail-content";
 import { getPortalTool } from "@/app/portal/tools-catalog";
+import { GoogleMapsLeadWorkbench } from "@/components/portal/google-maps-lead-workbench";
+import { LinkedInSerperLeadWorkbench } from "@/components/portal/linkedin-serper-lead-workbench";
 import { RevenueLeakWorkbench } from "@/components/portal/revenue-leak-workbench";
 import {
   buildAssetAccess,
@@ -40,13 +42,9 @@ function ToolWorkbench({
   if (slug === "revenue-leak-calculator") {
     return <RevenueLeakWorkbench />;
   }
-
-  return (
-    <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.012] p-8 text-[13.5px] leading-7 text-foreground/65">
-      {title} exists in the tool catalog, but no portal component is attached yet.
-      <span className="mt-1 block">{description}</span>
-    </div>
-  );
+  if (slug === "google-maps-lead-finder") return <GoogleMapsLeadWorkbench />;
+  if (slug === "linkedin-serper-lead-finder") return <LinkedInSerperLeadWorkbench />;
+  return null;
 }
 
 function WorkbenchHeroAside({ slug }: { slug: string }) {
@@ -64,29 +62,43 @@ function WorkbenchHeroAside({ slug }: { slug: string }) {
         <ul className="relative z-10 mt-6 space-y-2.5 text-[12.5px] leading-6 text-foreground/70">
           <li className="flex items-baseline gap-3">
             <span aria-hidden className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">01</span>
-            Speed-to-lead — InsideSales · HBR
+            Speed-to-lead: InsideSales · HBR
           </li>
           <li className="flex items-baseline gap-3">
             <span aria-hidden className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">02</span>
-            Pipeline conversion — OpenView · HubSpot
+            Pipeline conversion: OpenView · HubSpot
           </li>
           <li className="flex items-baseline gap-3">
             <span aria-hidden className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">03</span>
-            Revenue churn — Bessemer · SaaS Capital
+            Revenue churn: Bessemer · SaaS Capital
           </li>
           <li className="flex items-baseline gap-3">
             <span aria-hidden className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">04</span>
-            Lead source ROI — channel spend vs pipeline
+            Lead source ROI: channel spend vs pipeline
           </li>
           <li className="flex items-baseline gap-3">
             <span aria-hidden className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80">05</span>
-            Outbound performance — meeting-rate benchmark
+            Outbound performance: meeting-rate benchmark
           </li>
         </ul>
       </aside>
     );
   }
-  return null;
+  return (
+    <aside className="card-lift relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-7 backdrop-blur-md">
+      <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-emerald-500/10 blur-[60px]" />
+      <p className="relative z-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-emerald-300/80">
+        <span aria-hidden className="inline-flex size-1.5 animate-pulse rounded-full bg-emerald-400" />
+        Live data
+      </p>
+      <h2 className="relative z-10 mt-3 text-[20px] font-black leading-tight tracking-[-0.02em] text-foreground md:text-[22px]">
+        This tool only shows results returned by the connected API.
+      </h2>
+      <p className="relative z-10 mt-4 text-[13px] leading-6 text-foreground/65">
+        If an API key is missing, the workbench returns a setup message instead of fake leads.
+      </p>
+    </aside>
+  );
 }
 
 function WorkbenchPage({
@@ -162,7 +174,7 @@ function WorkbenchPage({
                   Runs in browser
                 </span>
                 <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
-                  No email required
+                  Portal account
                 </span>
                 <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
                   Cited benchmarks
@@ -189,7 +201,7 @@ function WorkbenchPage({
                 <span className="text-primary italic font-medium">MudiKit</span>.
               </h2>
               <p className="max-w-xl text-[14px] leading-7 text-foreground/65">
-                This tool is attached to the paid library. Free workbenches stay open to every
+                This tool is attached to the paid library. Included workbenches stay open to every
                 portal account.
               </p>
               <Link
@@ -212,7 +224,7 @@ function WorkbenchPage({
                 Live · runs in your browser
               </h2>
               <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-                Inputs → diagnosis
+                Inputs to diagnosis
               </span>
             </div>
             <ToolWorkbench slug={slug} title={title} description={description} />

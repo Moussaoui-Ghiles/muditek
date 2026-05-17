@@ -40,6 +40,8 @@ export function getPdfPageImages(slug: string): string[] {
 }
 
 export function getDownloadHref(item: ContentItem): string | null {
+  if (item.file_type?.toLowerCase() === "html") return null;
+
   const href = item.download_url?.trim();
   if (!href) return null;
 

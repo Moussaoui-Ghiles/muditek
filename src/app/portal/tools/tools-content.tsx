@@ -31,8 +31,12 @@ function isToolLocked(tool: PortalTool, access: PortalAccess): boolean {
   return tool.access === "mudikit" && !access.isMudikit && !access.isAdmin;
 }
 
+function accessLabel(isIncluded: boolean): string {
+  return isIncluded ? "Included" : "MudiKit";
+}
+
 function formatDate(value: string | Date | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "";
   return new Date(value).toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
@@ -173,7 +177,7 @@ function FeaturedWorkbench({ tool, access }: { tool: PortalTool; access: PortalA
               ) : tool.access === "free" ? (
                 <>
                   <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                  Free · No email
+                  Included
                 </>
               ) : (
                 <>MudiKit</>
@@ -254,7 +258,7 @@ function WorkbenchShelfCard({ tool, access }: { tool: PortalTool; access: Portal
             ) : (
               <>
                 <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                {tool.access === "free" ? "Free" : "MudiKit"}
+                {accessLabel(tool.access === "free")}
               </>
             )}
           </span>
@@ -341,7 +345,7 @@ function AssetShelfCard({ item, access }: { item: ContentItem; access: PortalAcc
             {accessible ? (
               <>
                 <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                {item.is_free ? "Free" : "MudiKit"}
+                {accessLabel(item.is_free)}
               </>
             ) : (
               <span className="inline-flex items-center gap-1">
@@ -562,7 +566,7 @@ export default function ToolsContent({
           <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
             <Stat label="Total" value={counts.total} />
             <Stat label="Workbenches" value={counts.workbenches} />
-            <Stat label="Free" value={counts.free} />
+            <Stat label="Included" value={counts.free} />
             <Stat label="MudiKit" value={counts.paid} />
             <Stat label="Locked" value={lockedCount} accent={lockedCount > 0} />
             <Stat label="New" value={items.filter((i) => i.is_new).length} />
@@ -574,7 +578,7 @@ export default function ToolsContent({
         {counts.total === 0 ? (
           <EmptyShelf
             message="The workbench is empty."
-            hint="Interactive tools and calculators will appear here as they ship. This page only lists real, working tools — never placeholders."
+            hint="Interactive tools and calculators will appear here as they ship. This page only lists real, working tools, never placeholders."
           />
         ) : (
           <>
@@ -609,7 +613,7 @@ export default function ToolsContent({
                           All
                         </FilterPill>
                         <FilterPill active={accessFilter === "free"} onClick={() => setAccessFilter("free")}>
-                          Free <span className="ml-2 opacity-60">{counts.free}</span>
+                          Included <span className="ml-2 opacity-60">{counts.free}</span>
                         </FilterPill>
                         <FilterPill active={accessFilter === "mudikit"} onClick={() => setAccessFilter("mudikit")}>
                           MudiKit <span className="ml-2 opacity-60">{counts.paid}</span>

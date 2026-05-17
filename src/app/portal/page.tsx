@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnail, withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
+import { listPortalSkills } from "@/lib/portal-skills";
 import { categoryPortalPath } from "@/lib/content-item";
 import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
 
@@ -149,6 +150,8 @@ function getPdfPageImages(slug: string): string[] {
 }
 
 function getDownloadHref(item: ContentItem): string | null {
+  if (item.file_type?.toLowerCase() === "html") return null;
+
   const href = item.download_url?.trim();
   if (!href) return null;
 
@@ -241,14 +244,14 @@ export default async function PortalPage({
     hasActiveSubscription: isPaid,
   });
 
-  const freeItems = withDerivedThumbnails((await sql`
+  const dbFreeItems = withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE is_free = true
     ORDER BY created_at DESC
   `) as ContentItem[]);
 
-  const paidItems = access.isMudikit
+  const dbPaidItems = access.isMudikit
     ? withDerivedThumbnails((await sql`
         SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
         FROM content_items
@@ -256,6 +259,15 @@ export default async function PortalPage({
         ORDER BY created_at DESC
       `) as ContentItem[])
     : [];
+
+  const localSkills = listPortalSkills();
+  const dbSlugs = new Set([...dbFreeItems, ...dbPaidItems].map((item) => item.slug));
+  const localOnlySkills = localSkills.filter((item) => !dbSlugs.has(item.slug));
+  const freeItems = [...dbFreeItems, ...localOnlySkills.filter((item) => item.is_free)];
+  const paidItems = [
+    ...dbPaidItems,
+    ...(access.isMudikit ? localOnlySkills.filter((item) => !item.is_free) : []),
+  ];
 
   const playbookGuideItems = withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
@@ -267,7 +279,10 @@ export default async function PortalPage({
   const issues = (await sql`
     SELECT slug, subject, sent_at
     FROM newsletter_issues
-    WHERE status = 'sent' AND slug IS NOT NULL
+    WHERE status = 'sent'
+      AND slug IS NOT NULL
+      AND html IS NOT NULL
+      AND length(trim(html)) > 0
     ORDER BY sent_at DESC NULLS LAST
     LIMIT 40
   `) as NewsletterIssue[];

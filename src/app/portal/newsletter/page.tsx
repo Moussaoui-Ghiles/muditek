@@ -15,7 +15,13 @@ interface IssueRow {
   slug: string;
   subject: string;
   sent_at: string | Date | null;
-  stats: { preview?: string | null; tldr?: string | null } | null;
+  stats: {
+    preview?: string | null;
+    tldr?: string | null;
+    thumbnail_url?: string | null;
+    image?: string | null;
+    hero_image?: string | null;
+  } | null;
 }
 
 export default async function PortalNewsletterPage() {
@@ -50,7 +56,10 @@ export default async function PortalNewsletterPage() {
   const rows = (await sql`
     SELECT slug, subject, sent_at, stats
     FROM newsletter_issues
-    WHERE status = 'sent' AND slug IS NOT NULL
+    WHERE status = 'sent'
+      AND slug IS NOT NULL
+      AND html IS NOT NULL
+      AND length(trim(html)) > 0
     ORDER BY sent_at DESC NULLS LAST
   `) as IssueRow[];
 
@@ -59,6 +68,11 @@ export default async function PortalNewsletterPage() {
     subject: r.subject,
     sent_at: r.sent_at ? new Date(r.sent_at).toISOString() : null,
     preview: r.stats?.preview?.trim() || r.stats?.tldr?.trim() || null,
+    thumbnailUrl:
+      r.stats?.thumbnail_url?.trim() ||
+      r.stats?.hero_image?.trim() ||
+      r.stats?.image?.trim() ||
+      null,
   }));
 
   const displayName =

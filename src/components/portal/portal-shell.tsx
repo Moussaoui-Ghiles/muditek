@@ -14,7 +14,7 @@ type Crumb = { href: string; label: string };
 
 const LEAF_LABEL: Record<string, string> = {
   skills: "Skills",
-  playbooks: "Playbooks & Guides",
+  playbooks: "Resources",
   tools: "Tools",
   mudikit: "MudiKit",
   newsletter: "Newsletter",
@@ -123,7 +123,7 @@ export function PortalShell({
         <PortalSidebar access={access} email={email} displayName={displayName} />
         <SidebarInset className="min-h-svh bg-[#0a0a0c]">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-[#0a0a0c]/85 px-4 backdrop-blur-xl md:px-6">
-            <SidebarTrigger className="md:hidden">
+            <SidebarTrigger aria-label="Toggle sidebar">
               <Menu className="size-4" />
             </SidebarTrigger>
 

@@ -39,6 +39,13 @@ function formatDateLong(iso: string | null): string {
 const PORTAL_ROUTE_REWRITES: Array<[RegExp, string]> = [
   [/^https?:\/\/(?:www\.)?muditek\.com\/newsletter\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/newsletter/$1"],
   [/^\/newsletter\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/newsletter/$1"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/resources\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^\/resources\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/r\/([\w-]+)\/?(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/playbooks\/([\w-]+)\.pdf(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^\/playbooks\/([\w-]+)\.pdf(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
+  [/^\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
   [/^https?:\/\/(?:www\.)?muditek\.com\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/mudikit"],
   [/^\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/mudikit"],
 ];

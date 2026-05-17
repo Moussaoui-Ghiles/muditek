@@ -346,7 +346,7 @@ export default function AccountContent({
           <ResourceHistory unlocks={resourceUnlocks} />
           <div className="mt-5 flex flex-wrap gap-2">
             <Button render={<Link href="/portal/playbooks" />} nativeButton={false} variant="outline">
-              Browse playbooks
+              Browse resources
               <ArrowUpRight className="size-4" />
             </Button>
             <Button render={<Link href="/portal/skills" />} nativeButton={false} variant="outline">

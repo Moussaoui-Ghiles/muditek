@@ -488,14 +488,14 @@ export default function NewsletterArchiveContent({
                     />
                     <PointerCard
                       href="/portal/playbooks"
-                      title="Playbooks & guides"
-                      body="Included systems and guides."
+                      title="Resources"
+                      body="Playbooks, guides, and scorecards."
                       icon={<BookText className="size-4" />}
                     />
                     <PointerCard
                       href="/portal/tools"
                       title="Tools"
-                      body="Calculators and scorecards."
+                      body="Live calculators and lead workbenches."
                       icon={<Wrench className="size-4" />}
                     />
                     <PointerCard

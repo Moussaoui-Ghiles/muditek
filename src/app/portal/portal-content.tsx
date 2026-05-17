@@ -404,10 +404,10 @@ export default function PortalHomeContent({
             />
             <CategoryTile
               href="/portal/playbooks"
-              title="Playbooks"
+              title="Resources"
               body="Guides, scorecards, templates, and implementation docs grouped by motion."
               count={playbooks.length}
-              latest={latestTitle(playbooks, "Playbook shelf")}
+              latest={latestTitle(playbooks, "Resource shelf")}
               icon={BookText}
             />
             <CategoryTile

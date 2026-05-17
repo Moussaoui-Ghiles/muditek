@@ -559,8 +559,7 @@ export default function ToolsContent({
             </h1>
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
               Interactive instruments that turn your real metrics into euro-denominated answers.
-              Workbenches run inside the portal. Downloadable tools open from the shelf. Nothing
-              fake. Nothing demoed.
+              Workbenches run inside the portal. Downloadable tools open from the shelf.
             </p>
           </div>
           <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">

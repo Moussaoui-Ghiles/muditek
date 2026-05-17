@@ -12,8 +12,8 @@ type LinkedInResult = {
 };
 
 export function LinkedInSerperLeadWorkbench() {
-  const [role, setRole] = useState("Head of Sales");
-  const [market, setMarket] = useState("B2B SaaS Germany");
+  const [role, setRole] = useState("");
+  const [market, setMarket] = useState("");
   const [company, setCompany] = useState("");
   const [max, setMax] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -53,15 +53,30 @@ export function LinkedInSerperLeadWorkbench() {
         <div className="mt-5 space-y-4">
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Role</span>
-            <Input value={role} onChange={(e) => setRole(e.target.value)} className="mt-2" />
+            <Input
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              placeholder="Head of Sales, Founder, RevOps..."
+              className="mt-2"
+            />
           </label>
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Market</span>
-            <Input value={market} onChange={(e) => setMarket(e.target.value)} className="mt-2" />
+            <Input
+              value={market}
+              onChange={(e) => setMarket(e.target.value)}
+              placeholder="B2B SaaS Germany, agencies US..."
+              className="mt-2"
+            />
           </label>
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Company keyword</span>
-            <Input value={company} onChange={(e) => setCompany(e.target.value)} className="mt-2" />
+            <Input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Optional company or niche keyword"
+              className="mt-2"
+            />
           </label>
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Max results</span>
@@ -74,7 +89,12 @@ export function LinkedInSerperLeadWorkbench() {
               className="mt-2"
             />
           </label>
-          <Button type="button" onClick={run} disabled={loading} className="w-full">
+          <Button
+            type="button"
+            onClick={run}
+            disabled={loading || (!role.trim() && !market.trim() && !company.trim())}
+            className="w-full"
+          >
             {loading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
             Search LinkedIn
           </Button>
@@ -89,7 +109,7 @@ export function LinkedInSerperLeadWorkbench() {
         )}
         {!error && results.length === 0 && !loading && (
           <div className="flex h-full min-h-[300px] items-center justify-center text-center text-[13.5px] leading-6 text-foreground/55">
-            Run a search to pull live LinkedIn profile results from Google. Nothing is prefilled.
+            Add a role, market, or company keyword to pull live LinkedIn profile results from Google.
           </div>
         )}
         {query && (

@@ -17,8 +17,8 @@ type Place = {
 };
 
 export function GoogleMapsLeadWorkbench() {
-  const [keyword, setKeyword] = useState("dentists");
-  const [location, setLocation] = useState("Austin, TX");
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
   const [max, setMax] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,11 +54,21 @@ export function GoogleMapsLeadWorkbench() {
         <div className="mt-5 space-y-4">
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Business type</span>
-            <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} className="mt-2" />
+            <Input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Dentists, med spas, accountants..."
+              className="mt-2"
+            />
           </label>
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Location</span>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} className="mt-2" />
+            <Input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Austin, Berlin, Dubai..."
+              className="mt-2"
+            />
           </label>
           <label className="block">
             <span className="text-[12px] font-bold text-foreground/70">Max results</span>
@@ -86,7 +96,8 @@ export function GoogleMapsLeadWorkbench() {
         )}
         {!error && results.length === 0 && !loading && (
           <div className="flex h-full min-h-[300px] items-center justify-center text-center text-[13.5px] leading-6 text-foreground/55">
-            Run a search to pull live Google Maps leads. Results stay empty until the API returns real data.
+            Add a business type and location to pull live Google Maps leads. Results stay empty
+            until the connected API returns real data.
           </div>
         )}
         {results.length > 0 && (

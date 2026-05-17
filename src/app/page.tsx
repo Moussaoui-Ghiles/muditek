@@ -51,7 +51,7 @@ const TOOL_STACK = [
 const HOME_FAQ = [
   {
     q: "What does Muditek actually do?",
-    a: "We diagnose where companies lose money to manual operations, then build the AI systems that fix it. Three offers: mudiAgent (on-premises AI for telecom and enterprise), Revenue Leak Audit (B2B SaaS pipeline diagnostics), and operational infrastructure for investment firms. Every engagement starts with a paid or free diagnostic that quantifies the waste in euros before any code is written.",
+    a: "We diagnose where companies lose money to manual operations, then build the AI systems that fix it. Three offers: mudiAgent (on-premises AI for telecom and enterprise), Revenue Leak Audit (B2B SaaS pipeline diagnostics), and operational infrastructure for investment firms. Every engagement starts with a diagnostic that quantifies the waste in euros before any code is written.",
   },
   {
     q: "How is Muditek different from a regular dev shop or consultancy?",
@@ -211,9 +211,9 @@ export default function Home() {
                      <span className="text-sm text-foreground/70 tracking-wider">Time saved weekly:</span>
                      <span className="text-primary text-lg font-black">40+ hours</span>
                    </div>
-                   <p className="text-sm text-primary/80 mb-4">40-hour guarantee or we reconfigure free</p>
+                   <p className="text-sm text-primary/80 mb-4">40-hour guarantee or we reconfigure at no cost</p>
                    <Link href="/mudiagent" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-primary transition-colors">
-                      Free Discovery Audit <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      Discovery Audit <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                    </Link>
                 </div>
               </div>
@@ -265,7 +265,7 @@ export default function Home() {
                      <span className="text-sm text-foreground/70 tracking-wider">LP onboarding:</span>
                      <span className="text-sky-400 text-lg font-black">weeks → 3-5 days</span>
                    </div>
-                   <p className="text-sm text-sky-400/80 mb-4">&euro;150K in waste found or the discovery is free</p>
+                   <p className="text-sm text-sky-400/80 mb-4">&euro;150K in waste found or you pay nothing</p>
                    <Link href="/pe-ops" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-sky-400 transition-colors">
                       See the Demo <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                    </Link>

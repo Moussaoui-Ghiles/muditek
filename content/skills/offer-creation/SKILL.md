@@ -1,6 +1,6 @@
 ---
 name: offer-creation
-description: Create, improve, reposition, and evaluate business offers using live market research plus structured offer design. Use when the task is to: (1) turn a topic, niche, or problem into an offer, (2) improve an existing offer, (3) adapt an offer to a new market or segment, (4) choose pricing, guarantees, tiers, or qualification rules, or (5) analyze whether an offer is strong enough to sell.
+description: "Create, improve, reposition, and evaluate business offers using live market research plus structured offer design. Use when the task is to: (1) turn a topic, niche, or problem into an offer, (2) improve an existing offer, (3) adapt an offer to a new market or segment, (4) choose pricing, guarantees, tiers, or qualification rules, or (5) analyze whether an offer is strong enough to sell."
 ---
 
 # Offer Creation

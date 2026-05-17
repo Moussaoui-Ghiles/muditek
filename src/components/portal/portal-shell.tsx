@@ -21,6 +21,28 @@ const LEAF_LABEL: Record<string, string> = {
   account: "Account",
 };
 
+const SEGMENT_ACRONYMS: Record<string, string> = {
+  ai: "AI",
+  api: "API",
+  b2b: "B2B",
+  cli: "CLI",
+  cro: "CRO",
+  gtm: "GTM",
+  json: "JSON",
+  llm: "LLM",
+  pdf: "PDF",
+  seo: "SEO",
+  sdr: "SDR",
+  ux: "UX",
+};
+
+function labelFromSegment(segment: string): string {
+  return segment
+    .split("-")
+    .map((part) => SEGMENT_ACRONYMS[part.toLowerCase()] ?? part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function buildCrumbs(pathname: string): Crumb[] {
   const crumbs: Crumb[] = [{ href: "/portal", label: "Home" }];
   if (!pathname.startsWith("/portal") || pathname === "/portal") return crumbs;
@@ -30,12 +52,7 @@ function buildCrumbs(pathname: string): Crumb[] {
   segments.forEach((segment, index) => {
     acc += `/${segment}`;
     const isFirst = index === 0;
-    const label = isFirst && LEAF_LABEL[segment]
-      ? LEAF_LABEL[segment]
-      : segment
-          .split("-")
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(" ");
+    const label = isFirst && LEAF_LABEL[segment] ? LEAF_LABEL[segment] : labelFromSegment(segment);
     crumbs.push({ href: acc, label });
   });
 

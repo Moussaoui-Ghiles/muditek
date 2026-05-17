@@ -441,7 +441,7 @@ export default function PlaybooksContent({
                     Browse
                   </span>
                   {hasBothTypes && (
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <FilterPill active={typeFilter === "all"} onClick={() => setTypeFilter("all")}>
                         All
                       </FilterPill>
@@ -457,7 +457,7 @@ export default function PlaybooksContent({
                     <span aria-hidden className="hidden h-4 w-px bg-white/10 lg:inline-block" />
                   )}
                   {visibleTopics.length > 1 && (
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       {visibleTopics.map((topic) => (
                         <FilterPill
                           key={topic.value}

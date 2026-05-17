@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { categoryLabel } from "@/lib/content-item";
+import { getPortalSkill } from "@/lib/portal-skills";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,12 @@ export async function GET(
     LIMIT 1
   `;
 
-  const item = rows[0] as { title?: string; category?: string } | undefined;
+  let item = rows[0] as { title?: string; category?: string } | undefined;
+  if (!item?.title) {
+    const skill = getPortalSkill(slug);
+    if (skill) item = { title: skill.name, category: "skill" };
+  }
+
   if (!item?.title) {
     return new NextResponse("Cover not found.", { status: 404 });
   }

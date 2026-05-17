@@ -548,7 +548,7 @@ export default function SkillsContent({
                   </span>
                 )}
                 {showAccessFilter && (
-                  <div className="inline-flex rounded-xl bg-white/[0.018] p-1">
+                  <div className="inline-flex max-w-full flex-wrap rounded-xl bg-white/[0.018] p-1">
                     {(["all", "free", "mudikit"] as AccessFilter[]).map((f) => (
                       <button
                         key={f}

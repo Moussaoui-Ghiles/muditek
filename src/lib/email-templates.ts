@@ -55,7 +55,7 @@ export async function sendFreeWelcomeEmail(
           You're in. Every edition of the newsletter ships a deployable system — outbound machines, AI agents, revenue ops. Full architecture, code, walkthrough.
         </p>
         <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
-          Your free portal has 14 playbooks and the full newsletter archive. One email / code to sign in. No password.
+          Your portal has the playbooks, tools, skills, and newsletter archive in one place. One email / code to sign in.
         </p>
         <a href="${escapeHtml(portalUrl)}"
            style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">

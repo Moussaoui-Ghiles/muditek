@@ -607,7 +607,7 @@ export default function ToolsContent({
                       Browse
                     </span>
                     {hasBothAccess && (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <FilterPill active={accessFilter === "all"} onClick={() => setAccessFilter("all")}>
                           All
                         </FilterPill>

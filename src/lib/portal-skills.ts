@@ -41,11 +41,49 @@ export function portalSkillToContentItem(skill: PortalSkillFile): ContentItem {
 }
 
 function titleFromSlug(slug: string): string {
+  const acronyms: Record<string, string> = {
+    ai: "AI",
+    api: "API",
+    b2b: "B2B",
+    cli: "CLI",
+    cro: "CRO",
+    gtm: "GTM",
+    json: "JSON",
+    llm: "LLM",
+    pdf: "PDF",
+    seo: "SEO",
+    sdr: "SDR",
+    ux: "UX",
+  };
+
   return slug
     .split(/[-_]/)
     .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .map((part) => acronyms[part.toLowerCase()] ?? part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function displayNameFromMeta(slug: string, name?: string): string {
+  if (slug === "free-tool-strategy") return "Tool Strategy";
+  if (!name) return titleFromSlug(slug);
+  const trimmed = name.trim();
+  if (!trimmed || trimmed.toLowerCase() === slug.toLowerCase()) return titleFromSlug(slug);
+  return trimmed;
+}
+
+function cleanDescription(description?: string): string | null {
+  if (!description) return null;
+  const compact = description
+    .replace(/\s+/g, " ")
+    .replace(/\bAlso use when\b[\s\S]*$/i, "")
+    .replace(/\bUse when\b[\s\S]*$/i, "")
+    .trim();
+
+  if (!compact) return null;
+  if (compact.length <= 180) return compact;
+
+  const sentence = compact.match(/^.{60,180}?[.!?](?:\s|$)/)?.[0]?.trim();
+  return sentence || `${compact.slice(0, 177).trim()}...`;
 }
 
 function parseFrontmatter(raw: string): Record<string, string> {
@@ -74,8 +112,8 @@ function readSkill(slug: string): PortalSkillFile | null {
 
   return {
     slug,
-    name: meta.name || titleFromSlug(slug),
-    description: meta.description || null,
+    name: displayNameFromMeta(slug, meta.name),
+    description: cleanDescription(meta.description),
     markdown,
     dir,
     isIncluded: INCLUDED_SKILLS.has(slug),

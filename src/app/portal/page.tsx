@@ -251,14 +251,12 @@ export default async function PortalPage({
     ORDER BY created_at DESC
   `) as ContentItem[]);
 
-  const dbPaidItems = access.isMudikit
-    ? withDerivedThumbnails((await sql`
-        SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
-        FROM content_items
-        WHERE is_free = false
-        ORDER BY created_at DESC
-      `) as ContentItem[])
-    : [];
+  const dbPaidItems = withDerivedThumbnails((await sql`
+    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    FROM content_items
+    WHERE is_free = false
+    ORDER BY created_at DESC
+  `) as ContentItem[]);
 
   const localSkills = listPortalSkills();
   const dbSlugs = new Set([...dbFreeItems, ...dbPaidItems].map((item) => item.slug));
@@ -266,7 +264,7 @@ export default async function PortalPage({
   const freeItems = [...dbFreeItems, ...localOnlySkills.filter((item) => item.is_free)];
   const paidItems = [
     ...dbPaidItems,
-    ...(access.isMudikit ? localOnlySkills.filter((item) => !item.is_free) : []),
+    ...localOnlySkills.filter((item) => !item.is_free),
   ];
 
   const playbookGuideItems = withDerivedThumbnails((await sql`

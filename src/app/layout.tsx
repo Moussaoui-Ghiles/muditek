@@ -64,6 +64,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();
+  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || "https://us.i.posthog.com";
+
   return (
     <ClerkProvider
       appearance={{
@@ -169,7 +172,7 @@ export default function RootLayout({
               },
             ]}
           />
-          <PostHogProvider>{children}</PostHogProvider>
+          <PostHogProvider apiKey={posthogKey} host={posthogHost}>{children}</PostHogProvider>
           <WhatsAppBubble />
           <ExitIntent />
           <Analytics />

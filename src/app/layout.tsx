@@ -66,6 +66,7 @@ export default function RootLayout({
 }>) {
   const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();
   const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || "https://us.i.posthog.com";
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   return (
     <ClerkProvider
@@ -177,7 +178,7 @@ export default function RootLayout({
           <ExitIntent />
           <Analytics />
           <SpeedInsights />
-          <GoogleAnalytics />
+          <GoogleAnalytics measurementId={gaMeasurementId} />
         </body>
       </html>
     </ClerkProvider>

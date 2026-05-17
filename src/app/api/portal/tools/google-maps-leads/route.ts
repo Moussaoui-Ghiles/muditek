@@ -43,7 +43,13 @@ export async function POST(req: Request) {
 
   const token = process.env.APIFY_TOKEN;
   if (!token) {
-    return NextResponse.json({ error: "APIFY_TOKEN is not configured." }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "This workbench needs Apify connected before it can run live searches.",
+        setupRequired: true,
+      },
+      { status: 503 }
+    );
   }
 
   const body = await req.json().catch(() => null);

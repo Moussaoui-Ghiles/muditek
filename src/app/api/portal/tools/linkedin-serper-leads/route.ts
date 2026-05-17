@@ -11,7 +11,13 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.SERPER_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "SERPER_API_KEY is not configured." }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "This workbench needs Serper connected before it can run live searches.",
+        setupRequired: true,
+      },
+      { status: 503 }
+    );
   }
 
   const body = await req.json().catch(() => null);

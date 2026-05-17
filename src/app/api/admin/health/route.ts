@@ -91,17 +91,19 @@ export async function GET(request: Request) {
       key: "serper",
       label: "LinkedIn lead finder",
       ok: Boolean(env("SERPER_API_KEY")),
-      required: true,
-      detail: env("SERPER_API_KEY") ? "SERPER_API_KEY is configured." : "SERPER_API_KEY is missing.",
+      required: false,
+      detail: env("SERPER_API_KEY")
+        ? "Serper is connected."
+        : "Serper is missing. The LinkedIn workbench will show a setup message instead of running.",
     }),
     check({
       key: "blob",
       label: "Image uploads",
       ok: Boolean(env("BLOB_READ_WRITE_TOKEN")),
-      required: true,
+      required: false,
       detail: env("BLOB_READ_WRITE_TOKEN")
         ? "Vercel Blob uploads are configured."
-        : "BLOB_READ_WRITE_TOKEN is missing.",
+        : "Vercel Blob is missing. Small images can still save inline, but CDN-hosted images need Blob.",
     }),
     check({
       key: "resend",

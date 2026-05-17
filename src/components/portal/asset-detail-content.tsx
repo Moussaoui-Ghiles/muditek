@@ -340,7 +340,7 @@ export default function AssetDetailContent({
               {item.is_free && (
                 <div className="relative border-t border-white/[0.06] px-5 py-4">
                   <p className="mb-3 text-[11.5px] leading-5 text-foreground/55">
-                    Share this as a lead magnet. New visitors create an account before it opens.
+                    Copy a share link. New visitors create an account before the resource opens.
                   </p>
                   <ShareResourceButton item={item} />
                 </div>

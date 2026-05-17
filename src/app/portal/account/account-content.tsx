@@ -161,7 +161,10 @@ function ResourceHistory({ unlocks }: { unlocks: ResourceUnlock[] }) {
   return (
     <ol className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
       {unlocks.map((unlock) => {
-        const href = `/r/${encodeURIComponent(unlock.slug)}`;
+        const encodedSlug = encodeURIComponent(unlock.slug);
+        const href = unlock.category === "skill"
+          ? `/portal/skills/${encodedSlug}`
+          : `/portal/playbooks/${encodedSlug}`;
         const date = formatDate(unlock.lastSeenAtIso || unlock.createdAtIso);
         return (
           <li key={unlock.slug}>
@@ -341,7 +344,7 @@ export default function AccountContent({
           icon={<BookOpen className="size-4" />}
           eyebrow="Unlock history"
           title="Resources opened from shared links"
-          body="Tracked from `/r/slug` links after signup or sign-in. These are real account events, not suggested resources."
+          body="Resources this account opened after signup or sign-in. These are real account events, not suggested resources."
         >
           <ResourceHistory unlocks={resourceUnlocks} />
           <div className="mt-5 flex flex-wrap gap-2">

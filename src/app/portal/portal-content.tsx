@@ -377,7 +377,7 @@ export default function PortalHomeContent({
         <section>
           <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.05] pb-5 md:flex-row md:items-end md:justify-between">
             <div>
-              <SectionKicker>Start here</SectionKicker>
+              <SectionKicker>Library</SectionKicker>
               <h2 className="mt-3 text-[28px] font-black leading-none tracking-[-0.025em] text-white">
                 Choose the shelf you need.
               </h2>

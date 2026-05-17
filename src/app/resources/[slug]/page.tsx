@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 
 function publicPreviewImage(thumbnailUrl: string | null): string | null {
   if (!thumbnailUrl) return null;
-  return thumbnailUrl.startsWith("/playbooks/") ? null : thumbnailUrl;
+  if (thumbnailUrl.startsWith("/playbooks/")) return null;
+  if (thumbnailUrl.startsWith("/api/portal/")) return null;
+  return thumbnailUrl;
 }
 
 export async function generateMetadata({

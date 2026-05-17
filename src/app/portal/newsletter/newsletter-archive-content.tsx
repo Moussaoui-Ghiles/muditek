@@ -30,6 +30,7 @@ interface Props {
   displayName: string;
   access: PortalAccess;
   issues: ArchiveIssue[];
+  preferencesHref: string | null;
 }
 
 function formatLong(iso: string | null): string {
@@ -344,6 +345,7 @@ export default function NewsletterArchiveContent({
   displayName,
   access,
   issues,
+  preferencesHref,
 }: Props) {
   const [query, setQuery] = useState("");
   const [activeYear, setActiveYear] = useState<string>("all");
@@ -497,7 +499,7 @@ export default function NewsletterArchiveContent({
               </div>
             </div>
             <Link
-              href="/preferences"
+              href={preferencesHref ?? "/portal/account"}
               className="inline-flex items-center gap-1.5 self-start rounded-md border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.045] sm:self-auto"
             >
               <Newspaper className="size-3.5" />

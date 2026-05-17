@@ -95,7 +95,7 @@ function WorkbenchHeroAside({ slug }: { slug: string }) {
         This tool only shows results returned by the connected API.
       </h2>
       <p className="relative z-10 mt-4 text-[13px] leading-6 text-foreground/65">
-        If an API key is missing, the workbench returns a setup message instead of fake leads.
+        If an API key is missing, the workbench returns a setup message instead of invented results.
       </p>
     </aside>
   );

@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { getOrCreatePreferenceHref } from "@/lib/newsletter-preferences";
 import { buildPortalAccess } from "@/lib/portal-access";
 import NewsletterArchiveContent from "./newsletter-archive-content";
 
@@ -77,6 +78,11 @@ export default async function PortalNewsletterPage() {
 
   const displayName =
     user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
+  const preferencesHref = await getOrCreatePreferenceHref({
+    email,
+    clerkUserId: user.id,
+    sql,
+  });
 
   return (
     <NewsletterArchiveContent
@@ -84,6 +90,7 @@ export default async function PortalNewsletterPage() {
       displayName={displayName}
       access={access}
       issues={issues}
+      preferencesHref={preferencesHref}
     />
   );
 }

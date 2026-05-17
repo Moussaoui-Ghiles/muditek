@@ -577,7 +577,7 @@ export default function ToolsContent({
         {counts.total === 0 ? (
           <EmptyShelf
             message="The workbench is empty."
-            hint="Interactive tools and calculators will appear here as they ship. This page only lists real, working tools, never placeholders."
+            hint="Interactive tools and calculators will appear here as they ship."
           />
         ) : (
           <>

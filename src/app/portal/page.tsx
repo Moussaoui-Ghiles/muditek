@@ -137,10 +137,10 @@ function getPdfPageImages(slug: string): string[] {
   try {
     const dir = join(process.cwd(), "public/playbooks", slug);
     return readdirSync(dir)
-      .filter((file) => file.startsWith("page-") && file.endsWith(".jpg"))
+      .filter((file) => /^page-\d+\.jpe?g$/i.test(file))
       .sort((a, b) => {
-        const numA = parseInt(a.replace("page-", "").replace(".jpg", ""), 10);
-        const numB = parseInt(b.replace("page-", "").replace(".jpg", ""), 10);
+        const numA = parseInt(a.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
+        const numB = parseInt(b.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
         return numA - numB;
       })
       .map((file) => `/playbooks/${slug}/${file}`);

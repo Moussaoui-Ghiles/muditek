@@ -74,12 +74,14 @@ export default function AccountContent({
   access,
   stripeCustomerId,
   memberSinceIso,
+  preferencesHref,
 }: {
   email: string;
   displayName?: string;
   access: PortalAccess;
   stripeCustomerId: string | null;
   memberSinceIso: string | null;
+  preferencesHref: string | null;
 }) {
   const { user } = useUser();
   const displayName = displayNameProp || user?.firstName || user?.fullName || email.split("@")[0];
@@ -144,11 +146,17 @@ export default function AccountContent({
           icon={<Mail className="size-4" />}
           eyebrow="Newsletter"
           title="Email preferences"
-          body="Change newsletter preferences from the preference center."
+          body="Manage topics, unsubscribe, or resubscribe from your preference center."
         >
-          <Button render={<Link href="/preferences" />} nativeButton={false} variant="outline">
-            Manage preferences
-          </Button>
+          {preferencesHref ? (
+            <Button render={<Link href={preferencesHref} />} nativeButton={false} variant="outline">
+              Manage preferences
+            </Button>
+          ) : (
+            <p className="text-[12.5px] leading-6 text-foreground/55">
+              Preference link is not available yet. Open the newsletter archive and try again.
+            </p>
+          )}
         </Panel>
 
         <Panel

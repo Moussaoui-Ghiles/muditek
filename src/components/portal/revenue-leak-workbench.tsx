@@ -482,7 +482,7 @@ export function RevenueLeakWorkbench() {
                   Enter your numbers. The numbers will answer.
                 </p>
                 <p className="mt-4 max-w-[42ch] text-[12.5px] leading-6 text-muted-foreground">
-                  Output stays empty until you run the calculation. Nothing is faked. Every euro you
+                  Output stays empty until you run the calculation. Every euro you
                   see is derived from your real inputs and the cited benchmark.
                 </p>
               </div>

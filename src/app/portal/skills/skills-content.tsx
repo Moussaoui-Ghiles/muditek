@@ -181,8 +181,7 @@ function EmptyFeatured() {
       </h2>
       <p className="relative max-w-[55ch] text-[14.5px] leading-[1.6] text-white/55">
         Each skill is a working asset for Claude, Codex, GTM, research, or
-        outreach. Nothing fake gets seeded. When there is something real to
-        install, it lands here.
+        outreach. When there is something ready to install, it lands here.
       </p>
     </div>
   );

@@ -236,7 +236,7 @@ function EmptyState() {
         Nothing on the shelf yet.
       </h3>
       <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-foreground/65">
-        When playbooks or guides ship, they will appear here. Nothing on this page is mocked or invented.
+        When playbooks or guides ship, they will appear here.
       </p>
     </div>
   );

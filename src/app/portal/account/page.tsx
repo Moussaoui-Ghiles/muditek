@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { getOrCreatePreferenceHref } from "@/lib/newsletter-preferences";
 import { buildPortalAccess } from "@/lib/portal-access";
 import AccountContent from "./account-content";
 
@@ -42,6 +43,11 @@ export default async function PortalAccountPage() {
     membershipRoles: membershipRows.map((row) => String(row.role)),
     hasActiveSubscription: isPaid,
   });
+  const preferencesHref = await getOrCreatePreferenceHref({
+    email,
+    clerkUserId: user.id,
+    sql,
+  });
 
   const displayName = user.firstName || email.split("@")[0];
 
@@ -52,6 +58,7 @@ export default async function PortalAccountPage() {
       access={access}
       stripeCustomerId={stripeCustomerId}
       memberSinceIso={memberSince}
+      preferencesHref={preferencesHref}
     />
   );
 }

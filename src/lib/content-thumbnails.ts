@@ -28,14 +28,22 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
         return aNum - bNum;
       })[0];
 
-    if (!firstPage) return item;
+    if (!firstPage) {
+      return {
+        ...item,
+        thumbnail_url: `/api/portal/covers/${item.slug}`,
+      };
+    }
 
     return {
       ...item,
       thumbnail_url: `/playbooks/${item.slug}/${firstPage}`,
     };
   } catch {
-    return item;
+    return {
+      ...item,
+      thumbnail_url: `/api/portal/covers/${item.slug}`,
+    };
   }
 }
 

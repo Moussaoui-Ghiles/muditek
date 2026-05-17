@@ -36,6 +36,7 @@ interface Props {
 function formatLong(iso: string | null): string {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -45,6 +46,7 @@ function formatLong(iso: string | null): string {
 function formatMonthDay(iso: string | null): string {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     month: "short",
     day: "2-digit",
   });
@@ -123,7 +125,7 @@ type YearBucket = {
 function bucketByYear(issues: ArchiveIssue[]): YearBucket[] {
   const map = new Map<string, ArchiveIssue[]>();
   for (const issue of issues) {
-    const year = issue.sent_at ? new Date(issue.sent_at).getFullYear().toString() : "Undated";
+    const year = issue.sent_at ? new Date(issue.sent_at).getUTCFullYear().toString() : "Undated";
     const list = map.get(year);
     if (list) list.push(issue);
     else map.set(year, [issue]);
@@ -384,7 +386,7 @@ export default function NewsletterArchiveContent({
       .map((issue, idx) => ({ issue, originalIndex: idx }))
       .filter(({ issue }) => {
         if (activeYear !== "all") {
-          const y = issue.sent_at ? new Date(issue.sent_at).getFullYear().toString() : "Undated";
+          const y = issue.sent_at ? new Date(issue.sent_at).getUTCFullYear().toString() : "Undated";
           if (y !== activeYear) return false;
         }
         if (!needle) return true;

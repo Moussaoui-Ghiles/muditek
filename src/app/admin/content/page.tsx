@@ -193,6 +193,7 @@ export default function ContentPage() {
   const [deleteArmedId, setDeleteArmedId] = useState<string | null>(null);
 
   const editingItem = editingId ? items.find((item) => item.id === editingId) ?? null : null;
+  const editingFileBackedSkill = editingItem ? isFileBackedSkill(editingItem) : false;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -530,8 +531,14 @@ export default function ContentPage() {
                 required
                 value={draft.slug}
                 onChange={(event) => updateDraft("slug", autoSlug(event.target.value))}
+                disabled={editingFileBackedSkill}
                 className="font-mono"
               />
+              {editingFileBackedSkill && (
+                <p className="text-xs leading-5 text-muted-foreground">
+                  File-backed skill slugs stay locked so folder download and markdown copy keep working.
+                </p>
+              )}
             </div>
 
             <div className="grid gap-1.5">

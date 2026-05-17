@@ -51,15 +51,20 @@ export default async function SkillDetailPage({
 
   const access = await buildAssetAccess(email, user.id);
   const item = await loadAssetBySlugAndCategories(slug, ["skill"]);
-  const localSkill = item ? null : getPortalSkill(slug);
+  const localSkill = getPortalSkill(slug);
 
   const displayName = user.firstName || email.split("@")[0];
 
-  if (!item && localSkill) {
+  if (localSkill) {
     const localItem = portalSkillToContentItem(localSkill);
     return (
       <SkillMarkdownDetailContent
-        item={localItem}
+        item={{
+          ...localItem,
+          ...(item ?? {}),
+          download_url: localItem.download_url,
+          file_type: "md",
+        }}
         markdown={localSkill.markdown}
         access={access}
       />

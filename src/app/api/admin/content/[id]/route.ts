@@ -27,7 +27,7 @@ export async function PATCH(
 
   const sourceSlug = localSkillSlug(id);
   if (sourceSlug) {
-    const slug = typeof body.slug === "string" && body.slug.trim() ? body.slug.trim() : sourceSlug;
+    const slug = sourceSlug;
     const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : slug;
     const category = typeof body.category === "string" && body.category.trim() ? body.category.trim() : "skill";
     const downloadUrl =

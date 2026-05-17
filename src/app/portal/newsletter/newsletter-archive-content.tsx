@@ -518,7 +518,7 @@ export default function NewsletterArchiveContent({
                 <Mail className="size-4" />
               </span>
               <div className="min-w-0">
-                <div className="text-[13px] font-medium text-foreground">Subscribed as {email}</div>
+                <div className="break-all text-[13px] font-medium text-foreground">Subscribed as {email}</div>
                 <p className="mt-0.5 text-[11.5px] leading-5 text-muted-foreground">
                   Next article lands in your inbox. Reading in-portal keeps everything in one place.
                 </p>

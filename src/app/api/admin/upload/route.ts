@@ -13,6 +13,7 @@ const ALLOWED_MIME = new Set([
   "image/webp",
 ]);
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const INLINE_FALLBACK_MAX_BYTES = 750 * 1024;
 
 export async function POST(request: Request) {
   const admin = await requireAdmin(request);
@@ -42,13 +43,23 @@ export async function POST(request: Request) {
   }
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      {
-        error:
-          "Image hosting not configured. Add BLOB_READ_WRITE_TOKEN to Vercel env (Storage → Blob → Connect).",
-      },
-      { status: 501 },
-    );
+    if (file.size > INLINE_FALLBACK_MAX_BYTES) {
+      return NextResponse.json(
+        {
+          error:
+            "Image hosting is not configured and this file is too large to inline. Add BLOB_READ_WRITE_TOKEN in Vercel Blob, or upload an image under 750 KB.",
+        },
+        { status: 413 },
+      );
+    }
+
+    const bytes = Buffer.from(await file.arrayBuffer());
+    return NextResponse.json({
+      url: `data:${mime};base64,${bytes.toString("base64")}`,
+      storage: "inline",
+      warning:
+        "BLOB_READ_WRITE_TOKEN is missing. Image was inlined; connect Vercel Blob for production image hosting.",
+    });
   }
 
   const ext = (name.split(".").pop() || "bin").toLowerCase();

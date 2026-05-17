@@ -45,6 +45,10 @@ export function getDownloadHref(item: ContentItem): string | null {
   const href = item.download_url?.trim();
   if (!href) return null;
 
+  if (href.startsWith("/playbooks/") || href.startsWith(`${BASE_URL}/playbooks/`)) {
+    return `/api/portal/resources/${encodeURIComponent(item.slug)}/download`;
+  }
+
   const portalPaths = [
     `/portal?view=resource&slug=${encodeURIComponent(item.slug)}`,
     `/portal/${categoryPortalPath(item.category)}/${encodeURIComponent(item.slug)}`,

@@ -114,7 +114,7 @@ export default function PortalHomeContent({
         </header>
 
         {/* HERO BANNER — controlled by content/portal/hero.md */}
-        {hero && (
+        {hero && hero.title && (
           <section className="relative isolate mt-10 overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/[0.12] via-amber-500/[0.04] to-transparent p-8 md:p-12">
             <div
               aria-hidden

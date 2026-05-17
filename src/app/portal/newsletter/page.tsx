@@ -72,7 +72,7 @@ export default async function PortalNewsletterPage() {
       r.stats?.hero_image?.trim() ||
       r.stats?.image?.trim() ||
       extractNewsletterThumbnailFromHtml(r.html) ||
-      null,
+      `/api/portal/newsletter-covers/${encodeURIComponent(r.slug)}`,
   }));
 
   const preferencesHref = await getOrCreatePreferenceHref({

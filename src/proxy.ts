@@ -55,6 +55,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/cron/(.*)",
   "/api/init",
   "/api/portal/covers/(.*)",
+  "/api/portal/newsletter-covers/(.*)",
   "/api/portal/billing",
   "/api/indexnow",
 ]);

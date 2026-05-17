@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { ensureUniqueSlug, renderIssueHtml } from "@/lib/newsletter";
+import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
@@ -31,12 +32,17 @@ export async function POST(request: Request) {
   const audienceFilter: string | null = body.audience_filter ?? null;
   const slug = await ensureUniqueSlug(subject);
   const html = htmlInput ?? renderIssueHtml(markdown);
+  const portalArticle =
+    readBooleanFlag(body.portal_article) ??
+    readBooleanFlag(body.portalArticle) ??
+    false;
+  const stats = setPortalNewsletterArticle(null, portalArticle);
 
   const sql = getDb();
   const rows = await sql`
-    INSERT INTO newsletter_issues (subject, slug, markdown_src, html, audience_filter)
-    VALUES (${subject}, ${slug}, ${markdown}, ${html}, ${audienceFilter})
-    RETURNING id, subject, slug, status
+    INSERT INTO newsletter_issues (subject, slug, markdown_src, html, audience_filter, stats)
+    VALUES (${subject}, ${slug}, ${markdown}, ${html}, ${audienceFilter}, ${JSON.stringify(stats)}::jsonb)
+    RETURNING id, subject, slug, status, audience_filter, stats
   `;
   return NextResponse.json(rows[0]);
 }

@@ -31,6 +31,14 @@ async function getIssue(slug: string) {
       AND status = 'sent'
       AND html IS NOT NULL
       AND length(trim(html)) > 0
+      AND (
+        stats->>'portal_article' = 'true'
+        OR stats->>'portalArticle' = 'true'
+        OR (
+          stats->>'source' = 'beehiiv'
+          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+        )
+      )
     LIMIT 1
   `) as IssueRow[];
   return rows[0] ?? null;
@@ -47,6 +55,14 @@ async function getNeighbors(sentAt: Date | null) {
         AND slug IS NOT NULL
         AND html IS NOT NULL
         AND length(trim(html)) > 0
+        AND (
+          stats->>'portal_article' = 'true'
+          OR stats->>'portalArticle' = 'true'
+          OR (
+            stats->>'source' = 'beehiiv'
+            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+          )
+        )
         AND sent_at > ${iso}
       ORDER BY sent_at ASC
       LIMIT 1
@@ -57,6 +73,14 @@ async function getNeighbors(sentAt: Date | null) {
         AND slug IS NOT NULL
         AND html IS NOT NULL
         AND length(trim(html)) > 0
+        AND (
+          stats->>'portal_article' = 'true'
+          OR stats->>'portalArticle' = 'true'
+          OR (
+            stats->>'source' = 'beehiiv'
+            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
+          )
+        )
         AND sent_at < ${iso}
       ORDER BY sent_at DESC
       LIMIT 1

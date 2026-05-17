@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { renderIssueHtml } from "@/lib/newsletter";
+import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
 export async function GET(
   request: Request,
@@ -30,16 +31,56 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
-  const sql = getDb();
-  const cur = await sql`SELECT status FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
-  if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (cur[0].status === "sent") return NextResponse.json({ error: "Cannot edit sent issue" }, { status: 409 });
-
   const subject: string | undefined = body.subject;
   const markdown: string | undefined = body.markdown_src;
   const htmlInput: string | undefined = typeof body.html === "string" ? body.html : undefined;
   const audienceProvided = Object.prototype.hasOwnProperty.call(body, "audience_filter");
   const audienceFilter: string | null | undefined = body.audience_filter;
+  const portalArticleProvided =
+    Object.prototype.hasOwnProperty.call(body, "portal_article") ||
+    Object.prototype.hasOwnProperty.call(body, "portalArticle");
+  const portalArticle = portalArticleProvided
+    ? readBooleanFlag(
+        Object.prototype.hasOwnProperty.call(body, "portal_article")
+          ? body.portal_article
+          : body.portalArticle,
+      )
+    : null;
+  const bodyEditProvided =
+    subject !== undefined ||
+    markdown !== undefined ||
+    htmlInput !== undefined ||
+    audienceProvided;
+
+  if (portalArticleProvided && portalArticle === null) {
+    return NextResponse.json({ error: "portal_article must be true or false" }, { status: 400 });
+  }
+
+  const sql = getDb();
+  const cur = await sql`SELECT status, stats FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
+  if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (cur[0].status === "sent" && bodyEditProvided) {
+    return NextResponse.json({ error: "Cannot edit sent issue body" }, { status: 409 });
+  }
+
+  if (portalArticleProvided && portalArticle !== null) {
+    const nextStats = setPortalNewsletterArticle(cur[0].stats, portalArticle);
+    await sql`
+      UPDATE newsletter_issues
+      SET stats = ${JSON.stringify(nextStats)}::jsonb, updated_at = NOW()
+      WHERE id = ${id}
+    `;
+  }
+
+  if (!bodyEditProvided) {
+    const rows = await sql`
+      SELECT id, subject, slug, status, audience_filter, stats
+      FROM newsletter_issues
+      WHERE id = ${id}
+      LIMIT 1
+    `;
+    return NextResponse.json(rows[0]);
+  }
 
   // Prefer Tiptap HTML, fall back to rendering markdown
   const html = htmlInput !== undefined
@@ -58,7 +99,7 @@ export async function PATCH(
           audience_filter = ${audienceFilter ?? null},
           updated_at = NOW()
         WHERE id = ${id}
-        RETURNING id, subject, slug, status, audience_filter
+        RETURNING id, subject, slug, status, audience_filter, stats
       `
     : await sql`
         UPDATE newsletter_issues
@@ -68,7 +109,7 @@ export async function PATCH(
           html = COALESCE(${html ?? null}, html),
           updated_at = NOW()
         WHERE id = ${id}
-        RETURNING id, subject, slug, status, audience_filter
+        RETURNING id, subject, slug, status, audience_filter, stats
       `;
   return NextResponse.json(rows[0]);
 }

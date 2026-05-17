@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/newsletter-html";
+import { normalizeNewsletterStats } from "@/lib/newsletter-portal";
 import { Resend } from "resend";
 
 export { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/newsletter-html";
@@ -107,7 +108,7 @@ export async function listActiveSubscribers(audienceFilter?: string | null): Pro
 export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sent: number; failed: number }> {
   const sql = getDb();
   const issueRows = await sql`
-    SELECT id, subject, html, slug, audience_filter, status
+    SELECT id, subject, html, slug, audience_filter, status, stats
     FROM newsletter_issues WHERE id = ${issueId} LIMIT 1
   `;
   if (issueRows.length === 0) throw new Error("Issue not found");
@@ -174,9 +175,15 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
     }
   }
 
+  const nextStats = {
+    ...normalizeNewsletterStats(issue.stats),
+    sent,
+    failed,
+  };
+
   await sql`
     UPDATE newsletter_issues
-    SET status = 'sent', sent_at = NOW(), stats = ${JSON.stringify({ sent, failed })}::jsonb
+    SET status = 'sent', sent_at = NOW(), stats = ${JSON.stringify(nextStats)}::jsonb
     WHERE id = ${issueId}
   `;
 

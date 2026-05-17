@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, ArrowUpRight, Eye, EyeOff, Maximize2, Minimize2, Trash2 } from "lucide-react";
 import { RichEditor } from "@/components/admin/rich-editor";
 import { wrapIssueHtml } from "@/lib/newsletter-html";
+import { isPortalNewsletterArticle, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
 interface Issue {
   id: string;
@@ -24,7 +25,15 @@ interface Issue {
   status: "draft" | "scheduled" | "sent";
   audience_filter: string | null;
   sent_at: string | null;
-  stats: { sent?: number; failed?: number; opens?: number; clicks?: number } | null;
+  stats: (Record<string, unknown> & {
+    sent?: number;
+    failed?: number;
+    opens?: number;
+    clicks?: number;
+    portal_article?: boolean;
+    portalArticle?: boolean;
+    source?: string;
+  }) | null;
 }
 
 interface Props {
@@ -56,6 +65,8 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [portalArticle, setPortalArticle] = useState(false);
+  const [portalSaving, setPortalSaving] = useState(false);
 
   const dirtyRef = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,6 +81,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         setSubject(data.subject ?? "");
         setHtml(data.html ?? "");
         setAudience(data.audience_filter ?? "all");
+        setPortalArticle(isPortalNewsletterArticle(data.stats));
       });
   }, [issueId]);
 
@@ -85,6 +97,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           subject,
           html,
           audience_filter: audience === "all" ? null : audience,
+          portal_article: portalArticle,
         }),
       });
       if (res.ok) {
@@ -94,7 +107,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     } finally {
       setSaving(false);
     }
-  }, [issueId, subject, html, audience, issue]);
+  }, [issueId, subject, html, audience, portalArticle, issue]);
 
   useEffect(() => {
     if (!issue) return;
@@ -111,6 +124,37 @@ export default function IssueEditor({ issueId, onClose }: Props) {
 
   function markDirty() {
     dirtyRef.current = true;
+  }
+
+  async function savePortalArticle(next: boolean) {
+    if (!issue || portalSaving) return;
+    const previous = portalArticle;
+    setPortalArticle(next);
+    setPortalSaving(true);
+    try {
+      const res = await fetch(`/api/admin/newsletter/issues/${issueId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ portal_article: next }),
+      });
+      if (!res.ok) {
+        setPortalArticle(previous);
+        return;
+      }
+      const data = await res.json();
+      setIssue((current) =>
+        current
+          ? {
+              ...current,
+              ...data,
+              stats: data.stats ?? setPortalNewsletterArticle(current.stats, next),
+            }
+          : current,
+      );
+      setSavedAt(new Date());
+    } finally {
+      setPortalSaving(false);
+    }
   }
 
   // Magnetic Send CTA — vanilla pointer math, no framer
@@ -248,6 +292,32 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           </div>
 
           <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => void savePortalArticle(!portalArticle)}
+              disabled={portalSaving}
+              aria-pressed={portalArticle}
+              className={`h-8 px-2.5 inline-flex items-center gap-1.5 rounded-md text-xs font-medium spring ${
+                portalArticle
+                  ? "bg-white/[0.07] text-zinc-100 ring-1 ring-white/[0.08]"
+                  : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
+              } ${portalSaving ? "opacity-60" : ""}`}
+              title={
+                portalArticle
+                  ? "Visible in the portal newsletter archive"
+                  : "Email only, hidden from the portal newsletter archive"
+              }
+            >
+              {portalArticle ? (
+                <Eye className="size-3.5" strokeWidth={1.8} />
+              ) : (
+                <EyeOff className="size-3.5" strokeWidth={1.8} />
+              )}
+              <span className="hidden sm:inline">
+                {portalArticle ? "Portal article" : "Email only"}
+              </span>
+            </button>
+            <span className="mx-1 h-4 w-px bg-white/[0.08]" />
             <button
               type="button"
               onClick={() => setFocusMode((v) => !v)}

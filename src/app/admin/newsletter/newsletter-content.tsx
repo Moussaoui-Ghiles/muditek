@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronRight, Plus } from "lucide-react";
 import IssueEditor from "./issue-editor";
+import { isPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
 interface Issue {
   id: string;
@@ -11,7 +12,15 @@ interface Issue {
   status: "draft" | "scheduled" | "sent";
   audience_filter: string | null;
   sent_at: string | null;
-  stats: { sent?: number; failed?: number; opens?: number; clicks?: number } | null;
+  stats: (Record<string, unknown> & {
+    sent?: number;
+    failed?: number;
+    opens?: number;
+    clicks?: number;
+    portal_article?: boolean;
+    portalArticle?: boolean;
+    source?: string;
+  }) | null;
   created_at: string;
 }
 
@@ -90,6 +99,7 @@ export default function NewsletterContent() {
           subject: "",
           html: "",
           audience_filter: null,
+          portal_article: false,
         }),
       });
       if (res.ok) {
@@ -213,6 +223,16 @@ export default function NewsletterContent() {
                   {/* Sent count */}
                   <span className="hidden sm:inline-block w-16 text-right text-xs text-zinc-400 tabular-nums">
                     {i.stats?.sent ?? "—"}
+                  </span>
+
+                  <span
+                    className={`hidden lg:inline-flex shrink-0 h-6 items-center rounded-full px-2.5 text-[11px] font-medium ${
+                      isPortalNewsletterArticle(i.stats)
+                        ? "bg-white/[0.07] text-zinc-200"
+                        : "bg-white/[0.03] text-zinc-500"
+                    }`}
+                  >
+                    {isPortalNewsletterArticle(i.stats) ? "Portal article" : "Email only"}
                   </span>
 
                   {/* Date */}

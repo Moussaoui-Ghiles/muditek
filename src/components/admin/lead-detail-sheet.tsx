@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Sheet,
@@ -14,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface LeadDetail {
   submission: {
+    source_type: "campaign" | "resource";
     id: string;
     name: string;
     email: string;
@@ -25,6 +27,11 @@ interface LeadDetail {
     campaign_keyword: string | null;
     campaign_post_url: string | null;
     campaign_resource_url: string | null;
+    resource_slug: string | null;
+    resource_title: string | null;
+    resource_category: string | null;
+    resource_source: string | null;
+    last_seen_at: string | null;
   };
   deliveries: Array<{ id: string; sent_at: string; resend_email_id: string | null }>;
   sequenceSends: Array<{ step: number; sent_at: string }>;
@@ -81,6 +88,7 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
 
   async function forceDeliver() {
     if (!detail) return;
+    if (detail.submission.source_type !== "campaign") return;
     if (!confirm("Force-send the lead magnet to this submission?")) return;
     setDelivering(true);
     try {
@@ -118,6 +126,9 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
         ) : (
           <div className="px-6 pb-6 space-y-5">
             <div className="flex flex-wrap gap-2">
+              <Badge variant="outline">
+                {detail.submission.source_type === "resource" ? "Resource unlock" : "Campaign lead"}
+              </Badge>
               <Badge variant={detail.submission.verified ? "default" : "secondary"}>
                 {detail.submission.verified ? "Verified" : "Unverified"}
               </Badge>
@@ -129,24 +140,61 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
               )}
             </div>
 
-            <Section title="Campaign">
-              <Row label="Title" value={detail.submission.campaign_title || "—"} />
-              <Row
-                label="Keyword"
-                value={detail.submission.campaign_keyword || "—"}
-                mono
-              />
-              <Row
-                label="Submitted"
-                value={formatDateTime(detail.submission.created_at)}
-              />
-              {detail.submission.comment && (
-                <Row label="Comment" value={detail.submission.comment} />
-              )}
-            </Section>
+            {detail.submission.source_type === "resource" ? (
+              <Section title="Resource">
+                <Row label="Title" value={detail.submission.resource_title || detail.submission.resource_slug || "-"} />
+                <Row label="Slug" value={detail.submission.resource_slug || "-"} mono />
+                <Row label="Category" value={detail.submission.resource_category || "-"} />
+                <Row label="Source" value={detail.submission.resource_source || "-"} mono />
+                <Row label="First opened" value={formatDateTime(detail.submission.created_at)} />
+                {detail.submission.last_seen_at && (
+                  <Row label="Last seen" value={formatDateTime(detail.submission.last_seen_at)} />
+                )}
+                {detail.submission.resource_slug && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      nativeButton={false}
+                      render={<Link href={`/r/${encodeURIComponent(detail.submission.resource_slug)}`} />}
+                    >
+                      Open share page
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      nativeButton={false}
+                      render={<Link href={`/portal/playbooks/${encodeURIComponent(detail.submission.resource_slug)}`} />}
+                    >
+                      Open in portal
+                    </Button>
+                  </div>
+                )}
+              </Section>
+            ) : (
+              <Section title="Campaign">
+                <Row label="Title" value={detail.submission.campaign_title || "-"} />
+                <Row
+                  label="Keyword"
+                  value={detail.submission.campaign_keyword || "-"}
+                  mono
+                />
+                <Row
+                  label="Submitted"
+                  value={formatDateTime(detail.submission.created_at)}
+                />
+                {detail.submission.comment && (
+                  <Row label="Comment" value={detail.submission.comment} />
+                )}
+              </Section>
+            )}
 
             <Section title={`Deliveries (${detail.deliveries.length})`}>
-              {detail.deliveries.length === 0 ? (
+              {detail.submission.source_type === "resource" ? (
+                <p className="text-sm text-muted-foreground">
+                  Resource unlocks open directly in the portal. No separate delivery email is required.
+                </p>
+              ) : detail.deliveries.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No deliveries yet.</p>
               ) : (
                 detail.deliveries.map((d) => (
@@ -189,19 +237,21 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
               </Section>
             )}
 
-            <div className="flex gap-2 pt-2 border-t">
-              <Button
-                onClick={forceDeliver}
-                disabled={delivering || detail.submission.delivered}
-                className="flex-1"
-              >
-                {delivering
-                  ? "Sending..."
-                  : detail.submission.delivered
-                    ? "Already delivered"
-                    : "Force deliver"}
-              </Button>
-            </div>
+            {detail.submission.source_type === "campaign" && (
+              <div className="flex gap-2 pt-2 border-t">
+                <Button
+                  onClick={forceDeliver}
+                  disabled={delivering || detail.submission.delivered}
+                  className="flex-1"
+                >
+                  {delivering
+                    ? "Sending..."
+                    : detail.submission.delivered
+                      ? "Already delivered"
+                      : "Force deliver"}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </SheetContent>

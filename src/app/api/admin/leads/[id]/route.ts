@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
+import { ensureContentItemsSchema } from "@/lib/content-items-schema";
+import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 
 export async function GET(
   request: Request,
@@ -11,33 +13,73 @@ export async function GET(
 
   const { id } = await params;
   const sql = getDb();
+  await ensureResourceLeadSchema(sql);
+  await ensureContentItemsSchema(sql);
 
   const submissions = await sql`
     SELECT
+      'campaign'::text AS source_type,
       s.*,
       c.title AS campaign_title,
       c.keyword AS campaign_keyword,
       c.post_url AS campaign_post_url,
-      c.resource_url AS campaign_resource_url
+      c.resource_url AS campaign_resource_url,
+      NULL::text AS resource_slug,
+      NULL::text AS resource_title,
+      NULL::text AS resource_category,
+      NULL::text AS resource_source,
+      NULL::timestamp AS last_seen_at
     FROM submissions s
     LEFT JOIN campaigns c ON c.id = s.campaign_id
     WHERE s.id = ${id}
   `;
 
-  if (submissions.length === 0) {
+  let lead = submissions[0];
+
+  if (!lead) {
+    const resourceLeads = await sql`
+      SELECT
+        'resource'::text AS source_type,
+        rl.id,
+        COALESCE(rl.name, split_part(rl.email, '@', 1)) AS name,
+        lower(rl.email) AS email,
+        NULL::text AS comment,
+        true AS verified,
+        true AS delivered,
+        rl.created_at,
+        NULL::uuid AS campaign_id,
+        NULL::text AS campaign_title,
+        NULL::text AS campaign_keyword,
+        NULL::text AS campaign_post_url,
+        NULL::text AS campaign_resource_url,
+        rl.resource_slug,
+        ci.title AS resource_title,
+        ci.category AS resource_category,
+        rl.source AS resource_source,
+        rl.last_seen_at
+      FROM resource_leads rl
+      LEFT JOIN content_items ci ON ci.slug = rl.resource_slug
+      WHERE rl.id = ${id}
+      LIMIT 1
+    `;
+
+    lead = resourceLeads[0];
+  }
+
+  if (!lead) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const submission = submissions[0];
-
   const [deliveries, sends, subscriber] = await Promise.all([
-    sql`SELECT id, sent_at, resend_email_id FROM deliveries WHERE submission_id = ${id} ORDER BY sent_at DESC`,
-    sql`SELECT step, sent_at FROM sequence_sends WHERE email = ${submission.email} ORDER BY step ASC`,
-    sql`SELECT id, status, stripe_customer_id, created_at FROM subscribers WHERE email = ${submission.email}`,
+    lead.source_type === "campaign"
+      ? sql`SELECT id, sent_at, resend_email_id FROM deliveries WHERE submission_id = ${id} ORDER BY sent_at DESC`
+      : Promise.resolve([]),
+    sql`SELECT step, sent_at FROM sequence_sends WHERE lower(email) = ${String(lead.email).toLowerCase()} ORDER BY step ASC`,
+    sql`SELECT id, status, stripe_customer_id, created_at FROM subscribers WHERE lower(email) = ${String(lead.email).toLowerCase()}`,
   ]);
 
   return NextResponse.json({
-    submission,
+    submission: lead,
     deliveries,
     sequenceSends: sends,
     subscriber: subscriber[0] || null,

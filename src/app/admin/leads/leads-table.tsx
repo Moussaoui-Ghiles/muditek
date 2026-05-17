@@ -223,14 +223,11 @@ export default function LeadsTable() {
             </TableHeader>
             <TableBody>
               {filtered.map((lead) => {
-                const clickable = lead.source_type === "campaign";
                 return (
                   <TableRow
                     key={`${lead.source_type}-${lead.id}`}
-                    className={clickable ? "cursor-pointer" : ""}
-                    onClick={() => {
-                      if (clickable) setSelectedId(lead.id);
-                    }}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedId(lead.id)}
                   >
                     <TableCell>
                       <div className="font-medium">{displayName(lead)}</div>

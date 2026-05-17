@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { ensureMudikitMembership, ensurePortalAccount } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
-import { ensurePortalMembershipsSchema } from "@/lib/portal-memberships-schema";
 import { PortalShell } from "@/components/portal/portal-shell";
 
 export const dynamic = "force-dynamic";
@@ -17,14 +17,22 @@ export default async function PortalLayout({ children }: { children: React.React
   if (!email) return children;
 
   const sql = getDb();
-  await ensurePortalMembershipsSchema(sql);
+  await ensurePortalAccount({ sql, email, clerkUserId: user.id });
 
   const subs = await sql`
-    SELECT id, email, name, status, stripe_customer_id
+    SELECT id, email, name, status, stripe_customer_id, clerk_user_id
     FROM subscribers WHERE email = ${email}
   `;
   const paidSub = subs[0];
   const isPaid = !!paidSub && paidSub.status === "active";
+
+  if (paidSub && !paidSub.clerk_user_id) {
+    await sql`UPDATE subscribers SET clerk_user_id = ${user.id} WHERE id = ${paidSub.id}`;
+  }
+
+  if (isPaid) {
+    await ensureMudikitMembership(sql, email);
+  }
 
   const membershipRows = await sql`
     SELECT role FROM portal_memberships

@@ -5,6 +5,7 @@ import { join } from "path";
 import { getDb } from "@/lib/db";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
+import { ensureMudikitMembership } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
 import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
@@ -149,21 +150,6 @@ export default async function PortalPage({
     }
   }
 
-  await sql`
-    INSERT INTO newsletter_subscribers (email, source, topics, clerk_user_id)
-    VALUES (${email}, 'portal', ARRAY['ai-agents','gtm-systems','solo-operator'], ${user.id})
-    ON CONFLICT (email) DO UPDATE
-    SET clerk_user_id = ${user.id}, status = 'active', unsub_at = NULL
-    WHERE newsletter_subscribers.clerk_user_id IS NULL OR newsletter_subscribers.clerk_user_id = ${user.id}
-  `;
-
-  await sql`
-    INSERT INTO portal_memberships (email, role)
-    VALUES (${email}, 'free')
-    ON CONFLICT (email, role) DO UPDATE
-    SET status = 'active', updated_at = NOW()
-  `;
-
   const subs = await sql`
     SELECT id, email, name, status, stripe_customer_id, clerk_user_id, created_at
     FROM subscribers WHERE email = ${email}
@@ -177,12 +163,7 @@ export default async function PortalPage({
   const isPaid = !!paidSub && paidSub.status === "active";
 
   if (isPaid) {
-    await sql`
-      INSERT INTO portal_memberships (email, role)
-      VALUES (${email}, 'mudikit')
-      ON CONFLICT (email, role) DO UPDATE
-      SET status = 'active', updated_at = NOW()
-    `;
+    await ensureMudikitMembership(sql, email);
   }
 
   const membershipRows = await sql`

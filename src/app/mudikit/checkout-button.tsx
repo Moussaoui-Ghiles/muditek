@@ -32,7 +32,7 @@ export function CheckoutButton({ email, label }: { email?: string; label: string
       disabled={loading}
       className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-[#e8e8ec] text-[#0a0a0c] text-sm font-bold tracking-wide rounded-md transition-all duration-150 hover:bg-white active:scale-[0.99] disabled:opacity-60"
     >
-      {loading ? "Opening checkout…" : label}
+      {loading ? "Opening checkout..." : label}
       {!loading && (
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path

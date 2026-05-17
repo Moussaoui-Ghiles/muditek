@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
-  title: "MudiKit | 15+ Claude Code skills, 6 playbooks, 1 vault | $47/mo",
+  title: "MudiKit | Claude Code skills, playbooks, and vault | $47/mo",
   description:
     "The Claude Code skills, playbooks, and vault template I use to run Muditek. $47 a month. New drops every week. Cancel anytime.",
   alternates: {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         url: "https://muditek.com/mudikit/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "MudiKit — $47/mo",
+        alt: "MudiKit - $47/mo",
       },
     ],
   },

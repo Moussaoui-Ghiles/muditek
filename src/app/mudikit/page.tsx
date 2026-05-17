@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { CheckoutButton } from "./checkout-button";
 import { FaqItem } from "./faq-item";
+import { listShippedPortalSkills } from "@/lib/portal-skills";
 
-const SKILLS = [
+const FEATURED_SKILL_SLUGS = [
   "linkedin-outreach",
-  "linkedin-inbox-sdr",
   "linkedin-content-writer",
   "cold-email",
   "email-sequence",
@@ -39,11 +39,11 @@ const PLAYBOOKS = [
   },
   {
     name: "Lead-capture funnel",
-    note: "Comment-gated LinkedIn → email → 12-day nurture → checkout. The exact stack this site runs.",
+    note: "Comment-gated LinkedIn to email to 12-day nurture to checkout. The exact stack this site runs.",
   },
   {
     name: "Content engine",
-    note: "Source ingest → distillation → LinkedIn post + newsletter issue. Once a week, repeatable.",
+    note: "Source ingest to distillation to LinkedIn post plus newsletter issue. Once a week, repeatable.",
   },
 ];
 
@@ -54,7 +54,7 @@ const FAQ = [
   },
   {
     q: "Why $47 a month?",
-    a: "Clients pay €40K–100K to have me install these systems for them. $47 is what it costs to install them yourself, with the same source files I work from.",
+    a: "Clients pay €40K-100K to have me install these systems for them. $47 is what it costs to install them yourself, with the same source files I work from.",
   },
   {
     q: "Who is this for?",
@@ -62,7 +62,7 @@ const FAQ = [
   },
   {
     q: "What ships every week?",
-    a: "One new skill or playbook, plus updates to existing ones. You see the change log inside the kit. Cancel anytime — you keep what you've already downloaded.",
+    a: "One new skill or playbook, plus updates to existing ones. You see the change log inside the kit. Cancel anytime. You keep what you've already downloaded.",
   },
   {
     q: "Can I cancel anytime?",
@@ -70,7 +70,7 @@ const FAQ = [
   },
   {
     q: "Do I get the vault template?",
-    a: "Yes. The full BizOps vault structure — CLAUDE.md hierarchy, decision rules, source library taxonomy, skill organization. Drop your work in, your AI agents read it.",
+    a: "Yes. The full BizOps vault structure: CLAUDE.md hierarchy, decision rules, source library taxonomy, skill organization. Drop your work in, your AI agents read it.",
   },
 ];
 
@@ -81,6 +81,13 @@ interface PageProps {
 export default async function MudikitPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const emailParam = typeof params.email === "string" ? params.email : undefined;
+  const allSkills = listShippedPortalSkills();
+  const skillsBySlug = new Map(allSkills.map((skill) => [skill.slug, skill]));
+  const featuredSkills = FEATURED_SKILL_SLUGS
+    .map((slug) => skillsBySlug.get(slug))
+    .filter((skill): skill is (typeof allSkills)[number] => Boolean(skill))
+    .slice(0, 15);
+  const skillCount = allSkills.length;
 
   return (
     <main className="min-h-screen bg-[#0a0a0c] text-[#e8e8ec] font-[family-name:var(--font-geist-sans)]">
@@ -90,7 +97,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           href="/"
           className="text-sm font-mono text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors"
         >
-          ← muditek.com
+          Back to muditek.com
         </Link>
         <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#636366]">
           MudiKit · $47/mo
@@ -109,7 +116,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           $47 a month. New drops every week. Cancel anytime.
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <CheckoutButton email={emailParam} label="Get the kit — $47/mo" />
+          <CheckoutButton email={emailParam} label="Get the kit - $47/mo" />
           <a
             href="#inside"
             className="text-sm text-[#a0a0a6] hover:text-[#e8e8ec] transition-colors underline underline-offset-4 decoration-[#636366]"
@@ -126,7 +133,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
         </p>
         <div className="max-w-3xl space-y-5 text-[#a0a0a6] text-base md:text-lg leading-relaxed">
           <p>
-            I&rsquo;m Ghiles. I run Muditek — I build AI systems for telecom operators, B2B SaaS, and PE firms. Clients pay €40K–100K to have me install these systems.
+            I&rsquo;m Ghiles. I run Muditek. I build AI systems for telecom operators, B2B SaaS, and PE firms. Clients pay €40K-100K to have me install these systems.
           </p>
           <p>
             Behind the scenes, the work is run by Claude Code skills, an Obsidian vault, and a handful of playbooks I&rsquo;ve refined on real engagements. MudiKit is that toolkit, packaged.
@@ -144,7 +151,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           What&rsquo;s inside
         </p>
         <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.02em] mb-14 max-w-2xl">
-          15+ skills. 6 playbooks. 1 vault. 20+ outreach templates.
+          {skillCount} skills. 6 playbooks. 1 vault. 20+ outreach templates.
         </h2>
 
         {/* Skills */}
@@ -152,23 +159,23 @@ export default async function MudikitPage({ searchParams }: PageProps) {
           <div className="flex items-baseline justify-between mb-6">
             <h3 className="text-xl md:text-2xl font-semibold">Claude Code skills</h3>
             <span className="text-xs font-mono uppercase tracking-[0.18em] text-[#636366]">
-              15+ shipped
+              {skillCount} shipped
             </span>
           </div>
           <p className="text-[#a0a0a6] text-base leading-relaxed mb-6 max-w-2xl">
             Drop them into{" "}
-            <span className="font-mono text-[#e8e8ec]">~/.claude/skills/</span>. Claude Code reads, understands, and runs them. Not prompts — full skill files with logic, references, and execution rules.
+            <span className="font-mono text-[#e8e8ec]">~/.claude/skills/</span>. Claude Code reads, understands, and runs them. Not prompts: full skill files with logic, references, and execution rules.
           </p>
           <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 font-mono text-[14px] text-[#e8e8ec]">
-            {SKILLS.map((s) => (
-              <li key={s} className="flex items-center gap-3">
+            {featuredSkills.map((skill) => (
+              <li key={skill.slug} className="flex items-center gap-3">
                 <span className="text-[#636366]">·</span>
-                {s}
+                {skill.slug}
               </li>
             ))}
           </ul>
           <p className="text-[#636366] text-sm font-mono mt-6">
-            …plus new ones every week.
+            New ones are added inside the portal.
           </p>
         </div>
 
@@ -208,7 +215,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
               </span>
             </div>
             <p className="text-[#a0a0a6] text-[15px] leading-relaxed">
-              The BizOps Obsidian vault — the same file tree you&rsquo;re reading these words from.{" "}
+              The BizOps Obsidian vault structure that runs the system.{" "}
               <span className="font-mono text-[#e8e8ec]">CLAUDE.md</span> hierarchy, decision rules, source library taxonomy, skill organization. Drop your work in. AI agents read it and execute.
             </p>
           </div>
@@ -233,10 +240,10 @@ export default async function MudikitPage({ searchParams }: PageProps) {
         </p>
         <div className="max-w-3xl space-y-6 text-base md:text-lg leading-relaxed">
           <p className="text-[#a0a0a6]">
-            <span className="text-[#e8e8ec] font-medium">Done-for-you</span> — I install the same systems for clients. Engagements run €40K–100K depending on scope, with a guarantee in euros.
+            <span className="text-[#e8e8ec] font-medium">Done-for-you</span>: I install the same systems for clients. Engagements run €40K-100K depending on scope, with a guarantee in euros.
           </p>
           <p className="text-[#a0a0a6]">
-            <span className="text-[#e8e8ec] font-medium">Do-it-yourself</span> — $47 a month. Same files. You install them. Cancel anytime, keep what you&rsquo;ve downloaded.
+            <span className="text-[#e8e8ec] font-medium">Do-it-yourself</span>: $47 a month. Same files. You install them. Cancel anytime, keep what you&rsquo;ve downloaded.
           </p>
           <p className="text-[#a0a0a6]">
             One paid hour saved a month covers it. After that, the kit is paying you back.
@@ -264,7 +271,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
             <div>
               <p className="text-xl md:text-2xl font-semibold mb-2">Get the portal</p>
               <p className="text-[#a0a0a6] leading-relaxed">
-                Skills, playbooks, vault, and outreach templates — all download links inside. Copy them into your{" "}
+                Skills, playbooks, vault, and outreach templates. All download links inside. Copy them into your{" "}
                 <span className="font-mono text-[#e8e8ec]">~/.claude/skills/</span> and your editor.
               </p>
             </div>
@@ -274,7 +281,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
             <div>
               <p className="text-xl md:text-2xl font-semibold mb-2">New drops every week</p>
               <p className="text-[#a0a0a6] leading-relaxed">
-                Email when something new ships. Always backwards-compatible — old skills keep working.
+                Email when something new ships. Always backwards-compatible. Old skills keep working.
               </p>
             </div>
           </li>
@@ -299,7 +306,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
             <h3 className="text-lg font-semibold mb-4 text-[#636366]">Not for</h3>
             <ul className="space-y-3 text-[#636366] text-[15px] leading-relaxed">
               <li>People who don&rsquo;t open a terminal.</li>
-              <li>Teams looking for hand-holding — there&rsquo;s no Slack, no live coaching.</li>
+              <li>Teams looking for hand-holding. There&rsquo;s no Slack, no live coaching.</li>
               <li>Anyone wanting a no-code SaaS. This is files, in a vault, run by an agent.</li>
             </ul>
           </div>
@@ -338,7 +345,7 @@ export default async function MudikitPage({ searchParams }: PageProps) {
         <p className="text-[#a0a0a6] text-base md:text-lg mb-10 max-w-xl">
           Get the kit. Cancel whenever. Keep everything you downloaded.
         </p>
-        <CheckoutButton email={emailParam} label="Get the kit — $47/mo" />
+        <CheckoutButton email={emailParam} label="Get the kit - $47/mo" />
       </section>
 
       {/* Footer */}

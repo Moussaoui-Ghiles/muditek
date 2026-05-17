@@ -147,9 +147,17 @@ function readSkill(slug: string): PortalSkillFile | null {
 }
 
 export function listPortalSkills(): ContentItem[] {
+  return listPortalSkillsFromDirs(SKILL_DIRS);
+}
+
+export function listShippedPortalSkills(): ContentItem[] {
+  return listPortalSkillsFromDirs([join(process.cwd(), "content/skills")]);
+}
+
+function listPortalSkillsFromDirs(skillDirs: string[]): ContentItem[] {
   const bySlug = new Map<string, PortalSkillFile>();
 
-  for (const baseDir of SKILL_DIRS) {
+  for (const baseDir of skillDirs) {
     if (!existsSync(baseDir)) continue;
     try {
       for (const entry of readdirSync(baseDir, { withFileTypes: true })) {

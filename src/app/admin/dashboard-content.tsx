@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
+  CheckCircle2,
   Clock,
   CalendarClock,
   ArrowUpRight,
@@ -15,6 +16,7 @@ import {
   Mail,
   Megaphone,
   Users,
+  XCircle,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -67,14 +69,33 @@ interface Stats {
   };
 }
 
+interface Health {
+  status: "ready" | "warning" | "blocked";
+  blocking: number;
+  warnings: number;
+  checks: Array<{
+    key: string;
+    label: string;
+    state: "ok" | "warn" | "error";
+    required: boolean;
+    detail: string;
+  }>;
+}
+
 export default function DashboardContent() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/stats")
-      .then((r) => r.json())
-      .then((data) => setStats(data))
+    Promise.all([
+      fetch("/api/admin/stats").then((r) => r.json()),
+      fetch("/api/admin/health").then((r) => r.json()),
+    ])
+      .then(([statsData, healthData]) => {
+        setStats(statsData);
+        setHealth(healthData);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -116,6 +137,7 @@ export default function DashboardContent() {
   return (
     <div className="space-y-6">
       <AttentionBar items={actionItems} />
+      {health && <LaunchHealthCard health={health} />}
 
       {/* Row 1: Newsletter (wide) + MRR (narrow) */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -143,6 +165,65 @@ export default function DashboardContent() {
 
       {/* Row 3: Campaigns */}
       <CampaignsCard campaigns={topCampaigns} />
+    </div>
+  );
+}
+
+/* ----------------------------- launch health ----------------------------- */
+
+function LaunchHealthCard({ health }: { health: Health }) {
+  const visible = health.checks.filter((item) => item.state !== "ok");
+  if (visible.length === 0) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-emerald-100">
+        <CheckCircle2 className="size-4" />
+        <p className="text-[13px]">Launch health is clean. All production services are configured.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-primary/25 bg-primary/10 px-5 py-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2 text-primary">
+            <AlertTriangle className="size-4" />
+            <p className="text-[11px] font-black uppercase tracking-[0.16em]">
+              Launch blockers
+            </p>
+          </div>
+          <p className="mt-2 text-[13.5px] text-foreground">
+            {health.blocking} required setup {health.blocking === 1 ? "item is" : "items are"} missing.
+          </p>
+        </div>
+        <Link
+          href="/admin/content"
+          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+        >
+          Open CMS
+          <ArrowUpRight className="size-3" />
+        </Link>
+      </div>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {visible.map((item) => (
+          <li
+            key={item.key}
+            className="rounded-lg border border-white/[0.08] bg-background/30 px-3 py-2.5"
+          >
+            <div className="flex items-start gap-2.5">
+              {item.state === "error" ? (
+                <XCircle className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              ) : (
+                <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-[var(--color-warn)]" />
+              )}
+              <div className="min-w-0">
+                <p className="text-[12.5px] font-medium text-foreground">{item.label}</p>
+                <p className="mt-0.5 text-[11.5px] leading-5 text-muted-foreground">{item.detail}</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -20,8 +20,8 @@ const NEWSLETTER_FAQ = [
     a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
   },
   {
-    q: "Will issues be paywalled later?",
-    a: "No. The newsletter is the front door. Paid options like MudiKit, audits, and builds live separately. You will never be paywalled out of an issue.",
+    q: "Will issues move into MudiKit later?",
+    a: "No. The newsletter is the front door. MudiKit, audits, and custom builds live separately. Newsletter issues stay readable.",
   },
   {
     q: "Who reads it?",

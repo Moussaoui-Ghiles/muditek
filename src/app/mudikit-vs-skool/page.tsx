@@ -51,7 +51,7 @@ const FAQ = [
   },
   {
     q: "What if I'm not technical enough for MudiKit?",
-    a: "Then start with the free newsletter and a Skool community where the host walks through implementation in calls. MudiKit assumes you can clone a repo, edit a config, and run a skill in Claude Code. If you're not there yet, the gap is small but real.",
+    a: "Then start with the newsletter and a Skool community where the host walks through implementation in calls. MudiKit assumes you can clone a repo, edit a config, and run a skill in Claude Code. If you're not there yet, the gap is small but real.",
   },
   {
     q: "How does pricing actually compare?",
@@ -269,7 +269,7 @@ export default function MudikitVsSkoolPage() {
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">$50–200</span>
                     <span className="text-sm text-foreground/50 font-light">/month</span>
-                    <p className="text-sm text-foreground/60 font-light mt-1">Set by the community owner. Free communities exist; paid ones in this niche typically fall in this range.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">Set by the community owner. Open communities exist; paid ones in this niche typically fall in this range.</p>
                   </div>
                   <div className="pt-4 border-t border-white/[0.05]">
                     <span className="text-lg font-black text-foreground/80 font-mono">$600–2,400</span>

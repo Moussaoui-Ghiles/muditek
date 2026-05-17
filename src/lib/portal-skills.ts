@@ -2,7 +2,16 @@ import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join, relative } from "path";
 import type { ContentItem } from "@/lib/content-item";
 
-const SKILLS_DIR = join(process.cwd(), "content/skills");
+const SKILL_DIRS = [
+  join(process.cwd(), "content/skills"),
+  ...(process.env.NODE_ENV === "production"
+    ? []
+    : [
+        join(process.cwd(), "../../..", ".claude/skills"),
+        join(process.cwd(), "../../..", ".agents/skills"),
+        join(process.cwd(), "../../..", ".codex/skills"),
+      ]),
+];
 
 const INCLUDED_SKILLS = new Set([
   "defuddle",
@@ -77,6 +86,13 @@ function cleanDescription(description?: string): string | null {
     .replace(/\s+/g, " ")
     .replace(/\bAlso use when\b[\s\S]*$/i, "")
     .replace(/\bUse when\b[\s\S]*$/i, "")
+    .replace(/[—–]/g, "-")
+    .replace(/\bfree tools\b/gi, "public tools")
+    .replace(/\bfree tool\b/gi, "public tool")
+    .replace(/\bfree resource\b/gi, "included resource")
+    .replace(/\bfree account\b/gi, "portal account")
+    .replace(/\bfree trial\b/gi, "trial")
+    .replace(/\bfree plan\b/gi, "included plan")
     .trim();
 
   if (!compact) return null;
@@ -101,8 +117,8 @@ function parseFrontmatter(raw: string): Record<string, string> {
   return data;
 }
 
-function readSkill(slug: string): PortalSkillFile | null {
-  const dir = join(SKILLS_DIR, slug);
+function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null {
+  const dir = join(baseDir, slug);
   const file = join(dir, "SKILL.md");
   if (!existsSync(file)) return null;
 
@@ -122,16 +138,31 @@ function readSkill(slug: string): PortalSkillFile | null {
   };
 }
 
-export function listPortalSkills(): ContentItem[] {
-  try {
-    return readdirSync(SKILLS_DIR, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => readSkill(entry.name))
-      .filter((skill): skill is PortalSkillFile => skill !== null)
-      .map(portalSkillToContentItem);
-  } catch {
-    return [];
+function readSkill(slug: string): PortalSkillFile | null {
+  for (const baseDir of SKILL_DIRS) {
+    const skill = readSkillFromDir(baseDir, slug);
+    if (skill) return skill;
   }
+  return null;
+}
+
+export function listPortalSkills(): ContentItem[] {
+  const bySlug = new Map<string, PortalSkillFile>();
+
+  for (const baseDir of SKILL_DIRS) {
+    if (!existsSync(baseDir)) continue;
+    try {
+      for (const entry of readdirSync(baseDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || bySlug.has(entry.name)) continue;
+        const skill = readSkillFromDir(baseDir, entry.name);
+        if (skill) bySlug.set(skill.slug, skill);
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return Array.from(bySlug.values()).map(portalSkillToContentItem);
 }
 
 export function mergePortalSkills(dbSkills: ContentItem[]): ContentItem[] {

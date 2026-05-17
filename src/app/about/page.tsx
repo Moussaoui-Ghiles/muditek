@@ -24,7 +24,7 @@ const ABOUT_FAQ = [
   },
   {
     q: "How do I get started?",
-    a: "Three doors. Start with the free newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the full skills library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
+    a: "Three doors. Start with the newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the full skills library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
   },
   {
     q: "Do you publish anything else?",
@@ -142,7 +142,7 @@ export default function AboutPage() {
               {
                 num: "01",
                 title: "Diagnose",
-                body: "We pull your data, map your workflows, and quantify every hour of waste. In euros, with the formulas. You see exactly where the money goes before any system is built. If we can't find meaningful waste, the diagnostic is free.",
+                body: "We pull your data, map your workflows, and quantify every hour of waste. In euros, with the formulas. You see exactly where the money goes before any system is built. If we can't find meaningful waste, you don't pay for the diagnostic.",
               },
               {
                 num: "02",
@@ -247,7 +247,6 @@ export default function AboutPage() {
       </section>
 
       {/* ══════ TESTIMONIALS ══════ */}
-      {/* TODO: replace with real LinkedIn DMs / newsletter replies */}
       <TestimonialBlock
         items={ABOUT_TESTIMONIALS}
         emptyStateNote="Client and reader notes will publish here once we collect enough signed-off quotes. We don't fabricate testimonials."

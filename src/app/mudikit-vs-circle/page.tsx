@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 const COMPARISON = [
   { category: "Product type", mudikit: "Working skills library you install. Production-grade Claude Code skills, prompts, and configs you clone and run.", circle: "Tiered community software platform. Owners build hosted communities with spaces, events, courses, and member directories." },
-  { category: "What you buy", mudikit: "A subscription to one curated library: 15+ skills, 6 playbooks, vault template, 20+ outreach templates, open-source lead capture system.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are free; many are paid." },
+  { category: "What you buy", mudikit: "A subscription to one curated library: 15+ skills, 6 playbooks, vault template, 20+ outreach templates, open-source lead capture system.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are open; many are paid." },
   { category: "Time to first deploy", mudikit: "Minutes. Each skill is a working system. Clone, configure, ship. Most subscribers ship something within their first weekend.", circle: "Hours to days. You browse spaces, watch lessons, take notes, then build. Implementation is on you." },
   { category: "Update cadence", mudikit: "New skill or playbook every month, plus updates to existing ones as Claude Code evolves. Subscribers notified by email.", circle: "Depends on the host. Active communities ship weekly content; many go quiet after the launch period." },
   { category: "Pricing model", mudikit: "Flat $47/month. Cancel anytime via Stripe portal. No tiers, no setup fees, no annual lock-in.", circle: "Members pay whatever the host sets. Circle itself sells tiered admin plans (Basic, Plus, Premium, Business) that scale with features and member count." },
@@ -51,7 +51,7 @@ const FAQ = [
   },
   {
     q: "Do I need to be technical to use MudiKit?",
-    a: "You need to be comfortable with a terminal and have used Claude Code at least once. If you've never opened a terminal, start with the free newsletter and a community with strong implementation support; come back to MudiKit when you can clone and run a skill.",
+    a: "You need to be comfortable with a terminal and have used Claude Code at least once. If you've never opened a terminal, start with the newsletter and a community with strong implementation support; come back to MudiKit when you can clone and run a skill.",
   },
   {
     q: "How does pricing actually compare?",
@@ -269,7 +269,7 @@ export default function MudikitVsCirclePage() {
                   <div>
                     <span className="text-2xl font-black text-foreground/80 font-mono">$50–200</span>
                     <span className="text-sm text-foreground/50 font-light">/month (typical)</span>
-                    <p className="text-sm text-foreground/60 font-light mt-1">Set by the host. Free communities exist. Paid AI/automation communities typically fall in this range.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">Set by the host. Open communities exist. Paid AI/automation communities typically fall in this range.</p>
                   </div>
                   <div className="pt-4 border-t border-white/[0.05]">
                     <span className="text-sm text-foreground/70 font-light">Hosts pay Circle a tiered admin subscription (Basic, Plus, Premium, Business) that scales with features, members, and white-label needs.</span>

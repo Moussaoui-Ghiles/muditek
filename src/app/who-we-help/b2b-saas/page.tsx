@@ -99,7 +99,7 @@ export default function B2bSaasIndustryPage() {
           },
           {
             q: "What happens if the diagnostic doesn't find €150K+ in waste?",
-            a: "Then you don't pay for the diagnostic. Our €50K guarantee on the Revenue Leak Audit means the diagnostic is free if we can't find waste worth at least €150K/year. We've never returned that result on a serious B2B SaaS at €800K+ ARR — but the guarantee is contractual.",
+            a: "Then you don't pay for the diagnostic. Our €50K guarantee on the Revenue Leak Audit means you only pay when we find waste worth at least €150K/year. We've never returned that result on a serious B2B SaaS at €800K+ ARR — but the guarantee is contractual.",
           },
           {
             q: "Do you replace our CRM, support tools, or marketing automation?",

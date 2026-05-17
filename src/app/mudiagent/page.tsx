@@ -49,7 +49,7 @@ const FAQ = [
   { q: "We can build this ourselves with ChatGPT.", a: "ChatGPT can't read your WhatsApp, send emails, fill your CRM, or run at 6 am. It's a conversation tool. You type, it responds, and it forgets everything. mudiAgent is a digital employee that executes real work on your infrastructure, autonomously, on schedule, and remembers everything." },
   { q: "What about data security?", a: "Everything runs on a device in your office. Your data never touches the internet. 82% of data breaches involve cloud-stored data (IBM 2024). mudiAgent eliminates that risk entirely. Full audit trail. Complete data sovereignty." },
   { q: "What if it doesn't work?", a: "If mudiAgent doesn't save your team at least 40 hours in the first 90 days, we reconfigure until it does, at no additional cost. Most deployments recover 40+ hours in the first month. We guarantee a fraction of the expected result." },
-  { q: "How long does deployment take?", a: "Week 1: free discovery audit to map your workflows. Week 2-4: configure and deploy. First agents go live doing real work within the first month. No multi-year implementation projects." },
+  { q: "How long does deployment take?", a: "Week 1: discovery audit to map your workflows. Week 2-4: configure and deploy. First agents go live doing real work within the first month. No multi-year implementation projects." },
   { q: "What systems does it connect to?", a: "CRM, ERP, ticketing systems (ServiceNow, Jira), NMS, OSS/BSS, Google Workspace, SharePoint, email, WhatsApp, Telegram, Slack, databases, vendor portals, browsers. If a human can use it at a desk, mudiAgent can operate it." },
 ];
 
@@ -66,7 +66,7 @@ export default function MudiAgentPage() {
           url: "https://muditek.com/mudiagent",
           areaServed: "Worldwide",
           offers: [
-            { "@type": "Offer", name: "Free Discovery Audit", price: "0", priceCurrency: "EUR", description: "Written automation roadmap in 1 week." },
+            { "@type": "Offer", name: "Discovery Audit", price: "0", priceCurrency: "EUR", description: "Written automation roadmap in 1 week." },
             { "@type": "Offer", name: "Pilot Deployment", price: "15000", priceCurrency: "EUR", description: "One agent, one workflow. Live in 4 weeks." },
             { "@type": "Offer", name: "Monthly Retainer", price: "3000", priceCurrency: "EUR", description: "Monitoring, optimization, support, scaling." },
           ],
@@ -78,7 +78,6 @@ export default function MudiAgentPage() {
       <section className="pt-32 md:pt-44 pb-24 md:pb-32 w-full flex justify-center relative overflow-hidden">
         <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
 
-        {/* Image placeholder — replace with generated hero image */}
         <div className="absolute inset-0 z-0 opacity-[0.04]" aria-hidden="true">
           <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
         </div>
@@ -129,7 +128,7 @@ export default function MudiAgentPage() {
             <div className="flex flex-col sm:flex-row items-start gap-5">
               <Link href="#contact" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
-                  Book a Free Discovery Audit
+                  Book a Discovery Audit
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
@@ -246,7 +245,7 @@ export default function MudiAgentPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {[
-              { num: "01", title: "Free Discovery Audit", time: "Week 1", body: "We map the workflows that eat your team's time. Identify the top 3 highest-impact automation targets. Estimate the hours and cost you'd recover. You get a written automation roadmap, even if you go no further.", metric: "Your effort: 30 minutes", highlight: "Free. 30 minutes of your time" },
+              { num: "01", title: "Discovery Audit", time: "Week 1", body: "We map the workflows that eat your team's time. Identify the top 3 highest-impact automation targets. Estimate the hours and cost you'd recover. You get a written automation roadmap, even if you go no further.", metric: "Your effort: 30 minutes", highlight: "30 minutes of your time" },
               { num: "02", title: "Configure & Deploy", time: "Week 2-4", body: "mudiAgent arrives pre-configured. Connected to your email, WhatsApp, CRM, ticketing system, file servers. Trained on your documents and templates. First agents go live doing real work. Not demos, not proofs of concept.", metric: "Starting at €15,000", highlight: "No per-user fees" },
               { num: "03", title: "Prove & Scale", time: "Month 2-3", body: "We measure everything. Hours saved. Reports produced. Response times cut. You see the numbers. Then we scale. More workflows, more departments, more sites.", metric: "Retainer from €3,000/mo", highlight: "Pays for itself in month 1" },
             ].map((phase, i) => (
@@ -275,7 +274,7 @@ export default function MudiAgentPage() {
       {/* ══════ LEAD MAGNET ══════ */}
       <LeadMagnetGate
         title="3 Workflows Every Telecom Can Automate This Quarter"
-        description="A free guide to the highest-ROI automation targets for telecom and enterprise operations — with time savings estimates and implementation complexity ratings."
+        description="A guide to the highest-ROI automation targets for telecom and enterprise operations, with time savings estimates and implementation complexity ratings."
         tags={["source:mudiagent", "segment:telecom", "lead-magnet:telecom-workflows"]}
         accentColor="primary"
       />
@@ -338,7 +337,7 @@ export default function MudiAgentPage() {
                       <span className="text-2xl font-black text-foreground font-mono">€0</span>
                       <span className="text-sm font-mono text-primary/60 tracking-wider">Discovery Audit</span>
                     </div>
-                    <p className="text-sm text-foreground/60 font-light mt-1">Free. Written roadmap in 1 week. No commitment.</p>
+                    <p className="text-sm text-foreground/60 font-light mt-1">Written roadmap in 1 week. No commitment.</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2">
@@ -437,7 +436,7 @@ export default function MudiAgentPage() {
             </p>
             <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
-                Book a Free Discovery Audit
+                Book a Discovery Audit
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />
               </span>
             </a>

@@ -46,7 +46,7 @@ const FAQ = [
   { q: "We can do this ourselves.", a: "You've had the CRM data for 18 months. If your team was going to fix it, they would have. The diagnostic shows you what to fix. That alone is worth €2-3K even if you build it yourself." },
   { q: "We don't have the budget.", a: "The diagnostic typically finds €80-180K in annual leakage. You're spending more by NOT doing this." },
   { q: "What if the diagnostic finds nothing?", a: "If we can't find at least €50K in annual leakage, you pay nothing. That's the guarantee." },
-  { q: "What if the fix doesn't work?", a: "If you buy within 14 days of receiving the diagnostic, you get 30 days of post-build optimization included free. The system doesn't just launch. It gets tuned, adjusted, and optimized for a full month." },
+  { q: "What if the fix doesn't work?", a: "If you buy within 14 days of receiving the diagnostic, you get 30 days of post-build optimization included. The system doesn't just launch. It gets tuned, adjusted, and optimized for a full month." },
   { q: "I have a developer who could build this.", a: "Great. The diagnostic shows exactly what to fix and how. That alone is worth the price. You get the architecture, the formulas, and the roadmap. Your dev builds it, we review." },
 ];
 

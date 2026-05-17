@@ -68,7 +68,7 @@ export async function sendFreeWelcomeEmail(
     `,
   });
 
-  if (error) throw new Error(`Free welcome email failed: ${error.message}`);
+  if (error) throw new Error(`Welcome email failed: ${error.message}`);
   await logEmail(to, "free-welcome", subject, data?.id ?? null);
 }
 

@@ -54,6 +54,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/resend/webhook",
   "/api/cron/(.*)",
   "/api/init",
+  "/api/portal/covers/(.*)",
   "/api/portal/billing",
   "/api/indexnow",
 ]);

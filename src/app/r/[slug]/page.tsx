@@ -13,10 +13,10 @@ const BASE_URL = "https://muditek.com";
 
 export const dynamic = "force-dynamic";
 
-function publicPreviewImage(thumbnailUrl: string | null): string | null {
+function publicPreviewImage(slug: string, thumbnailUrl: string | null): string | null {
   if (!thumbnailUrl) return null;
-  if (thumbnailUrl.startsWith("/playbooks/")) return null;
-  if (thumbnailUrl.startsWith("/api/portal/")) return null;
+  if (thumbnailUrl.startsWith("/playbooks/")) return `/api/portal/covers/${slug}`;
+  if (thumbnailUrl.startsWith("/api/portal/")) return `/api/portal/covers/${slug}`;
   return thumbnailUrl;
 }
 
@@ -28,6 +28,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const item = await getContentItemBySlug(slug);
   if (!item || !item.is_free) return {};
+  const image = publicPreviewImage(item.slug, item.thumbnail_url);
+  const imageUrl = image?.startsWith("/") ? `${BASE_URL}${image}` : image;
 
   return {
     title: `${item.title} | Muditek Resource`,
@@ -40,6 +42,7 @@ export async function generateMetadata({
         item.description ?? "Create a Muditek account to unlock this resource.",
       url: `${BASE_URL}/r/${slug}`,
       type: "website",
+      images: imageUrl ? [imageUrl] : undefined,
     },
     alternates: {
       canonical: `${BASE_URL}/r/${slug}`,
@@ -55,7 +58,7 @@ export default async function ResourceUnlockPage({
   const { slug } = await params;
   const item = await getContentItemBySlug(slug);
   if (!item || !item.is_free) notFound();
-  const image = publicPreviewImage(item.thumbnail_url);
+  const image = publicPreviewImage(item.slug, item.thumbnail_url);
 
   const { isAuthenticated } = await auth();
 

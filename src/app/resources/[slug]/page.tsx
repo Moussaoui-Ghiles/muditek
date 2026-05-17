@@ -7,10 +7,10 @@ const BASE_URL = "https://muditek.com";
 
 export const dynamic = "force-dynamic";
 
-function publicPreviewImage(thumbnailUrl: string | null): string | null {
+function publicPreviewImage(slug: string, thumbnailUrl: string | null): string | null {
   if (!thumbnailUrl) return null;
-  if (thumbnailUrl.startsWith("/playbooks/")) return null;
-  if (thumbnailUrl.startsWith("/api/portal/")) return null;
+  if (thumbnailUrl.startsWith("/playbooks/")) return `/api/portal/covers/${slug}`;
+  if (thumbnailUrl.startsWith("/api/portal/")) return `/api/portal/covers/${slug}`;
   return thumbnailUrl;
 }
 
@@ -22,7 +22,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const item = await getContentItemBySlug(slug);
   if (!item || !item.is_free) return {};
-  const image = publicPreviewImage(item.thumbnail_url);
+  const image = publicPreviewImage(item.slug, item.thumbnail_url);
 
   return {
     title: `${item.title} | Muditek`,

@@ -39,20 +39,24 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { isAuthenticated } = await auth();
-  if (!isAuthenticated) {
-    return new NextResponse("Sign in required.", { status: 401 });
-  }
-
   const { slug } = await params;
   const sql = getDb();
   const rows = await sql`
-    SELECT title, category
+    SELECT title, category, is_free
     FROM content_items
     WHERE slug = ${slug}
     LIMIT 1
   `;
 
-  let item = rows[0] as { title?: string; category?: string } | undefined;
+  let item = rows[0] as { title?: string; category?: string; is_free?: boolean } | undefined;
+  if (!isAuthenticated && item && !item.is_free) {
+    return new NextResponse("Sign in required.", { status: 401 });
+  }
+
+  if (!isAuthenticated && !item) {
+    return new NextResponse("Sign in required.", { status: 401 });
+  }
+
   if (!item?.title) {
     const skill = getPortalSkill(slug);
     if (skill) item = { title: skill.name, category: "skill" };

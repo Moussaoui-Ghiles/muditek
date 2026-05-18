@@ -21,8 +21,7 @@ export function isPortalNewsletterArticle(stats: NewsletterStats): boolean {
     readBooleanFlag(normalized.portal_article) ??
     readBooleanFlag(normalized.portalArticle);
 
-  if (explicit !== null) return explicit;
-  return String(normalized.source ?? "").toLowerCase() === "beehiiv";
+  return explicit === true;
 }
 
 export function setPortalNewsletterArticle(

@@ -33,10 +33,6 @@ async function getIssue(slug: string) {
       AND (
         stats->>'portal_article' = 'true'
         OR stats->>'portalArticle' = 'true'
-        OR (
-          stats->>'source' = 'beehiiv'
-          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-        )
       )
     LIMIT 1
   `) as IssueRow[];
@@ -57,10 +53,6 @@ async function getNeighbors(sentAt: Date | null) {
         AND (
           stats->>'portal_article' = 'true'
           OR stats->>'portalArticle' = 'true'
-          OR (
-            stats->>'source' = 'beehiiv'
-            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-          )
         )
         AND sent_at > ${iso}
       ORDER BY sent_at ASC
@@ -75,10 +67,6 @@ async function getNeighbors(sentAt: Date | null) {
         AND (
           stats->>'portal_article' = 'true'
           OR stats->>'portalArticle' = 'true'
-          OR (
-            stats->>'source' = 'beehiiv'
-            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-          )
         )
         AND sent_at < ${iso}
       ORDER BY sent_at DESC

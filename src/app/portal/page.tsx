@@ -217,10 +217,6 @@ export default async function PortalPage({
       AND (
         stats->>'portal_article' = 'true'
         OR stats->>'portalArticle' = 'true'
-        OR (
-          stats->>'source' = 'beehiiv'
-          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-        )
       )
     ORDER BY sent_at DESC NULLS LAST
     LIMIT 40

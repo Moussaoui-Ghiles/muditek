@@ -61,10 +61,6 @@ export async function GET(
       AND (
         stats->>'portal_article' = 'true'
         OR stats->>'portalArticle' = 'true'
-        OR (
-          stats->>'source' = 'beehiiv'
-          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-        )
       )
     LIMIT 1
   `) as Array<{ subject: string; sent_at: Date | string | null }>;

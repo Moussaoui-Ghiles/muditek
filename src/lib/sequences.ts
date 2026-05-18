@@ -55,7 +55,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           The setup: skills sit in <code style="font-family: ui-monospace, monospace; background: #f5f5f5; padding: 1px 5px; border-radius: 3px; font-size: 14px;">~/.claude/skills/</code>. Claude Code reads them and does the work. Outreach, content, lead capture, client delivery. Most of my day is reviewing what an agent already drafted, not drafting from scratch.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          The playbook you downloaded is one of those systems. The vault structure behind it is what makes them stack.
+          The resource you opened is one part of that system. The paid layer is the skill library and the deeper portal drops.
         </p>
         <p style="margin: 0; font-size: 16px; line-height: 1.65;">
           More on that in a few days.
@@ -105,7 +105,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           Most people open the portal, grab a resource, and move on. Some try to build one piece of it. Almost no one connects them.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          Not because they can&rsquo;t. The <em>connections</em> are the part nobody ships in the PDF. The vault structure. The naming conventions skills use to find each other. The decision rules that tell an agent what to do when context is missing.
+          Not because they can&rsquo;t. The <em>connections</em> are the part nobody ships in the PDF: the skills, the resource shelf, and the operating patterns that turn one download into a repeatable workflow.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           That&rsquo;s the difference between &ldquo;AI helps me&rdquo; and &ldquo;AI runs the work.&rdquo;
@@ -119,7 +119,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 5,
     delayDays: 12,
-    subject: "MudiKit: same files I work from",
+    subject: "MudiKit: the paid portal layer",
     buildHtml: (name: string, checkoutUrl?: string) => {
       const safeName = escapeHtml(name);
       const safeUrl = escapeHtml(checkoutUrl || "https://muditek.com/mudikit");
@@ -131,17 +131,17 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           I packaged it.
         </p>
         <ul style="margin: 0 0 18px; padding-left: 20px; font-size: 15.5px; line-height: 1.85;">
-          <li>64 shipped Claude Code skills</li>
-          <li>Implementation playbooks and portal resources</li>
-          <li>The vault template: CLAUDE.md hierarchy + decision rules</li>
-          <li>Outreach templates and operating files</li>
-          <li>New drops every week</li>
+          <li>59 paid Claude Code skills currently shipped</li>
+          <li>Paid portal resources as they are published</li>
+          <li>Copy Markdown and folder downloads for skills</li>
+          <li>Tools and subscriber-only portal updates</li>
+          <li>Email when a paid drop is released</li>
         </ul>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           $47 a month. Cancel anytime. Keep what you&rsquo;ve downloaded.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          For context: clients pay €40K-100K to have me install these systems. $47 is what it costs to install them yourself.
+          It is built for people who already use Claude Code and want the paid library instead of piecing the system together from public posts.
         </p>
         <p style="margin: 22px 0;">
           <a href="${safeUrl}"

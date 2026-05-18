@@ -22,16 +22,16 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON = [
-  { category: "Product type", mudikit: "Working skills library you install. Production-grade Claude Code skills, prompts, and configs you clone and run.", circle: "Tiered community software platform. Owners build hosted communities with spaces, events, courses, and member directories." },
-  { category: "What you buy", mudikit: "A subscription to one curated library: 64 skills, playbooks, vault template, outreach files, open-source lead capture system.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are open; many are paid." },
+  { category: "Product type", mudikit: "Paid portal library for Claude Code operators. Skills, resource drops, tools, and account access in one place.", circle: "Tiered community software platform. Owners build hosted communities with spaces, events, courses, and member directories." },
+  { category: "What you buy", mudikit: "Paid Claude Code skills, portal resource drops, and subscriber tools as they are published.", circle: "A subscription to a single host's Circle community. Content depth, courses, and live events vary by host. Some are open; many are paid." },
   { category: "Time to first deploy", mudikit: "Minutes. Each skill is a working system. Clone, configure, ship. Most subscribers ship something within their first weekend.", circle: "Hours to days. You browse spaces, watch lessons, take notes, then build. Implementation is on you." },
-  { category: "Update cadence", mudikit: "New skill or playbook every month, plus updates to existing ones as Claude Code evolves. Subscribers notified by email.", circle: "Depends on the host. Active communities ship weekly content; many go quiet after the launch period." },
+  { category: "Update cadence", mudikit: "New paid skills and portal drops are published through the Muditek portal. Subscribers are notified when something ships.", circle: "Depends on the host. Active communities ship weekly content; many go quiet after the launch period." },
   { category: "Pricing model", mudikit: "Flat $47/month. Cancel anytime via Stripe portal. No tiers, no setup fees, no annual lock-in.", circle: "Members pay whatever the host sets. Circle itself sells tiered admin plans (Basic, Plus, Premium, Business) that scale with features and member count." },
   { category: "Community layer", mudikit: "None inside the product. Public discussion is the B2B Agents newsletter (5,000+ operators) and LinkedIn (35K).", circle: "Built-in. Spaces, threads, direct messages, events, member directory, and live calls. Community is the core feature." },
   { category: "White-label / branding", mudikit: "Not applicable — you receive code and configs, not a hosted experience.", circle: "Strong. Custom domain on most tiers; native white-label mobile apps available on higher tiers." },
   { category: "Mobile app", mudikit: "Web only. The product is files you deploy on a workstation or server.", circle: "Native iOS + Android apps for community members. White-label apps available on higher tiers." },
   { category: "Format", mudikit: "Code, configs, prompts, .md skill files. Designed to be cloned into a working Claude Code project and executed.", circle: "Hosted spaces with posts, threads, videos, events, paid memberships, and structured course modules." },
-  { category: "Source code & ownership", mudikit: "Yes. You get the actual code I run in my own business. MIT-licensed where applicable. Your deployments are yours.", circle: "No source. Content lives on Circle's infrastructure. If the community owner moves or shuts down, your access goes with it." },
+  { category: "Source code & ownership", mudikit: "You can copy skill markdown and download available skill folders or attached resources. Your local deployments are yours.", circle: "No source. Content lives on Circle's infrastructure. If the community owner moves or shuts down, your access goes with it." },
   { category: "Best for", mudikit: "Solo operators, AI builders, founders, and consultants who already use Claude Code and want curated production systems.", circle: "Community owners building branded paid memberships, and members who want structured, white-labeled community experiences." },
   { category: "Technical bar", mudikit: "Comfortable with a terminal. Have used Claude Code at least once. Can read and edit a config file.", circle: "Anyone with a browser or phone. Built for non-technical members and creators." },
 ];
@@ -257,7 +257,7 @@ export default function MudikitVsCirclePage() {
                   <div className="pt-4 border-t border-primary/[0.1]">
                     <span className="text-lg font-black text-foreground font-mono">$564</span>
                     <span className="text-sm text-foreground/50 font-light"> / 12 months</span>
-                    <p className="text-sm text-foreground/50 font-light mt-1">64 skills, playbooks, vault template, outreach files, monthly drops. Cancel anytime.</p>
+                    <p className="text-sm text-foreground/50 font-light mt-1">Paid skills, resource drops, tools, and portal access. Cancel anytime.</p>
                   </div>
                 </div>
               </div>

@@ -293,7 +293,7 @@ export default function PEOpsPage() {
         variant="inline"
         className="max-w-[1000px] mx-auto px-6 md:px-12"
         headline="Run the systems yourself · $47/mo"
-        body="Same Claude Code skills, playbooks, and vault template I install for €40K–100K engagements. New drops every week."
+        body="Paid Claude Code skills and portal resource drops for operators who want deployable assets, not another course."
         ctaLabel="See the kit"
       />
 

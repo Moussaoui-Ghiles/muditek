@@ -12,7 +12,7 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 
 ## Product
 
-- [MudiKit](https://muditek.com/buy): $47/month subscription operator library — 15+ Claude Code skills (outreach, lead gen, content writing, scraping, inbox SDR), 6 implementation playbooks, vault template, 20+ outreach templates, open-source lead capture system. New skills and playbooks drop every month. Cancel anytime via Stripe.
+- [MudiKit](https://muditek.com/mudikit): $47/month paid portal library — Claude Code skills, portal resource drops, tools, and account access. Cancel anytime via Stripe.
 
 ## Tools
 
@@ -92,7 +92,7 @@ These pages are also available in clean Markdown for AI agents that prefer text/
 - https://muditek.com/mudiagent.md
 - https://muditek.com/revenue-leak-audit.md
 - https://muditek.com/pe-ops.md
-- https://muditek.com/buy.md (MudiKit)
+- https://muditek.com/mudikit.md (MudiKit)
 - https://muditek.com/about.md
 
 Each page also declares its Markdown alternate via `<link rel="alternate" type="text/markdown">` in the HTML head.

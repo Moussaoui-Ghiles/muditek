@@ -24,7 +24,7 @@ const ABOUT_FAQ = [
   },
   {
     q: "How do I get started?",
-    a: "Three doors. Start with the newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the full skills library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
+    a: "Three doors. Start with the newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the paid portal library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
   },
   {
     q: "Do you publish anything else?",
@@ -286,7 +286,7 @@ export default function AboutPage() {
       {/* ══════ MUDIKIT CTA ══════ */}
       <MudikitCta
         headline="Or skip the call. Subscribe to MudiKit · $47/mo"
-        body="Want the systems without the engagement? MudiKit is the operator library: 64 Claude Code skills, implementation playbooks, the vault template that runs Muditek, and outreach operating files. Updated monthly."
+        body="Want the self-serve layer? MudiKit is the paid portal library: Claude Code skills, resource drops, tools, and billing in one account."
       />
 
       {/* ══════ CTA ══════ */}

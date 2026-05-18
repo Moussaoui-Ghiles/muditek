@@ -33,7 +33,7 @@ const RELATED_BUY: RelatedLink = {
   href: "/mudikit",
   tag: "MudiKit",
   title: "Get the operator library: $47/mo",
-  body: "Skills, playbooks, vault template, outreach templates. New drops monthly.",
+  body: "Paid Claude Code skills and portal resource drops in one account.",
 };
 
 const RELATED_NEWSLETTER_ARCHIVE: RelatedLink = {

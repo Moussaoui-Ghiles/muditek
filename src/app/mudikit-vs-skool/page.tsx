@@ -22,15 +22,15 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON = [
-  { category: "Product type", mudikit: "Working skills library you install. Production-grade Claude Code skills, prompts, and configs you clone and run.", skool: "Hosted community platform with courses, discussion feed, calendar, and gamification. Owner posts content; members consume and chat." },
-  { category: "What you get", mudikit: "64 Claude Code skills, implementation playbooks, vault template, outreach operating files, open-source lead capture system.", skool: "Access to a single creator's community: courses, group threads, weekly calls, and a points/levels system. Content depth depends on the host." },
+  { category: "Product type", mudikit: "Paid portal library for Claude Code operators. Skills, resource drops, tools, and account access in one place.", skool: "Hosted community platform with courses, discussion feed, calendar, and gamification. Owner posts content; members consume and chat." },
+  { category: "What you get", mudikit: "Paid Claude Code skills, portal resource drops, and subscriber tools as they are published.", skool: "Access to a single creator's community: courses, group threads, weekly calls, and a points/levels system. Content depth depends on the host." },
   { category: "Time to first deploy", mudikit: "Minutes. Each skill is a working system. Clone, configure, ship. Most subscribers ship something within their first weekend.", skool: "Hours to days. You watch lessons, take notes, and then build. Implementation is on you." },
-  { category: "Maintenance & updates", mudikit: "New skill or playbook every month. Existing items updated as Claude Code evolves. Subscribers notified when something drops.", skool: "Depends entirely on the community owner. Some are actively updated, many go dormant after the launch cohort." },
+  { category: "Maintenance & updates", mudikit: "New paid skills and portal drops are published through the Muditek portal. Subscribers are notified when something ships.", skool: "Depends entirely on the community owner. Some are actively updated, many go dormant after the launch cohort." },
   { category: "Pricing model", mudikit: "Flat $47/month. Cancel anytime via Stripe customer portal. No setup fees, no annual commitment.", skool: "Members pay whatever the community owner sets (often $50-200/month for AI/automation communities). Skool itself charges owners $99/month flat." },
   { category: "Live calls & community", mudikit: "None. No live calls, no Discord, no homework. Async by design. The newsletter and LinkedIn feed are the public discussion layer.", skool: "Built-in: weekly calls, group threads, member-to-member messaging, mobile app notifications. Community is the product." },
   { category: "Mobile app", mudikit: "Web only. The product is files you deploy on a workstation or server.", skool: "Native iOS + Android app. Browse threads, watch lessons, get push notifications on the go." },
   { category: "Format", mudikit: "Code, configs, prompts, .md skill files. Designed to be cloned into a working Claude Code project and executed.", skool: "Video courses, written posts, threads, comments. Designed to be watched, read, and discussed." },
-  { category: "Source code & ownership", mudikit: "Yes. You get the actual code I run in my own business. MIT-licensed where applicable. Your deployments are yours.", skool: "No source. Content lives on the host's Skool group. If the owner closes the community, your access goes with it." },
+  { category: "Source code & ownership", mudikit: "You can copy skill markdown and download available skill folders or attached resources. Your local deployments are yours.", skool: "No source. Content lives on the host's Skool group. If the owner closes the community, your access goes with it." },
   { category: "Best for", mudikit: "Solo operators, AI builders, founders, and consultants who already use Claude Code and want production-grade systems they can deploy this week.", skool: "Learners who want peer accountability, structured courses, and a community to ask questions in. Especially good for cohort-style learning." },
   { category: "Technical bar", mudikit: "Comfortable with a terminal. Have used Claude Code at least once. Can read and edit a config file.", skool: "Anyone with a browser or phone. Designed to be approachable to non-technical learners." },
   { category: "What scales over time", mudikit: "Your library of deployable systems grows monthly. Old skills compound; you accumulate working assets.", skool: "Your network and accountability circle. The content library is owner-dependent." },
@@ -257,7 +257,7 @@ export default function MudikitVsSkoolPage() {
                   <div className="pt-4 border-t border-primary/[0.1]">
                     <span className="text-lg font-black text-foreground font-mono">$564</span>
                     <span className="text-sm text-foreground/50 font-light"> / 12 months</span>
-                    <p className="text-sm text-foreground/50 font-light mt-1">64 skills, playbooks, vault template, outreach files, monthly drops. Cancel anytime.</p>
+                    <p className="text-sm text-foreground/50 font-light mt-1">Paid skills, resource drops, tools, and portal access. Cancel anytime.</p>
                   </div>
                 </div>
               </div>

@@ -421,7 +421,7 @@ export default function PortalHomeContent({
             <CategoryTile
               href="/portal/mudikit"
               title="MudiKit"
-              body="The paid shelf for deeper skills, systems, templates, and monthly drops."
+              body="The paid shelf for deeper skills, resource drops, and subscriber tools."
               count={paidCount}
               latest={latestTitle(paidItems, "MudiKit shelf")}
               icon={Package}

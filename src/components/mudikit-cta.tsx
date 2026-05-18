@@ -10,7 +10,7 @@ interface MudikitCtaProps {
 
 const DEFAULT_HEADLINE = "Get MudiKit · $47/mo";
 const DEFAULT_BODY =
-  "64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New drops every month.";
+  "Paid Claude Code skills and portal resource drops for operators who want deployable assets, not another course.";
 const DEFAULT_CTA_LABEL = "Get MudiKit - $47/mo";
 
 export function MudikitCta({
@@ -108,7 +108,7 @@ export function MudikitCta({
               <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
             </Link>
             <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/45">
-              Workflows that add ROI · New drops every week
+              Paid skills · Portal drops
             </span>
             <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/35">
               Cancel anytime

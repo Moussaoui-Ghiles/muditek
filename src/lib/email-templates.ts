@@ -95,7 +95,7 @@ export async function sendWelcomeEmail(
           Your MudiKit subscription is active. Everything you need is in your portal.
         </p>
         <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
-          New skills, playbooks, and templates drop monthly. You'll get an email each time.
+          Paid skills and resource drops appear in the portal when they ship. You'll get an email each time.
         </p>
         <a href="${escapeHtml(portalUrl)}"
            style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">

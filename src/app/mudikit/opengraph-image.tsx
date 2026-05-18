@@ -7,8 +7,8 @@ export const alt = "MudiKit - $47/mo";
 export default function Image() {
   return ogImage({
     eyebrow: "MudiKit · $47/mo",
-    title: "The kit I run my business with.",
+    title: "Paid skills and portal drops.",
     subtitle:
-      "Claude Code skills. Playbooks. Vault template. Outreach files. New drops every week.",
+      "Claude Code skills, resource drops, tools, and account access inside the Muditek portal.",
   });
 }

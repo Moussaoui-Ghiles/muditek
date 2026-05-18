@@ -262,7 +262,7 @@ export default async function NewsletterPage() {
       {/* MUDIKIT CTA */}
       <MudikitCta
         headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
-        body="The newsletter is what I write publicly. MudiKit is what I install: 64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. New skills drop every month."
+        body="The newsletter is the public layer. MudiKit is the paid portal layer: Claude Code skills, resource drops, and tools in one account."
       />
 
       {/* BOTTOM CTA */}
@@ -273,7 +273,7 @@ export default async function NewsletterPage() {
               Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              153 booked calls for $1,200. Proposals in 12 minutes. 2,000 leads/day for $10. You get the full build every week.
+              Every issue points back to the portal so readers can open the resource, save it, and keep the system tied to one account.
             </p>
             <div className="max-w-md mx-auto">
               <EmailCapture

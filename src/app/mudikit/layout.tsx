@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
-  title: "MudiKit | Claude Code skills, playbooks, and vault | $47/mo",
+  title: "MudiKit | Paid Claude Code skills and portal drops | $47/mo",
   description:
-    "The Claude Code skills, playbooks, and vault template I use to run Muditek. $47 a month. New drops every week. Cancel anytime.",
+    "The paid Claude Code skills and resource drops inside the Muditek portal. $47 a month. Cancel anytime.",
   alternates: {
     canonical: "https://muditek.com/mudikit",
   },
   openGraph: {
     title: "MudiKit · $47/mo",
     description:
-      "The Claude Code skills, playbooks, and vault template I use to run Muditek. New drops every week. Cancel anytime.",
+      "The paid Claude Code skills and resource drops inside the Muditek portal. Cancel anytime.",
     url: "https://muditek.com/mudikit",
     type: "website",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MudiKit · $47/mo",
     description:
-      "The Claude Code skills, playbooks, and vault template I use to run Muditek. New drops every week.",
+      "The paid Claude Code skills and resource drops inside the Muditek portal.",
     images: ["https://muditek.com/mudikit/opengraph-image"],
   },
 };
@@ -38,7 +38,7 @@ const PRODUCT_SCHEMA = {
   "@id": "https://muditek.com/mudikit#kit",
   name: "MudiKit",
   description:
-    "Subscription kit of Claude Code skills, implementation playbooks, vault template, and outreach templates used to run Muditek.",
+    "Subscription kit of paid Claude Code skills and resource drops inside the Muditek portal.",
   brand: {
     "@type": "Brand",
     name: "Muditek",

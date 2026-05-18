@@ -36,7 +36,7 @@ export default function AgenciesIndustryPage() {
         heroSubhead:
           "Every retainer comes with weekly content, monthly reports, daily inboxes, and constant context-switching. The work expands faster than the headcount can absorb. Margin disappears into work nobody got hired to do.",
         heroSecondaryParagraph:
-          "MudiKit is the operator library for agencies that want to stop doing the busywork: 64 Claude Code skills, implementation playbooks, the vault template, and outreach operating files. Where MudiKit isn't enough, we build custom on top.",
+          "MudiKit is the paid portal library for agencies that want deployable Claude Code skills and resource drops. Where MudiKit isn't enough, we build custom on top.",
         stats: [
           { value: "20+ hrs", label: "Weekly busywork in 2026" },
           { value: "60x", label: "Throughput on social production" },

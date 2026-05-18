@@ -1,26 +1,24 @@
-# MudiKit — $47/month Operator Library
+# MudiKit — $47/month Paid Portal Library
 
-> 15+ Claude Code skills, 6 implementation playbooks, the vault template that runs my business, 20+ outreach templates. Updated monthly. Cancel anytime.
+> Paid Claude Code skills, portal resource drops, tools, and account access for operators who want deployable assets, not another course. Cancel anytime.
 
-URL: https://muditek.com/buy
+URL: https://muditek.com/mudikit
 Product of: Muditek (https://muditek.com)
 Founder: Ghiles Moussaoui (35K LinkedIn followers, $3M+ B2B revenue generated)
-Last updated: 2026-05-04
+Last updated: 2026-05-18
 
 ## Pricing
 
-**$47 USD per month.** Stripe checkout. No platform account. No annual lock-in. Cancel anytime via Stripe customer portal.
+**$47 USD per month.** Stripe checkout. Portal account access. No annual lock-in. Cancel anytime via Stripe customer portal.
 
 ## What's Included
 
 | # | Item | Count | What it is |
 |---|---|---|---|
-| 01 | Operator Skills | 15+ | Claude Code skills: outreach, cold email, content writing, lead gen, inbox SDR, offer creation, scraping |
-| 02 | Playbooks | 6 | Google Maps outbound, OpenClaw, Agentic SDR, Claude Code self-evolving system, Chief of Staff Blueprint, Judgment Moat |
-| 03 | Vault Template | 1 | Folder structure, CLAUDE.md files, decision frameworks, pipeline tracker — the actual setup that runs Muditek |
-| 04 | Outreach Templates | 20+ | DM and email with A/B variants. PE, SaaS, founder segments |
-| 05 | Monthly Drops | ∞ | New skills, updated playbooks, new templates — every month |
-| 06 | Lead Capture System | OSS | Comment CTA → email handoff. Apify scraping. Self-deployable |
+| 01 | Paid Skills | 59 | Claude Code skills available to paid MudiKit members |
+| 02 | Portal Resources | CMS | Playbooks, guides, scorecards, files, and paid drops as they are published |
+| 03 | Tools | Portal | Subscriber tools and workbenches inside the Muditek portal |
+| 04 | Account Access | Portal | Billing, newsletter preferences, unlock history, and gated resources |
 
 ## Numbers Behind the System
 
@@ -28,13 +26,13 @@ Last updated: 2026-05-04
 - 35+ AI systems deployed
 - $3M+ revenue generated
 - 15M+ LinkedIn impressions
-- Library used to run Muditek itself — not theory
+- Built from the same operating patterns used to run Muditek
 
 ## How It Works
 
-1. **Subscribe** ($47/month, Stripe checkout, no platform account, cancel whenever)
-2. **Access portal** — log in with your email. Browse skills, playbooks, templates by category.
-3. **Get drops** — new content every month. Email notification. Download and install.
+1. **Subscribe** ($47/month, Stripe checkout, cancel whenever)
+2. **Access portal** — log in with your email. Browse skills, resources, tools, and newsletter articles by category.
+3. **Use the assets** — copy skill markdown, download available folders or files, and get notified when paid drops ship.
 
 ## For You If
 
@@ -58,7 +56,7 @@ Last updated: 2026-05-04
 ## FAQ
 
 **What exactly do I get for $47/month?**
-Access to a portal with 15+ Claude Code skills, 6 implementation playbooks, the vault template that runs my business, 20+ outreach templates with A/B variants, and the open-source lead capture system. New content drops every month — your subscription unlocks them automatically.
+Access to the paid MudiKit layer inside the Muditek portal: paid Claude Code skills, published resource drops, tools, billing, newsletter preferences, and gated downloads.
 
 **Do I need to be technical to use this?**
 You need to be comfortable with a terminal and have used Claude Code at least once. Most subscribers ship something within their first weekend.
@@ -70,10 +68,10 @@ Yes. Stripe handles billing — cancel from your customer portal in two clicks. 
 No live calls, no community chat, no homework. MudiKit is a working skills library you install and run. Each skill is a tested, deployable system — not lectures or theory.
 
 **Is the content updated?**
-Yes. New skill or playbook every month. Existing items get updated as Claude Code evolves and as I find better patterns. Active subscribers get notified by email when something drops.
+Yes. Paid skills and resources are updated as the library improves. Active subscribers get notified when a paid drop is published.
 
 ## Subscribe
 
-https://muditek.com/buy
+https://muditek.com/mudikit
 
 Secured by Stripe. Instant portal access. Cancel anytime.

@@ -233,7 +233,7 @@ function MudikitHero({
           <Stat label="New · 30d" value={newThisMonth} accent={newThisMonth > 0} />
           <Stat
             label="Cadence"
-            value={<span className="text-[13px] font-medium tracking-tight text-foreground">monthly drops</span>}
+            value={<span className="text-[13px] font-medium tracking-tight text-foreground">new drops</span>}
             small
           />
         </dl>

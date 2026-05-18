@@ -197,24 +197,23 @@ A: Optional retainer. Every new fund, jurisdiction, or regulatory change, handle
 
 ## MudiKit — $47/month Operator Library
 
-URL: https://muditek.com/buy
+URL: https://muditek.com/mudikit
 ICP: Solo operators, AI builders, and consultants using Claude Code who want production-grade skills they can deploy this week.
 Price: $47/month subscription. Cancel anytime via Stripe customer portal.
 
 What's included:
-- 15+ Claude Code skills covering outreach, cold email, content writing, lead generation, inbox SDR, offer creation, and scraping.
-- 6 implementation playbooks: Google Maps outbound, OpenClaw, Agentic SDR, Claude Code self-evolving system, Chief of Staff Blueprint, Judgment Moat.
-- Vault template — folder structure, CLAUDE.md files, decision frameworks, pipeline tracker. The actual setup that runs Muditek's business.
-- 20+ outreach templates (DM and email) with A/B variants for PE, SaaS, and founder segments.
-- Open-source lead capture system — comment CTA → email handoff. Apify scraping. Self-deployable.
-- Monthly drops: new skills, updated playbooks, and templates every month. Active subscribers get notified by email.
+- Paid Claude Code skills available inside the Muditek portal.
+- Portal resource drops published through the admin CMS.
+- Subscriber tools and workbenches.
+- Account access for billing, newsletter preferences, unlock history, and gated resources.
+- Email notification when a paid drop is published.
 
 Numbers behind the system:
 - 35,000+ LinkedIn followers
 - 35+ systems deployed
 - $3M+ revenue generated
 - 15M+ LinkedIn impressions
-- Library used to run Muditek itself — not theory
+- Built from the same operating patterns used to run Muditek
 
 For who: people comfortable with a terminal who have used Claude Code at least once. Not for: people who have never opened a terminal, want drag-and-drop no-code, are looking for live coaching or community, or need done-for-you service.
 
@@ -225,7 +224,7 @@ Comparison pages:
 FAQ — MudiKit:
 
 Q: What exactly do I get for $47/month?
-A: Access to a portal with 15+ Claude Code skills, 6 implementation playbooks, the vault template that runs the business, 20+ outreach templates with A/B variants, and the open-source lead capture system. New content drops every month — your subscription unlocks them automatically.
+A: Access to the paid MudiKit layer inside the Muditek portal: paid Claude Code skills, published resource drops, tools, billing, newsletter preferences, and gated downloads.
 
 Q: Do I need to be technical to use this?
 A: You need to be comfortable with a terminal and have used Claude Code at least once. Most subscribers ship something within their first weekend.
@@ -237,7 +236,7 @@ Q: How is this different from a course or community?
 A: No live calls, no community chat, no homework. MudiKit is a working skills library you install and run. Each skill is a tested, deployable system — not lectures or theory.
 
 Q: Is the content updated?
-A: Yes. New skill or playbook every month. Existing items get updated as Claude Code evolves and as better patterns emerge. Active subscribers get email notifications when something drops.
+A: Yes. Paid skills and resources are updated as the library improves. Active subscribers get notified when a paid drop is published.
 
 ---
 
@@ -463,7 +462,7 @@ Many key pages on muditek.com are also available in clean Markdown format. AI ag
 - https://muditek.com/mudiagent.md
 - https://muditek.com/revenue-leak-audit.md
 - https://muditek.com/pe-ops.md
-- https://muditek.com/buy.md (MudiKit)
+- https://muditek.com/mudikit.md (MudiKit)
 - https://muditek.com/about.md
 
 These are 1,000-3,000 word self-contained summaries with citable headlines, core features, comparison data, and CTAs.
@@ -478,7 +477,7 @@ Marketing & services:
 - https://muditek.com/mudiagent — on-premises AI service
 - https://muditek.com/revenue-leak-audit — B2B SaaS pipeline diagnostic
 - https://muditek.com/pe-ops — operational infrastructure for investment firms
-- https://muditek.com/buy — MudiKit ($47/mo)
+- https://muditek.com/mudikit — MudiKit ($47/mo)
 
 Industries:
 - https://muditek.com/who-we-help — index

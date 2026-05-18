@@ -14,7 +14,7 @@ Three service offers, each starting with a diagnostic that quantifies waste in e
 - **Revenue Leak Audit** — B2B SaaS pipeline diagnostics. Find €80-180K/year in leakage with formulas. €50K guarantee or pay nothing. €2K diagnostic. https://muditek.com/revenue-leak-audit
 - **Operational Infrastructure** — Custom-built systems for PE, VC, merchant banking. Juniper Square alternative. €40-80K build, €5-10K/mo retainer. https://muditek.com/pe-ops
 
-Plus **MudiKit** — $47/mo subscription operator library: 15+ Claude Code skills, 6 playbooks, vault template, 20+ outreach templates. https://muditek.com/buy
+Plus **MudiKit** — $47/mo paid portal library: Claude Code skills, resource drops, tools, and account access. https://muditek.com/mudikit
 
 ## Numbers (2026)
 

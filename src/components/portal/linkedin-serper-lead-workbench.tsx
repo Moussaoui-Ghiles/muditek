@@ -11,19 +11,24 @@ type LinkedInResult = {
   snippet: string;
 };
 
+type WorkbenchNotice = {
+  message: string;
+  setupRequired: boolean;
+};
+
 export function LinkedInSerperLeadWorkbench() {
   const [role, setRole] = useState("");
   const [market, setMarket] = useState("");
   const [company, setCompany] = useState("");
   const [max, setMax] = useState(10);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<WorkbenchNotice | null>(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<LinkedInResult[]>([]);
 
   async function run() {
     setLoading(true);
-    setError(null);
+    setNotice(null);
     setResults([]);
     setQuery("");
     try {
@@ -33,11 +38,20 @@ export function LinkedInSerperLeadWorkbench() {
         body: JSON.stringify({ role, market, company, max }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "LinkedIn search failed.");
+      if (!res.ok) {
+        setNotice({
+          message: data.error || "LinkedIn search failed.",
+          setupRequired: Boolean(data.setupRequired),
+        });
+        return;
+      }
       setQuery(data.query || "");
       setResults(data.results || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "LinkedIn search failed.");
+      setNotice({
+        message: err instanceof Error ? err.message : "LinkedIn search failed.",
+        setupRequired: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -102,12 +116,22 @@ export function LinkedInSerperLeadWorkbench() {
       </section>
 
       <section className="min-h-[360px] rounded-[2px] border border-white/[0.08] bg-black/25 p-5">
-        {error && (
-          <div className="rounded-[2px] border border-red-400/20 bg-red-500/10 p-4 text-[13px] text-red-100">
-            {error}
+        {notice && (
+          <div
+            className={
+              "rounded-[2px] border p-4 text-[13px] leading-6 " +
+              (notice.setupRequired
+                ? "border-primary/25 bg-primary/10 text-primary"
+                : "border-red-400/20 bg-red-500/10 text-red-100")
+            }
+          >
+            <p className="font-semibold">
+              {notice.setupRequired ? "Setup required" : "Search failed"}
+            </p>
+            <p className="mt-1 text-foreground/70">{notice.message}</p>
           </div>
         )}
-        {!error && results.length === 0 && !loading && (
+        {!notice && results.length === 0 && !loading && (
           <div className="flex h-full min-h-[300px] items-center justify-center text-center text-[13.5px] leading-6 text-foreground/55">
             Add a role, market, or company keyword to pull live LinkedIn profile results from Google.
           </div>

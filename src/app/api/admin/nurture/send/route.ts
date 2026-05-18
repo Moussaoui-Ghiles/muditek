@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
       FROM newsletter_subscribers
       WHERE status = 'active'
-        AND source IN ('portal', 'portal-signup')
+        AND source IN ('portal', 'portal-signup', 'sign-up')
     )
     SELECT name, enrolled_at
     FROM raw_leads

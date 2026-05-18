@@ -90,7 +90,7 @@ export async function GET(
       FROM newsletter_subscribers ns
       WHERE ns.id = ${id}
         AND ns.status = 'active'
-        AND ns.source IN ('portal', 'portal-signup')
+        AND ns.source IN ('portal', 'portal-signup', 'sign-up')
       LIMIT 1
     `;
 

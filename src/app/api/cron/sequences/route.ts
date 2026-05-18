@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
       FROM newsletter_subscribers
       WHERE status = 'active'
-        AND source IN ('portal', 'portal-signup')
+        AND source IN ('portal', 'portal-signup', 'sign-up')
     )
     SELECT DISTINCT ON (email)
       email, name, enrolled_at

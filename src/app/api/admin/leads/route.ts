@@ -87,7 +87,7 @@ export async function GET(request: Request) {
         ) AS is_subscriber
       FROM newsletter_subscribers ns
       WHERE ns.status = 'active'
-        AND ns.source IN ('portal', 'portal-signup')
+        AND ns.source IN ('portal', 'portal-signup', 'sign-up')
     )
     SELECT * FROM campaign_leads
     UNION ALL

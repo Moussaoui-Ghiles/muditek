@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
         FROM newsletter_subscribers
         WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup')
+          AND source IN ('portal', 'portal-signup', 'sign-up')
       ),
       lead_progress AS (
         SELECT DISTINCT ON (lead.email)
@@ -62,7 +62,7 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email
         FROM newsletter_subscribers
         WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup')
+          AND source IN ('portal', 'portal-signup', 'sign-up')
       ) lead
       WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
     `,

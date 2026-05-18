@@ -25,7 +25,7 @@ export function getHTMLContent(slug: string): { styles: string; body: string } |
 
 export function getPdfPageImages(slug: string): string[] {
   try {
-    const dir = join(process.cwd(), "public/playbooks", slug);
+    const dir = join(process.cwd(), "content/downloads/playbooks", slug);
     return readdirSync(dir)
       .filter((file) => /^page-\d+\.jpe?g$/i.test(file))
       .sort((a, b) => {
@@ -33,7 +33,7 @@ export function getPdfPageImages(slug: string): string[] {
         const numB = parseInt(b.replace(/^page-/, "").replace(/\.jpe?g$/i, ""), 10);
         return numA - numB;
       })
-      .map((file) => `/playbooks/${slug}/${file}`);
+      .map((file) => `/api/portal/resources/${slug}/page/${file}`);
   } catch {
     return [];
   }

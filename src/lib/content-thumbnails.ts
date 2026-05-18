@@ -9,13 +9,13 @@ type ThumbnailItem = {
 export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (item.thumbnail_url) return item;
 
-  const dir = join(process.cwd(), "public/playbooks", item.slug);
+  const dir = join(process.cwd(), "content/downloads/playbooks", item.slug);
   const preferred = ["page-1.jpg", "page-01.jpg", "page-001.jpg"];
   const preferredFile = preferred.find((file) => existsSync(join(dir, file)));
   if (preferredFile) {
     return {
       ...item,
-      thumbnail_url: `/playbooks/${item.slug}/${preferredFile}`,
+      thumbnail_url: `/api/portal/resources/${item.slug}/page/${preferredFile}`,
     };
   }
 
@@ -37,7 +37,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
 
     return {
       ...item,
-      thumbnail_url: `/playbooks/${item.slug}/${firstPage}`,
+      thumbnail_url: `/api/portal/resources/${item.slug}/page/${firstPage}`,
     };
   } catch {
     return {

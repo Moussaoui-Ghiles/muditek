@@ -30,10 +30,6 @@ async function getIssue(slug: string): Promise<IssueRow | null> {
         AND (
           stats->>'portal_article' = 'true'
           OR stats->>'portalArticle' = 'true'
-          OR (
-            stats->>'source' = 'beehiiv'
-            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-          )
         )
       LIMIT 1
     `) as IssueRow[];

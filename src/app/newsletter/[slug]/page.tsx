@@ -39,8 +39,8 @@ const RELATED_BUY: RelatedLink = {
 const RELATED_NEWSLETTER_ARCHIVE: RelatedLink = {
   href: "/newsletter",
   tag: "Archive",
-  title: "Browse every issue",
-  body: "All past systems, indexed and searchable.",
+  title: "Browse selected articles",
+  body: "Article-style newsletter issues, indexed and searchable.",
 };
 
 const RELATED_REVENUE_LEAK: RelatedLink = {
@@ -89,10 +89,6 @@ async function getIssue(slug: string): Promise<Issue | null> {
       AND (
         stats->>'portal_article' = 'true'
         OR stats->>'portalArticle' = 'true'
-        OR (
-          stats->>'source' = 'beehiiv'
-          AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-        )
       )
     LIMIT 1
   `;

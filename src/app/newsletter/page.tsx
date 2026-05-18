@@ -21,7 +21,7 @@ const NEWSLETTER_FAQ = [
   },
   {
     q: "Will issues move into MudiKit later?",
-    a: "No. The newsletter is the front door. MudiKit, audits, and custom builds live separately. Newsletter issues stay readable.",
+    a: "No. The newsletter is the front door. MudiKit, audits, and custom builds live separately. Selected article-style issues stay readable in the archive.",
   },
   {
     q: "Who reads it?",
@@ -71,10 +71,6 @@ async function getIssues(): Promise<Issue[]> {
         AND (
           stats->>'portal_article' = 'true'
           OR stats->>'portalArticle' = 'true'
-          OR (
-            stats->>'source' = 'beehiiv'
-            AND COALESCE(stats->>'portal_article', stats->>'portalArticle', 'true') <> 'false'
-          )
         )
       ORDER BY sent_at DESC
       LIMIT 30

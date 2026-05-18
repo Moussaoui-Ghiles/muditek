@@ -38,10 +38,18 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const { title, slug, description, category, downloadUrl, fileType, thumbnailUrl, isFree, isNew } = body;
+  const normalizedSlug = typeof slug === "string" ? slug.trim() : "";
+  const normalizedFileType = typeof fileType === "string" && fileType.trim() ? fileType.trim() : "zip";
+  const normalizedDownloadUrl =
+    typeof downloadUrl === "string" && downloadUrl.trim()
+      ? downloadUrl.trim()
+      : normalizedFileType.toLowerCase() === "html" && normalizedSlug
+        ? `/portal/playbooks/${normalizedSlug}`
+        : "";
 
-  if (!title || !slug || !category || !downloadUrl) {
+  if (!title || !normalizedSlug || !category || !normalizedDownloadUrl) {
     return NextResponse.json(
-      { error: "title, slug, category, and downloadUrl are required" },
+      { error: "title, slug, category, and asset URL are required unless the item is HTML" },
       { status: 400 }
     );
   }
@@ -53,11 +61,11 @@ export async function POST(request: Request) {
     INSERT INTO content_items (title, slug, description, category, download_url, file_type, thumbnail_url, is_free, is_new, updated_at)
     VALUES (
       ${title.trim()},
-      ${slug.trim()},
+      ${normalizedSlug},
       ${description?.trim() || null},
       ${category.trim()},
-      ${downloadUrl.trim()},
-      ${fileType?.trim() || "zip"},
+      ${normalizedDownloadUrl},
+      ${normalizedFileType},
       ${thumbnailUrl?.trim() || null},
       ${Boolean(isFree)},
       ${typeof isNew === "boolean" ? isNew : true},

@@ -262,10 +262,16 @@ export default function ContentPage() {
     setSaving(true);
     setMessage("");
 
+    const slug = draft.slug || autoSlug(draft.title);
+    const downloadUrl =
+      draft.fileType === "html" && !draft.downloadUrl.trim()
+        ? `/portal/playbooks/${slug}`
+        : draft.downloadUrl;
     const payload = {
       ...draft,
-      slug: draft.slug || autoSlug(draft.title),
+      slug,
       description: draft.description || null,
+      downloadUrl,
       thumbnailUrl: draft.thumbnailUrl || "",
     };
 
@@ -565,11 +571,16 @@ export default function ContentPage() {
               <Label htmlFor="downloadUrl">Asset URL</Label>
               <Input
                 id="downloadUrl"
-                required
+                required={draft.fileType !== "html"}
                 value={draft.downloadUrl}
                 onChange={(event) => updateDraft("downloadUrl", event.target.value)}
-                placeholder="https://... or /playbooks/..."
+                placeholder={draft.fileType === "html" ? "Optional for HTML reader" : "https://... or /playbooks/file.pdf"}
               />
+              {draft.fileType === "html" && (
+                <p className="text-xs leading-5 text-muted-foreground">
+                  HTML resources open in the portal. Leave this blank when the HTML file lives in <span className="font-mono">content/playbooks/{draft.slug || "slug"}.html</span>.
+                </p>
+              )}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">

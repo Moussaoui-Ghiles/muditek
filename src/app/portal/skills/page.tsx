@@ -47,7 +47,7 @@ export default async function SkillsPage() {
   });
 
   const rows = (await sql`
-    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE category = 'skill'
     ORDER BY is_free DESC, created_at DESC

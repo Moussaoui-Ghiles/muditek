@@ -156,11 +156,7 @@ function CategoryTile({
                 <Lock className="size-3" />
                 MudiKit
               </span>
-            ) : (
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-emerald-300/80">
-                Open
-              </span>
-            )}
+            ) : null}
           </div>
           <h2 className="mt-5 text-[25px] font-black leading-[1] tracking-[-0.025em] text-white">
             {title}
@@ -334,8 +330,8 @@ export default function PortalHomeContent({
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
-            <StatPill label="Open" value={allItems.filter((item) => item.is_free).length + PORTAL_TOOLS.filter((tool) => tool.access !== "mudikit").length} />
-            <StatPill label="MudiKit" value={paidCount} />
+            <StatPill label="Library" value={allItems.length + PORTAL_TOOLS.length} />
+            {paidCount > 0 && <StatPill label="MudiKit" value={paidCount} />}
             <StatPill label="Articles" value={issues.length} />
           </div>
         </div>

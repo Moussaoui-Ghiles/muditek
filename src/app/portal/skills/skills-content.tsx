@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
-type AccessFilter = "all" | "free" | "mudikit";
+type AccessFilter = "all" | "mudikit";
 
 function isAccessible(skill: ContentItem, access: PortalAccess): boolean {
   if (skill.is_free) return true;
@@ -36,10 +36,10 @@ function formatShortDate(date: Date | string | null): string {
 }
 
 function accessLabel(skill: ContentItem, accessible: boolean): {
-  text: string;
-  tone: "free" | "mudikit" | "locked";
+  text: string | null;
+  tone: "included" | "mudikit" | "locked";
 } {
-  if (skill.is_free) return { text: "Open", tone: "free" };
+  if (skill.is_free) return { text: null, tone: "included" };
   if (accessible) return { text: "MudiKit", tone: "mudikit" };
   return { text: "Locked", tone: "locked" };
 }
@@ -149,17 +149,15 @@ function FeaturedSkill({
               .{skill.file_type.toLowerCase()}
             </span>
           )}
-          <span
-            className={`font-mono uppercase tracking-[0.18em] ${
-              label.tone === "free"
-                ? "text-emerald-300/85"
-                : label.tone === "mudikit"
-                  ? "text-amber-300/85"
-                  : "text-white/50"
-            }`}
-          >
-            {label.text}
-          </span>
+          {label.text && (
+            <span
+              className={`font-mono uppercase tracking-[0.18em] ${
+                label.tone === "mudikit" ? "text-amber-300/85" : "text-white/50"
+              }`}
+            >
+              {label.text}
+            </span>
+          )}
         </div>
       </div>
     </Link>
@@ -201,7 +199,7 @@ function SkillCard({
   const isNew = isRecent(skill) && skill.is_new;
 
   const accent =
-    label.tone === "free"
+    label.tone === "included"
       ? "from-emerald-400/[0.07]"
       : label.tone === "mudikit"
         ? "from-amber-400/[0.08]"
@@ -247,20 +245,18 @@ function SkillCard({
               .{skill.file_type.toLowerCase()}
             </span>
           )}
-          <span
-            className={`font-mono uppercase tracking-[0.16em] ${
-              label.tone === "free"
-                ? "text-emerald-300/85"
-                : label.tone === "mudikit"
-                  ? "text-amber-300/85"
-                  : "text-white/45"
-            }`}
-          >
-            {label.text}
-          </span>
+          {label.text && (
+            <span
+              className={`font-mono uppercase tracking-[0.16em] ${
+                label.tone === "mudikit" ? "text-amber-300/85" : "text-white/45"
+              }`}
+            >
+              {label.text}
+            </span>
+          )}
         </div>
         <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-white/70 transition-colors group-hover:text-amber-300/85">
-          Open
+          View
           <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </span>
       </div>
@@ -296,8 +292,8 @@ function RecentRow({
             )}
           </div>
           <p className="mt-1 text-[12.5px] text-white/40">
-            {label.text}
-            {skill.file_type ? ` · .${skill.file_type.toLowerCase()}` : ""}
+            {label.text && <>{label.text} · </>}
+            {skill.file_type ? `.${skill.file_type.toLowerCase()}` : "skill"}
             {skill.created_at ? ` · ${formatShortDate(skill.created_at)}` : ""}
           </p>
         </div>
@@ -395,7 +391,6 @@ export default function SkillsContent({
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return skills.filter((skill) => {
-      if (filter === "free" && !skill.is_free) return false;
       if (filter === "mudikit" && skill.is_free) return false;
       if (!needle) return true;
       const haystack = [skill.title, skill.description, skill.file_type]
@@ -434,12 +429,6 @@ export default function SkillsContent({
                 <span className="text-[18px] font-semibold tabular-nums text-white/85">{total}</span>
                 <span className="font-mono uppercase tracking-[0.16em]">Total</span>
               </span>
-              {freeCount > 0 && (
-                <span className="flex items-baseline gap-1.5">
-                  <span className="text-[18px] font-semibold tabular-nums text-emerald-300/85">{freeCount}</span>
-                  <span className="font-mono uppercase tracking-[0.16em]">Open</span>
-                </span>
-              )}
               {(access.isMudikit || access.isAdmin) && paidCount > 0 ? (
                 <span className="flex items-baseline gap-1.5">
                   <span className="text-[18px] font-semibold tabular-nums text-amber-300/85">{paidCount}</span>
@@ -500,13 +489,9 @@ export default function SkillsContent({
                               {!accessible && <Lock className="size-3 shrink-0 text-white/35" />}
                             </div>
                             <p className="mt-0.5 text-[11.5px] text-white/40">
-                              {skill.is_free
-                                ? "Open"
-                                : accessible
-                                  ? "MudiKit"
-                                  : "Locked"}
+                              {!skill.is_free && (accessible ? "MudiKit · " : "Locked · ")}
                               {skill.created_at
-                                ? ` · ${formatShortDate(skill.created_at)}`
+                                ? formatShortDate(skill.created_at)
                                 : ""}
                             </p>
                           </Link>
@@ -549,7 +534,7 @@ export default function SkillsContent({
                 )}
                 {showAccessFilter && (
                   <div className="inline-flex max-w-full flex-wrap rounded-xl bg-white/[0.018] p-1">
-                    {(["all", "free", "mudikit"] as AccessFilter[]).map((f) => (
+                    {(["all", "mudikit"] as AccessFilter[]).map((f) => (
                       <button
                         key={f}
                         type="button"
@@ -560,7 +545,7 @@ export default function SkillsContent({
                             : "text-white/45 hover:text-white/80"
                         }`}
                       >
-                        {f === "all" ? "All" : f === "free" ? "Open" : "MudiKit"}
+                        {f === "all" ? "All" : "MudiKit only"}
                       </button>
                     ))}
                   </div>
@@ -656,7 +641,7 @@ export default function SkillsContent({
                               {newCount} {newCount === 1 ? "drop" : "drops"} in the last 30 days
                             </p>
                             <p className="mt-0.5 text-[12px] text-white/40">
-                              Fresh installs marked with an amber dot
+                              Fresh additions marked with an amber dot
                             </p>
                           </li>
                         )}
@@ -678,7 +663,7 @@ export default function SkillsContent({
             )
           ) : null}
 
-          {!access.isMudikit && !access.isAdmin && lockedCount > 0 && filter !== "free" && (
+          {!access.isMudikit && !access.isAdmin && lockedCount > 0 && (
             <LockedTeaser count={lockedCount} />
           )}
         </div>

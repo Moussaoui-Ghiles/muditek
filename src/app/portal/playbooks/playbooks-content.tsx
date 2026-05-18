@@ -6,17 +6,20 @@ import { ArrowUpRight, Filter, Lock, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
+import { CONTENT_TOPIC_LABEL, type ContentTopic } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
 type TypeFilter = "all" | "playbook" | "guide" | "resource";
-type TopicFilter = "all" | "lead-gen" | "sales" | "marketing" | "gtm";
+type TopicFilter = "all" | ContentTopic;
 
 const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
   { value: "all", label: "All" },
-  { value: "lead-gen", label: "Lead gen" },
-  { value: "sales", label: "Sales" },
-  { value: "marketing", label: "Marketing" },
-  { value: "gtm", label: "GTM" },
+  { value: "lead-gen", label: CONTENT_TOPIC_LABEL["lead-gen"] },
+  { value: "sales", label: CONTENT_TOPIC_LABEL.sales },
+  { value: "marketing", label: CONTENT_TOPIC_LABEL.marketing },
+  { value: "gtm", label: CONTENT_TOPIC_LABEL.gtm },
+  { value: "ops", label: CONTENT_TOPIC_LABEL.ops },
+  { value: "ai", label: CONTENT_TOPIC_LABEL.ai },
 ];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
@@ -37,15 +40,21 @@ function typeLabel(item: ContentItem): string {
   return "Resource";
 }
 
-function accessLabel(item: ContentItem): string {
-  return item.is_free ? "Open" : "MudiKit";
+function accessLabel(item: ContentItem): string | null {
+  return item.is_free ? null : "MudiKit";
 }
 
-function topicForItem(item: ContentItem): Exclude<TopicFilter, "all"> {
+function topicForItem(item: ContentItem): ContentTopic {
+  const explicit = item.topic?.trim().toLowerCase();
+  if (explicit && (explicit in CONTENT_TOPIC_LABEL)) {
+    return explicit as ContentTopic;
+  }
   const text = `${item.title} ${item.description ?? ""} ${item.slug} ${item.category}`.toLowerCase();
   if (/(lead|outbound|apollo|maps|scrap|prospect|sdr)/.test(text)) return "lead-gen";
   if (/(sales|call|crm|pipeline|deal|revenue)/.test(text)) return "sales";
   if (/(content|creative|marketing|newsletter|viral|media)/.test(text)) return "marketing";
+  if (/(ai|llm|claude|gpt|model)/.test(text)) return "ai";
+  if (/(ops|automation|workflow|process)/.test(text)) return "ops";
   return "gtm";
 }
 
@@ -141,19 +150,19 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
 
         <div className="flex flex-col gap-5 pt-6 border-t border-white/[0.06]">
           <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.18em] text-foreground/55">
-            <span className="inline-flex items-center gap-2">
-              {accessible ? (
-                <>
-                  <span className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                  {accessLabel(item)}
-                </>
-              ) : (
-                <>
-                  <Lock className="size-3" /> Locked · MudiKit
-                </>
-              )}
-            </span>
-            <span aria-hidden className="inline-block h-3 w-px bg-white/10" />
+            {!accessible ? (
+              <span className="inline-flex items-center gap-2">
+                <Lock className="size-3" /> Locked · MudiKit
+              </span>
+            ) : !item.is_free ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
+                MudiKit
+              </span>
+            ) : null}
+            {(!accessible || !item.is_free) && (
+              <span aria-hidden className="inline-block h-3 w-px bg-white/10" />
+            )}
             <span>{readingHint(item)}</span>
             {item.created_at && (
               <>
@@ -213,19 +222,21 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
         )}
         <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
           <span className="inline-flex items-center gap-1.5">
-            {accessible ? (
-              <>
-                <span className="inline-block size-1.5 rounded-full bg-emerald-300/80" />
-                {accessLabel(item)}
-              </>
-            ) : (
+            {!accessible ? (
               <span className="inline-flex items-center gap-1">
                 <Lock className="size-3" /> MudiKit
               </span>
+            ) : !item.is_free ? (
+              <>
+                <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
+                MudiKit
+              </>
+            ) : (
+              <span>{typeLabel(item)}</span>
             )}
           </span>
           <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
-            Open
+            View
             <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
         </div>
@@ -359,7 +370,15 @@ export default function PlaybooksContent({
   ].filter((type) => type.count > 0);
   const hasMultipleTypes = visibleTypes.length > 1;
   const topicCounts = useMemo(() => {
-    const map: Record<TopicFilter, number> = { all: items.length, "lead-gen": 0, sales: 0, marketing: 0, gtm: 0 };
+    const map: Record<TopicFilter, number> = {
+      all: items.length,
+      "lead-gen": 0,
+      sales: 0,
+      marketing: 0,
+      gtm: 0,
+      ops: 0,
+      ai: 0,
+    };
     for (const item of items) map[topicForItem(item)] += 1;
     return map;
   }, [items]);
@@ -419,8 +438,7 @@ export default function PlaybooksContent({
             <Stat label="Playbooks" value={counts.playbooks} />
             <Stat label="Guides" value={counts.guides} />
             <Stat label="Resources" value={counts.resources} />
-            <Stat label="Open" value={counts.included} />
-            <Stat label="MudiKit" value={counts.paid} />
+            {counts.paid > 0 && <Stat label="MudiKit" value={counts.paid} />}
           </dl>
         </div>
       </section>

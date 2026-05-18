@@ -98,7 +98,7 @@ export async function loadAssetBySlugAndCategories(
   const sql = getDb();
   await ensureContentItemsSchema(sql);
   const rows = (await sql`
-    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE slug = ${slug} AND category = ANY(${categories})
     LIMIT 1

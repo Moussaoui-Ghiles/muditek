@@ -245,7 +245,7 @@ export default async function ToolDetailPage({
   const access = await buildAssetAccess(email, user.id);
   const workbench = getPortalTool(slug);
 
-  if (!workbench) redirect(`/portal/playbooks/${encodeURIComponent(slug)}`);
+  if (!workbench) redirect("/portal/tools");
 
   const locked = workbench.access === "mudikit" && !access.isMudikit && !access.isAdmin;
   return (

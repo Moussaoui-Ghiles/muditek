@@ -4,6 +4,7 @@ export interface ContentItem {
   slug: string;
   description: string | null;
   category: string;
+  topic?: string | null;
   download_url: string;
   file_type: string;
   thumbnail_url: string | null;
@@ -11,6 +12,22 @@ export interface ContentItem {
   is_free: boolean;
   created_at: Date | string;
   updated_at?: Date | string | null;
+}
+
+export const CONTENT_TOPICS = ["lead-gen", "sales", "marketing", "gtm", "ops", "ai"] as const;
+export type ContentTopic = (typeof CONTENT_TOPICS)[number];
+
+export const CONTENT_TOPIC_LABEL: Record<ContentTopic, string> = {
+  "lead-gen": "Lead gen",
+  sales: "Sales",
+  marketing: "Marketing",
+  gtm: "GTM",
+  ops: "Ops",
+  ai: "AI",
+};
+
+export function isContentTopic(value: string | null | undefined): value is ContentTopic {
+  return !!value && (CONTENT_TOPICS as readonly string[]).includes(value.trim().toLowerCase());
 }
 
 export function categoryLabel(category: string): string {

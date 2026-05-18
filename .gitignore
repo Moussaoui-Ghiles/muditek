@@ -37,3 +37,4 @@ next-env.d.ts
 
 # playwright-cli local snapshots
 .playwright-cli/
+.superpowers/

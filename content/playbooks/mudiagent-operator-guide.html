@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The MudiAgent Operator Guide — Muditek</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ─── Reset ─── */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0c;
+    --bg-soft: #111114;
+    --ink: #f5f0eb;
+    --ink-soft: rgba(245, 240, 235, 0.65);
+    --ink-faint: rgba(245, 240, 235, 0.4);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.15);
+    --emerald: #6ee7b7;
+    --hairline: rgba(255, 255, 255, 0.08);
+    --hairline-soft: rgba(255, 255, 255, 0.04);
+    --sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  /* ─── Page (A4 frame, collapses on mobile via .portal-asset-html overrides) ─── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 64px 72px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    page-break-inside: avoid;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* mesh + grid overlay matching home aesthetic */
+  .page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 70%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.018;
+    pointer-events: none;
+  }
+  .page > * { position: relative; z-index: 1; }
+
+  /* ─── Footer (page chrome) ─── */
+  .foot {
+    position: absolute;
+    bottom: 28px;
+    left: 72px;
+    right: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    z-index: 1;
+  }
+  .foot .brand { display: inline-flex; align-items: center; gap: 8px; }
+  .foot .brand-dot {
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 1px;
+  }
+
+  /* ─── Eyebrow ─── */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .eyebrow .rule {
+    width: 28px; height: 1px;
+    background: rgba(245, 158, 11, 0.5);
+  }
+
+  /* ─── Headlines ─── */
+  h1.display {
+    font-weight: 900;
+    font-size: 88px;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1.display .accent {
+    color: var(--amber);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  h1.title {
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1.title .accent { color: var(--amber); font-style: italic; font-weight: 500; }
+
+  h2.section {
+    font-weight: 900;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-wrap: balance;
+    margin-bottom: 28px;
+  }
+  h2.section .accent { color: var(--amber); font-style: italic; font-weight: 500; }
+
+  h3.sub {
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  h3.sub .accent { color: var(--amber); }
+
+  h4.minor {
+    font-weight: 800;
+    font-size: 14px;
+    line-height: 1.3;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  /* ─── Body ─── */
+  p, li {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+  p + p { margin-top: 14px; }
+  strong { color: var(--ink); font-weight: 700; }
+  em { font-style: italic; }
+  .lead {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink);
+    font-weight: 400;
+    margin-bottom: 24px;
+    max-width: 560px;
+  }
+
+  ul { padding-left: 0; list-style: none; }
+  ul li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 10px;
+  }
+  ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 8px;
+    height: 1px;
+    background: var(--amber);
+  }
+  ol { padding-left: 22px; }
+  ol li { margin-bottom: 10px; }
+  ol li::marker { color: var(--amber); font-weight: 700; }
+
+  /* ─── Code blocks ─── */
+  pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--bg-soft);
+    border: 1px solid var(--hairline);
+    border-left: 2px solid var(--amber);
+    border-radius: 2px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 18px 0;
+  }
+  code:not(pre code) {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--amber);
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 2px;
+    padding: 1px 6px;
+  }
+  pre code { font-family: inherit; color: inherit; background: none; border: none; padding: 0; font-size: inherit; }
+
+  /* ─── Callouts ─── */
+  .callout {
+    border-left: 2px solid var(--amber);
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.06), transparent 60%);
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 0 2px 2px 0;
+  }
+  .callout .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .callout p {
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  /* ─── Stat grid ─── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px 32px;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding: 28px 0;
+    margin: 28px 0;
+  }
+  .stat dt {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .stat dd {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ─── Cards ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    padding: 22px 24px;
+    position: relative;
+  }
+  .card .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card h4 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .card p { font-size: 13.5px; line-height: 1.65; }
+
+  /* ─── Image frames ─── */
+  .figure {
+    margin: 28px 0;
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .figure .caption {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 12px 18px;
+    border-top: 1px solid var(--hairline);
+    background: var(--bg-soft);
+  }
+  .figure.split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .figure.split img { border-right: 1px solid var(--hairline); }
+  .figure.split img:last-child { border-right: none; }
+
+  /* ─── Tag chips ─── */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 28px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--hairline);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 12px;
+    border-radius: 2px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .chip.amber {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.08);
+    color: var(--amber);
+  }
+  .chip.emerald {
+    border-color: rgba(110, 231, 183, 0.3);
+    background: rgba(110, 231, 183, 0.06);
+    color: var(--emerald);
+  }
+  .chip-dot {
+    width: 6px; height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+  }
+
+  /* ─── Cover (page 1) ─── */
+  .cover {
+    height: 100%;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 80px 80px 110px;
+  }
+  .cover-top { display: flex; align-items: center; justify-content: space-between; }
+  .cover-brand { display: inline-flex; align-items: center; gap: 12px; }
+  .cover-brand img { height: 24px; width: auto; }
+  .cover-brand .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cover-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .cover-headline {
+    margin-top: auto;
+  }
+  .cover-headline .eyebrow { font-size: 13px; }
+  .cover-bottom {
+    border-top: 1px solid var(--hairline);
+    padding-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .cover-meta-block dt {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .cover-meta-block dd {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── Diagrams ─── */
+  .ascii {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    background: var(--bg-soft);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    padding: 24px 28px;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 20px 0;
+  }
+
+  /* ─── Two-column body ─── */
+  .twocol {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    align-items: start;
+    margin: 24px 0;
+  }
+
+  /* ─── Final page ─── */
+  .closing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 297mm;
+    padding: 80px;
+    align-items: flex-start;
+  }
+  .closing h1 {
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .closing h1 .accent { color: var(--amber); font-style: italic; font-weight: 500; }
+
+  /* ─── Sidebar note ─── */
+  .aside {
+    border: 1px solid var(--hairline);
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 2px;
+    padding: 20px 22px;
+  }
+  .aside .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .aside h4 { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .aside p { font-size: 13px; line-height: 1.65; }
+
+  /* ─── Print/PDF tuning ─── */
+  @page { size: A4; margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ PAGE 1 — COVER ═══════════════════════════ -->
+<div class="page cover">
+  <div class="cover-top">
+    <div class="cover-brand">
+      <img src="/playbooks/mudiagent-operator-guide/muditek-logo.svg" alt="Muditek">
+      <span class="label">Muditek · Operator Library</span>
+    </div>
+    <span class="cover-meta">Guide · 01</span>
+  </div>
+
+  <div class="cover-headline">
+    <p class="eyebrow"><span class="rule"></span>The MudiAgent Operator Guide</p>
+    <h1 class="display">Build a marketing<br>company on <span class="accent">one VPS</span>.</h1>
+    <p style="margin-top: 32px; max-width: 600px; font-size: 18px; line-height: 1.65; color: var(--ink-soft);">
+      How to operate and master MudiAgent. Set up the agent control room, configure
+      specialist agents, and grow from one agent on a laptop to a fully automated
+      agent team that ships work while the operator sleeps.
+    </p>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-meta-block">
+      <dt>Audience</dt>
+      <dd>Operators, marketers, founders</dd>
+    </div>
+    <div class="cover-meta-block">
+      <dt>Outcome</dt>
+      <dd>A fleet that ships without babysitting</dd>
+    </div>
+    <div class="cover-meta-block">
+      <dt>Format</dt>
+      <dd>Architecture · Setup · Methodology</dd>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 2 — WHAT'S INSIDE ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>What's inside</p>
+  <h1 class="title">An end-to-end map from <span class="accent">one agent</span> to a full team.</h1>
+
+  <p class="lead" style="margin-top: 28px;">
+    Most agent tools answer questions. MudiAgent runs workflows end-to-end: it navigates
+    a browser, executes terminal commands, schedules cron jobs, monitors inboxes, drafts
+    the work, and posts the result wherever operators live. This guide explains how to
+    operate it, scale it, and trust it with real work.
+  </p>
+
+  <h4 class="minor" style="margin-top: 40px;">Inside this guide</h4>
+  <ul style="margin-top: 14px;">
+    <li>What MudiAgent is and why operators (not just engineers) should care</li>
+    <li>The reader-friendly architecture: brain, personality, skillset, and how they live in one folder</li>
+    <li>Real use cases running on MudiAgent right now, from a personal assistant to an SEO factory</li>
+    <li>The four-part mental model and the four levels of setup, from "one agent on a laptop" to "a documented team on a VPS controllable from a phone"</li>
+    <li>The prototype → production methodology that takes a messy workflow to autonomous deployment</li>
+    <li>The honest trade-offs and where the framework still has rough edges</li>
+  </ul>
+
+  <div class="callout" style="margin-top: 36px;">
+    <div class="label">Operator note</div>
+    <p>Nothing in this guide requires writing custom skills on day one. Run real work,
+    let the harness watch, and let the framework grow its own skill library. The
+    fastest path to a custom MudiAgent is to use it, not to prompt-engineer it.</p>
+  </div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>02</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 3 — WHAT MUDIAGENT IS ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>The framework</p>
+  <h1 class="title">An autonomous agent that gets more capable the <span class="accent">longer it runs.</span></h1>
+
+  <div class="twocol" style="margin-top: 36px;">
+    <div>
+      <p>
+        MudiAgent is Muditek's enterprise build of a persistent operator framework.
+        It owns memory that survives between sessions. It writes its own skills as it
+        works. It ships with a curated bundle of operator skills covering GitHub
+        workflows, Obsidian, Google Workspace, Linear, Notion, browser control, web
+        scraping, vision, voice, and scheduling out of the box.
+      </p>
+      <p>
+        It lives wherever it is deployed: a laptop, a Docker container, a VPS, or a
+        serverless runtime. Operators reach it through whatever surface they already
+        use: Telegram, Discord, Slack, email, voice mode, or the terminal itself.
+      </p>
+      <p>
+        The closed learning loop is what separates this from a smart chatbot. The
+        agent watches itself work, writes new skills as it learns the shape of the
+        operator's work, refines its memory periodically, and recalls past context
+        across sessions. It does not have to be re-taught next week.
+      </p>
+    </div>
+    <div class="aside">
+      <div class="label">Two philosophies</div>
+      <h4>Rails vs Linux</h4>
+      <p style="margin-bottom: 12px;"><strong style="color: var(--amber);">MudiAgent is rails.</strong>
+      Opinionated defaults. Batteries included. Productive on day one with minimal setup.
+      The agent does more thinking for the operator.</p>
+      <p><strong style="color: var(--ink);">Primitive-first frameworks are Linux.</strong>
+      Maximum control, explicit wiring, the agent does exactly what it was told and
+      nothing more. Both are valid. The defaults of rails compound; the predictability
+      of primitives reassures. Pick the taste that matches the team.</p>
+    </div>
+  </div>
+
+  <h4 class="minor" style="margin-top: 40px;">Where MudiAgent earns its keep</h4>
+  <ul style="margin-top: 14px;">
+    <li>Persistent memory across every session, queryable across months of work</li>
+    <li>A bundled skill library that grows with use, never shrinks</li>
+    <li>One framework, multiple deployment targets (local, Docker, SSH, serverless)</li>
+    <li>Tool-gateway routing to whichever model fits the task (creative work to one model, structured work to another)</li>
+    <li>Twenty-plus messaging surfaces so the operator never has to switch tools to reach it</li>
+  </ul>
+
+  <div class="figure">
+    <img src="/playbooks/mudiagent-operator-guide/HG6c_8nbcAAFdzt.jpg" alt="MudiAgent operating an end-to-end workflow">
+    <div class="caption">Fig. 01 — A persistent operator routing across messaging surfaces, tools, and memory</div>
+  </div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>03</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 4 — ARCHITECTURE ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Architecture</p>
+  <h2 class="section">Every agent has three things. <span class="accent">Brain. Soul. Skillset.</span></h2>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 28px;">
+    <div class="card">
+      <div class="label">01 · Brain</div>
+      <h4>Memory that persists</h4>
+      <p>Memory lives at <code>~/.mudiagent/memories/</code>. Two files,
+      <code>MEMORY.md</code> and <code>USER.md</code>, inject at session start. Voice
+      rubric, brand notes, customer language, last week's corrections — all of it
+      loads before the first prompt. Sessions stored in SQLite, recall is full-text
+      searchable across the entire history.</p>
+    </div>
+    <div class="card">
+      <div class="label">02 · Soul</div>
+      <h4>Personality on demand</h4>
+      <p><code>soul.md</code> is where the vibe lives. Concise, sarcastic, blunt,
+      formal, fast or thoughtful. Six agents can share one brain but wear six
+      different souls. One closer-energy outbound rep. One long-form researcher. One
+      terse assistant. The skin is configurable; the underlying state is the same.</p>
+    </div>
+    <div class="card">
+      <div class="label">03 · Skillset</div>
+      <h4>Bundled, then grown</h4>
+      <p>A curated skill library ships in the box: PR workflows, Obsidian, Google
+      Workspace, Linear, Notion, browser control, web scraping, vision, voice,
+      scheduling. As the agent works, it writes new skills along the way. The
+      library compounds on top of the bundle. The operator never writes the boring
+      ones from scratch.</p>
+    </div>
+  </div>
+
+  <h3 class="sub" style="margin-top: 36px;">What the agent can talk to</h3>
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card">
+      <h4>Tool gateway</h4>
+      <p>One subscription routes to many model providers, plus web scraping and
+      browser automation built in. Switch model per agent or per task.</p>
+    </div>
+    <div class="card">
+      <h4>MCP integration</h4>
+      <p>Any external service that speaks the Model Context Protocol becomes a tool
+      the agent can use immediately. No bespoke wrapper needed.</p>
+    </div>
+    <div class="card">
+      <h4>Messaging surfaces</h4>
+      <p>Telegram, Discord, Slack, email, voice, the CLI itself. The agent meets
+      the operator wherever they already work.</p>
+    </div>
+  </div>
+
+  <h3 class="sub" style="margin-top: 36px;">And where the agent can live</h3>
+  <ul>
+    <li><strong>Laptop</strong> — local, fastest to start, lives and dies with the machine</li>
+    <li><strong>Docker container</strong> — isolated, portable, the recommended default for fleet work</li>
+    <li><strong>SSH session on a VPS</strong> — keeps running with the laptop closed</li>
+    <li><strong>Serverless runtimes</strong> — Daytona, Singularity, Modal — no infrastructure to manage</li>
+  </ul>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>04</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 5 — USE CASES ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Use cases</p>
+  <h2 class="section">What an operating team actually runs on <span class="accent">MudiAgent</span>.</h2>
+
+  <p class="lead">
+    A working fleet is not theoretical. Below is the actual catalog a marketing
+    operator runs today. Each role earns its container.
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="label">Role · Assistant</div>
+      <h4>Personal assistant</h4>
+      <p>Handles business and private. Lives in Telegram. Flags the four emails worth
+      reading every morning. Schedules reminders. Summarizes meetings missed.</p>
+    </div>
+    <div class="card">
+      <div class="label">Role · Lab</div>
+      <h4>Workflow prototyping bench</h4>
+      <p>Where new flows get tested: lead magnet, ad creative review, content sprint.
+      Two or three runs against real work before a flow is promoted to its own
+      container.</p>
+    </div>
+    <div class="card">
+      <div class="label">Role · Specialists</div>
+      <h4>Specialized agents</h4>
+      <p>SEO, outbound / BD, design review, content writing. Each one with its own
+      soul, its own scope, its own credentials. No mega-agent confusion.</p>
+    </div>
+    <div class="card">
+      <div class="label">Role · Memory</div>
+      <h4>Company brain</h4>
+      <p>Monitors Slack, chats, emails, transcripts, voice memos. Everything becomes
+      queryable. "What did we tell that client about pricing last month?" gets
+      answered in three seconds instead of thirty minutes of digging.</p>
+    </div>
+    <div class="card">
+      <div class="label">Role · Factory</div>
+      <h4>SEO agent</h4>
+      <p>Runs the full pipeline from keyword seed to published article in one Docker
+      container. Twenty-one steps. No human in the middle until the final review.</p>
+    </div>
+    <div class="card">
+      <div class="label">Role · Distribution</div>
+      <h4>Content distribution agent</h4>
+      <p>Takes long-form (this guide, for example) and atomizes it across LinkedIn,
+      X, Threads, with platform-specific hooks per channel.</p>
+    </div>
+  </div>
+
+  <div class="figure">
+    <img src="/playbooks/mudiagent-operator-guide/HG6dAPObQAEju_z.jpg" alt="Org chart of an agent fleet across docker containers on one VPS">
+    <div class="caption">Fig. 02 — Four layers of an agent fleet, every layer in its own container on one VPS</div>
+  </div>
+
+  <div class="callout">
+    <div class="label">Operator note</div>
+    <p>One orchestrator agent reads the company brain, picks the right department,
+    and routes the work. It does not produce output itself; it just makes sure the
+    right specialist sees the right task with the right context.</p>
+  </div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>05</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 6 — SEO PIPELINE DEEP DIVE ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Deep dive · SEO factory</p>
+  <h2 class="section">Five layers. One container. <span class="accent">Twenty-one steps</span> from seed to published.</h2>
+
+  <p class="lead">
+    The SEO agent is the cleanest mapping of the general architecture. Three sub-agents,
+    one shared container, one set of credentials, sequential handoff through memory.
+  </p>
+
+  <h3 class="sub" style="margin-top: 28px;">The twenty-one steps</h3>
+  <pre><code>[research + ideate]
+01  keyword seed
+02  serp snapshot
+03  competitor extraction
+04  intent + format analysis
+05  content + visual gap
+06  internal validation
+07  external validation
+
+[production]
+08  angle + positioning brief
+09  visual strategy brief
+10  outline
+11  draft
+12  image gen
+13  flowchart gen
+14  visual qa
+15  article qa
+
+[distribution]
+16  publish prep
+17  schema
+18  internal linking
+19  syndication
+20  analytics setup
+21  monitoring</code></pre>
+
+  <h3 class="sub" style="margin-top: 28px;">Layers above the pipeline</h3>
+  <ul>
+    <li><strong>Company brain</strong> at the top: vision, brand, audience, products. Every agent inherits from this.</li>
+    <li><strong>Orchestrator agent:</strong> takes the topic or keyword seed and routes it to the SEO agent.</li>
+    <li><strong>SEO brain:</strong> ranking playbook, voice rules, content formats, visual style guide, success criteria per format. All SEO-specific context lives here.</li>
+    <li><strong>Three sub-agents</strong> inside the SEO container, one per phase: research + ideate, production, distribution.</li>
+    <li><strong>One Docker container</strong> holds all three sub-agents. They share env, memory, and tools. Sub-profiles switch context per phase. One process, one filesystem, one set of credentials.</li>
+  </ul>
+
+  <div class="callout">
+    <div class="label">Why one container</div>
+    <p>SEO work is sequential. Research feeds the brief, the brief feeds production,
+    production feeds distribution. Every step needs memory of what was decided
+    upstream. Splitting into three containers means shuttling state across
+    boundaries, which gets expensive and breaks the chain.</p>
+  </div>
+
+  <p style="margin-top: 24px;">
+    Every other specialized agent runs on the same template. Clone the SEO agent,
+    swap the brain (SEO brain → outbound brain, or → design brain, or → support
+    brain), and a new role exists with the same five-layer shape.
+  </p>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>06</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 7 — MENTAL MODEL ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Mental model</p>
+  <h2 class="section">From one agent to a <span class="accent">full fleet</span>.</h2>
+
+  <p class="lead">
+    Before the levels, the four parts. Internalize these; the rest of this guide
+    becomes navigation rather than learning.
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="label">01 · Operator</div>
+      <h4>You</h4>
+      <p>Direct access to every part of the system. The decision-maker, the editor,
+      the only voice that matters when taste is on the line.</p>
+    </div>
+    <div class="card">
+      <div class="label">02 · Side control plane</div>
+      <h4>Agent control room</h4>
+      <p>Not an agent the operator chats with. A folder at <code>/root/vps-agents</code>
+      that documents and governs the fleet. Opened, edited, inspected, or read by
+      another agent when managing the system.</p>
+    </div>
+    <div class="card">
+      <div class="label">03 · Workers</div>
+      <h4>MudiAgent specialists</h4>
+      <p>The workers. Some are specialists (SEO, dev, CMO, ops, life). One of them
+      can optionally be an orchestrator that routes across the rest.</p>
+    </div>
+    <div class="card">
+      <div class="label">04 · Optional desk</div>
+      <h4>Agent task bus</h4>
+      <p>An optional handoff desk between the orchestrator and the specialists. Only
+      needed once an orchestrator is in play. Skip until then.</p>
+    </div>
+  </div>
+
+  <div class="ascii">┌───────┐
+│  YOU  │ the operator
+└───┬───┘
+    │
+    ┌─────────────────────────────┼─────────────────────────────┐
+    │                             │                             │
+control path              orchestrated path                direct path
+    │                             │                             │
+    ▼                             ▼                             ▼
+┌────────────────────┐    ┌────────────────────┐    ┌────────────────────┐
+│ AGENT CONTROL ROOM │    │    ORCHESTRATOR    │    │ SPECIALIST AGENT   │
+│  /root/vps-agents  │    │  (optional door)   │    │                    │
+│                    │    └─────────┬──────────┘    │  seo · dev · cmo · │
+│ docs · rules ·     │              │ delegates     │   ops · life       │
+│ runbooks · env-map │              ▼               │                    │
+│ · registry         │    ┌────────────────────┐    │  talk to it        │
+│                    │    │   AGENT TASK BUS   │    │  directly,         │
+│ side control plane │    │   /srv/agent-bus   │    │  no routing        │
+│  no raw secrets    │    └─────────┬──────────┘    │                    │
+└────────────────────┘              │ routes        │                    │
+                                    └──────────────►│                    │
+                                                    └────────────────────┘
+
+the agent control room governs every agent in this diagram. it is the
+single source of truth, and the place to go to manage the fleet, not
+the place to go to run work through it.</div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>07</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 8 — STORAGE SPLIT ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Storage split</p>
+  <h2 class="section">Control room and runtime. <span class="accent">Brain</span> and <span class="accent">body</span>.</h2>
+
+  <p class="lead">
+    The clearest design decision in the whole stack. Get this right and the rest of
+    the system gets easier. Get this wrong and every level after one becomes painful.
+  </p>
+
+  <pre><code>/root/vps-agents → control room: docs, rules, runbooks, architecture
+                   no raw secrets, ever
+
+/srv/&lt;agent-name&gt;/data → live runtime: secrets, memory, skills, sessions, crons
+                         this is where each MudiAgent lives</code></pre>
+
+  <p style="margin-top: 20px;">
+    The control room contains the answers to questions like which agents exist, what
+    they do, what ports they use, what credentials they reference, what each agent
+    can and cannot do, and how to restart, debug, or rebuild any of them. The live
+    runtime contains the actual workings.
+  </p>
+
+  <div class="callout">
+    <div class="label">The principle</div>
+    <p>The control room is the brain that defines the system. The live runtime is
+    the body that runs it. <strong style="color: var(--amber);">You can rebuild the
+    body from the brain. You cannot rebuild the brain from the body.</strong></p>
+  </div>
+
+  <h3 class="sub" style="margin-top: 32px;">Inside the control room</h3>
+  <pre><code>/root/vps-agents/
+├── README.md
+├── CLAUDE.md
+├── agents/
+│   └── &lt;agent-name&gt;/
+│       ├── inventory.md
+│       ├── docker.md
+│       ├── env-map.md
+│       ├── runbook.md
+│       └── backup.md
+└── shared/
+    ├── security.md
+    ├── commands.md
+    ├── api-keys-sop.md
+    └── orchestrator-and-fleet-skills.md</code></pre>
+
+  <h3 class="sub" style="margin-top: 28px;">Inside each agent's runtime at <code>/srv/&lt;agent-name&gt;/data/</code></h3>
+  <pre><code>.env
+config.yaml
+SOUL.md
+memories/
+skills/
+cron/
+sessions/
+logs/
+state.db</code></pre>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>08</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 9 — THREE PATHS ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Interaction</p>
+  <h2 class="section">Three ways an operator <span class="accent">talks to the fleet</span>.</h2>
+
+  <div class="ascii" style="margin-top: 28px;">control path:
+you ──────► agent control room
+            (add agents, rotate keys, update docs, debug setup)
+
+direct path:
+you ──────► mudiagent-seo
+            (talk to a specialist directly, fastest)
+
+orchestrated path:
+you ──► mudiagent-orchestrator ──► task bus ──► specialists ──► you
+        (one front door, routes and synthesizes multi-agent work)</div>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 32px;">
+    <div class="card">
+      <div class="label">Control path</div>
+      <h4>Meta layer</h4>
+      <p>Used when adding agents, reviewing docs, checking ports, rotating keys, or
+      debugging setup. Not where work happens.</p>
+    </div>
+    <div class="card">
+      <div class="label">Direct path</div>
+      <h4>Fastest</h4>
+      <p>Used when the operator already knows which agent owns the job. No routing
+      hop, no orchestrator latency.</p>
+    </div>
+    <div class="card">
+      <div class="label">Orchestrated path</div>
+      <h4>Synthesizer</h4>
+      <p>Used when one front door should route and combine work across multiple
+      specialists. Worth the latency for cross-functional tasks.</p>
+    </div>
+  </div>
+
+  <div class="figure">
+    <img src="/playbooks/mudiagent-operator-guide/HIIpUelaMAAKC-o.jpg" alt="Specialist agent UI rendering in the operator's interface">
+    <div class="caption">Fig. 03 — Specialist agent surface, accessed via the direct path</div>
+  </div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>09</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 10 — LEVELS 1+2 ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Levels 1 & 2</p>
+  <h2 class="section">Start with <span class="accent">one</span>. Earn the right to scale.</h2>
+
+  <h3 class="sub" style="margin-top: 32px;">Level 1 · One agent</h3>
+  <p>
+    One MudiAgent. That is it. The control room can still exist (recommended) but it
+    only documents that one agent.
+  </p>
+  <div class="ascii">you → one mudiagent
+
+control room → documents that one agent</div>
+
+  <p><strong>Best for:</strong> initial setup, the personal MudiAgent, root install
+  documentation, simple Docker migration.</p>
+
+  <p style="margin-top: 14px;">
+    One agent, lived-in, with a personality the operator has tuned and a memory that
+    has started to build. Fill in <code>SOUL.md</code> with the voice. Fill in
+    <code>MEMORY.md</code> with the stable facts about the business. Fill in
+    <code>USER.md</code> with the stable facts about the operator. Connect it to
+    Telegram or Discord so it lives where the work already lives. Start using it on
+    real tasks. Let it touch tools. Let it write its own skills along the way.
+  </p>
+
+  <h3 class="sub" style="margin-top: 32px;">Level 2 · Direct specialists</h3>
+  <p>
+    Multiple specialized agents, still talked to directly. No orchestrator yet.
+  </p>
+  <div class="ascii">you → mudiagent-life
+you → mudiagent-seo
+you → mudiagent-dev
+you → mudiagent-cmo
+
+the control room documents all of them.</div>
+
+  <p><strong>Best for:</strong> clear role separation, testing which agents are
+  useful, avoiding premature orchestration, keeping credentials scoped per agent.</p>
+
+  <div class="callout">
+    <div class="label">Trap to avoid</div>
+    <p>Do not reach for an orchestrator before specialists have proven they are
+    useful. Spin up two or three, run them directly, only add an orchestrator when
+    the operator finds themselves wanting one front door. Premature orchestration
+    is the most common way to ship a fleet that nobody uses.</p>
+  </div>
+
+  <h4 class="minor" style="margin-top: 28px;">When to spin up a new agent</h4>
+  <ul>
+    <li>It needs its own credentials → new agent</li>
+    <li>It needs its own long-term memory → new agent</li>
+    <li>It owns ongoing repeated work that is a separate role → new agent</li>
+    <li>Otherwise, stay with what you have</li>
+  </ul>
+
+  <p style="margin-top: 14px;">
+    <strong>Bad pattern:</strong> one mega-agent with every credential and every
+    memory layer mashed together. Isolation gone, ability to revoke access cleanly
+    gone, and the agent gets confused about which voice to use for which surface.
+  </p>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>10</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 11 — LEVELS 3+4 ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Levels 3 & 4</p>
+  <h2 class="section">From a team to a <span class="accent">department that ships</span> on its own.</h2>
+
+  <h3 class="sub" style="margin-top: 32px;">Level 3 · Orchestrator + specialists</h3>
+  <p>
+    Add <code>mudiagent-orchestrator</code> as a front door. The operator can still
+    talk directly to specialists, but the orchestrator can now route work and
+    synthesize results.
+  </p>
+  <p>
+    The orchestrator reads the control room to know which agents exist, what each
+    one does, where task queues live, what requires approval, which actions are
+    forbidden, and where docs and runbooks are. It does not need to be told any of
+    that — it reads it from the source of truth.
+  </p>
+
+  <p><strong>Best for:</strong> cross-functional work, delegation, summary and
+  synthesis, one main interface for multi-agent workflows.</p>
+
+  <div class="callout">
+    <div class="label">The earning moment</div>
+    <p>The orchestrator is when the setup stops being a collection of agents and
+    starts being a team. It is also the moment the control room earns its keep,
+    because the orchestrator is only as good as the docs it reads.</p>
+  </div>
+
+  <h4 class="minor" style="margin-top: 28px;">A quick check-in from a laptop or phone</h4>
+  <pre><code>$ ssh mudiagent
+welcome to mudiagent-vps-1.
+last login: thu may 15 09:14:22
+
+mudiagent-vps-1 ~ $ cd vps-agents
+mudiagent-vps-1 ~/vps-agents $ docker ps --format \
+"table {{.Names}}\t{{.Status}}\t{{.Image}}"
+
+NAMES                     STATUS        IMAGE
+mudiagent-orchestrator    up 14 hours   mudiagent-runtime
+mudiagent-seo             up 8 hours    mudiagent-runtime
+mudiagent-cmo             up 8 hours    mudiagent-runtime
+mudiagent-outbound        up 4 hours    mudiagent-runtime
+mudiagent-life            up 12 hours   mudiagent-runtime
+
+mudiagent-vps-1 ~/vps-agents $ cat agents/mudiagent-seo/runbook.md
+# runbook: mudiagent-seo
+restart: docker compose restart mudiagent-seo
+logs:    docker logs -f mudiagent-seo
+shell:   docker exec -it mudiagent-seo bash
+...</code></pre>
+
+  <h3 class="sub" style="margin-top: 32px;">Level 4 · Automated team</h3>
+  <p>
+    Same shape as level 3, with recurring workflows and stronger automation. Weekly
+    SEO reports run on cron. Server health checks fire daily. Backup verification
+    runs without anyone asking. Cross-agent business workflows kick off on schedule.
+  </p>
+
+  <p style="margin-top: 14px;">
+    Level 4 is what a marketing department in a terminal looks like. It does not
+    need an operator to start the day. It shows up to work on its own, files
+    reports, checks itself, and only pings the operator for the decisions that
+    need taste.
+  </p>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>11</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 12 — SETUP FLOW ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Setup</p>
+  <h2 class="section">Point an agent at the control-room template. <span class="accent">Walk away.</span></h2>
+
+  <p class="lead">
+    The template holds the exact structure described above, plus the skills the
+    agent needs to set up the fleet. Manual clone works; the point is that nothing
+    has to be manual. With another agent on the laptop and a Hetzner API key, the
+    plane lands itself.
+  </p>
+
+  <h3 class="sub" style="margin-top: 28px;">The automated flow</h3>
+  <div class="ascii">you ──► generate a Hetzner API key
+        (5 min: sign up, generate a token, drop it in .env)
+            │
+            ▼
+agent ──► create-vps skill
+          spins up a Hetzner box, generates an SSH key,
+          writes the alias to ~/.ssh/config so `ssh mudiagent` works
+            │
+            ▼
+agent ──► setup-control-room skill
+          installs Node, Docker, the agent runtime, then clones the
+          template to the VPS at /root/agent-control-room
+            │
+            ▼
+you ──► finish interactive auth on the VPS
+            │
+            ▼
+agent ──► agent-control-room skill
+          registers the first mudiagent in the docs,
+          fills in the runbook, sets up the env-map
+            │
+            ▼
+you are at level 1 with a documented agent</div>
+
+  <h4 class="minor" style="margin-top: 28px;">Within ten to fifteen minutes</h4>
+  <ul>
+    <li>A fresh Hetzner VPS with the right tooling installed</li>
+    <li>The control room cloned at <code>/root/agent-control-room</code> on the VPS</li>
+    <li>Bundled skills linked into the local skill directory on the VPS</li>
+    <li>One MudiAgent registered, runbook filled in, env-map written</li>
+    <li>An SSH alias on the laptop so <code>ssh mudiagent</code> connects instantly</li>
+  </ul>
+
+  <div class="figure">
+    <img src="/playbooks/mudiagent-operator-guide/HIX8GPyWAAAQd4c.jpg" alt="Terminal output showing the agent control room layout">
+    <div class="caption">Fig. 04 — Terminal view of a documented fleet</div>
+  </div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>12</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 13 — PROTOTYPE → PROD ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Methodology</p>
+  <h2 class="section">Prototype → production. <span class="accent">Grow agents, don't write them.</span></h2>
+
+  <p class="lead">
+    Most workflows do not start as production ones. They start messy. A flow that
+    runs SEO research, drafts an article, schedules it, and posts to LinkedIn does
+    not exist fully formed in anyone's head. It gets discovered by running it.
+  </p>
+
+  <p>MudiAgent is the prototyping environment for this. Four steps from messy idea
+  to autonomous deployment.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="label">Step 01</div>
+      <h4>Prototype in MudiAgent</h4>
+      <p>Open the main MudiAgent. Describe what should happen. Let it try. It will
+      get most of it wrong on the first run. That is fine.</p>
+    </div>
+    <div class="card">
+      <div class="label">Step 02</div>
+      <h4>Run it 2–3 times</h4>
+      <p>Against real work. Correct drift each time. The harness watches every
+      correction and starts writing the skill as it learns the shape. By run three
+      the agent is doing most of the work without coaching.</p>
+    </div>
+    <div class="card">
+      <div class="label">Step 03</div>
+      <h4>Fine-tune in a workspace</h4>
+      <p>Pull the workflow into a dedicated workspace (or a fresh MudiAgent). Tighten
+      prompts, lock routing, add error handling, decide what runs on cron versus
+      what runs on trigger.</p>
+    </div>
+    <div class="card">
+      <div class="label">Step 04</div>
+      <h4>Deploy to a VPS on schedule</h4>
+      <p>Once the workflow survives a week of real runs without babysitting, push it
+      to its own Docker container on the VPS. Set the cron. Walk away.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="label">The hard-won lesson</div>
+    <p>Nobody writes a production agent from scratch. The ones that ship are grown.
+    MudiAgent makes the growing fast — but the growing is still the work.</p>
+  </div>
+
+  <div class="ascii">prototype in mudiagent
+   │
+   ▼
+fine-tune in a dedicated workspace
+   │
+   ▼
+deploy autonomous on a vps</div>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>13</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 14 — MODELS + TRADE-OFFS ═══════════════════════════ -->
+<div class="page">
+  <p class="eyebrow"><span class="rule"></span>Models & trade-offs</p>
+  <h2 class="section">Pick the model for the work. Then <span class="accent">accept the trade-offs</span>.</h2>
+
+  <h3 class="sub" style="margin-top: 28px;">Models worth routing</h3>
+  <div class="twocol" style="margin-top: 0;">
+    <div>
+      <p>MudiAgent gives the framework. The model underneath is the operator's
+      choice. Through the tool gateway, agents route to many providers from one
+      subscription — switching per agent or per task.</p>
+      <h4 class="minor" style="margin-top: 18px;">A working default</h4>
+      <ul>
+        <li><strong>Frontier creative model</strong> for copywriting, voice, hook generation, content drafting — anywhere taste matters</li>
+        <li><strong>Frontier engineering model</strong> for code, planning, multi-step workflows, browser automation, scraping — anywhere predictability matters</li>
+      </ul>
+      <p style="margin-top: 14px;">Run both. One writes. The other builds and plans.
+      Point each agent at the model that fits the work it does.</p>
+    </div>
+    <div class="aside">
+      <div class="label">If only one</div>
+      <h4>Pick by workload</h4>
+      <p>Heavy on content and copy? Start with the strongest creative model. Heavy
+      on infrastructure, automation, and engineering workflows? Start with the
+      strongest engineering model. The other can be added later through the same
+      gateway without touching agent config.</p>
+    </div>
+  </div>
+
+  <h3 class="sub" style="margin-top: 36px;">Three honest trade-offs</h3>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card">
+      <div class="label">01 · Opinions</div>
+      <h4>Defaults are opinions</h4>
+      <p>MudiAgent ships with strong defaults for memory, skills, and tool usage.
+      That is the pitch. It also means operators who want raw primitives with
+      explicit control over every step will find it heavy. A primitive-first
+      framework is the better fit for that taste.</p>
+    </div>
+    <div class="card">
+      <div class="label">02 · Curve</div>
+      <h4>Levels 3 and 4 take learning</h4>
+      <p>Docker, VPS, SSH, the control-room folder structure, orchestrator skills —
+      none of this is install-and-go. Do not jump to level 3 without already
+      running level 1 daily.</p>
+    </div>
+    <div class="card">
+      <div class="label">03 · Model still matters</div>
+      <h4>Framework can't fix model gap</h4>
+      <p>MudiAgent makes a good model great. It does not make a small model into a
+      strategist. Use the strongest models for the work that matters (orchestrator,
+      strategy, brain). Drop to cheaper models for batch processing and scraping.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 28px;">
+    None of this is magic. It is a framework that pays back because memory persists,
+    skills accumulate, and agents stay scoped. Apply it to the wrong-sized model
+    and the result is a confused team. Apply it to the right one and the result is
+    a team.
+  </p>
+
+  <div class="foot">
+    <span class="brand"><span class="brand-dot"></span>Muditek · MudiAgent Operator Guide</span>
+    <span>14</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 15 — CLOSING ═══════════════════════════ -->
+<div class="page">
+  <div class="closing">
+    <p class="eyebrow"><span class="rule"></span>The starting move</p>
+    <h1>Stop reading. <span class="accent">Run one agent.</span></h1>
+    <p style="margin-top: 36px; max-width: 600px; font-size: 18px; line-height: 1.7; color: var(--ink-soft);">
+      The fastest way to understand MudiAgent is to put a single agent on a laptop,
+      give it a soul, point it at real work, and watch what it does. Everything in
+      this guide compounds from that one move. The control room, the specialists,
+      the orchestrator, the cron jobs — all of it is downstream of an operator who
+      knows their agent because they use it daily.
+    </p>
+
+    <div style="margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; width: 100%; max-width: 720px; border-top: 1px solid var(--hairline); padding-top: 28px;">
+      <div>
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">Today</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.4;">Install on a laptop. Wire <code>SOUL.md</code>.</div>
+      </div>
+      <div>
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">This week</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.4;">Use it on three real tasks. Correct it.</div>
+      </div>
+      <div>
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">This month</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.4;">Spin up the second specialist. Document both.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 80px; display: inline-flex; align-items: center; gap: 12px;">
+      <img src="/playbooks/mudiagent-operator-guide/muditek-logo.svg" alt="Muditek" style="height: 22px;">
+      <span style="font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-soft);">
+        Muditek · MudiAgent Operator Guide
+      </span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

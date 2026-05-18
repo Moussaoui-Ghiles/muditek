@@ -32,6 +32,7 @@ interface ContentItem {
   slug: string;
   description: string | null;
   category: string;
+  topic?: string | null;
   download_url: string;
   file_type: string;
   thumbnail_url: string | null;
@@ -46,12 +47,23 @@ interface Draft {
   slug: string;
   description: string;
   category: string;
+  topic: string;
   downloadUrl: string;
   fileType: string;
   thumbnailUrl: string;
   isFree: boolean;
   isNew: boolean;
 }
+
+const TOPICS = [
+  { value: "", label: "No topic" },
+  { value: "lead-gen", label: "Lead gen" },
+  { value: "sales", label: "Sales" },
+  { value: "marketing", label: "Marketing" },
+  { value: "gtm", label: "GTM" },
+  { value: "ops", label: "Ops" },
+  { value: "ai", label: "AI" },
+];
 
 const CATEGORIES = [
   { value: "skill", label: "Skill" },
@@ -67,6 +79,7 @@ const EMPTY_DRAFT: Draft = {
   slug: "",
   description: "",
   category: "playbook",
+  topic: "",
   downloadUrl: "",
   fileType: "url",
   thumbnailUrl: "",
@@ -92,6 +105,7 @@ function itemToDraft(item: ContentItem): Draft {
     slug: item.slug,
     description: item.description ?? "",
     category: item.category,
+    topic: item.topic ?? "",
     downloadUrl: item.download_url,
     fileType: item.file_type || "url",
     thumbnailUrl: item.thumbnail_url ?? "",
@@ -449,6 +463,11 @@ export default function ContentPage() {
                       <Badge variant="outline" className="rounded-md">
                         {categoryLabel(item.category)}
                       </Badge>
+                      {item.topic && (
+                        <Badge variant="outline" className="rounded-md border-amber-400/30 text-amber-200">
+                          {TOPICS.find((t) => t.value === item.topic)?.label ?? item.topic}
+                        </Badge>
+                      )}
                       {isFileBackedSkill(item) && (
                         <Badge variant="outline" className="rounded-md border-violet-400/30 text-violet-200">
                           File skill
@@ -583,7 +602,7 @@ export default function ContentPage() {
               )}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div className="grid gap-1.5">
                 <Label htmlFor="category">Category</Label>
                 <Select value={draft.category} onValueChange={(value) => updateDraft("category", value ?? "playbook")}>
@@ -594,6 +613,25 @@ export default function ContentPage() {
                     {CATEGORIES.map((category) => (
                       <SelectItem key={category.value} value={category.value}>
                         {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label htmlFor="topic">Topic</Label>
+                <Select
+                  value={draft.topic || "__none__"}
+                  onValueChange={(value) => updateDraft("topic", value === "__none__" ? "" : (value ?? ""))}
+                >
+                  <SelectTrigger id="topic">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TOPICS.map((topic) => (
+                      <SelectItem key={topic.value || "__none__"} value={topic.value || "__none__"}>
+                        {topic.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

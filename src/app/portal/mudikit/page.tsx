@@ -49,7 +49,7 @@ export default async function PortalMudikitPage() {
   });
 
   const dbPaidItems = withDerivedThumbnails((await sql`
-    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE is_free = false
     ORDER BY is_new DESC, created_at DESC

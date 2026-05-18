@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 
-function accessText(item: ContentItem): string {
-  return item.is_free ? "Open" : "MudiKit";
+function accessText(item: ContentItem): string | null {
+  return item.is_free ? null : "MudiKit";
 }
 
 function stripFrontmatter(markdown: string): string {
@@ -99,10 +99,12 @@ export function SkillMarkdownDetailContent({
               <p className="flex flex-wrap items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
                 <span aria-hidden className="h-px w-6 bg-primary/50" />
                 Skill
-                <span aria-hidden className="text-foreground/30">·</span>
-                <span className={item.is_free ? "text-emerald-300" : "text-primary"}>
-                  {accessText(item)}
-                </span>
+                {accessText(item) && (
+                  <>
+                    <span aria-hidden className="text-foreground/30">·</span>
+                    <span className="text-primary">{accessText(item)}</span>
+                  </>
+                )}
               </p>
               <h1 className="mt-6 text-[40px] font-black leading-[0.92] tracking-[-0.04em] text-foreground md:text-[68px]">
                 {item.title}

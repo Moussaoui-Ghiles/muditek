@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const sql = getDb();
   await ensureContentItemsSchema(sql);
   const items = await sql`
-    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     ORDER BY is_free ASC, category ASC, created_at DESC
   `;
@@ -37,7 +37,8 @@ export async function POST(request: Request) {
   if (!admin.authorized) return admin.response;
 
   const body = await request.json();
-  const { title, slug, description, category, downloadUrl, fileType, thumbnailUrl, isFree, isNew } = body;
+  const { title, slug, description, category, topic, downloadUrl, fileType, thumbnailUrl, isFree, isNew } = body;
+  const normalizedTopic = typeof topic === "string" && topic.trim() ? topic.trim().toLowerCase() : null;
   const normalizedSlug = typeof slug === "string" ? slug.trim() : "";
   const normalizedFileType = typeof fileType === "string" && fileType.trim() ? fileType.trim() : "zip";
   const normalizedDownloadUrl =
@@ -58,12 +59,13 @@ export async function POST(request: Request) {
   await ensureContentItemsSchema(sql);
 
   const result = await sql`
-    INSERT INTO content_items (title, slug, description, category, download_url, file_type, thumbnail_url, is_free, is_new, updated_at)
+    INSERT INTO content_items (title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_free, is_new, updated_at)
     VALUES (
       ${title.trim()},
       ${normalizedSlug},
       ${description?.trim() || null},
       ${category.trim()},
+      ${normalizedTopic},
       ${normalizedDownloadUrl},
       ${normalizedFileType},
       ${thumbnailUrl?.trim() || null},

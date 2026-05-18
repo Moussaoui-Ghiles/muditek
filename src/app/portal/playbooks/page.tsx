@@ -45,7 +45,7 @@ export default async function PortalPlaybooksPage() {
   });
 
   const rows = (await sql`
-    SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
+    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE category = ANY(${[...PLAYBOOK_RESOURCE_CATEGORIES]})
     ORDER BY is_new DESC NULLS LAST, created_at DESC

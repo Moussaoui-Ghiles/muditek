@@ -38,8 +38,8 @@ function fileTypeLabel(value: string): string {
   return value.toUpperCase();
 }
 
-function accessLabel(item: ContentItem): string {
-  return item.is_free ? "Open" : "MudiKit";
+function accessLabel(item: ContentItem): string | null {
+  return item.is_free ? null : "MudiKit";
 }
 
 function formatLongDate(value: string | Date | null | undefined): string | null {
@@ -232,8 +232,10 @@ export default function AssetDetailContent({
   const ActionIcon = external ? ExternalLink : Download;
   const created = formatLongDate(item.created_at);
   const updated = formatLongDate(item.updated_at ?? null);
-  const accentClass = item.is_free ? "text-emerald-300" : "text-primary";
-  const accentDot = item.is_free ? "bg-emerald-300/80" : "bg-primary/80";
+  const accentClass = "text-primary";
+  const accessText = accessLabel(item);
+  const isHtml = (item.file_type || "").toLowerCase() === "html";
+  const showDownloadCta = !!downloadHref && !!actionLabel && !(html && isHtml);
 
   return (
     <main className="relative">
@@ -257,8 +259,12 @@ export default function AssetDetailContent({
               <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
                 <span aria-hidden className="h-px w-6 bg-primary/50" />
                 {labels.kindSingular}
-                <span aria-hidden className="text-foreground/30">·</span>
-                <span className={accentClass}>{accessLabel(item)}</span>
+                {accessText && (
+                  <>
+                    <span aria-hidden className="text-foreground/30">·</span>
+                    <span className={accentClass}>{accessText}</span>
+                  </>
+                )}
                 {item.is_new && (
                   <>
                     <span aria-hidden className="text-foreground/30">·</span>
@@ -278,16 +284,12 @@ export default function AssetDetailContent({
                 <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
                   {labels.kindSingular}
                 </span>
-                <span
-                  className={
-                    item.is_free
-                      ? "inline-flex items-center gap-1.5 rounded-[2px] border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200"
-                      : "inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-primary"
-                  }
-                >
-                  <span className={`inline-block size-1.5 rounded-full ${accentDot}`} />
-                  {accessLabel(item)}
-                </span>
+                {accessText && (
+                  <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-primary">
+                    <span className="inline-block size-1.5 rounded-full bg-primary/80" />
+                    {accessText}
+                  </span>
+                )}
                 {item.file_type && (
                   <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
                     {fileTypeLabel(item.file_type)}
@@ -332,10 +334,12 @@ export default function AssetDetailContent({
                   <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Format</dt>
                   <dd className="font-mono uppercase text-foreground">{fileTypeLabel(item.file_type) || "Asset"}</dd>
                 </div>
-                <div className="flex items-center justify-between gap-4 py-3.5">
-                  <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Access</dt>
-                  <dd className={`font-mono ${accentClass}`}>{accessLabel(item)}</dd>
-                </div>
+                {accessText && (
+                  <div className="flex items-center justify-between gap-4 py-3.5">
+                    <dt className="font-black uppercase tracking-[0.2em] text-foreground/55">Access</dt>
+                    <dd className={`font-mono ${accentClass}`}>{accessText}</dd>
+                  </div>
+                )}
               </dl>
               {item.is_free && (
                 <div className="relative border-t border-white/[0.06] px-5 py-4">
@@ -352,7 +356,7 @@ export default function AssetDetailContent({
 
       {/* BODY */}
       <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
-        {downloadHref && actionLabel && (
+        {showDownloadCta && downloadHref && actionLabel && (
           <ScrollReveal>
           <section className="mb-12">
             <div className="card-lift group relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] backdrop-blur-md">
@@ -433,7 +437,7 @@ export default function AssetDetailContent({
               </div>
             </>
           ) : (
-            !downloadHref && (
+            !showDownloadCta && (
               <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.01] p-10 text-[13.5px] leading-7 text-foreground/65">
                 {labels.emptyAssetBody}
               </div>

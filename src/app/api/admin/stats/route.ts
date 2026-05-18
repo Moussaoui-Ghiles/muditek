@@ -39,6 +39,11 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email FROM submissions
         UNION ALL
         SELECT lower(email) AS email FROM resource_leads
+        UNION ALL
+        SELECT lower(email) AS email
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ) lead
     `,
     sql`
@@ -47,6 +52,11 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email, created_at FROM submissions
         UNION ALL
         SELECT lower(email) AS email, created_at FROM resource_leads
+        UNION ALL
+        SELECT lower(email) AS email, subscribed_at AS created_at
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ) lead
       WHERE created_at >= NOW() - INTERVAL '7 days'
     `,
@@ -58,6 +68,11 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email FROM submissions
         UNION
         SELECT lower(email) AS email FROM resource_leads
+        UNION
+        SELECT lower(email) AS email
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ) lead
       WHERE EXISTS (SELECT 1 FROM subscribers WHERE email = lead.email AND status = 'active')`,
     sql`SELECT COUNT(*)::int AS total FROM deliveries WHERE sent_at >= NOW() - INTERVAL '7 days'`,
@@ -74,6 +89,11 @@ export async function GET(request: Request) {
         UNION ALL
         SELECT lower(email) AS email, created_at AS enrolled_at
         FROM resource_leads
+        UNION ALL
+        SELECT lower(email) AS email, subscribed_at AS enrolled_at
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ),
       lead_progress AS (
         SELECT DISTINCT ON (lead.email)

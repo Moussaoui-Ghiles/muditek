@@ -25,6 +25,11 @@ export async function GET(request: Request) {
         UNION ALL
         SELECT lower(email) AS email, name, created_at AS enrolled_at
         FROM resource_leads
+        UNION ALL
+        SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ),
       lead_progress AS (
         SELECT DISTINCT ON (lead.email)
@@ -53,6 +58,11 @@ export async function GET(request: Request) {
         SELECT lower(email) AS email FROM submissions
         UNION
         SELECT lower(email) AS email FROM resource_leads
+        UNION
+        SELECT lower(email) AS email
+        FROM newsletter_subscribers
+        WHERE status = 'active'
+          AND source IN ('portal', 'portal-signup')
       ) lead
       WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
     `,

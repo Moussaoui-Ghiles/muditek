@@ -39,6 +39,11 @@ export async function POST(request: Request) {
       UNION ALL
       SELECT lower(email) AS email, name, created_at AS enrolled_at
       FROM resource_leads
+      UNION ALL
+      SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+        AND source IN ('portal', 'portal-signup')
     )
     SELECT name, enrolled_at
     FROM raw_leads
@@ -57,7 +62,7 @@ export async function POST(request: Request) {
   let target = step;
   if (!target) {
     const sentRows = await sql`
-      SELECT COALESCE(MAX(step), 1) AS last_step FROM sequence_sends WHERE email = ${email}
+      SELECT COALESCE(MAX(step), 1) AS last_step FROM sequence_sends WHERE email = ${normalizedEmail}
     `;
     const lastStep = sentRows[0]?.last_step ?? 1;
     const next = NURTURE_SEQUENCE.find((s) => s.step > lastStep);

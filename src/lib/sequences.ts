@@ -1,8 +1,8 @@
 /**
  * Nurture sequence configuration.
  *
- * Step 1 = resource delivery (handled separately, instant).
- * Steps 2-5 are the nurture emails that move free-resource leads to MudiKit.
+ * Step 1 = portal/resource access (handled separately, instant).
+ * Steps 2-5 are the nurture emails that move portal leads to MudiKit.
  *
  * Voice: direct, factual, specific numbers. No SaaS fluff.
  */
@@ -24,7 +24,7 @@ function wrapEmail(content: string): string {
       </p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 28px 0 18px;" />
       <p style="margin: 0; font-size: 12px; color: #999; line-height: 1.6;">
-        You&rsquo;re on this list because you grabbed a resource from one of my LinkedIn posts.
+        You&rsquo;re on this list because you joined the Muditek portal or opened a resource.
       </p>
     </div>
   `;
@@ -49,7 +49,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           Hey ${safeName},
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          That resource you grabbed is one piece of how I actually run Muditek.
+          The portal resource you opened is one piece of how I actually run Muditek.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           The setup: skills sit in <code style="font-family: ui-monospace, monospace; background: #f5f5f5; padding: 1px 5px; border-radius: 3px; font-size: 14px;">~/.claude/skills/</code>. Claude Code reads them and does the work. Outreach, content, lead capture, client delivery. Most of my day is reviewing what an agent already drafted, not drafting from scratch.
@@ -102,7 +102,7 @@ export const NURTURE_SEQUENCE: SequenceStep[] = [
           ${safeName},
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
-          Most people grab a resource and move on. Some try to build one piece of it. Almost no one connects them.
+          Most people open the portal, grab a resource, and move on. Some try to build one piece of it. Almost no one connects them.
         </p>
         <p style="margin: 0 0 14px; font-size: 16px; line-height: 1.65;">
           Not because they can&rsquo;t. The <em>connections</em> are the part nobody ships in the PDF. The vault structure. The naming conventions skills use to find each other. The decision rules that tell an agent what to do when context is missing.

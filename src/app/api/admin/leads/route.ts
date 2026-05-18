@@ -62,10 +62,38 @@ export async function GET(request: Request) {
         ) AS is_subscriber
       FROM resource_leads rl
       LEFT JOIN content_items ci ON ci.slug = rl.resource_slug
+    ),
+    portal_signups AS (
+      SELECT
+        ns.id,
+        'portal'::text AS source_type,
+        split_part(ns.email, '@', 1) AS name,
+        lower(ns.email) AS email,
+        NULL::text AS comment,
+        true AS verified,
+        true AS delivered,
+        ns.subscribed_at AS created_at,
+        NULL::uuid AS campaign_id,
+        NULL::text AS campaign_title,
+        NULL::text AS campaign_keyword,
+        NULL::boolean AS campaign_active,
+        NULL::text AS resource_slug,
+        NULL::text AS resource_title,
+        'Portal signup'::text AS source_label,
+        (SELECT MAX(step) FROM sequence_sends ss WHERE lower(ss.email) = lower(ns.email)) AS nurture_step,
+        EXISTS (
+          SELECT 1 FROM subscribers sub
+          WHERE lower(sub.email) = lower(ns.email) AND sub.status = 'active'
+        ) AS is_subscriber
+      FROM newsletter_subscribers ns
+      WHERE ns.status = 'active'
+        AND ns.source IN ('portal', 'portal-signup')
     )
     SELECT * FROM campaign_leads
     UNION ALL
     SELECT * FROM resource_unlocks
+    UNION ALL
+    SELECT * FROM portal_signups
     ORDER BY created_at DESC
     LIMIT 500
   `;

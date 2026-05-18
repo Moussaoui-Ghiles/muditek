@@ -67,6 +67,37 @@ export async function GET(
   }
 
   if (!lead) {
+    const portalLeads = await sql`
+      SELECT
+        'portal'::text AS source_type,
+        ns.id,
+        split_part(ns.email, '@', 1) AS name,
+        lower(ns.email) AS email,
+        NULL::text AS comment,
+        true AS verified,
+        true AS delivered,
+        ns.subscribed_at AS created_at,
+        NULL::uuid AS campaign_id,
+        NULL::text AS campaign_title,
+        NULL::text AS campaign_keyword,
+        NULL::text AS campaign_post_url,
+        NULL::text AS campaign_resource_url,
+        NULL::text AS resource_slug,
+        NULL::text AS resource_title,
+        NULL::text AS resource_category,
+        ns.source AS resource_source,
+        NULL::timestamp AS last_seen_at
+      FROM newsletter_subscribers ns
+      WHERE ns.id = ${id}
+        AND ns.status = 'active'
+        AND ns.source IN ('portal', 'portal-signup')
+      LIMIT 1
+    `;
+
+    lead = portalLeads[0];
+  }
+
+  if (!lead) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

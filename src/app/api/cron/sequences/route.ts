@@ -24,6 +24,11 @@ export async function GET(request: Request) {
       UNION ALL
       SELECT lower(email) AS email, name, created_at AS enrolled_at
       FROM resource_leads
+      UNION ALL
+      SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+        AND source IN ('portal', 'portal-signup')
     )
     SELECT DISTINCT ON (email)
       email, name, enrolled_at

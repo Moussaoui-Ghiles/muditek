@@ -23,7 +23,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import LeadDetailSheet from "@/components/admin/lead-detail-sheet";
 
-type LeadSource = "campaign" | "resource";
+type LeadSource = "campaign" | "resource" | "portal";
 
 interface Lead {
   id: string;
@@ -59,6 +59,9 @@ function displayName(lead: Lead): string {
 }
 
 function sourceTitle(lead: Lead): string {
+  if (lead.source_type === "portal") {
+    return lead.source_label || "Portal signup";
+  }
   if (lead.source_type === "resource") {
     return lead.resource_title || lead.resource_slug || "Resource unlock";
   }
@@ -66,6 +69,9 @@ function sourceTitle(lead: Lead): string {
 }
 
 function sourceMeta(lead: Lead): string {
+  if (lead.source_type === "portal") {
+    return "Direct portal account";
+  }
   if (lead.source_type === "resource") {
     return lead.resource_slug ? `/r/${lead.resource_slug}` : "Portal resource";
   }
@@ -106,6 +112,7 @@ export default function LeadsTable() {
     () => ({
       total: leads.length,
       resources: leads.filter((lead) => lead.source_type === "resource").length,
+      portal: leads.filter((lead) => lead.source_type === "portal").length,
       campaigns: leads.filter((lead) => lead.source_type === "campaign").length,
       paying: leads.filter((lead) => lead.is_subscriber).length,
       nurture: leads.filter((lead) => !lead.is_subscriber && (lead.nurture_step ?? 1) < 5).length,
@@ -117,6 +124,7 @@ export default function LeadsTable() {
     const q = search.trim().toLowerCase();
     return leads.filter((lead) => {
       if (sourceFilter === "resource" && lead.source_type !== "resource") return false;
+      if (sourceFilter === "portal" && lead.source_type !== "portal") return false;
       if (sourceFilter === "campaigns" && lead.source_type !== "campaign") return false;
       if (sourceFilter.startsWith("campaign:")) {
         const id = sourceFilter.replace("campaign:", "");
@@ -151,8 +159,8 @@ export default function LeadsTable() {
     <div className="space-y-5">
       <div className="grid gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] sm:grid-cols-4">
         <Stat label="Total leads" value={counts.total} />
+        <Stat label="Portal signups" value={counts.portal} />
         <Stat label="Resource unlocks" value={counts.resources} />
-        <Stat label="Campaign leads" value={counts.campaigns} />
         <Stat label="Needs nurture" value={counts.nurture} />
       </div>
 
@@ -169,6 +177,7 @@ export default function LeadsTable() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All sources</SelectItem>
+            <SelectItem value="portal">Portal signups</SelectItem>
             <SelectItem value="resource">Resource unlocks</SelectItem>
             <SelectItem value="campaigns">All campaigns</SelectItem>
             {campaigns.map((campaign) => (
@@ -234,7 +243,11 @@ export default function LeadsTable() {
                       <div className="font-mono text-xs text-muted-foreground">{lead.email}</div>
                     </TableCell>
                     <TableCell>
-                      {lead.source_type === "resource" ? (
+                      {lead.source_type === "portal" ? (
+                        <Badge className="bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
+                          Portal
+                        </Badge>
+                      ) : lead.source_type === "resource" ? (
                         <Badge className="bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
                           Resource
                         </Badge>
@@ -249,7 +262,9 @@ export default function LeadsTable() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {lead.source_type === "resource" ? (
+                      {lead.source_type === "portal" ? (
+                        <Badge variant="outline">Account created</Badge>
+                      ) : lead.source_type === "resource" ? (
                         <Badge variant="outline">Portal signup</Badge>
                       ) : lead.delivered ? (
                         <Badge>Delivered</Badge>

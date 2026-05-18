@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface LeadDetail {
   submission: {
-    source_type: "campaign" | "resource";
+    source_type: "campaign" | "resource" | "portal";
     id: string;
     name: string;
     email: string;
@@ -56,6 +56,18 @@ function formatDateTime(iso: string): string {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+function sourceBadge(sourceType: LeadDetail["submission"]["source_type"]): string {
+  if (sourceType === "portal") return "Portal signup";
+  if (sourceType === "resource") return "Resource unlock";
+  return "Campaign lead";
+}
+
+function portalResourceHref(category: string | null, slug: string): string {
+  if (category === "skill") return `/portal/skills/${encodeURIComponent(slug)}`;
+  if (category === "tool") return `/portal/tools/${encodeURIComponent(slug)}`;
+  return `/portal/playbooks/${encodeURIComponent(slug)}`;
 }
 
 export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }: Props) {
@@ -127,7 +139,7 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
           <div className="px-6 pb-6 space-y-5">
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline">
-                {detail.submission.source_type === "resource" ? "Resource unlock" : "Campaign lead"}
+                {sourceBadge(detail.submission.source_type)}
               </Badge>
               <Badge variant={detail.submission.verified ? "default" : "secondary"}>
                 {detail.submission.verified ? "Verified" : "Unverified"}
@@ -140,7 +152,12 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
               )}
             </div>
 
-            {detail.submission.source_type === "resource" ? (
+            {detail.submission.source_type === "portal" ? (
+              <Section title="Portal">
+                <Row label="Source" value={detail.submission.resource_source || "portal"} mono />
+                <Row label="Signed up" value={formatDateTime(detail.submission.created_at)} />
+              </Section>
+            ) : detail.submission.source_type === "resource" ? (
               <Section title="Resource">
                 <Row label="Title" value={detail.submission.resource_title || detail.submission.resource_slug || "-"} />
                 <Row label="Slug" value={detail.submission.resource_slug || "-"} mono />
@@ -164,7 +181,14 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
                       size="sm"
                       variant="outline"
                       nativeButton={false}
-                      render={<Link href={`/portal/playbooks/${encodeURIComponent(detail.submission.resource_slug)}`} />}
+                      render={
+                        <Link
+                          href={portalResourceHref(
+                            detail.submission.resource_category,
+                            detail.submission.resource_slug,
+                          )}
+                        />
+                      }
                     >
                       Open in portal
                     </Button>
@@ -190,7 +214,11 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
             )}
 
             <Section title={`Deliveries (${detail.deliveries.length})`}>
-              {detail.submission.source_type === "resource" ? (
+              {detail.submission.source_type === "portal" ? (
+                <p className="text-sm text-muted-foreground">
+                  Direct portal signups do not need a lead magnet delivery email.
+                </p>
+              ) : detail.submission.source_type === "resource" ? (
                 <p className="text-sm text-muted-foreground">
                   Resource unlocks open directly in the portal. No separate delivery email is required.
                 </p>

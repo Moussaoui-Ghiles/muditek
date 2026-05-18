@@ -29,7 +29,7 @@ function localPlaybookPath(downloadUrl: string): string | null {
   const normalized = normalize(relativePath);
   if (!normalized.startsWith("playbooks/") || normalized.includes("..")) return null;
 
-  return join(process.cwd(), "public", normalized);
+  return join(process.cwd(), "content/downloads", normalized);
 }
 
 export async function GET(

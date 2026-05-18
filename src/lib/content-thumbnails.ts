@@ -1,10 +1,32 @@
-import { existsSync, readdirSync } from "fs";
+import { existsSync, readdirSync, readFileSync } from "fs";
 import { join } from "path";
 
 type ThumbnailItem = {
   slug: string;
   thumbnail_url: string | null;
 };
+
+function decodeHtmlAttribute(value: string): string {
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function extractHtmlThumbnail(slug: string): string | null {
+  try {
+    const html = readFileSync(join(process.cwd(), "content/playbooks", `${slug}.html`), "utf-8");
+    const image = Array.from(html.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi))
+      .map((match) => decodeHtmlAttribute(match[1]?.trim() ?? ""))
+      .find((src) => /^https?:\/\//i.test(src));
+
+    return image ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (item.thumbnail_url) return item;
@@ -15,7 +37,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (preferredFile) {
     return {
       ...item,
-      thumbnail_url: `/api/portal/resources/${item.slug}/page/${preferredFile}`,
+      thumbnail_url: `/api/portal/resources/${encodeURIComponent(item.slug)}/page/${encodeURIComponent(preferredFile)}`,
     };
   }
 
@@ -29,20 +51,36 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
       })[0];
 
     if (!firstPage) {
+      const htmlThumbnail = extractHtmlThumbnail(item.slug);
+      if (htmlThumbnail) {
+        return {
+          ...item,
+          thumbnail_url: htmlThumbnail,
+        };
+      }
+
       return {
         ...item,
-        thumbnail_url: `/api/portal/covers/${item.slug}`,
+        thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
       };
     }
 
     return {
       ...item,
-      thumbnail_url: `/api/portal/resources/${item.slug}/page/${firstPage}`,
+      thumbnail_url: `/api/portal/resources/${encodeURIComponent(item.slug)}/page/${encodeURIComponent(firstPage)}`,
     };
   } catch {
+    const htmlThumbnail = extractHtmlThumbnail(item.slug);
+    if (htmlThumbnail) {
+      return {
+        ...item,
+        thumbnail_url: htmlThumbnail,
+      };
+    }
+
     return {
       ...item,
-      thumbnail_url: `/api/portal/covers/${item.slug}`,
+      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
     };
   }
 }

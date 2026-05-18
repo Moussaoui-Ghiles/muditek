@@ -9,6 +9,7 @@ import { MudikitCta } from "@/components/mudikit-cta";
 import { DataCitation } from "@/components/data-citation";
 import { DATA_POINTS } from "@/lib/data-points";
 import { getDb } from "@/lib/db";
+import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 
 const NEWSLETTER_FAQ = [
   {
@@ -49,6 +50,7 @@ interface Issue {
   slug: string;
   subject: string;
   sent_at: string | null;
+  html: string | null;
   stats: {
     preview?: string | null;
     tldr?: string | null;
@@ -62,7 +64,7 @@ async function getIssues(): Promise<Issue[]> {
   try {
     const sql = getDb();
     const rows = (await sql`
-      SELECT slug, subject, sent_at, stats
+      SELECT slug, subject, sent_at, html, stats
       FROM newsletter_issues
       WHERE status = 'sent'
         AND slug IS NOT NULL
@@ -86,7 +88,8 @@ function issueImage(issue: Issue): string | null {
     issue.stats?.thumbnail_url?.trim() ||
     issue.stats?.hero_image?.trim() ||
     issue.stats?.image?.trim() ||
-    null
+    extractNewsletterThumbnailFromHtml(issue.html) ||
+    `/api/portal/newsletter-covers/${encodeURIComponent(issue.slug)}`
   );
 }
 
@@ -201,10 +204,10 @@ export default async function NewsletterPage() {
           <ScrollReveal>
             <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
-              Past Editions
+              Selected Articles
             </h2>
             <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
-              Every edition ships a <span className="text-primary italic font-medium">system.</span>
+              Article-style issues live <span className="text-primary italic font-medium">here.</span>
             </h3>
           </ScrollReveal>
 
@@ -242,9 +245,9 @@ export default async function NewsletterPage() {
           ) : (
             <ScrollReveal>
               <div className="text-center py-20 border border-white/[0.08] bg-card/[0.2] rounded-[4px]">
-                <h4 className="text-lg font-black text-foreground/80 mb-4">Archive rebuilding</h4>
+                <h4 className="text-lg font-black text-foreground/80 mb-4">No public articles selected yet</h4>
                 <p className="text-base text-foreground/60 mb-8 max-w-md mx-auto">
-                  Past editions are being reindexed. Subscribe above to get the next one.
+                  Subscribe above to get new editions. Selected article-style issues will appear here after publishing.
                 </p>
               </div>
             </ScrollReveal>

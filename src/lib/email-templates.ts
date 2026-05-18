@@ -52,7 +52,7 @@ export async function sendFreeWelcomeEmail(
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
         <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">Welcome, ${safeName}.</h2>
         <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
-          You're in. Every edition of the newsletter ships a deployable system — outbound machines, AI agents, revenue ops. Full architecture, code, walkthrough.
+          You're in. Every edition of the newsletter ships a deployable system: outbound machines, AI agents, revenue ops. Full architecture, code, walkthrough.
         </p>
         <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
           Your portal has the playbooks, tools, skills, and newsletter archive in one place. One email / code to sign in.

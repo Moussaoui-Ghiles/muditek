@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronRight, Plus } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Eye, EyeOff, Loader2, Plus } from "lucide-react";
 import IssueEditor from "./issue-editor";
 import { isPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
@@ -43,6 +43,7 @@ export default function NewsletterContent() {
   const [creatingLoading, setCreatingLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [savingPortalId, setSavingPortalId] = useState<string | null>(null);
 
   const newBtnRef = useRef<HTMLButtonElement>(null);
   const newInnerRef = useRef<HTMLSpanElement>(null);
@@ -108,6 +109,33 @@ export default function NewsletterContent() {
       }
     } finally {
       setCreatingLoading(false);
+    }
+  }
+
+  async function setPortalArticle(issue: Issue, next: boolean) {
+    setSavingPortalId(issue.id);
+    try {
+      const res = await fetch(`/api/admin/newsletter/issues/${issue.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ portal_article: next }),
+      });
+      if (!res.ok) return;
+      setIssues((current) =>
+        current?.map((item) =>
+          item.id === issue.id
+            ? {
+                ...item,
+                stats: {
+                  ...(item.stats ?? {}),
+                  portal_article: next,
+                },
+              }
+            : item,
+        ) ?? null,
+      );
+    } finally {
+      setSavingPortalId(null);
     }
   }
 
@@ -186,73 +214,109 @@ export default function NewsletterContent() {
           <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
             {issues.map((i) => (
               <li key={i.id}>
-                <button
-                  type="button"
-                  onClick={() => setEditingId(i.id)}
-                  className="group w-full py-5 flex items-center gap-4 text-left spring hover:bg-white/[0.015] -mx-2 px-2 rounded-md"
-                >
-                  {/* Status dot */}
-                  <span
-                    aria-hidden
-                    className={`shrink-0 size-1.5 rounded-full ${
-                      i.status === "sent"
-                        ? "bg-zinc-500"
-                        : i.status === "scheduled"
-                          ? "bg-[var(--color-warn,#f5a524)]"
-                          : "bg-[var(--color-live,#32d583)]"
-                    }`}
-                  />
-
-                  {/* Subject */}
-                  <span className="min-w-0 flex-1 truncate text-base font-medium text-zinc-100 group-hover:text-white">
-                    {i.subject || <span className="text-zinc-500 italic">Untitled draft</span>}
-                  </span>
-
-                  {/* Audience */}
-                  <span className="hidden md:inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
-                    {i.audience_filter ? (
-                      <>
-                        <span className={`size-1.5 rounded-full ${SEG_DOT[i.audience_filter] ?? "bg-zinc-500"}`} />
-                        {i.audience_filter}
-                      </>
-                    ) : (
-                      "All active"
-                    )}
-                  </span>
-
-                  {/* Sent count */}
-                  <span className="hidden sm:inline-block w-16 text-right text-xs text-zinc-400 tabular-nums">
-                    {i.stats?.sent ?? "—"}
-                  </span>
-
-                  <span
-                    className={`hidden lg:inline-flex shrink-0 h-6 items-center rounded-full px-2.5 text-[11px] font-medium ${
-                      isPortalNewsletterArticle(i.stats)
-                        ? "bg-white/[0.07] text-zinc-200"
-                        : "bg-white/[0.03] text-zinc-500"
-                    }`}
-                  >
-                    {isPortalNewsletterArticle(i.stats) ? "Portal article" : "Email only"}
-                  </span>
-
-                  {/* Date */}
-                  <span className="shrink-0 w-24 text-right text-xs text-zinc-500">
-                    {(i.sent_at
-                      ? new Date(i.sent_at)
-                      : new Date(i.created_at)
-                    ).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                  </span>
-
-                  <ChevronRight
-                    className="size-4 shrink-0 text-zinc-700 group-hover:text-zinc-300 group-hover:translate-x-0.5 spring"
-                    strokeWidth={1.8}
-                  />
-                </button>
+                <IssueRow
+                  issue={i}
+                  saving={savingPortalId === i.id}
+                  onEdit={() => setEditingId(i.id)}
+                  onTogglePortalArticle={(next) => void setPortalArticle(i, next)}
+                />
               </li>
             ))}
           </ul>
         )}
       </section>
+    </div>
+  );
+}
+
+function IssueRow({
+  issue,
+  saving,
+  onEdit,
+  onTogglePortalArticle,
+}: {
+  issue: Issue;
+  saving: boolean;
+  onEdit: () => void;
+  onTogglePortalArticle: (next: boolean) => void;
+}) {
+  const portalArticle = isPortalNewsletterArticle(issue.stats);
+  const date = (issue.sent_at
+    ? new Date(issue.sent_at)
+    : new Date(issue.created_at)
+  ).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+  return (
+    <div className="group -mx-2 flex items-center gap-3 rounded-md px-2 py-5 transition-colors hover:bg-white/[0.015]">
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex min-w-0 flex-1 items-center gap-4 text-left"
+      >
+        <span
+          aria-hidden
+          className={`shrink-0 size-1.5 rounded-full ${
+            issue.status === "sent"
+              ? "bg-zinc-500"
+              : issue.status === "scheduled"
+                ? "bg-[var(--color-warn,#f5a524)]"
+                : "bg-[var(--color-live,#32d583)]"
+          }`}
+        />
+
+        <span className="min-w-0 flex-1 truncate text-base font-medium text-zinc-100 group-hover:text-white">
+          {issue.subject || <span className="text-zinc-500 italic">Untitled draft</span>}
+        </span>
+
+        <span className="hidden md:inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
+          {issue.audience_filter ? (
+            <>
+              <span className={`size-1.5 rounded-full ${SEG_DOT[issue.audience_filter] ?? "bg-zinc-500"}`} />
+              {issue.audience_filter}
+            </>
+          ) : (
+            "All active"
+          )}
+        </span>
+
+        <span className="hidden sm:inline-block w-16 shrink-0 text-right text-xs text-zinc-400 tabular-nums">
+          {issue.stats?.sent ?? "—"}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onTogglePortalArticle(!portalArticle)}
+        disabled={saving}
+        className={`hidden h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[11px] font-medium transition-colors lg:inline-flex ${
+          portalArticle
+            ? "bg-white/[0.08] text-zinc-100 hover:bg-white/[0.12]"
+            : "bg-white/[0.03] text-zinc-500 hover:bg-white/[0.07] hover:text-zinc-300"
+        } ${saving ? "opacity-60" : ""}`}
+        title={portalArticle ? "Hide from portal archive" : "Show in portal archive"}
+      >
+        {saving ? (
+          <Loader2 className="size-3 animate-spin" />
+        ) : portalArticle ? (
+          <Eye className="size-3" />
+        ) : (
+          <EyeOff className="size-3" />
+        )}
+        {portalArticle ? "Portal article" : "Email only"}
+      </button>
+
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex shrink-0 items-center gap-3"
+        aria-label={`Open ${issue.subject || "issue"}`}
+      >
+        <span className="w-16 text-right text-xs text-zinc-500 sm:w-24">{date}</span>
+        <ChevronRight
+          className="size-4 shrink-0 text-zinc-700 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-300"
+          strokeWidth={1.8}
+        />
+      </button>
     </div>
   );
 }

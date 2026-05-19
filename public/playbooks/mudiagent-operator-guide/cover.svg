@@ -1,44 +1,60 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0a0a0a"/>
-      <stop offset="1" stop-color="#161616"/>
+      <stop offset="0" stop-color="#141413"/>
+      <stop offset="1" stop-color="#1A1A19"/>
     </linearGradient>
-    <linearGradient id="amberFade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f5a524" stop-opacity="0.18"/>
-      <stop offset="1" stop-color="#f5a524" stop-opacity="0"/>
+    <linearGradient id="clayGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D97757" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#D97757" stop-opacity="0"/>
     </linearGradient>
-    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0L0 0L0 48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0L0 0L0 42" fill="none" stroke="rgba(250,249,245,0.035)" stroke-width="1"/>
     </pattern>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/>
+    </filter>
   </defs>
 
   <rect width="1200" height="800" fill="url(#bg)"/>
   <rect width="1200" height="800" fill="url(#grid)"/>
-  <rect x="0" y="0" width="1200" height="320" fill="url(#amberFade)"/>
+  <rect width="1200" height="380" fill="url(#clayGlow)"/>
+  <rect width="1200" height="800" filter="url(#noise)" opacity="0.6"/>
 
-  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="#f5a524" font-size="18" letter-spacing="6">
-    <text x="80" y="120">THE MUDIAGENT OPERATOR GUIDE</text>
-    <line x1="80" y1="138" x2="180" y2="138" stroke="#f5a524" stroke-width="1.4"/>
+  <g transform="translate(80, 80)">
+    <rect width="42" height="42" rx="3" fill="none" stroke="#D97757" stroke-width="2.4"/>
+    <line x1="10" y1="14" x2="32" y2="14" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="10" y1="22" x2="26" y2="22" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="10" y1="30" x2="20" y2="30" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="30" r="3" fill="#D97757"/>
   </g>
 
-  <g font-family="ui-sans-serif, system-ui, 'Manrope', sans-serif" fill="#ffffff">
-    <text x="80" y="320" font-weight="800" font-size="120" letter-spacing="-4">Build a marketing</text>
-    <text x="80" y="450" font-weight="800" font-size="120" letter-spacing="-4">company on
-      <tspan font-family="Georgia, 'Instrument Serif', serif" font-style="italic" font-weight="400" fill="#f5a524">one VPS.</tspan>
+  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#D97757" font-size="14" letter-spacing="4">
+    <text x="148" y="106">MUDITEK &#183; PORTAL PLAYBOOK</text>
+  </g>
+
+  <g font-family="'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#FAF9F5">
+    <text x="80" y="320" font-weight="800" font-size="108" letter-spacing="-3">The MudiAgent</text>
+    <text x="80" y="440" font-weight="800" font-size="108" letter-spacing="-3">
+      <tspan fill="#D97757">Operator</tspan> Guide
     </text>
   </g>
 
-  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.55)" font-size="16" letter-spacing="2">
-    <text x="80" y="620">123 SKILLS &#183; 300+ MODELS &#183; 4 OPERATOR LEVELS &#183; ONE FOLDER</text>
+  <g font-family="'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#87867F" font-size="22" font-weight="400">
+    <text x="80" y="510">Build a marketing company on one VPS.</text>
   </g>
 
-  <g stroke="rgba(255,255,255,0.18)" stroke-width="1">
-    <line x1="80" y1="700" x2="1120" y2="700"/>
+  <g stroke="rgba(217,119,87,0.3)" stroke-width="1">
+    <line x1="80" y1="660" x2="1120" y2="660"/>
   </g>
 
-  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.42)" font-size="14" letter-spacing="3">
-    <text x="80" y="740">MUDITEK &#183; PORTAL PLAYBOOK</text>
-    <text x="1120" y="740" text-anchor="end">v1 &#183; READ IN PORTAL</text>
+  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#87867F" font-size="13" letter-spacing="3">
+    <text x="80" y="700">17 SECTIONS &#183; 123+ SKILLS &#183; 300+ MODELS &#183; 4 OPERATOR LEVELS</text>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#5E5D59" font-size="12" letter-spacing="3">
+    <text x="80" y="740">BY GHILES MOUSSAOUI</text>
+    <text x="1120" y="740" text-anchor="end">READ IN PORTAL &#x2192;</text>
   </g>
 </svg>

@@ -29,6 +29,14 @@ function extractHtmlThumbnail(slug: string): string | null {
 }
 
 export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
+  const publicCover = join(process.cwd(), "public/playbooks", item.slug, "cover.svg");
+  if (existsSync(publicCover)) {
+    return {
+      ...item,
+      thumbnail_url: `/playbooks/${item.slug}/cover.svg`,
+    };
+  }
+
   if (item.thumbnail_url) return item;
 
   const dir = join(process.cwd(), "content/downloads/playbooks", item.slug);

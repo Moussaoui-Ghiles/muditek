@@ -1,902 +1,1162 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>The MudiAgent Operator Guide — Muditek</title>
+<meta charset="utf-8" />
+<title>The MudiAgent Operator Guide</title>
 <style>
-  /* ════════════════════════════════════════════════════════════════════
-     EVERYTHING IS SCOPED TO .portal-asset-html
-     The portal injects this <style> into the live page; an unscoped
-     selector here would wreck the surrounding portal shell. Every rule
-     below MUST start with .portal-asset-html.
-     ════════════════════════════════════════════════════════════════════ */
+/* ============================================================
+   MudiAgent Operator Guide - scoped to .portal-asset-html
+   Every selector MUST be prefixed to avoid bleed via
+   dangerouslySetInnerHTML into the portal shell.
+   ============================================================ */
 
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-  /* ─── Wrapper (the portal-asset-html div the loader created) ─── */
-  .portal-asset-html {
-    /* tokens */
-    --pg-bg: transparent;
-    --pg-surface: rgba(255, 255, 255, 0.025);
-    --pg-surface-2: rgba(255, 255, 255, 0.04);
-    --pg-ink: #f5f0eb;
-    --pg-ink-soft: rgba(245, 240, 235, 0.7);
-    --pg-ink-faint: rgba(245, 240, 235, 0.45);
-    --pg-amber: #f59e0b;
-    --pg-amber-soft: rgba(245, 158, 11, 0.12);
-    --pg-emerald: #6ee7b7;
-    --pg-hairline: rgba(255, 255, 255, 0.08);
-    --pg-hairline-soft: rgba(255, 255, 255, 0.045);
-    --pg-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-    --pg-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+.portal-asset-html {
+  --pg-bg: transparent;
+  --pg-ink: rgba(255, 255, 255, 0.92);
+  --pg-muted: rgba(255, 255, 255, 0.62);
+  --pg-faint: rgba(255, 255, 255, 0.42);
+  --pg-hair: rgba(255, 255, 255, 0.10);
+  --pg-rule: rgba(255, 255, 255, 0.18);
+  --pg-amber: #f5a524;
+  --pg-amber-soft: rgba(245, 165, 36, 0.14);
+  --pg-card: rgba(255, 255, 255, 0.025);
+  --pg-card-hi: rgba(255, 255, 255, 0.045);
+  --pg-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --pg-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --pg-serif: 'Instrument Serif', 'Times New Roman', serif;
 
-    /* container */
-    width: 100%;
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 0;
-    background: transparent;
-    color: var(--pg-ink);
-    font-family: var(--pg-sans);
-    font-size: 15px;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
+  color: var(--pg-ink);
+  font-family: var(--pg-sans);
+  font-size: 16.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 
-  /* ─── Scoped reset for content elements only ─── */
-  .portal-asset-html h1,
-  .portal-asset-html h2,
-  .portal-asset-html h3,
-  .portal-asset-html h4,
-  .portal-asset-html h5,
-  .portal-asset-html h6,
-  .portal-asset-html p,
-  .portal-asset-html ul,
-  .portal-asset-html ol,
-  .portal-asset-html li,
-  .portal-asset-html dl,
-  .portal-asset-html dt,
-  .portal-asset-html dd,
-  .portal-asset-html pre,
-  .portal-asset-html figure,
-  .portal-asset-html blockquote {
-    margin: 0;
-    padding: 0;
-  }
-  .portal-asset-html *,
-  .portal-asset-html *::before,
-  .portal-asset-html *::after { box-sizing: border-box; }
+/* container reset (scoped only to content) */
+.portal-asset-html h1,
+.portal-asset-html h2,
+.portal-asset-html h3,
+.portal-asset-html h4,
+.portal-asset-html p,
+.portal-asset-html ul,
+.portal-asset-html ol,
+.portal-asset-html li,
+.portal-asset-html figure,
+.portal-asset-html blockquote,
+.portal-asset-html pre,
+.portal-asset-html code,
+.portal-asset-html table {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+}
 
-  /* ─── Sections (the new rhythm — was .page in v1) ─── */
-  .portal-asset-html .pg-section {
-    padding: 56px 0;
-    border-bottom: 1px solid var(--pg-hairline-soft);
-    position: relative;
-  }
-  .portal-asset-html .pg-section:last-child { border-bottom: none; }
-  .portal-asset-html .pg-section--hero { padding: 64px 0 72px; }
-  .portal-asset-html .pg-section--closing { padding: 80px 0 96px; border-bottom: none; }
+.portal-asset-html ul,
+.portal-asset-html ol {
+  list-style: none;
+}
 
-  /* ─── Eyebrow ─── */
-  .portal-asset-html .pg-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--pg-amber);
-    margin-bottom: 20px;
-  }
-  .portal-asset-html .pg-eyebrow::before {
-    content: "";
-    width: 24px;
-    height: 1px;
-    background: rgba(245, 158, 11, 0.5);
-  }
+.portal-asset-html * {
+  box-sizing: border-box;
+}
 
-  /* ─── Display + headings ─── */
-  .portal-asset-html .pg-display {
-    font-family: var(--pg-sans);
-    font-weight: 900;
-    font-size: clamp(40px, 5.6vw, 68px);
-    line-height: 0.96;
-    letter-spacing: -0.035em;
-    color: var(--pg-ink);
-    margin-bottom: 24px;
-    text-wrap: balance;
-  }
-  .portal-asset-html .pg-display .pg-accent,
-  .portal-asset-html .pg-h2 .pg-accent,
-  .portal-asset-html .pg-h3 .pg-accent {
-    color: var(--pg-amber);
-    font-style: italic;
-    font-weight: 500;
-  }
-  .portal-asset-html .pg-h2 {
-    font-family: var(--pg-sans);
-    font-weight: 900;
-    font-size: clamp(30px, 4vw, 44px);
-    line-height: 1;
-    letter-spacing: -0.03em;
-    color: var(--pg-ink);
-    margin-bottom: 20px;
-    text-wrap: balance;
-  }
-  .portal-asset-html .pg-h3 {
-    font-family: var(--pg-sans);
-    font-weight: 800;
-    font-size: 22px;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: var(--pg-ink);
-    margin: 36px 0 14px;
-  }
-  .portal-asset-html .pg-minor {
-    font-family: var(--pg-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    margin-bottom: 12px;
-  }
+/* ---------- layout shell ---------- */
+.portal-asset-html .pg-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(8px, 2vw, 24px) 0;
+}
 
-  /* ─── Body ─── */
-  .portal-asset-html .pg-lead {
-    font-size: 18px;
-    line-height: 1.65;
-    color: var(--pg-ink);
-    max-width: 720px;
-    margin-bottom: 24px;
-    font-weight: 400;
-  }
-  .portal-asset-html .pg-section p {
-    font-size: 15.5px;
-    line-height: 1.75;
-    color: var(--pg-ink-soft);
-    max-width: 720px;
-    margin-bottom: 14px;
-  }
-  .portal-asset-html .pg-section strong { color: var(--pg-ink); font-weight: 700; }
-  .portal-asset-html .pg-section em { font-style: italic; }
+.portal-asset-html .pg-section {
+  padding: clamp(40px, 6vw, 72px) 0;
+  border-top: 1px solid var(--pg-hair);
+}
 
-  /* ─── Lists ─── */
-  .portal-asset-html .pg-section ul {
-    list-style: none;
-    max-width: 760px;
-    margin: 0 0 14px;
-  }
-  .portal-asset-html .pg-section ul li {
-    position: relative;
-    padding-left: 22px;
-    margin-bottom: 10px;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--pg-ink-soft);
-  }
-  .portal-asset-html .pg-section ul li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 13px;
-    width: 10px;
-    height: 1px;
-    background: var(--pg-amber);
-  }
-  .portal-asset-html .pg-section ol {
-    max-width: 760px;
-    padding-left: 22px;
-    margin: 0 0 14px;
-  }
-  .portal-asset-html .pg-section ol li {
-    margin-bottom: 10px;
-    color: var(--pg-ink-soft);
-  }
-  .portal-asset-html .pg-section ol li::marker { color: var(--pg-amber); font-weight: 700; }
+.portal-asset-html .pg-section:first-child {
+  border-top: 0;
+  padding-top: clamp(8px, 2vw, 16px);
+}
 
-  /* ─── Code ─── */
-  .portal-asset-html pre {
-    font-family: var(--pg-mono);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--pg-ink);
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--pg-hairline);
-    border-left: 2px solid var(--pg-amber);
-    border-radius: 4px;
-    padding: 22px 26px;
-    overflow-x: auto;
-    margin: 18px 0;
-    white-space: pre;
-  }
-  .portal-asset-html code:not(pre code) {
-    font-family: var(--pg-mono);
-    font-size: 12.5px;
-    color: var(--pg-amber);
-    background: var(--pg-amber-soft);
-    border: 1px solid rgba(245, 158, 11, 0.22);
-    border-radius: 3px;
-    padding: 1px 6px;
-    white-space: nowrap;
-  }
-  .portal-asset-html pre code {
-    font-family: inherit; color: inherit; background: none;
-    border: none; padding: 0; font-size: inherit; white-space: pre;
-  }
+/* ---------- shared atoms ---------- */
+.portal-asset-html .pg-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--pg-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+}
 
-  /* ─── Callouts ─── */
-  .portal-asset-html .pg-callout {
-    border-left: 2px solid var(--pg-amber);
-    background: linear-gradient(90deg, rgba(245, 158, 11, 0.06), transparent 60%);
-    padding: 18px 22px;
-    margin: 24px 0;
-    border-radius: 0 4px 4px 0;
-  }
-  .portal-asset-html .pg-callout-label {
-    font-family: var(--pg-mono);
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--pg-amber);
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .portal-asset-html .pg-callout p {
-    font-size: 14.5px;
-    color: var(--pg-ink);
-    line-height: 1.65;
-    margin-bottom: 0;
-    max-width: none;
-  }
+.portal-asset-html .pg-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--pg-amber);
+  opacity: 0.7;
+}
 
-  /* ─── Hero stat strip ─── */
+.portal-asset-html h1.pg-title {
+  font-family: var(--pg-sans);
+  font-weight: 800;
+  font-size: clamp(34px, 5.5vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-top: 20px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html h1.pg-title em {
+  font-style: italic;
+  font-family: var(--pg-serif);
+  font-weight: 400;
+  color: var(--pg-amber);
+  letter-spacing: -0.01em;
+}
+
+.portal-asset-html h2.pg-h2 {
+  font-family: var(--pg-sans);
+  font-weight: 800;
+  font-size: clamp(24px, 3.2vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html h2.pg-h2 em {
+  font-style: italic;
+  font-family: var(--pg-serif);
+  font-weight: 400;
+  color: var(--pg-amber);
+}
+
+.portal-asset-html h3.pg-h3 {
+  font-family: var(--pg-sans);
+  font-weight: 700;
+  font-size: clamp(18px, 2vw, 21px);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  margin: 36px 0 14px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html h4.pg-h4 {
+  font-family: var(--pg-mono);
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+  margin: 0 0 14px;
+}
+
+.portal-asset-html .pg-lead {
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.55;
+  color: var(--pg-muted);
+  max-width: 64ch;
+}
+
+.portal-asset-html p.pg-p {
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: var(--pg-muted);
+  margin-bottom: 18px;
+  max-width: 68ch;
+}
+
+.portal-asset-html p.pg-p strong,
+.portal-asset-html li.pg-li strong {
+  color: var(--pg-ink);
+  font-weight: 700;
+}
+
+.portal-asset-html .pg-p code,
+.portal-asset-html .pg-li code,
+.portal-asset-html .pg-callout code {
+  font-family: var(--pg-mono);
+  font-size: 0.86em;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html ul.pg-bullets {
+  margin: 8px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 68ch;
+}
+
+.portal-asset-html ul.pg-bullets > li.pg-li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--pg-muted);
+}
+
+.portal-asset-html ul.pg-bullets > li.pg-li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 10px;
+  height: 1px;
+  background: var(--pg-amber);
+}
+
+/* ---------- HERO ---------- */
+.portal-asset-html .pg-hero {
+  display: grid;
+  gap: 32px;
+  padding: clamp(20px, 4vw, 40px) 0 clamp(32px, 6vw, 56px);
+}
+
+.portal-asset-html .pg-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--pg-hair);
+  font-family: var(--pg-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+}
+
+.portal-asset-html .pg-hero-meta span strong {
+  color: var(--pg-ink);
+  font-weight: 600;
+}
+
+/* ---------- TWO-COL GRID ---------- */
+.portal-asset-html .pg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.portal-asset-html .pg-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.portal-asset-html .pg-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+
+/* ---------- CARDS ---------- */
+.portal-asset-html .pg-card {
+  position: relative;
+  padding: 24px;
+  border: 1px solid var(--pg-hair);
+  background: var(--pg-card);
+  border-radius: 2px;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease;
+}
+
+.portal-asset-html .pg-card:hover {
+  border-color: rgba(245, 165, 36, 0.35);
+  background: var(--pg-card-hi);
+}
+
+.portal-asset-html .pg-card-eyebrow {
+  font-family: var(--pg-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+  margin-bottom: 12px;
+}
+
+.portal-asset-html .pg-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--pg-ink);
+  margin-bottom: 8px;
+}
+
+.portal-asset-html .pg-card-body {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--pg-muted);
+}
+
+/* ---------- STATS STRIP ---------- */
+.portal-asset-html .pg-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--pg-hair);
+  border-bottom: 1px solid var(--pg-hair);
+  margin: 24px 0;
+}
+
+.portal-asset-html .pg-stat {
+  padding: 20px 16px;
+  border-right: 1px solid var(--pg-hair);
+}
+
+.portal-asset-html .pg-stat:last-child {
+  border-right: 0;
+}
+
+.portal-asset-html .pg-stat-num {
+  display: block;
+  font-family: var(--pg-sans);
+  font-weight: 800;
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--pg-ink);
+  margin-bottom: 8px;
+}
+
+.portal-asset-html .pg-stat-num em {
+  font-family: var(--pg-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--pg-amber);
+}
+
+.portal-asset-html .pg-stat-label {
+  font-family: var(--pg-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+}
+
+/* ---------- CALLOUTS ---------- */
+.portal-asset-html .pg-callout {
+  padding: 20px 22px;
+  margin: 22px 0;
+  border-left: 2px solid var(--pg-amber);
+  background: var(--pg-amber-soft);
+  border-radius: 0 2px 2px 0;
+}
+
+.portal-asset-html .pg-callout p {
+  font-family: var(--pg-serif);
+  font-style: italic;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.45;
+  color: var(--pg-ink);
+  letter-spacing: -0.01em;
+}
+
+.portal-asset-html .pg-callout-mono {
+  padding: 18px 22px;
+  margin: 22px 0;
+  border: 1px solid var(--pg-hair);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2px;
+  font-family: var(--pg-mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--pg-muted);
+}
+
+.portal-asset-html .pg-callout-mono strong {
+  color: var(--pg-ink);
+}
+
+/* ---------- CODE BLOCKS ---------- */
+.portal-asset-html pre.pg-pre {
+  display: block;
+  font-family: var(--pg-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 22px 24px;
+  margin: 22px 0;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--pg-hair);
+  border-radius: 2px;
+  color: var(--pg-ink);
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.portal-asset-html pre.pg-pre .pg-c {
+  color: var(--pg-faint);
+}
+
+.portal-asset-html pre.pg-pre .pg-k {
+  color: var(--pg-amber);
+}
+
+/* ---------- DIAGRAMS (native CSS) ---------- */
+.portal-asset-html .pg-diagram {
+  padding: clamp(20px, 3vw, 32px);
+  margin: 28px 0;
+  border: 1px solid var(--pg-hair);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 2px;
+}
+
+.portal-asset-html .pg-diagram-title {
+  font-family: var(--pg-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+  margin-bottom: 18px;
+}
+
+.portal-asset-html .pg-node {
+  padding: 14px 18px;
+  border: 1px solid var(--pg-rule);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2px;
+  font-family: var(--pg-mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html .pg-node-em {
+  border-color: var(--pg-amber);
+  background: var(--pg-amber-soft);
+}
+
+.portal-asset-html .pg-node-label {
+  display: block;
+  font-family: var(--pg-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+  margin-bottom: 6px;
+}
+
+.portal-asset-html .pg-arrow {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+  color: var(--pg-faint);
+  font-family: var(--pg-mono);
+  font-size: 12px;
+}
+
+.portal-asset-html .pg-three-paths {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.portal-asset-html .pg-pillars {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.portal-asset-html .pg-pillar {
+  padding: 18px 14px;
+  border: 1px solid var(--pg-hair);
+  border-radius: 2px;
+  background: var(--pg-card);
+  text-align: left;
+}
+
+.portal-asset-html .pg-pillar-n {
+  font-family: var(--pg-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--pg-amber);
+  margin-bottom: 8px;
+}
+
+.portal-asset-html .pg-pillar-name {
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 4px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html .pg-pillar-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--pg-muted);
+}
+
+/* ---------- 21 STEP PIPELINE ---------- */
+.portal-asset-html .pg-pipeline {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.portal-asset-html .pg-phase {
+  padding: 22px 20px;
+  border: 1px solid var(--pg-hair);
+  background: var(--pg-card);
+  border-radius: 2px;
+}
+
+.portal-asset-html .pg-phase-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--pg-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+  margin-bottom: 16px;
+}
+
+.portal-asset-html .pg-phase-num {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--pg-amber);
+  border-radius: 50%;
+  color: var(--pg-amber);
+}
+
+.portal-asset-html .pg-step {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-top: 1px solid var(--pg-hair);
+  font-family: var(--pg-mono);
+  font-size: 12.5px;
+  color: var(--pg-ink);
+}
+
+.portal-asset-html .pg-step:first-of-type {
+  border-top: 0;
+}
+
+.portal-asset-html .pg-step-n {
+  color: var(--pg-faint);
+  font-size: 11px;
+}
+
+/* ---------- LEVELS ---------- */
+.portal-asset-html .pg-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.portal-asset-html .pg-level {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 28px;
+  align-items: start;
+  padding: 28px 0;
+  border-top: 1px solid var(--pg-hair);
+}
+
+.portal-asset-html .pg-level-tag {
+  font-family: var(--pg-mono);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+}
+
+.portal-asset-html .pg-level-tag-n {
+  display: block;
+  font-family: var(--pg-sans);
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--pg-ink);
+  margin-bottom: 6px;
+}
+
+.portal-asset-html .pg-level h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+/* ---------- TABLE-LIKE COMPARISON ---------- */
+.portal-asset-html .pg-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 24px 0;
+  border: 1px solid var(--pg-hair);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.portal-asset-html .pg-compare-col {
+  padding: 26px 22px;
+  border-right: 1px solid var(--pg-hair);
+  background: var(--pg-card);
+}
+
+.portal-asset-html .pg-compare-col:last-child {
+  border-right: 0;
+}
+
+.portal-asset-html .pg-compare-col.pg-compare-pick {
+  background: var(--pg-amber-soft);
+}
+
+.portal-asset-html .pg-compare-name {
+  font-family: var(--pg-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pg-amber);
+  margin-bottom: 8px;
+}
+
+.portal-asset-html .pg-compare-tag {
+  font-family: var(--pg-sans);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.012em;
+  color: var(--pg-ink);
+  margin-bottom: 12px;
+}
+
+.portal-asset-html .pg-compare-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--pg-muted);
+}
+
+/* ---------- KICKER / END ---------- */
+.portal-asset-html .pg-end {
+  padding: clamp(40px, 6vw, 64px) 0 clamp(20px, 3vw, 32px);
+  border-top: 1px solid var(--pg-hair);
+  text-align: left;
+}
+
+.portal-asset-html .pg-end-quote {
+  font-family: var(--pg-serif);
+  font-style: italic;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  color: var(--pg-ink);
+  max-width: 32ch;
+  margin-bottom: 24px;
+}
+
+.portal-asset-html .pg-end-quote em {
+  color: var(--pg-amber);
+}
+
+/* ---------- TAGS ---------- */
+.portal-asset-html .pg-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.portal-asset-html .pg-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--pg-hair);
+  border-radius: 999px;
+  font-family: var(--pg-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 880px) {
+  .portal-asset-html { font-size: 15.5px; }
+  .portal-asset-html .pg-grid,
+  .portal-asset-html .pg-grid-3,
+  .portal-asset-html .pg-grid-4,
+  .portal-asset-html .pg-pipeline,
+  .portal-asset-html .pg-three-paths,
+  .portal-asset-html .pg-pillars,
+  .portal-asset-html .pg-compare {
+    grid-template-columns: 1fr;
+  }
+  .portal-asset-html .pg-compare-col {
+    border-right: 0;
+    border-bottom: 1px solid var(--pg-hair);
+  }
+  .portal-asset-html .pg-compare-col:last-child { border-bottom: 0; }
   .portal-asset-html .pg-stats {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 28px 32px;
-    border-top: 1px solid var(--pg-hairline);
-    border-bottom: 1px solid var(--pg-hairline);
-    padding: 24px 0;
-    margin: 36px 0 0;
   }
-  .portal-asset-html .pg-stat dt {
-    font-family: var(--pg-mono);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    margin-bottom: 6px;
+  .portal-asset-html .pg-stat {
+    border-bottom: 1px solid var(--pg-hair);
   }
-  .portal-asset-html .pg-stat dd {
-    font-size: 14.5px;
-    font-weight: 600;
-    color: var(--pg-ink);
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-  }
-
-  /* ─── Card grids ─── */
-  .portal-asset-html .pg-grid {
-    display: grid;
-    gap: 16px;
-    margin: 28px 0;
-  }
-  .portal-asset-html .pg-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .portal-asset-html .pg-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .portal-asset-html .pg-card {
-    position: relative;
-    background: var(--pg-surface);
-    border: 1px solid var(--pg-hairline);
-    border-radius: 4px;
-    padding: 22px 24px;
-    transition: background 280ms cubic-bezier(0.32, 0.72, 0, 1),
-                border-color 280ms cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  .portal-asset-html .pg-card:hover {
-    background: var(--pg-surface-2);
-    border-color: rgba(255, 255, 255, 0.14);
-  }
-  .portal-asset-html .pg-card-label {
-    font-family: var(--pg-mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--pg-amber);
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .portal-asset-html .pg-card h4 {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    color: var(--pg-ink);
-    margin-bottom: 8px;
-    line-height: 1.25;
-  }
-  .portal-asset-html .pg-card p {
-    font-size: 13.5px;
-    line-height: 1.65;
-    color: var(--pg-ink-soft);
-    margin-bottom: 0;
-    max-width: none;
-  }
-
-  /* ─── Two-column body ─── */
-  .portal-asset-html .pg-twocol {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 36px;
-    align-items: start;
-    margin: 24px 0;
-  }
-  .portal-asset-html .pg-aside {
-    background: var(--pg-surface);
-    border: 1px solid var(--pg-hairline);
-    border-radius: 4px;
-    padding: 22px 24px;
-  }
-  .portal-asset-html .pg-aside .pg-card-label { margin-bottom: 10px; }
-  .portal-asset-html .pg-aside h4 {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--pg-ink);
-    margin-bottom: 8px;
-    letter-spacing: -0.015em;
-  }
-  .portal-asset-html .pg-aside p {
-    font-size: 13.5px;
-    color: var(--pg-ink-soft);
-    line-height: 1.65;
-    margin-bottom: 10px;
-    max-width: none;
-  }
-  .portal-asset-html .pg-aside p:last-child { margin-bottom: 0; }
-
-  /* ─── Figures ─── */
-  .portal-asset-html .pg-figure {
-    margin: 32px 0;
-    border: 1px solid var(--pg-hairline);
-    border-radius: 4px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.02);
-  }
-  .portal-asset-html .pg-figure img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  .portal-asset-html .pg-figure-caption {
-    font-family: var(--pg-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    padding: 12px 18px;
-    border-top: 1px solid var(--pg-hairline);
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  /* ─── ASCII diagrams ─── */
-  .portal-asset-html .pg-ascii {
-    font-family: var(--pg-mono);
-    font-size: 11.5px;
-    line-height: 1.6;
-    color: var(--pg-ink-soft);
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--pg-hairline);
-    border-radius: 4px;
-    padding: 22px 26px;
-    overflow-x: auto;
-    white-space: pre;
-    margin: 22px 0;
-  }
-
-  /* ─── Hero cover ─── */
-  .portal-asset-html .pg-hero {
-    display: grid;
+  .portal-asset-html .pg-stat:nth-child(3n) { border-right: 0; }
+  .portal-asset-html .pg-stat:nth-last-child(-n+3) { border-bottom: 0; }
+  .portal-asset-html .pg-level {
+    grid-template-columns: 1fr;
     gap: 14px;
   }
-  .portal-asset-html .pg-hero-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 22px;
+  .portal-asset-html .pg-level-tag-n {
+    font-size: 36px;
   }
-  .portal-asset-html .pg-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--pg-mono);
+  .portal-asset-html pre.pg-pre {
+    font-size: 11.5px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .portal-asset-html .pg-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .portal-asset-html .pg-stat:nth-child(2n) { border-right: 0; }
+  .portal-asset-html .pg-stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .portal-asset-html pre.pg-pre {
     font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--pg-ink-soft);
-    border: 1px solid var(--pg-hairline);
-    background: rgba(255, 255, 255, 0.03);
-    padding: 5px 10px;
-    border-radius: 3px;
   }
-  .portal-asset-html .pg-tag--amber {
-    color: var(--pg-amber);
-    border-color: rgba(245, 158, 11, 0.3);
-    background: rgba(245, 158, 11, 0.08);
-  }
+}
 
-  /* ─── Closing CTA ─── */
-  .portal-asset-html .pg-closing {
-    text-align: left;
-    max-width: 720px;
-  }
-  .portal-asset-html .pg-closing-rule {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 40px;
-    padding-top: 28px;
-    border-top: 1px solid var(--pg-hairline);
-  }
-  .portal-asset-html .pg-closing-rule dt {
-    font-family: var(--pg-mono);
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    margin-bottom: 8px;
-  }
-  .portal-asset-html .pg-closing-rule dd {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--pg-ink);
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-  }
-
-  /* ════════════════════════════════════════════════════════════════════
-     RESPONSIVE: collapse two-col, three-col, hero meta on narrow screens
-     ════════════════════════════════════════════════════════════════════ */
-  @media (max-width: 768px) {
-    .portal-asset-html { font-size: 14.5px; }
-    .portal-asset-html .pg-section { padding: 40px 0; }
-    .portal-asset-html .pg-section--hero { padding: 32px 0 48px; }
-    .portal-asset-html .pg-grid--2,
-    .portal-asset-html .pg-grid--3 { grid-template-columns: 1fr; }
-    .portal-asset-html .pg-twocol { grid-template-columns: 1fr; gap: 24px; }
-    .portal-asset-html .pg-stats { grid-template-columns: 1fr; gap: 14px; }
-    .portal-asset-html .pg-closing-rule { grid-template-columns: 1fr; gap: 14px; }
-    .portal-asset-html pre,
-    .portal-asset-html .pg-ascii { font-size: 11px; padding: 16px 18px; }
-  }
+@media (prefers-reduced-motion: reduce) {
+  .portal-asset-html .pg-card { transition: none; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     HERO — sets the tone and hands the operator a map of the document
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section pg-section--hero">
-  <div class="pg-hero">
-    <p class="pg-eyebrow">The MudiAgent operator guide</p>
-    <h1 class="pg-display">Build a marketing company on <span class="pg-accent">one VPS.</span></h1>
-    <p class="pg-lead">
-      How to operate and master MudiAgent. Set up the agent control room, configure specialist
-      agents, and grow from one agent on a laptop to a fully automated agent team that ships
-      work while the operator sleeps.
-    </p>
-    <div class="pg-hero-tags">
-      <span class="pg-tag pg-tag--amber">Guide · 01</span>
-      <span class="pg-tag">Architecture</span>
-      <span class="pg-tag">Setup</span>
-      <span class="pg-tag">Methodology</span>
-    </div>
-    <dl class="pg-stats">
-      <div class="pg-stat">
-        <dt>Audience</dt>
-        <dd>Operators, marketers, founders</dd>
-      </div>
-      <div class="pg-stat">
-        <dt>Outcome</dt>
-        <dd>A fleet that ships without babysitting</dd>
-      </div>
-      <div class="pg-stat">
-        <dt>Format</dt>
-        <dd>Architecture · Setup · Methodology</dd>
-      </div>
-    </dl>
-  </div>
-</section>
+<article class="pg-shell">
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     WHAT'S INSIDE
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">What's inside</p>
-  <h2 class="pg-h2">An end-to-end map from <span class="pg-accent">one agent</span> to a full team.</h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    Most agent tools answer questions. MudiAgent runs workflows end-to-end: navigates a browser,
-    executes terminal commands, schedules cron jobs, monitors inboxes, drafts the work, and
-    posts the result wherever operators live. This guide explains how to operate it, scale it,
-    and trust it with real work.
-  </p>
-
-  <p class="pg-minor" style="margin-top: 32px;">Inside this guide</p>
-  <ul>
-    <li>What MudiAgent is and why operators (not just engineers) should care</li>
-    <li>The reader-friendly architecture: brain, personality, skillset, all in one folder</li>
-    <li>Real use cases running on MudiAgent today, from a personal assistant to an SEO factory</li>
-    <li>The four-part mental model and the four levels of setup, from one agent on a laptop to a documented team on a VPS controlled from a phone</li>
-    <li>The prototype → production methodology that turns a messy workflow into autonomous deployment</li>
-    <li>The honest trade-offs and where the framework still has rough edges</li>
-  </ul>
-
-  <div class="pg-callout">
-    <div class="pg-callout-label">Operator note</div>
-    <p>Nothing in this guide requires writing custom skills on day one. Run real work, let the
-    harness watch, and let the framework grow its own skill library. The fastest path to a
-    custom MudiAgent is to use it, not to prompt-engineer it.</p>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     WHAT MUDIAGENT IS
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">The framework</p>
-  <h2 class="pg-h2">An autonomous agent that gets more capable the <span class="pg-accent">longer it runs.</span></h2>
-
-  <div class="pg-twocol">
+  <!-- ========== HERO ========== -->
+  <section class="pg-section pg-hero">
     <div>
-      <p>
-        MudiAgent is Muditek's enterprise build of a persistent operator framework. It owns
-        memory that survives between sessions. It writes its own skills as it works. It ships
-        with a curated bundle of operator skills covering GitHub workflows, Obsidian, Google
-        Workspace, Linear, Notion, browser control, web scraping, vision, voice, and scheduling.
+      <div class="pg-eyebrow">The MudiAgent Operator Guide</div>
+      <h1 class="pg-title">
+        Build a marketing company on <em>one VPS.</em>
+      </h1>
+      <p class="pg-lead" style="margin-top:24px;">
+        Most AI tools answer questions. MudiAgent runs your workflows end to end. It navigates your browser, executes terminal commands, schedules cron jobs, monitors your inboxes, drafts the work, and posts the result to wherever you live. Telegram. Discord. Slack. The email thread you are in right now.
       </p>
-      <p>
-        It lives wherever it is deployed: a laptop, a Docker container, a VPS, or a serverless
-        runtime. Operators reach it through whatever surface they already use — Telegram,
-        Discord, Slack, email, voice mode, or the terminal itself.
+      <p class="pg-lead" style="margin-top:16px;">
+        This guide is how you would set it up if you were starting today.
       </p>
-      <p>
-        The closed learning loop is what separates this from a smart chatbot. The agent watches
-        itself work, writes new skills as it learns the shape of the operator's work, refines
-        its memory periodically, and recalls past context across sessions.
+
+      <div class="pg-tags">
+        <span class="pg-tag">Operator playbook</span>
+        <span class="pg-tag">Architecture</span>
+        <span class="pg-tag">VPS · Docker</span>
+        <span class="pg-tag">Marketing ops</span>
+      </div>
+    </div>
+
+    <div class="pg-stats">
+      <div class="pg-stat"><span class="pg-stat-num">123</span><span class="pg-stat-label">Bundled skills</span></div>
+      <div class="pg-stat"><span class="pg-stat-num">300<em>+</em></span><span class="pg-stat-label">Routable models</span></div>
+      <div class="pg-stat"><span class="pg-stat-num">70<em>+</em></span><span class="pg-stat-label">Gateway tools</span></div>
+      <div class="pg-stat"><span class="pg-stat-num">6</span><span class="pg-stat-label">Deploy targets</span></div>
+      <div class="pg-stat"><span class="pg-stat-num">20<em>+</em></span><span class="pg-stat-label">Surfaces</span></div>
+      <div class="pg-stat"><span class="pg-stat-num">4</span><span class="pg-stat-label">Operator levels</span></div>
+    </div>
+  </section>
+
+  <!-- ========== WHAT'S INSIDE ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">What you'll get</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Everything you need on day one. <em>And on day ninety.</em></h2>
+
+    <ul class="pg-bullets" style="margin-top:24px;">
+      <li class="pg-li">What MudiAgent is and why marketers (not just developers) should care.</li>
+      <li class="pg-li">The reader-friendly version of the architecture: the brain, the personality, the skillset, and how they all live in one folder.</li>
+      <li class="pg-li">The use cases that actually run on this stack, with the exact org chart we deploy.</li>
+      <li class="pg-li">The four-part mental model (you, control room, agents, optional task bus) and the four levels of setup, from <em>one agent on your laptop</em> to <em>a fully automated agent team on a VPS that you control from your phone</em>.</li>
+      <li class="pg-li">The prototype to production methodology that takes a marketing workflow from messy idea to autonomous deployment.</li>
+      <li class="pg-li">The docs, references, and people worth following on day one.</li>
+      <li class="pg-li">The honest trade-offs and where this still breaks.</li>
+    </ul>
+  </section>
+
+  <!-- ========== WHAT IS IT ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">What MudiAgent is</div>
+    <h2 class="pg-h2" style="margin-top:18px;">An autonomous agent that <em>gets more capable the longer it runs.</em></h2>
+
+    <p class="pg-p">
+      MudiAgent is a framework that turns a model into a persistent operator. It has its own memory that survives between sessions. It writes its own skills as it works. It ships with 123 skills already built in (github workflows, obsidian, google workspace, linear, notion, typefully, perplexity, deep research, plus 100+ more). It lives wherever you put it: your laptop, a docker container, a VPS, a serverless runtime. And you can talk to it through 20+ surfaces.
+    </p>
+
+    <div class="pg-callout">
+      <p>It routes tasks to the right model based on complexity and cost. Learns your voice and preferences over time. Handles context switching without losing thread.</p>
+    </div>
+
+    <h3 class="pg-h3">MudiAgent vs. coding assistants vs. agent primitives</h3>
+    <p class="pg-p">
+      If you have used Claude Code or other terminal coding agents, MudiAgent is the same shape with a different philosophy.
+    </p>
+
+    <div class="pg-compare">
+      <div class="pg-compare-col">
+        <div class="pg-compare-name">Coding assistant</div>
+        <div class="pg-compare-tag">A pair programmer.</div>
+        <p class="pg-compare-body">Lives in your terminal next to your code. Best for sitting down, opening an editor, and drafting code with you all day. Day-driver for desk work.</p>
+      </div>
+      <div class="pg-compare-col pg-compare-pick">
+        <div class="pg-compare-name">MudiAgent</div>
+        <div class="pg-compare-tag">Rails. Productive day one.</div>
+        <p class="pg-compare-body">Opinionated defaults, batteries included, the agent does more thinking for you. Lighter, faster, focused on the self-improvement loop. Built for the work that runs without you watching.</p>
+      </div>
+      <div class="pg-compare-col">
+        <div class="pg-compare-name">Agent primitives</div>
+        <div class="pg-compare-tag">Linux. Explicit control.</div>
+        <p class="pg-compare-body">Primitives, guarantees, the agent does exactly what you told it to and nothing more. The right choice if you want primitives and explicit control over every step.</p>
+      </div>
+    </div>
+
+    <p class="pg-p">
+      Both directions are valid. We run MudiAgent because the bundled defaults compound. Every project starts with the agent already knowing how to do 100+ things before you write a line of configuration. That head start is worth it.
+    </p>
+  </section>
+
+  <!-- ========== HOW IT WORKS (BRAIN/SOUL/SKILLS) ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">How it works</div>
+    <h2 class="pg-h2" style="margin-top:18px;">A brain. A personality. A skillset. <em>One folder.</em></h2>
+
+    <p class="pg-p">Every MudiAgent has three things.</p>
+
+    <div class="pg-grid-3" style="margin-top:8px;">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">01 · Brain</div>
+        <div class="pg-card-title">Memory that survives sessions.</div>
+        <p class="pg-card-body">
+          Memory lives at <code>~/.mudiagent/memories/</code>. Two files, <code>MEMORY.md</code> and <code>USER.md</code>, inject at session start. Your voice rubric, your brand notes, your customer language, last week's corrections, all of it loads before the first prompt. Sessions are stored in SQLite. Recall across sessions is full-text searchable.
+        </p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">02 · Soul</div>
+        <div class="pg-card-title">A personality that you tune.</div>
+        <p class="pg-card-body">
+          <code>SOUL.md</code> is where the vibe lives. Concise. Sarcastic. Blunt. Formal. Fast or thoughtful. Spin up six agents and give each one a different soul, same brain underneath. One is your outbound rep with a closer's energy. One is your researcher who likes long sentences. One is your assistant who keeps it short.
+        </p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">03 · Skillset</div>
+        <div class="pg-card-title">123 skills out of the box.</div>
+        <p class="pg-card-body">
+          GitHub PRs, Obsidian, Google Workspace, Linear, Notion, Typefully, Perplexity, deep research, browser control, web scraping, vision, voice, scheduling. And the closed learning loop: as the agent works, it writes new skills along the way. Your library grows on top of the 123 without you having to write any of them.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="pg-h3">What the agent can talk to.</h3>
+    <div class="pg-grid-3">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Tool gateway</div>
+        <p class="pg-card-body">One subscription, 300+ models, plus web scraping and browser automation built in.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">MCP integration</div>
+        <p class="pg-card-body">Any external service that speaks Model Context Protocol becomes a tool the agent can use.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">20+ surfaces</div>
+        <p class="pg-card-body">Telegram, Discord, Slack, email, voice mode, plus the CLI itself.</p>
+      </div>
+    </div>
+
+    <h3 class="pg-h3">And where the agent can live.</h3>
+    <div class="pg-grid-4">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Local</div>
+        <p class="pg-card-body">Your laptop. The simplest start.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Docker</div>
+        <p class="pg-card-body">Isolated, portable, the way we run ours.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">SSH on a VPS</div>
+        <p class="pg-card-body">So it runs even when your laptop is closed.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Serverless</div>
+        <p class="pg-card-body">If you don't want to manage infrastructure.</p>
+      </div>
+    </div>
+
+    <h3 class="pg-h3">The closed learning loop.</h3>
+    <p class="pg-p">
+      The closed learning loop is what makes this different from a smart chatbot. The agent watches itself work, writes new skills as it learns the shape of your work, refines its memory periodically, and recalls past context across sessions using a mix of full-text search and LLM summarization. You do not have to re-teach it next week.
+    </p>
+
+    <div class="pg-callout">
+      <p>Do not try to write your own skills on day one. Run real work, let the agent watch, and let the harness write the skills. You build a custom skill library faster by working than by writing prompts.</p>
+    </div>
+
+    <h3 class="pg-h3">The five pillars (mental model).</h3>
+    <div class="pg-pillars">
+      <div class="pg-pillar">
+        <div class="pg-pillar-n">01</div>
+        <div class="pg-pillar-name">Memory</div>
+        <div class="pg-pillar-desc">MEMORY.md, USER.md, durable facts. Loads at session start. Auto-extracts facts during work. Update inline ("flush that") any time. Never holds secrets.</div>
+      </div>
+      <div class="pg-pillar">
+        <div class="pg-pillar-n">02</div>
+        <div class="pg-pillar-name">Skills</div>
+        <div class="pg-pillar-desc">Procedural memory. Reusable playbooks stored as SKILL.md with YAML front-matter. Analyzes convos. Turns patterns into skills. Feedback makes skills evolve with use.</div>
+      </div>
+      <div class="pg-pillar">
+        <div class="pg-pillar-n">03</div>
+        <div class="pg-pillar-name">Soul</div>
+        <div class="pg-pillar-desc">soul.md shapes personality. Six agents, each with its own. Concise, sarcastic, blunt, formal, whatever fits. Evolves with feedback.</div>
+      </div>
+      <div class="pg-pillar">
+        <div class="pg-pillar-n">04</div>
+        <div class="pg-pillar-name">Crons</div>
+        <div class="pg-pillar-desc">Where MudiAgent leaves your laptop in the dust. Every job runs in a fresh isolated session. Flags: CONTEXT, MEMORY, NO_LOOP. Time-bounded crons work to-do loop style.</div>
+      </div>
+      <div class="pg-pillar">
+        <div class="pg-pillar-n">05</div>
+        <div class="pg-pillar-name">Self-improving loop</div>
+        <div class="pg-pillar-desc">Do work, get feedback, memory grows, turn steps into skills, search past sessions. The more you use it, the better it gets. Honest caveat: prune and curate the skill library.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WHAT WE RUN ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">What we run on it</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Marketing infrastructure. <em>One operator. Many specialists.</em></h2>
+
+    <p class="pg-p">
+      Most of what runs on this stack is marketing infrastructure with the occasional internal tool. Here is the actual list:
+    </p>
+
+    <div class="pg-grid-3">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Personal assistant</div>
+        <p class="pg-card-body">Handles business and private. Lives in Telegram. Flags the four emails worth reading every morning, schedules reminders, summarizes meetings you missed.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Workflow prototyping bench</div>
+        <p class="pg-card-body">Where new flows (lead magnet, ad creative review, content sprint) get tested against real work for 2 to 3 runs before they get promoted to production.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Specialized agents</div>
+        <p class="pg-card-body">SEO, outbound / BD, design review, content writing. Each one with its own soul and its own scope.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Company brain</div>
+        <p class="pg-card-body">Monitors Slack, chats, emails, transcripts, voice memos. Makes all of it queryable. "What did we say to that client about pricing last month" returns in three seconds instead of thirty minutes of digging.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">SEO agent</div>
+        <p class="pg-card-body">Runs the full pipeline from keyword seed to published article in one docker container. 21 steps. No human in the middle until the final review.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Content distribution</div>
+        <p class="pg-card-body">Takes a piece of long form (this article, for example) and atomizes it across LinkedIn, X, Threads, with platform-specific hooks.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Orchestrator</div>
+        <p class="pg-card-body">Does not produce work itself. Routes requests to the right specialist based on what you are asking for.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Design review</div>
+        <p class="pg-card-body">Sees draft ads, hero crops, brand-mark placements, screenshots. Flags what is off-system before it ships.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">Internal tooler</div>
+        <p class="pg-card-body">Builds the small one-off scripts you would otherwise never finish. Plus the cron jobs that catch the silent fail before customers do.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SEO PIPELINE (21 STEPS) ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">Zoom in: SEO agent</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Five layers. One container. <em>21 steps.</em></h2>
+
+    <p class="pg-p">
+      The SEO agent is worth zooming in on. It is the one shipped publicly and the one that maps cleanest to the architecture in the rest of this guide. Five layers, all inside one docker container, 21 steps from keyword seed to published article.
+    </p>
+
+    <div class="pg-pipeline">
+      <div class="pg-phase">
+        <div class="pg-phase-label"><span class="pg-phase-num">1</span>Research + ideate</div>
+        <div class="pg-step"><span class="pg-step-n">01</span>keyword seed</div>
+        <div class="pg-step"><span class="pg-step-n">02</span>serp snapshot</div>
+        <div class="pg-step"><span class="pg-step-n">03</span>competitor extraction</div>
+        <div class="pg-step"><span class="pg-step-n">04</span>intent + format analysis</div>
+        <div class="pg-step"><span class="pg-step-n">05</span>content + visual gap</div>
+        <div class="pg-step"><span class="pg-step-n">06</span>internal validation</div>
+        <div class="pg-step"><span class="pg-step-n">07</span>external validation</div>
+      </div>
+      <div class="pg-phase">
+        <div class="pg-phase-label"><span class="pg-phase-num">2</span>Production</div>
+        <div class="pg-step"><span class="pg-step-n">08</span>angle + positioning brief</div>
+        <div class="pg-step"><span class="pg-step-n">09</span>visual strategy brief</div>
+        <div class="pg-step"><span class="pg-step-n">10</span>outline</div>
+        <div class="pg-step"><span class="pg-step-n">11</span>draft</div>
+        <div class="pg-step"><span class="pg-step-n">12</span>image gen</div>
+        <div class="pg-step"><span class="pg-step-n">13</span>flowchart gen</div>
+        <div class="pg-step"><span class="pg-step-n">14</span>visual qa</div>
+        <div class="pg-step"><span class="pg-step-n">15</span>article qa</div>
+      </div>
+      <div class="pg-phase">
+        <div class="pg-phase-label"><span class="pg-phase-num">3</span>Distribution</div>
+        <div class="pg-step"><span class="pg-step-n">16</span>publish prep</div>
+        <div class="pg-step"><span class="pg-step-n">17</span>schema</div>
+        <div class="pg-step"><span class="pg-step-n">18</span>internal linking</div>
+        <div class="pg-step"><span class="pg-step-n">19</span>syndication</div>
+        <div class="pg-step"><span class="pg-step-n">20</span>analytics setup</div>
+        <div class="pg-step"><span class="pg-step-n">21</span>monitoring</div>
+      </div>
+    </div>
+
+    <h3 class="pg-h3">The layers above this pipeline.</h3>
+
+    <div class="pg-diagram">
+      <div class="pg-diagram-title">Layered architecture · SEO agent</div>
+      <div class="pg-node pg-node-em"><span class="pg-node-label">Layer 1 · Company brain</span>vision · brand · audience · products. Every agent reads from this.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Layer 2 · Orchestrator</span>takes the topic or keyword seed and routes it to the SEO agent.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Layer 3 · SEO brain</span>ranking playbook · voice rules · content formats · visual style guide · success criteria per format.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node">
+        <span class="pg-node-label">Layer 4 · Three sub-agents (one per phase)</span>
+        research + ideate · production · distribution
+      </div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node">
+        <span class="pg-node-label">Layer 5 · One docker container</span>
+        all three sub-agents share env, memory, and tools. Sub-profiles switch context per phase. One process. One filesystem. One set of credentials.
+      </div>
+    </div>
+
+    <div class="pg-callout-mono">
+      <strong>Why one container instead of three.</strong><br>
+      SEO work is sequential. Research feeds the brief. The brief feeds production. Production feeds distribution. Every step needs memory of what was decided upstream. Splitting into three containers means shuttling state across boundaries, which gets expensive and breaks the chain.
+    </div>
+
+    <p class="pg-p">
+      Every other specialized agent runs on the same template. Clone the SEO agent template, swap the brain (SEO brain to outbound brain, or design brain, or support brain), and you have a new agent for any function with the same five-layer shape.
+    </p>
+  </section>
+
+  <!-- ========== MENTAL MODEL ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">From one agent to a full fleet</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Before the levels, <em>the mental model.</em></h2>
+
+    <p class="pg-p">The setup has four parts:</p>
+
+    <ul class="pg-bullets">
+      <li class="pg-li"><strong>You</strong> are the operator. You have direct access to every part of the system.</li>
+      <li class="pg-li">The <strong>agent control room</strong> is the side control plane. It is not an agent you chat through. It is a folder at <code>/root/vps-agents</code> that documents and governs the whole fleet. You open it, edit it, inspect it, or ask any coding agent on your laptop to use it when you are managing the system.</li>
+      <li class="pg-li">The <strong>MudiAgents</strong> are the workers. Some are specialists (SEO, dev, CMO, ops). One of them can optionally be an orchestrator.</li>
+      <li class="pg-li">The <strong>agent task bus</strong> is an optional handoff desk that sits between the orchestrator and the specialists. You only need it once you have an orchestrator in play.</li>
+    </ul>
+
+    <div class="pg-diagram">
+      <div class="pg-diagram-title">The whole thing</div>
+      <div class="pg-node pg-node-em" style="max-width:240px;margin:0 auto;text-align:center;">
+        <span class="pg-node-label">You</span>the operator
+      </div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-three-paths">
+        <div class="pg-node">
+          <span class="pg-node-label">Control path</span>
+          &rarr; Agent control room<br>
+          <span style="color:var(--pg-faint);">/root/vps-agents</span><br>
+          docs · rules · runbooks · env-map · registry<br>
+          <span style="color:var(--pg-faint);">side control plane · no raw secrets</span>
+        </div>
+        <div class="pg-node">
+          <span class="pg-node-label">Orchestrated path</span>
+          &rarr; MudiAgent orchestrator<br>
+          <span style="color:var(--pg-faint);">optional front door</span><br>
+          &#x2193; delegates<br>
+          &rarr; Agent task bus <span style="color:var(--pg-faint);">/srv/agent-bus</span><br>
+          &#x2193; routes<br>
+          &rarr; Specialist agents
+        </div>
+        <div class="pg-node">
+          <span class="pg-node-label">Direct path</span>
+          &rarr; Specialist agent<br>
+          <span style="color:var(--pg-faint);">seo · dev · cmo · ops · life</span><br><br>
+          talk to it directly,<br>
+          no routing
+        </div>
+      </div>
+      <p style="margin-top:18px;font-family:var(--pg-mono);font-size:11.5px;color:var(--pg-faint);line-height:1.7;">
+        The agent control room governs every agent in this diagram. It is the single source of truth, and the place you go to manage the fleet, not the place you go to run work through it.
       </p>
     </div>
-    <aside class="pg-aside">
-      <div class="pg-card-label">Two philosophies</div>
-      <h4>Rails vs Linux</h4>
-      <p><strong style="color: var(--pg-amber);">MudiAgent is rails.</strong> Opinionated defaults.
-      Batteries included. Productive on day one with minimal setup. The agent does more
-      thinking for the operator.</p>
-      <p>Primitive-first frameworks are Linux. Maximum control, explicit wiring, the agent does
-      exactly what it was told and nothing more. Both are valid — pick the taste that matches
-      the team.</p>
-    </aside>
-  </div>
 
-  <p class="pg-minor" style="margin-top: 32px;">Where MudiAgent earns its keep</p>
-  <ul>
-    <li>Persistent memory across every session, queryable across months of work</li>
-    <li>A bundled skill library that grows with use, never shrinks</li>
-    <li>One framework, multiple deployment targets — local, Docker, SSH, serverless</li>
-    <li>Tool-gateway routing to whichever model fits the task (creative work to one model, structured work to another)</li>
-    <li>Twenty-plus messaging surfaces so the operator never has to switch tools to reach it</li>
-  </ul>
+    <h3 class="pg-h3">The storage split matters more than people think.</h3>
 
-  <figure class="pg-figure">
-    <img src="/playbooks/mudiagent-operator-guide/HG6c_8nbcAAFdzt.jpg" alt="A persistent operator routing across messaging surfaces, tools, and memory">
-    <figcaption class="pg-figure-caption">Fig. 01 — A persistent operator routing across messaging surfaces, tools, and memory</figcaption>
-  </figure>
-</section>
+<pre class="pg-pre">/root/vps-agents          <span class="pg-c">&rarr; control room: docs, rules, runbooks, architecture
+                            no raw secrets, ever</span>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     ARCHITECTURE — brain / soul / skillset
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Architecture</p>
-  <h2 class="pg-h2">Every agent has three things. <span class="pg-accent">Brain. Soul. Skillset.</span></h2>
+/srv/&lt;agent-name&gt;/data    <span class="pg-c">&rarr; live runtime: secrets, memory, skills, sessions, crons
+                            this is where each MudiAgent lives</span></pre>
 
-  <div class="pg-grid pg-grid--3">
-    <div class="pg-card">
-      <div class="pg-card-label">01 · Brain</div>
-      <h4>Memory that persists</h4>
-      <p>Memory lives at <code>~/.mudiagent/memories/</code>. Two files, <code>MEMORY.md</code>
-      and <code>USER.md</code>, inject at session start. Voice rubric, brand notes, customer
-      language, last week's corrections — all of it loads before the first prompt. Sessions
-      stored in SQLite, recall is full-text searchable across the entire history.</p>
+    <p class="pg-p">
+      The control room contains the answers to questions like which agents exist, what they do, what ports they use, what credentials they reference, what each agent can and cannot do, and how to restart, debug, or rebuild any of them. The live runtime contains the actual workings.
+    </p>
+
+    <div class="pg-callout">
+      <p>The control room is the brain that defines the system. The live runtime is the body that runs it. You can rebuild the body from the brain. You cannot rebuild the brain from the body.</p>
     </div>
-    <div class="pg-card">
-      <div class="pg-card-label">02 · Soul</div>
-      <h4>Personality on demand</h4>
-      <p><code>soul.md</code> is where the vibe lives. Concise, sarcastic, blunt, formal, fast
-      or thoughtful. Six agents can share one brain but wear six different souls. One
-      closer-energy outbound rep. One long-form researcher. One terse assistant. The skin is
-      configurable; the underlying state is the same.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">03 · Skillset</div>
-      <h4>Bundled, then grown</h4>
-      <p>A curated skill library ships in the box: PR workflows, Obsidian, Google Workspace,
-      Linear, Notion, browser control, web scraping, vision, voice, scheduling. As the agent
-      works, it writes new skills along the way. The library compounds on top of the bundle.</p>
-    </div>
-  </div>
 
-  <h3 class="pg-h3">What the agent can talk to</h3>
-  <div class="pg-grid pg-grid--3">
-    <div class="pg-card">
-      <h4>Tool gateway</h4>
-      <p>One subscription routes to many model providers, plus web scraping and browser
-      automation built in. Switch model per agent or per task.</p>
-    </div>
-    <div class="pg-card">
-      <h4>MCP integration</h4>
-      <p>Any external service that speaks the Model Context Protocol becomes a tool the agent
-      can use immediately. No bespoke wrapper needed.</p>
-    </div>
-    <div class="pg-card">
-      <h4>Messaging surfaces</h4>
-      <p>Telegram, Discord, Slack, email, voice, and the CLI itself. The agent meets the
-      operator wherever they already work.</p>
-    </div>
-  </div>
+    <h3 class="pg-h3">Inside the control room.</h3>
+<pre class="pg-pre">/root/vps-agents/
+&#x251C;&#x2500;&#x2500; README.md
+&#x251C;&#x2500;&#x2500; CLAUDE.md
+&#x251C;&#x2500;&#x2500; agents/
+&#x2502;   &#x2514;&#x2500;&#x2500; &lt;agent-name&gt;/
+&#x2502;       &#x251C;&#x2500;&#x2500; inventory.md
+&#x2502;       &#x251C;&#x2500;&#x2500; docker.md
+&#x2502;       &#x251C;&#x2500;&#x2500; env-map.md
+&#x2502;       &#x251C;&#x2500;&#x2500; runbook.md
+&#x2502;       &#x2514;&#x2500;&#x2500; backup.md
+&#x2514;&#x2500;&#x2500; shared/
+    &#x251C;&#x2500;&#x2500; security.md
+    &#x251C;&#x2500;&#x2500; commands.md
+    &#x251C;&#x2500;&#x2500; api-keys-sop.md
+    &#x2514;&#x2500;&#x2500; orchestrator-and-fleet-skills.md</pre>
 
-  <h3 class="pg-h3">And where the agent can live</h3>
-  <ul>
-    <li><strong>Laptop</strong> — local, fastest to start, lives and dies with the machine</li>
-    <li><strong>Docker container</strong> — isolated, portable, the recommended default for fleet work</li>
-    <li><strong>SSH session on a VPS</strong> — keeps running with the laptop closed</li>
-    <li><strong>Serverless runtimes</strong> (Daytona, Singularity, Modal) — no infrastructure to manage</li>
-  </ul>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     USE CASES
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Use cases</p>
-  <h2 class="pg-h2">What an operating team actually runs on <span class="pg-accent">MudiAgent.</span></h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    A working fleet is not theoretical. Below is the actual catalog a marketing operator runs
-    today. Each role earns its container.
-  </p>
-
-  <div class="pg-grid pg-grid--2">
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Assistant</div>
-      <h4>Personal assistant</h4>
-      <p>Handles business and private. Lives in Telegram. Flags the four emails worth reading
-      every morning. Schedules reminders. Summarizes meetings missed.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Lab</div>
-      <h4>Workflow prototyping bench</h4>
-      <p>Where new flows get tested: lead magnet, ad creative review, content sprint. Two or
-      three runs against real work before promotion to its own container.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Specialists</div>
-      <h4>Specialized agents</h4>
-      <p>SEO, outbound / BD, design review, content writing. Each one with its own soul, its
-      own scope, its own credentials. No mega-agent confusion.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Memory</div>
-      <h4>Company brain</h4>
-      <p>Monitors Slack, chats, emails, transcripts, voice memos. Everything becomes queryable.
-      Three-second answers replace thirty minutes of digging.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Factory</div>
-      <h4>SEO agent</h4>
-      <p>Runs the full pipeline from keyword seed to published article in one Docker container.
-      Twenty-one steps. No human in the middle until the final review.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Role · Distribution</div>
-      <h4>Content distribution agent</h4>
-      <p>Takes long-form (this guide, for example) and atomizes it across LinkedIn, X, Threads,
-      with platform-specific hooks per channel.</p>
-    </div>
-  </div>
-
-  <figure class="pg-figure">
-    <img src="/playbooks/mudiagent-operator-guide/HG6dAPObQAEju_z.jpg" alt="Org chart of an agent fleet across docker containers on one VPS">
-    <figcaption class="pg-figure-caption">Fig. 02 — Four layers of an agent fleet, every layer in its own container on one VPS</figcaption>
-  </figure>
-
-  <div class="pg-callout">
-    <div class="pg-callout-label">Operator note</div>
-    <p>One orchestrator agent reads the company brain, picks the right department, and routes
-    the work. It does not produce output itself — it just makes sure the right specialist sees
-    the right task with the right context.</p>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     SEO PIPELINE
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Deep dive · SEO factory</p>
-  <h2 class="pg-h2">Five layers. One container. <span class="pg-accent">Twenty-one steps.</span></h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    The SEO agent is the cleanest mapping of the general architecture. Three sub-agents, one
-    shared container, one set of credentials, sequential handoff through memory.
-  </p>
-
-  <h3 class="pg-h3">The twenty-one steps</h3>
-<pre><code>[research + ideate]
-01  keyword seed
-02  serp snapshot
-03  competitor extraction
-04  intent + format analysis
-05  content + visual gap
-06  internal validation
-07  external validation
-
-[production]
-08  angle + positioning brief
-09  visual strategy brief
-10  outline
-11  draft
-12  image gen
-13  flowchart gen
-14  visual qa
-15  article qa
-
-[distribution]
-16  publish prep
-17  schema
-18  internal linking
-19  syndication
-20  analytics setup
-21  monitoring</code></pre>
-
-  <h3 class="pg-h3">Layers above the pipeline</h3>
-  <ul>
-    <li><strong>Company brain</strong> at the top: vision, brand, audience, products. Every agent inherits from this.</li>
-    <li><strong>Orchestrator agent:</strong> takes the topic or keyword seed and routes it to the SEO agent.</li>
-    <li><strong>SEO brain:</strong> ranking playbook, voice rules, content formats, visual style guide, success criteria per format.</li>
-    <li><strong>Three sub-agents</strong> inside the SEO container, one per phase: research + ideate, production, distribution.</li>
-    <li><strong>One Docker container</strong> holds all three sub-agents. They share env, memory, and tools. Sub-profiles switch context per phase.</li>
-  </ul>
-
-  <div class="pg-callout">
-    <div class="pg-callout-label">Why one container</div>
-    <p>SEO work is sequential. Research feeds the brief, the brief feeds production, production
-    feeds distribution. Every step needs memory of what was decided upstream. Splitting into
-    three containers means shuttling state across boundaries, which gets expensive and breaks
-    the chain.</p>
-  </div>
-
-  <p>
-    Every other specialized agent runs on the same template. Clone the SEO agent, swap the
-    brain (SEO brain → outbound brain, or → design brain, or → support brain), and a new role
-    exists with the same five-layer shape.
-  </p>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     MENTAL MODEL
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Mental model</p>
-  <h2 class="pg-h2">From one agent to a <span class="pg-accent">full fleet.</span></h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    Before the levels, the four parts. Internalize these; the rest of this guide becomes
-    navigation rather than learning.
-  </p>
-
-  <div class="pg-grid pg-grid--2">
-    <div class="pg-card">
-      <div class="pg-card-label">01 · Operator</div>
-      <h4>You</h4>
-      <p>Direct access to every part of the system. The decision-maker, the editor, the only
-      voice that matters when taste is on the line.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">02 · Side control plane</div>
-      <h4>Agent control room</h4>
-      <p>A folder at <code>/root/vps-agents</code> that documents and governs the fleet.
-      Opened, edited, inspected, or read by another agent when managing the system.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">03 · Workers</div>
-      <h4>MudiAgent specialists</h4>
-      <p>The workers — SEO, dev, CMO, ops, life. One of them can optionally be an orchestrator
-      that routes across the rest.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">04 · Optional desk</div>
-      <h4>Agent task bus</h4>
-      <p>An optional handoff desk between the orchestrator and the specialists. Only needed
-      once an orchestrator is in play. Skip until then.</p>
-    </div>
-  </div>
-
-<div class="pg-ascii">┌───────┐
-│  YOU  │ the operator
-└───┬───┘
-    │
-    ┌─────────────────────────────┼─────────────────────────────┐
-    │                             │                             │
-control path              orchestrated path                direct path
-    │                             │                             │
-    ▼                             ▼                             ▼
-┌────────────────────┐    ┌────────────────────┐    ┌────────────────────┐
-│ AGENT CONTROL ROOM │    │    ORCHESTRATOR    │    │ SPECIALIST AGENT   │
-│  /root/vps-agents  │    │  (optional door)   │    │                    │
-│                    │    └─────────┬──────────┘    │  seo · dev · cmo · │
-│ docs · rules ·     │              │ delegates     │   ops · life       │
-│ runbooks · env-map │              ▼               │                    │
-│ · registry         │    ┌────────────────────┐    │  talk to it        │
-│                    │    │   AGENT TASK BUS   │    │  directly,         │
-│ side control plane │    │   /srv/agent-bus   │    │  no routing        │
-│  no raw secrets    │    └─────────┬──────────┘    │                    │
-└────────────────────┘              │ routes        │                    │
-                                    └──────────────►│                    │
-                                                    └────────────────────┘</div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     STORAGE SPLIT
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Storage split</p>
-  <h2 class="pg-h2">Control room and runtime. <span class="pg-accent">Brain and body.</span></h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    The clearest design decision in the whole stack. Get this right and the rest of the system
-    gets easier. Get it wrong and every level after one becomes painful.
-  </p>
-
-<pre><code>/root/vps-agents → control room: docs, rules, runbooks, architecture
-                   no raw secrets, ever
-
-/srv/&lt;agent-name&gt;/data → live runtime: secrets, memory, skills, sessions, crons
-                         this is where each MudiAgent lives</code></pre>
-
-  <p>
-    The control room contains the answers to questions like which agents exist, what they do,
-    what ports they use, what credentials they reference, what each agent can and cannot do,
-    and how to restart, debug, or rebuild any of them. The live runtime contains the actual
-    workings.
-  </p>
-
-  <div class="pg-callout">
-    <div class="pg-callout-label">The principle</div>
-    <p>The control room is the brain that defines the system. The live runtime is the body
-    that runs it. <strong style="color: var(--pg-amber);">You can rebuild the body from the
-    brain. You cannot rebuild the brain from the body.</strong></p>
-  </div>
-
-  <h3 class="pg-h3">Inside the control room</h3>
-<pre><code>/root/vps-agents/
-├── README.md
-├── CLAUDE.md
-├── agents/
-│   └── &lt;agent-name&gt;/
-│       ├── inventory.md
-│       ├── docker.md
-│       ├── env-map.md
-│       ├── runbook.md
-│       └── backup.md
-└── shared/
-    ├── security.md
-    ├── commands.md
-    ├── api-keys-sop.md
-    └── orchestrator-and-fleet-skills.md</code></pre>
-
-  <h3 class="pg-h3">Inside each agent's runtime at <code>/srv/&lt;agent-name&gt;/data/</code></h3>
-<pre><code>.env
+    <h3 class="pg-h3">Inside each agent's runtime at <code>/srv/&lt;agent-name&gt;/data/</code></h3>
+<pre class="pg-pre">.env
 config.yaml
 SOUL.md
 memories/
@@ -904,142 +1164,119 @@ skills/
 cron/
 sessions/
 logs/
-state.db</code></pre>
-</section>
+state.db</pre>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     THREE PATHS
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Interaction</p>
-  <h2 class="pg-h2">Three ways an operator <span class="pg-accent">talks to the fleet.</span></h2>
-
-<div class="pg-ascii">control path:
-you ──────► agent control room
+    <h3 class="pg-h3">Three ways you interact.</h3>
+<pre class="pg-pre"><span class="pg-k">control path:</span>
+you &#x2500;&#x2500;&#x2500;&#x2500;&#x25B6; agent control room
             (add agents, rotate keys, update docs, debug setup)
 
-direct path:
-you ──────► mudiagent-seo
+<span class="pg-k">direct path:</span>
+you &#x2500;&#x2500;&#x2500;&#x2500;&#x25B6; mudiagent-seo
             (talk to a specialist directly, fastest)
 
-orchestrated path:
-you ──► mudiagent-orchestrator ──► task bus ──► specialists ──► you
-        (one front door, routes and synthesizes multi-agent work)</div>
+<span class="pg-k">orchestrated path:</span>
+you &#x2500;&#x25B6; mudiagent-orchestrator &#x2500;&#x25B6; task bus &#x2500;&#x25B6; specialists &#x2500;&#x25B6; you
+        (one front door, routes and synthesizes multi-agent work)</pre>
 
-  <div class="pg-grid pg-grid--3">
-    <div class="pg-card">
-      <div class="pg-card-label">Control path</div>
-      <h4>Meta layer</h4>
-      <p>Used when adding agents, reviewing docs, checking ports, rotating keys, or debugging
-      setup. Not where work happens.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Direct path</div>
-      <h4>Fastest</h4>
-      <p>Used when the operator already knows which agent owns the job. No routing hop, no
-      orchestrator latency.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Orchestrated path</div>
-      <h4>Synthesizer</h4>
-      <p>Used when one front door should route and combine work across multiple specialists.
-      Worth the latency for cross-functional tasks.</p>
-    </div>
-  </div>
+    <ul class="pg-bullets">
+      <li class="pg-li"><strong>Control path</strong> is the meta layer. Used when adding agents, reviewing docs, checking ports, rotating keys, debugging setup.</li>
+      <li class="pg-li"><strong>Direct path</strong> is the fastest. Used when you already know which agent does the work.</li>
+      <li class="pg-li"><strong>Orchestrated path</strong> is the synthesizer. Used when you want one front door that routes and combines work across multiple specialists.</li>
+    </ul>
+  </section>
 
-  <figure class="pg-figure">
-    <img src="/playbooks/mudiagent-operator-guide/HIIpUelaMAAKC-o.jpg" alt="Specialist agent UI rendering in the operator's interface">
-    <figcaption class="pg-figure-caption">Fig. 03 — Specialist agent surface, accessed via the direct path</figcaption>
-  </figure>
-</section>
+  <!-- ========== LEVELS ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">The four levels</div>
+    <h2 class="pg-h2" style="margin-top:18px;">From one agent <em>to a full fleet.</em></h2>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     LEVELS 1 & 2
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Levels 1 &amp; 2</p>
-  <h2 class="pg-h2">Start with <span class="pg-accent">one.</span> Earn the right to scale.</h2>
+    <div class="pg-levels">
 
-  <h3 class="pg-h3">Level 1 · One agent</h3>
-  <p>One MudiAgent. That is it. The control room can still exist (recommended) but it only
-  documents that one agent.</p>
+      <div class="pg-level">
+        <div class="pg-level-tag">
+          <span class="pg-level-tag-n">01</span>
+          Level
+        </div>
+        <div>
+          <h3 class="pg-h3" style="margin-top:0;">One agent.</h3>
+          <p class="pg-p">
+            You have one MudiAgent. That is it. The control room can still exist (recommended) but it only documents that one agent.
+          </p>
+<pre class="pg-pre">you &rarr; one MudiAgent
 
-<div class="pg-ascii">you → one mudiagent
+control room &rarr; documents that one agent</pre>
+          <h4 class="pg-h4">Best for</h4>
+          <p class="pg-p">Initial setup. Your personal MudiAgent. Root install documentation. Simple docker migration.</p>
+          <p class="pg-p">
+            One agent, lived-in, with a personality you have tuned and a memory that has started to build. Fill in <code>SOUL.md</code> with the voice you want. <code>MEMORY.md</code> with the stable facts about your business. <code>USER.md</code> with the stable facts about you. Connect it to Telegram or Discord so it lives where you do. Start using it on real tasks. Let it touch your tools. Let it write its own skills along the way.
+          </p>
+          <p class="pg-p">
+            <code>MEMORY.md</code> holds the stable facts (what your business is, who your customers are, what your products do). <code>USER.md</code> holds the stable facts about you (timezone, working hours, recurring projects, preferred output formats). Both get refined every week as you correct the agent in real conversations.
+          </p>
+        </div>
+      </div>
 
-control room → documents that one agent</div>
+      <div class="pg-level">
+        <div class="pg-level-tag">
+          <span class="pg-level-tag-n">02</span>
+          Level
+        </div>
+        <div>
+          <h3 class="pg-h3" style="margin-top:0;">Direct specialist agents.</h3>
+          <p class="pg-p">
+            You have multiple specialized agents, but you still talk to each one directly. No orchestrator yet.
+          </p>
+<pre class="pg-pre">you &rarr; mudiagent-life
+you &rarr; mudiagent-seo
+you &rarr; mudiagent-dev
+you &rarr; mudiagent-cmo
 
-  <p><strong>Best for:</strong> initial setup, the personal MudiAgent, root install
-  documentation, simple Docker migration.</p>
+the control room documents all of them.</pre>
+          <h4 class="pg-h4">Best for</h4>
+          <p class="pg-p">Clear role separation. Testing which agents are useful. Avoiding premature orchestration. Keeping credentials scoped per agent.</p>
 
-  <p>
-    One agent, lived-in, with a personality the operator has tuned and a memory that has
-    started to build. Fill in <code>SOUL.md</code> with the voice. Fill in <code>MEMORY.md</code>
-    with the stable facts about the business. Fill in <code>USER.md</code> with the stable
-    facts about the operator. Connect it to Telegram or Discord so it lives where the work
-    already lives. Start using it on real tasks. Let it touch tools. Let it write its own
-    skills along the way.
-  </p>
+          <p class="pg-p">
+            The trap to avoid here is reaching for an orchestrator before you have proven your specialists are useful. Spin up two or three, run them directly, and only add an orchestrator when you find yourself wanting one front door.
+          </p>
 
-  <h3 class="pg-h3">Level 2 · Direct specialists</h3>
-  <p>Multiple specialized agents, still talked to directly. No orchestrator yet.</p>
+          <h4 class="pg-h4">When to spin up a new agent vs. stay with what you have</h4>
+<pre class="pg-pre">needs its own credentials       &rarr; new agent
+needs its own long-term memory  &rarr; new agent
+ongoing repeated work that is
+  a separate role               &rarr; new agent
+otherwise                       &rarr; stay with what you have</pre>
 
-<div class="pg-ascii">you → mudiagent-life
-you → mudiagent-seo
-you → mudiagent-dev
-you → mudiagent-cmo
+          <div class="pg-callout-mono">
+            <strong>Bad pattern.</strong> One mega-agent with every credential and every memory layer mashed together. You lose isolation. You lose the ability to revoke access cleanly. The agent gets confused about which voice to use.
+          </div>
+        </div>
+      </div>
 
-the control room documents all of them.</div>
+      <div class="pg-level">
+        <div class="pg-level-tag">
+          <span class="pg-level-tag-n">03</span>
+          Level
+        </div>
+        <div>
+          <h3 class="pg-h3" style="margin-top:0;">Orchestrator + specialists.</h3>
+          <p class="pg-p">
+            You add <code>mudiagent-orchestrator</code> as a front door. You can still talk directly to specialists, but the orchestrator can route work and synthesize results.
+          </p>
 
-  <p><strong>Best for:</strong> clear role separation, testing which agents are useful,
-  avoiding premature orchestration, keeping credentials scoped per agent.</p>
+          <p class="pg-p">
+            The orchestrator reads the control room to know which agents exist, what each one does, where task queues live, what requires approval, which actions are forbidden, and where docs and runbooks are. It does not need to ask you any of that. It reads it.
+          </p>
 
-  <div class="pg-callout">
-    <div class="pg-callout-label">Trap to avoid</div>
-    <p>Do not reach for an orchestrator before specialists have proven they are useful. Spin up
-    two or three, run them directly, only add an orchestrator when the operator finds
-    themselves wanting one front door. Premature orchestration is the most common way to ship
-    a fleet that nobody uses.</p>
-  </div>
+          <h4 class="pg-h4">Best for</h4>
+          <p class="pg-p">Cross-functional work. Delegation. Summary and synthesis. One main interface for multi-agent workflows.</p>
 
-  <p class="pg-minor" style="margin-top: 28px;">When to spin up a new agent</p>
-  <ul>
-    <li>It needs its own credentials → new agent</li>
-    <li>It needs its own long-term memory → new agent</li>
-    <li>It owns ongoing repeated work that is a separate role → new agent</li>
-    <li>Otherwise, stay with what you have</li>
-  </ul>
-</section>
+          <p class="pg-p">
+            The orchestrator is the moment your setup stops being a collection of agents and starts being a team. It is also the moment where the control room earns its keep, because the orchestrator is only as good as the docs it reads.
+          </p>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     LEVELS 3 & 4
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Levels 3 &amp; 4</p>
-  <h2 class="pg-h2">From a team to a <span class="pg-accent">department that ships on its own.</span></h2>
-
-  <h3 class="pg-h3">Level 3 · Orchestrator + specialists</h3>
-  <p>
-    Add <code>mudiagent-orchestrator</code> as a front door. The operator can still talk
-    directly to specialists, but the orchestrator can now route work and synthesize results.
-  </p>
-  <p>
-    The orchestrator reads the control room to know which agents exist, what each one does,
-    where task queues live, what requires approval, which actions are forbidden, and where
-    docs and runbooks are. It does not need to be told any of that.
-  </p>
-
-  <p><strong>Best for:</strong> cross-functional work, delegation, summary and synthesis, one
-  main interface for multi-agent workflows.</p>
-
-  <div class="pg-callout">
-    <div class="pg-callout-label">The earning moment</div>
-    <p>The orchestrator is when the setup stops being a collection of agents and starts being
-    a team. It is also when the control room earns its keep, because the orchestrator is only
-    as good as the docs it reads.</p>
-  </div>
-
-  <h3 class="pg-h3">A quick check-in from a laptop or phone</h3>
-<pre><code>$ ssh mudiagent
+          <h4 class="pg-h4">A quick check-in on the fleet from your laptop or phone</h4>
+<pre class="pg-pre">$ ssh mudiagent
 welcome to mudiagent-vps-1.
 last login: thu may 15 09:14:22
 
@@ -1047,233 +1284,238 @@ mudiagent-vps-1 ~ $ cd vps-agents
 mudiagent-vps-1 ~/vps-agents $ docker ps --format \
 "table {{.Names}}\t{{.Status}}\t{{.Image}}"
 
-NAMES                     STATUS        IMAGE
-mudiagent-orchestrator    up 14 hours   mudiagent-runtime
-mudiagent-seo             up 8 hours    mudiagent-runtime
-mudiagent-cmo             up 8 hours    mudiagent-runtime
-mudiagent-outbound        up 4 hours    mudiagent-runtime
-mudiagent-life            up 12 hours   mudiagent-runtime
+NAMES                       STATUS        IMAGE
+mudiagent-orchestrator      up 14 hours   mudiagent-runtime
+mudiagent-seo               up  8 hours   mudiagent-runtime
+mudiagent-cmo               up  8 hours   mudiagent-runtime
+mudiagent-outbound          up  4 hours   mudiagent-runtime
+mudiagent-life              up 12 hours   mudiagent-runtime
 
 mudiagent-vps-1 ~/vps-agents $ cat agents/mudiagent-seo/runbook.md
 # runbook: mudiagent-seo
 restart: docker compose restart mudiagent-seo
 logs:    docker logs -f mudiagent-seo
-shell:   docker exec -it mudiagent-seo bash</code></pre>
+shell:   docker exec -it mudiagent-seo bash
+...</pre>
+        </div>
+      </div>
 
-  <h3 class="pg-h3">Level 4 · Automated team</h3>
-  <p>
-    Same shape as level 3, with recurring workflows and stronger automation. Weekly SEO
-    reports run on cron. Server health checks fire daily. Backup verification runs without
-    anyone asking. Cross-agent business workflows kick off on schedule.
-  </p>
-  <p>
-    Level 4 is what a marketing department in a terminal looks like. It does not need an
-    operator to start the day. It shows up to work on its own, files reports, checks itself,
-    and only pings the operator for the decisions that need taste.
-  </p>
-</section>
+      <div class="pg-level">
+        <div class="pg-level-tag">
+          <span class="pg-level-tag-n">04</span>
+          Level
+        </div>
+        <div>
+          <h3 class="pg-h3" style="margin-top:0;">Automated agent team.</h3>
+          <p class="pg-p">
+            Same shape as level 3, but with recurring workflows and stronger automation. Weekly SEO reports run on cron. Server health checks fire daily. Backup verification runs without you asking. Cross-agent business workflows kick off on schedule.
+          </p>
 
-<!-- ═════════════════════════════════════════════════════════════════════
-     SETUP FLOW
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Setup</p>
-  <h2 class="pg-h2">Point an agent at the control-room template. <span class="pg-accent">Walk away.</span></h2>
+          <h4 class="pg-h4">Best for</h4>
+          <p class="pg-p">Weekly SEO reports. Content operations. Server health checks. Backup verification. Cross-agent business workflows.</p>
 
-  <p class="pg-lead" style="margin-top: 24px;">
-    The template holds the exact structure described above, plus the skills the agent needs to
-    set up the fleet. Manual clone works; the point is that nothing has to be manual. With
-    another agent on the laptop and a Hetzner API key, the plane lands itself.
-  </p>
+          <p class="pg-p">
+            Level 4 is what a marketing department in your terminal looks like. It does not need you to start the day. It shows up to work on its own, files reports, checks itself, and only pings you for the decisions that need taste.
+          </p>
+        </div>
+      </div>
 
-  <h3 class="pg-h3">The automated flow</h3>
-<div class="pg-ascii">you ──► generate a Hetzner API key
-        (5 min: sign up, generate a token, drop it in .env)
-            │
-            ▼
-agent ──► create-vps skill
-          spins up a Hetzner box, generates an SSH key,
-          writes the alias to ~/.ssh/config so `ssh mudiagent` works
-            │
-            ▼
-agent ──► setup-control-room skill
-          installs Node, Docker, the agent runtime, then clones the
-          template to the VPS at /root/agent-control-room
-            │
-            ▼
-you ──► finish interactive auth on the VPS
-            │
-            ▼
-agent ──► agent-control-room skill
-          registers the first mudiagent in the docs,
-          fills in the runbook, sets up the env-map
-            │
-            ▼
-you are at level 1 with a documented agent</div>
-
-  <p class="pg-minor" style="margin-top: 28px;">Within ten to fifteen minutes</p>
-  <ul>
-    <li>A fresh Hetzner VPS with the right tooling installed</li>
-    <li>The control room cloned at <code>/root/agent-control-room</code> on the VPS</li>
-    <li>Bundled skills linked into the local skill directory on the VPS</li>
-    <li>One MudiAgent registered, runbook filled in, env-map written</li>
-    <li>An SSH alias on the laptop so <code>ssh mudiagent</code> connects instantly</li>
-  </ul>
-
-  <figure class="pg-figure">
-    <img src="/playbooks/mudiagent-operator-guide/HIX8GPyWAAAQd4c.jpg" alt="Terminal output showing the agent control room layout">
-    <figcaption class="pg-figure-caption">Fig. 04 — Terminal view of a documented fleet</figcaption>
-  </figure>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     PROTOTYPE → PRODUCTION
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Methodology</p>
-  <h2 class="pg-h2">Prototype → production. <span class="pg-accent">Grow agents, don't write them.</span></h2>
-
-  <p class="pg-lead" style="margin-top: 24px;">
-    Most workflows do not start as production ones. They start messy. A flow that runs SEO
-    research, drafts an article, schedules it, and posts to LinkedIn does not exist fully
-    formed in anyone's head. It gets discovered by running it.
-  </p>
-
-  <p>MudiAgent is the prototyping environment for this. Four steps from messy idea to autonomous deployment.</p>
-
-  <div class="pg-grid pg-grid--2">
-    <div class="pg-card">
-      <div class="pg-card-label">Step 01</div>
-      <h4>Prototype in MudiAgent</h4>
-      <p>Open the main MudiAgent. Describe what should happen. Let it try. It will get most of
-      it wrong on the first run. That is fine.</p>
     </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Step 02</div>
-      <h4>Run it 2–3 times</h4>
-      <p>Against real work. Correct drift each time. The harness watches every correction and
-      starts writing the skill as it learns the shape. By run three the agent is doing most of
-      the work without coaching.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Step 03</div>
-      <h4>Fine-tune in a workspace</h4>
-      <p>Pull the workflow into a dedicated workspace. Tighten prompts, lock routing, add error
-      handling, decide what runs on cron versus what runs on trigger.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">Step 04</div>
-      <h4>Deploy on schedule</h4>
-      <p>Once the workflow survives a week of real runs without babysitting, push it to its own
-      Docker container on the VPS. Set the cron. Walk away.</p>
-    </div>
-  </div>
 
-  <div class="pg-callout">
-    <div class="pg-callout-label">The hard-won lesson</div>
-    <p>Nobody writes a production agent from scratch. The ones that ship are grown. MudiAgent
-    makes the growing fast — but the growing is still the work.</p>
-  </div>
-
-<div class="pg-ascii">prototype in mudiagent
-   │
-   ▼
-fine-tune in a dedicated workspace
-   │
-   ▼
-deploy autonomous on a vps</div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     MODELS + TRADE-OFFS
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section">
-  <p class="pg-eyebrow">Models &amp; trade-offs</p>
-  <h2 class="pg-h2">Pick the model for the work. <span class="pg-accent">Then accept the trade-offs.</span></h2>
-
-  <h3 class="pg-h3">Models worth routing</h3>
-  <div class="pg-twocol">
-    <div>
-      <p>MudiAgent gives the framework. The model underneath is the operator's choice. Through
-      the tool gateway, agents route to many providers from one subscription — switching per
-      agent or per task.</p>
-      <p class="pg-minor" style="margin-top: 14px;">A working default</p>
-      <ul>
-        <li><strong>Frontier creative model</strong> for copywriting, voice, hook generation, content drafting — anywhere taste matters</li>
-        <li><strong>Frontier engineering model</strong> for code, planning, multi-step workflows, browser automation, scraping — anywhere predictability matters</li>
-      </ul>
-      <p>Run both. One writes. The other builds and plans. Point each agent at the model that
-      fits the work it does.</p>
-    </div>
-    <aside class="pg-aside">
-      <div class="pg-card-label">If only one</div>
-      <h4>Pick by workload</h4>
-      <p>Heavy on content and copy? Start with the strongest creative model. Heavy on
-      infrastructure, automation, and engineering workflows? Start with the strongest
-      engineering model.</p>
-      <p>The other can be added later through the same gateway without touching agent config.</p>
-    </aside>
-  </div>
-
-  <h3 class="pg-h3">Three honest trade-offs</h3>
-  <div class="pg-grid pg-grid--3">
-    <div class="pg-card">
-      <div class="pg-card-label">01 · Opinions</div>
-      <h4>Defaults are opinions</h4>
-      <p>MudiAgent ships with strong defaults for memory, skills, and tool usage. That is the
-      pitch. It also means operators who want raw primitives with explicit control over every
-      step will find it heavy.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">02 · Curve</div>
-      <h4>Levels 3 &amp; 4 take learning</h4>
-      <p>Docker, VPS, SSH, the control-room folder structure, orchestrator skills — none of
-      this is install-and-go. Do not jump to level 3 without already running level 1 daily.</p>
-    </div>
-    <div class="pg-card">
-      <div class="pg-card-label">03 · Model gap</div>
-      <h4>Framework can't fix model gap</h4>
-      <p>MudiAgent makes a good model great. It does not make a small model into a strategist.
-      Use the strongest models for the work that matters; drop to cheaper models for batch
-      processing and scraping.</p>
-    </div>
-  </div>
-
-  <p>
-    None of this is magic. It is a framework that pays back because memory persists, skills
-    accumulate, and agents stay scoped. Apply it to the wrong-sized model and the result is a
-    confused team. Apply it to the right one and the result is a team.
-  </p>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════════
-     CLOSING
-     ═════════════════════════════════════════════════════════════════════ -->
-<section class="pg-section pg-section--closing">
-  <div class="pg-closing">
-    <p class="pg-eyebrow">The starting move</p>
-    <h2 class="pg-display">Stop reading. <span class="pg-accent">Run one agent.</span></h2>
-    <p class="pg-lead" style="margin-top: 20px;">
-      The fastest way to understand MudiAgent is to put a single agent on a laptop, give it a
-      soul, point it at real work, and watch what it does. Everything in this guide compounds
-      from that one move.
+    <h3 class="pg-h3">The control hierarchy.</h3>
+    <p class="pg-p">
+      One principle to keep in your head as you climb the levels.
     </p>
-    <dl class="pg-closing-rule">
-      <div>
-        <dt>Today</dt>
-        <dd>Install on a laptop. Wire <code>SOUL.md</code>.</dd>
+    <p class="pg-p">
+      The control room is for config, docs, runbooks, and governance. It documents which agents exist, what they do, where they run, which credentials they reference, what each agent can and cannot do. It is the admin panel for the fleet, including the orchestrator. <strong>It is not where you go to do work.</strong>
+    </p>
+    <p class="pg-p">
+      For work, you talk to the agents directly. Either a specialist (when you know which agent owns the job) or the orchestrator (when you want one front door to route across specialists).
+    </p>
+  </section>
+
+  <!-- ========== SETUP GUIDE ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">The setup</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Point your coding agent at the repo. <em>Walk away.</em></h2>
+
+    <p class="pg-p">
+      Now you understand the architecture. Here is how you build it.
+    </p>
+
+    <p class="pg-p">
+      The exact structure described above lives in a public control-room template, plus the skills the agent needs to set it up for you. You can clone it manually, but the point is that you do not have to. If you have a coding agent on your laptop, the agents do most of the work after you hand over a VPS provider API key.
+    </p>
+
+    <h3 class="pg-h3">The automated flow.</h3>
+
+    <div class="pg-diagram">
+      <div class="pg-diagram-title">Setup pipeline</div>
+      <div class="pg-node"><span class="pg-node-label">Step 01 · You</span>generate a VPS provider API key (5 min: sign up, generate a token, drop it in your <code style="color:var(--pg-amber);">.env</code>).</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Step 02 · Agent</span><code>create-vps</code> skill. Spins up a box, generates an SSH key, writes the alias to <code>~/.ssh/config</code> so <code>ssh mudiagent</code> works.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Step 03 · Agent</span><code>setup-control-room</code> skill. Installs Node, Docker, your coding agent, MudiAgent. Clones the repo to the VPS at <code>/root/agent-control-room</code>.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Step 04 · You</span>finish interactive auth on the VPS (your coding agent login, MudiAgent login).</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node"><span class="pg-node-label">Step 05 · Agent</span><code>agent-control-room</code> skill. Registers your first MudiAgent in the docs, fills in the runbook, sets up the env-map.</div>
+      <div class="pg-arrow">&#x2193;</div>
+      <div class="pg-node pg-node-em"><span class="pg-node-label">Done</span>you are at level 1 with a documented agent.</div>
+    </div>
+
+    <h3 class="pg-h3">Within ten to fifteen minutes you have:</h3>
+    <ul class="pg-bullets">
+      <li class="pg-li">A fresh VPS with the right tooling installed.</li>
+      <li class="pg-li">The control room cloned at <code>/root/agent-control-room</code> on the VPS.</li>
+      <li class="pg-li">The bundled skills linked into <code>~/.&lt;coding-agent&gt;/skills</code> on the VPS.</li>
+      <li class="pg-li">One MudiAgent registered, runbook filled in, env-map written.</li>
+      <li class="pg-li">An SSH alias on your laptop so <code>ssh mudiagent</code> connects instantly.</li>
+    </ul>
+  </section>
+
+  <!-- ========== PROTOTYPE TO PRODUCTION ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">Methodology</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Prototype in MudiAgent. Deploy when it survives. <em>Walk away.</em></h2>
+
+    <p class="pg-p">
+      Most workflows do not start as production ones. They start messy. A flow that runs SEO research, drafts an article, schedules it in Typefully, and posts it to LinkedIn does not exist in your head fully formed. You discover it by running it.
+    </p>
+
+    <p class="pg-p">
+      MudiAgent is the prototyping environment for this. Here is the four-step path to take any new marketing workflow from idea to autonomous deployment:
+    </p>
+
+    <div class="pg-grid">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">01 · Prototype</div>
+        <div class="pg-card-title">Prototype in MudiAgent.</div>
+        <p class="pg-card-body">Open your main agent, describe what you want to happen, let it try. It will get most of it wrong on the first run. That is fine.</p>
       </div>
-      <div>
-        <dt>This week</dt>
-        <dd>Use it on three real tasks. Correct it.</dd>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">02 · Refine</div>
+        <div class="pg-card-title">Run it 2 to 3 times against real work.</div>
+        <p class="pg-card-body">Correct drift each time. The harness watches every correction and starts writing the skill as it learns the shape. By run three the agent is doing most of what you want without coaching.</p>
       </div>
-      <div>
-        <dt>This month</dt>
-        <dd>Spin up the second specialist. Document both.</dd>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">03 · Fine-tune</div>
+        <div class="pg-card-title">Move to a dedicated workspace.</div>
+        <p class="pg-card-body">Pull the workflow into a separate coding-agent workspace (or a fresh MudiAgent if you prefer). Tighten the prompts. Lock the routing. Add error handling. Decide what should run on cron and what should be triggered.</p>
       </div>
-    </dl>
-  </div>
-</section>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">04 · Deploy</div>
+        <div class="pg-card-title">VPS on a schedule.</div>
+        <p class="pg-card-body">Once it survives a week of real runs without you babysitting it, push it to its own docker container on your VPS, set the cron, walk away.</p>
+      </div>
+    </div>
+
+    <div class="pg-callout">
+      <p>You cannot write a production agent from scratch. You have to grow one. MudiAgent makes the growing part fast.</p>
+    </div>
+
+<pre class="pg-pre">prototype in MudiAgent
+   &#x2502;
+   &#x25BC;
+fine-tune in a dedicated workspace
+   &#x2502;
+   &#x25BC;
+deploy autonomous on a VPS</pre>
+  </section>
+
+  <!-- ========== MODELS ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">Models</div>
+    <h2 class="pg-h2" style="margin-top:18px;">The framework gives you the shape. <em>The model gives you the taste.</em></h2>
+
+    <p class="pg-p">
+      MudiAgent gives you the framework. The model underneath is your choice. Through the tool gateway you can route to 300+ models from one subscription, switching per agent or per task.
+    </p>
+
+    <div class="pg-grid">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">For creative work</div>
+        <div class="pg-card-title">Claude Opus 4.7.</div>
+        <p class="pg-card-body">Copywriting. Voice. Hook generation. Content drafting. Anything where taste and writing quality matter.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">For structured work</div>
+        <div class="pg-card-title">Codex / GPT 5.5 class.</div>
+        <p class="pg-card-body">Coding. Planning. Multi-step workflows. Browser automation. Scraping. Anything where the steps need to be tight and the output predictable.</p>
+      </div>
+    </div>
+
+    <p class="pg-p">
+      Run both. Opus writes. Codex builds and plans. MudiAgent makes routing easy. Point each agent at the model that fits the work it does.
+    </p>
+
+    <p class="pg-p">
+      If you can only run one, the answer depends on what kind of work your fleet is doing. Heavy on content and copy? Start with Claude Opus. Heavy on infrastructure, automation, and engineering workflows? Start with Codex. You can always add the second model later through the same tool gateway.
+    </p>
+  </section>
+
+  <!-- ========== TRADE-OFFS ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">Honest trade-offs</div>
+    <h2 class="pg-h2" style="margin-top:18px;">Where this still <em>breaks.</em></h2>
+
+    <div class="pg-grid-3">
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">01</div>
+        <div class="pg-card-title">The bundled defaults are also opinions.</div>
+        <p class="pg-card-body">MudiAgent ships with strong defaults for how memory works, how skills get written, how the agent uses tools. That is the whole pitch. But it also means if you want primitives with explicit control over every step, MudiAgent will feel heavy. A primitives framework is the better fit for that taste. Pick the tool that matches your philosophy.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">02</div>
+        <div class="pg-card-title">Level 3 and 4 have a real learning curve.</div>
+        <p class="pg-card-body">Docker, VPS, SSH, the control room folder structure, the orchestrator skills. None of this is "install and go." You should not jump to level 3 if you are not already running MudiAgent at level 1 daily.</p>
+      </div>
+      <div class="pg-card">
+        <div class="pg-card-eyebrow">03</div>
+        <div class="pg-card-title">The model still matters.</div>
+        <p class="pg-card-body">MudiAgent is a framework that makes a good model great. It does not make a small model into a strategist. Use the strongest models you can afford for the work that matters (your orchestrator, your strategy agent, your brain). Drop to cheaper models for the work that does not (research scraping, draft generation, batch processing).</p>
+      </div>
+    </div>
+
+    <p class="pg-p" style="margin-top:24px;">
+      None of this is magic. It is a framework that pays back because the memory persists, the skills accumulate, and the agents stay scoped. Apply it to the wrong-sized model and you get a confused team. Apply it to the right one and you get a team.
+    </p>
+  </section>
+
+  <!-- ========== RESOURCES ========== -->
+  <section class="pg-section">
+    <div class="pg-eyebrow">Resources</div>
+    <h2 class="pg-h2" style="margin-top:18px;">What to read <em>in order.</em></h2>
+
+    <ul class="pg-bullets">
+      <li class="pg-li"><strong>The official docs.</strong> Start with the install guide, then read the skills page so you understand what ships out of the box.</li>
+      <li class="pg-li"><strong>The control room template.</strong> The exact structure described above, ready to clone. Control-room-first template for managing agents from one VPS agent to specialist teams and orchestrated workflows. Fork it. Make it yours.</li>
+      <li class="pg-li"><strong>The community atlas.</strong> A curated map of open source tools, plugins, workspaces, and integrations built on top of the framework. Categorized by domain (memory providers, workspaces, skill registries, deployment, orchestration). Free, weekly updates.</li>
+      <li class="pg-li"><strong>The handbook.</strong> A beginner-friendly walkthrough that covers the install, the first agent, and the first cron.</li>
+      <li class="pg-li"><strong>Meetups in person.</strong> Worth showing up if there is one near you. You learn more in 90 minutes of side conversations than in a week of reading.</li>
+    </ul>
+  </section>
+
+  <!-- ========== END ========== -->
+  <section class="pg-end">
+    <div class="pg-eyebrow">In one line</div>
+    <p class="pg-end-quote">
+      Memory persists. Skills accumulate. Agents stay scoped. <em>The framework pays back.</em>
+    </p>
+    <p class="pg-p" style="max-width:60ch;">
+      MudiAgent is not selling you anything. The framework is open source. Most of the community ecosystem is free. Fork, change, make it yours.
+    </p>
+    <div class="pg-tags">
+      <span class="pg-tag">Operator</span>
+      <span class="pg-tag">VPS</span>
+      <span class="pg-tag">Docker</span>
+      <span class="pg-tag">SEO</span>
+      <span class="pg-tag">Marketing ops</span>
+      <span class="pg-tag">Self-improving</span>
+    </div>
+  </section>
+
+</article>
 
 </body>
 </html>

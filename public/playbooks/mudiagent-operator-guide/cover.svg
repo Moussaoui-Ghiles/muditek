@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0a0a"/>
+      <stop offset="1" stop-color="#161616"/>
+    </linearGradient>
+    <linearGradient id="amberFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5a524" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f5a524" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0L0 0L0 48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#grid)"/>
+  <rect x="0" y="0" width="1200" height="320" fill="url(#amberFade)"/>
+
+  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="#f5a524" font-size="18" letter-spacing="6">
+    <text x="80" y="120">THE MUDIAGENT OPERATOR GUIDE</text>
+    <line x1="80" y1="138" x2="180" y2="138" stroke="#f5a524" stroke-width="1.4"/>
+  </g>
+
+  <g font-family="ui-sans-serif, system-ui, 'Manrope', sans-serif" fill="#ffffff">
+    <text x="80" y="320" font-weight="800" font-size="120" letter-spacing="-4">Build a marketing</text>
+    <text x="80" y="450" font-weight="800" font-size="120" letter-spacing="-4">company on
+      <tspan font-family="Georgia, 'Instrument Serif', serif" font-style="italic" font-weight="400" fill="#f5a524">one VPS.</tspan>
+    </text>
+  </g>
+
+  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.55)" font-size="16" letter-spacing="2">
+    <text x="80" y="620">123 SKILLS &#183; 300+ MODELS &#183; 4 OPERATOR LEVELS &#183; ONE FOLDER</text>
+  </g>
+
+  <g stroke="rgba(255,255,255,0.18)" stroke-width="1">
+    <line x1="80" y1="700" x2="1120" y2="700"/>
+  </g>
+
+  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.42)" font-size="14" letter-spacing="3">
+    <text x="80" y="740">MUDITEK &#183; PORTAL PLAYBOOK</text>
+    <text x="1120" y="740" text-anchor="end">v1 &#183; READ IN PORTAL</text>
+  </g>
+</svg>

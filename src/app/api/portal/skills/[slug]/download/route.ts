@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
-  if (!skill.isIncluded) {
+  if (!skill.is_free) {
     const user = await currentUser();
     const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
     if (!user || !email) {

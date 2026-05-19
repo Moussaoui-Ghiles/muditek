@@ -13,21 +13,13 @@ const SKILL_DIRS = [
       ]),
 ];
 
-const INCLUDED_SKILLS = new Set([
-  "defuddle",
-  "source-distill",
-  "lead-magnets",
-  "copywriting",
-  "ai-seo",
-]);
-
 export interface PortalSkillFile {
   slug: string;
   name: string;
   description: string | null;
   markdown: string;
   dir: string;
-  isIncluded: boolean;
+  is_free: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,7 +35,7 @@ export function portalSkillToContentItem(skill: PortalSkillFile): ContentItem {
     file_type: "md",
     thumbnail_url: null,
     is_new: false,
-    is_free: skill.isIncluded,
+    is_free: skill.is_free,
     created_at: skill.createdAt,
     updated_at: skill.updatedAt,
   };
@@ -117,6 +109,37 @@ function parseFrontmatter(raw: string): Record<string, string> {
   return data;
 }
 
+function parseBooleanValue(raw: string | undefined): boolean | undefined {
+  if (raw == null) return undefined;
+
+  const v = raw.trim().toLowerCase();
+  if (!v) return undefined;
+
+  if (["true", "1", "yes", "y", "on", "free", "public"].includes(v)) return true;
+  if (["false", "0", "no", "n", "off", "paid", "premium", "locked", "mudikit", "pro"].includes(v)) return false;
+
+  return undefined;
+}
+
+function resolveSkillFreeFlag(meta: Record<string, string>): boolean {
+  const direct = parseBooleanValue(meta.is_free) ?? parseBooleanValue(meta.free);
+
+  if (direct !== undefined) return direct;
+
+  const premiumKeywords = parseBooleanValue(meta.is_premium);
+  if (premiumKeywords !== undefined) return !premiumKeywords;
+
+  const paid = parseBooleanValue(meta.paid);
+  if (paid !== undefined) return !paid;
+
+  const tier = meta.tier?.toLowerCase();
+  const access = meta.access?.toLowerCase();
+  if (tier && ["mudikit", "paid", "pro", "premium"].includes(tier)) return false;
+  if (access && ["mudikit", "paid", "pro", "premium", "paywalled", "private"].includes(access)) return false;
+
+  return true;
+}
+
 function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null {
   const dir = join(baseDir, slug);
   const file = join(dir, "SKILL.md");
@@ -132,7 +155,7 @@ function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null
     description: cleanDescription(meta.description),
     markdown,
     dir,
-    isIncluded: INCLUDED_SKILLS.has(slug),
+    is_free: resolveSkillFreeFlag(meta),
     createdAt: stats.birthtime.toISOString(),
     updatedAt: stats.mtime.toISOString(),
   };

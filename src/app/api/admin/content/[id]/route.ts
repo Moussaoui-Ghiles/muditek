@@ -2,11 +2,23 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
+import { normalizeCreatePayload, normalizeUpdatePayload } from "@/lib/content-admin-validation";
 import { withDerivedThumbnail } from "@/lib/content-thumbnails";
 
 interface ContentItem {
+  id: string;
   slug: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  topic?: string | null;
+  download_url: string;
+  file_type: string;
   thumbnail_url: string | null;
+  is_new: boolean;
+  is_free: boolean;
+  created_at: string;
+  updated_at?: string | null;
 }
 
 function localSkillSlug(id: string): string | null {
@@ -27,32 +39,40 @@ export async function PATCH(
 
   const sourceSlug = localSkillSlug(id);
   if (sourceSlug) {
-    const slug = sourceSlug;
-    const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : slug;
-    const category = typeof body.category === "string" && body.category.trim() ? body.category.trim() : "skill";
-    const downloadUrl =
-      typeof body.downloadUrl === "string" && body.downloadUrl.trim()
-        ? body.downloadUrl.trim()
-        : `/api/portal/skills/${encodeURIComponent(sourceSlug)}/download`;
+    const normalized = normalizeCreatePayload({
+      ...body,
+      fileType: "md",
+      topic: body.topic ?? "",
+      isNew: body.isNew,
+      isFree: body.isFree,
+      category: "skill",
+      slug: sourceSlug,
+    });
+    if (!normalized.ok) {
+      return NextResponse.json({ error: normalized.error }, { status: 400 });
+    }
+    const payload = normalized.payload;
 
     const result = await sql`
-      INSERT INTO content_items (title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, updated_at)
+      INSERT INTO content_items (title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, updated_at)
       VALUES (
-        ${title},
-        ${slug},
-        ${typeof body.description === "string" ? body.description.trim() || null : null},
-        ${category},
-        ${downloadUrl},
-        ${typeof body.fileType === "string" ? body.fileType.trim() || "md" : "md"},
-        ${typeof body.thumbnailUrl === "string" ? body.thumbnailUrl.trim() || null : null},
-        ${typeof body.isNew === "boolean" ? body.isNew : false},
-        ${typeof body.isFree === "boolean" ? body.isFree : false},
+        ${payload.title},
+        ${payload.slug},
+        ${payload.description},
+        ${payload.category},
+        ${payload.topic},
+        ${payload.downloadUrl},
+        ${payload.fileType},
+        ${payload.thumbnailUrl},
+        ${payload.isNew},
+        ${payload.isFree},
         NOW()
       )
       ON CONFLICT (slug) DO UPDATE SET
         title = EXCLUDED.title,
         description = EXCLUDED.description,
         category = EXCLUDED.category,
+        topic = EXCLUDED.topic,
         download_url = EXCLUDED.download_url,
         file_type = EXCLUDED.file_type,
         thumbnail_url = EXCLUDED.thumbnail_url,
@@ -65,33 +85,40 @@ export async function PATCH(
     return NextResponse.json(withDerivedThumbnail(result[0] as ContentItem));
   }
 
-  if (typeof body.title === "string") {
-    await sql`UPDATE content_items SET title = ${body.title.trim()}, updated_at = NOW() WHERE id = ${id}`;
+  const current = (await sql`
+    SELECT title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free
+    FROM content_items
+    WHERE id = ${id}
+    LIMIT 1
+  `) as ContentItem[];
+
+  if (!current[0]) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (typeof body.slug === "string") {
-    await sql`UPDATE content_items SET slug = ${body.slug.trim()}, updated_at = NOW() WHERE id = ${id}`;
+
+  const normalized = normalizeUpdatePayload(body, current[0]);
+  if (!normalized.ok) {
+    return NextResponse.json({ error: normalized.error }, { status: 400 });
   }
-  if (typeof body.description === "string") {
-    await sql`UPDATE content_items SET description = ${body.description.trim() || null}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.downloadUrl === "string") {
-    await sql`UPDATE content_items SET download_url = ${body.downloadUrl.trim()}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.category === "string") {
-    await sql`UPDATE content_items SET category = ${body.category.trim()}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.fileType === "string") {
-    await sql`UPDATE content_items SET file_type = ${body.fileType.trim() || "zip"}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.thumbnailUrl === "string") {
-    await sql`UPDATE content_items SET thumbnail_url = ${body.thumbnailUrl.trim() || null}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.isNew === "boolean") {
-    await sql`UPDATE content_items SET is_new = ${body.isNew}, updated_at = NOW() WHERE id = ${id}`;
-  }
-  if (typeof body.isFree === "boolean") {
-    await sql`UPDATE content_items SET is_free = ${body.isFree}, updated_at = NOW() WHERE id = ${id}`;
-  }
+
+  const payload = normalized.payload;
+
+  await sql`
+    UPDATE content_items
+    SET
+      title = ${payload.title},
+      slug = ${payload.slug},
+      description = ${payload.description},
+      category = ${payload.category},
+      topic = ${payload.topic},
+      download_url = ${payload.downloadUrl},
+      file_type = ${payload.fileType},
+      thumbnail_url = ${payload.thumbnailUrl},
+      is_new = ${payload.isNew},
+      is_free = ${payload.isFree},
+      updated_at = NOW()
+    WHERE id = ${id}
+  `;
 
   const result = await sql`
     SELECT id, title, slug, description, category, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at

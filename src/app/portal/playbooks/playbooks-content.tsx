@@ -18,8 +18,6 @@ const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
   { value: "sales", label: CONTENT_TOPIC_LABEL.sales },
   { value: "marketing", label: CONTENT_TOPIC_LABEL.marketing },
   { value: "gtm", label: CONTENT_TOPIC_LABEL.gtm },
-  { value: "ops", label: CONTENT_TOPIC_LABEL.ops },
-  { value: "ai", label: CONTENT_TOPIC_LABEL.ai },
 ];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
@@ -53,8 +51,8 @@ function topicForItem(item: ContentItem): ContentTopic {
   if (/(lead|outbound|apollo|maps|scrap|prospect|sdr)/.test(text)) return "lead-gen";
   if (/(sales|call|crm|pipeline|deal|revenue)/.test(text)) return "sales";
   if (/(content|creative|marketing|newsletter|viral|media)/.test(text)) return "marketing";
-  if (/(ai|llm|claude|gpt|model)/.test(text)) return "ai";
-  if (/(ops|automation|workflow|process)/.test(text)) return "ops";
+  if (/(llm|claude|gpt|model|ai)/.test(text)) return "gtm";
+  if (/(automation|workflow|process)/.test(text)) return "gtm";
   return "gtm";
 }
 
@@ -376,8 +374,6 @@ export default function PlaybooksContent({
       sales: 0,
       marketing: 0,
       gtm: 0,
-      ops: 0,
-      ai: 0,
     };
     for (const item of items) map[topicForItem(item)] += 1;
     return map;

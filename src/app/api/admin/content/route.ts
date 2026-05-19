@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
 import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
+import { normalizeCreatePayload } from "@/lib/content-admin-validation";
 import { listPortalSkills } from "@/lib/portal-skills";
 import type { ContentItem } from "@/lib/content-item";
 
@@ -36,24 +37,12 @@ export async function POST(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
-  const body = await request.json();
-  const { title, slug, description, category, topic, downloadUrl, fileType, thumbnailUrl, isFree, isNew } = body;
-  const normalizedTopic = typeof topic === "string" && topic.trim() ? topic.trim().toLowerCase() : null;
-  const normalizedSlug = typeof slug === "string" ? slug.trim() : "";
-  const normalizedFileType = typeof fileType === "string" && fileType.trim() ? fileType.trim() : "zip";
-  const normalizedDownloadUrl =
-    typeof downloadUrl === "string" && downloadUrl.trim()
-      ? downloadUrl.trim()
-      : normalizedFileType.toLowerCase() === "html" && normalizedSlug
-        ? `/portal/playbooks/${normalizedSlug}`
-        : "";
-
-  if (!title || !normalizedSlug || !category || !normalizedDownloadUrl) {
-    return NextResponse.json(
-      { error: "title, slug, category, and asset URL are required unless the item is HTML" },
-      { status: 400 }
-    );
+  const normalized = normalizeCreatePayload(await request.json());
+  if (!normalized.ok) {
+    return NextResponse.json({ error: normalized.error }, { status: 400 });
   }
+
+  const payload = normalized.payload;
 
   const sql = getDb();
   await ensureContentItemsSchema(sql);
@@ -61,16 +50,16 @@ export async function POST(request: Request) {
   const result = await sql`
     INSERT INTO content_items (title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_free, is_new, updated_at)
     VALUES (
-      ${title.trim()},
-      ${normalizedSlug},
-      ${description?.trim() || null},
-      ${category.trim()},
-      ${normalizedTopic},
-      ${normalizedDownloadUrl},
-      ${normalizedFileType},
-      ${thumbnailUrl?.trim() || null},
-      ${Boolean(isFree)},
-      ${typeof isNew === "boolean" ? isNew : true},
+      ${payload.title},
+      ${payload.slug},
+      ${payload.description},
+      ${payload.category},
+      ${payload.topic},
+      ${payload.downloadUrl},
+      ${payload.fileType},
+      ${payload.thumbnailUrl},
+      ${payload.isFree},
+      ${payload.isNew},
       NOW()
     )
     RETURNING *

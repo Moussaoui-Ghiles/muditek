@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import TestSendDialog from "@/components/admin/test-send-dialog";
 import { resourceDetailHref } from "@/lib/content-item";
+import { CONTENT_TOPIC_LABEL, CONTENT_TOPICS, type ContentTopic } from "@/lib/content-item";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -55,14 +56,12 @@ interface Draft {
   isNew: boolean;
 }
 
-const TOPICS = [
+const TOPICS: Array<{ value: "" | ContentTopic; label: string }> = [
   { value: "", label: "No topic" },
-  { value: "lead-gen", label: "Lead gen" },
-  { value: "sales", label: "Sales" },
-  { value: "marketing", label: "Marketing" },
-  { value: "gtm", label: "GTM" },
-  { value: "ops", label: "Ops" },
-  { value: "ai", label: "AI" },
+  ...CONTENT_TOPICS.map((topic) => ({
+    value: topic,
+    label: CONTENT_TOPIC_LABEL[topic],
+  })),
 ];
 
 const CATEGORIES = [

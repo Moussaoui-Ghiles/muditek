@@ -6,10 +6,23 @@
 <title>The MudiAgent Operator Guide — Muditek</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ─── Reset ─── */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* ─── Scoped reset (only inside the portal asset wrapper) ─── */
+  .portal-asset-html, .portal-asset-html * { box-sizing: border-box; }
+  .portal-asset-html p,
+  .portal-asset-html h1,
+  .portal-asset-html h2,
+  .portal-asset-html h3,
+  .portal-asset-html h4,
+  .portal-asset-html ul,
+  .portal-asset-html ol,
+  .portal-asset-html pre,
+  .portal-asset-html dl,
+  .portal-asset-html dd,
+  .portal-asset-html dt,
+  .portal-asset-html figure,
+  .portal-asset-html blockquote { margin: 0; padding: 0; }
 
-  :root {
+  .portal-asset-html {
     --bg: #0a0a0c;
     --bg-soft: #111114;
     --ink: #f5f0eb;
@@ -22,13 +35,13 @@
     --hairline-soft: rgba(255, 255, 255, 0.04);
     --sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
     --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
-  }
 
-  body {
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
     background: var(--bg);
     color: var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
   }
 
   /* ─── Page (A4 frame, collapses on mobile via .portal-asset-html overrides) ─── */
@@ -494,8 +507,8 @@
   .aside h4 { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
   .aside p { font-size: 13px; line-height: 1.65; }
 
-  /* ─── Print/PDF tuning ─── */
-  @page { size: A4; margin: 0; }
+  /* ─── Web fonts (extracted inline so the portal loader keeps them) ─── */
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 </style>
 </head>
 <body>

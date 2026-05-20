@@ -6,1167 +6,1340 @@
 <title>The MudiAgent Operator Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <style>
-  /* All rules scoped to .portal-asset-html to prevent CSS bleed onto
-     the portal shell when injected via dangerouslySetInnerHTML.        */
+/* ============================================================
+   The MudiAgent Operator Guide
+   EVERY selector is scoped to .portal-asset-html so nothing
+   leaks onto the portal shell via dangerouslySetInnerHTML.
+   ============================================================ */
 
-  .portal-asset-html,
+.portal-asset-html,
 .portal-asset-html *,
 .portal-asset-html *::before,
-.portal-asset-html *::after{ margin: 0; padding: 0; box-sizing: border-box; }
+.portal-asset-html *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  .portal-asset-html{
-    --bg: transparent;
-    --surface: #1A1A19;
-    --border: rgba(61, 61, 58, 0.4);
-    --text: #FAF9F5;
-    --text-secondary: #87867F;
-    --text-dim: #5E5D59;
-    --clay: #D97757;
-    --clay-hover: #C6613F;
-    --terminal-bg: #111110;
-    --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+.portal-asset-html {
+  --bg: transparent;
+  --surface: #1A1A19;
+  --surface-2: #201F1E;
+  --border: rgba(120,118,111,0.18);
+  --border-strong: rgba(120,118,111,0.32);
+  --text: #FAF9F5;
+  --text-2: #A3A29B;
+  --text-3: #6E6D67;
+  --clay: #D97757;
+  --clay-soft: rgba(217,119,87,0.10);
+  --clay-line: rgba(217,119,87,0.32);
+  --term-bg: #131312;
+  --green: #7FB069;
+  --sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --serif: 'Newsreader', Georgia, serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
 
-    background: var(--bg);
-    font-family: var(--font-display);
-    color: var(--text);
-    line-height: 1.7;
-    font-weight: 400;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  .portal-asset-html ul,
-.portal-asset-html ol{ list-style: none; }
+.portal-asset-html ul,
+.portal-asset-html ol { list-style: none; }
 
-  .portal-asset-html .page-wrapper{
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 80px 48px 100px;
-    position: relative;
-  }
+/* ---------- shell ---------- */
+.portal-asset-html .wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 8px 0 40px;
+}
 
-  .portal-asset-html .muditek-logo{
-    margin-bottom: 40px;
-  }
-  .portal-asset-html .muditek-logo img{
-    height: 56px;
-    width: auto;
-    opacity: 1;
-  }
+.portal-asset-html .rule {
+  height: 1px;
+  background: var(--border);
+  margin: 56px 0;
+  border: 0;
+}
+.portal-asset-html .rule.clay { background: var(--clay-line); }
 
-  /* -- Cover -- */
-  .portal-asset-html .cover{
-    padding-bottom: 72px;
-    position: relative;
-  }
+/* ---------- kicker / eyebrow ---------- */
+.portal-asset-html .kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.portal-asset-html .kicker::before {
+  content: "";
+  width: 24px; height: 1px;
+  background: var(--clay);
+  opacity: 0.7;
+}
 
-  .portal-asset-html .cover-layout{
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 32px;
-    align-items: start;
-  }
+/* ---------- hero ---------- */
+.portal-asset-html .hero { padding: 8px 0 8px; }
+.portal-asset-html .hero h1 {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: clamp(36px, 6vw, 58px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin: 22px 0 0;
+}
+.portal-asset-html .hero h1 .accent {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--clay);
+  letter-spacing: -0.01em;
+}
+.portal-asset-html .hero .lede {
+  font-size: clamp(17px, 2.2vw, 20px);
+  line-height: 1.55;
+  color: var(--text-2);
+  max-width: 60ch;
+  margin-top: 24px;
+}
+.portal-asset-html .hero .byline {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 28px;
+}
+.portal-asset-html .hero .byline strong { color: var(--text-2); font-weight: 600; }
 
-  .portal-asset-html .spark-icon-wrap{
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 4px;
-  }
+/* ---------- stat strip ---------- */
+.portal-asset-html .stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 36px;
+  background: var(--surface);
+}
+.portal-asset-html .stat {
+  padding: 18px 16px;
+  border-right: 1px solid var(--border);
+}
+.portal-asset-html .stat:last-child { border-right: 0; }
+.portal-asset-html .stat .n {
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.portal-asset-html .stat .n em { font-style: normal; color: var(--clay); }
+.portal-asset-html .stat .l {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 8px;
+}
 
-  .portal-asset-html .spark-icon-wrap svg{
-    width: 72px;
-    height: 72px;
-  }
+/* ---------- section ---------- */
+.portal-asset-html section { scroll-margin-top: 24px; }
+.portal-asset-html h2.sec {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: clamp(26px, 3.6vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 18px 0 0;
+}
+.portal-asset-html h2.sec .accent {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--clay);
+}
+.portal-asset-html .lead {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 68ch;
+  margin-top: 18px;
+}
+.portal-asset-html p.body {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-2);
+  max-width: 68ch;
+  margin-top: 16px;
+}
+.portal-asset-html p.body strong,
+.portal-asset-html li strong { color: var(--text); font-weight: 600; }
+.portal-asset-html h3.sub {
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  margin-top: 40px;
+}
+.portal-asset-html .micro {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 34px;
+  margin-bottom: 4px;
+}
 
-  .portal-asset-html .cover-text h1{
-    font-size: 42px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 16px;
-  }
+.portal-asset-html code {
+  font-family: var(--mono);
+  font-size: 0.84em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  white-space: nowrap;
+}
 
-  .portal-asset-html .cover-text h1 span{
-    color: var(--clay);
-  }
+/* ---------- bullet list ---------- */
+.portal-asset-html ul.list {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  max-width: 70ch;
+}
+.portal-asset-html ul.list > li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-2);
+}
+.portal-asset-html ul.list > li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 11px;
+  width: 12px; height: 1.5px;
+  background: var(--clay);
+}
 
-  .portal-asset-html .cover-subtitle{
-    font-size: 18px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    font-weight: 400;
-    margin-bottom: 24px;
-    max-width: 580px;
-  }
+/* ---------- cards grid ---------- */
+.portal-asset-html .grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+.portal-asset-html .grid.c2 { grid-template-columns: repeat(2,1fr); }
+.portal-asset-html .grid.c3 { grid-template-columns: repeat(3,1fr); }
 
-  .portal-asset-html .cover-byline{
-    font-size: 14px;
-    color: var(--text-dim);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+.portal-asset-html .card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  background: var(--surface);
+  transition: border-color .2s ease, transform .2s ease;
+}
+.portal-asset-html .card:hover { border-color: var(--clay-line); }
+.portal-asset-html .card .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 12px;
+}
+.portal-asset-html .card h4 {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.portal-asset-html .card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
 
-  .portal-asset-html .cover-byline strong{
-    color: var(--text-secondary);
-    font-weight: 600;
-  }
+/* ---------- numbered card (big numeral) ---------- */
+.portal-asset-html .ncard { position: relative; }
+.portal-asset-html .ncard .num {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 30px;
+  color: var(--clay);
+  line-height: 1;
+  margin-bottom: 14px;
+  display: block;
+}
 
-  /* -- Section separator -- */
-  .portal-asset-html .sep{
-    height: 1px;
-    background: var(--clay);
-    opacity: 0.3;
-    margin: 48px 0;
-  }
+/* ---------- comparison ---------- */
+.portal-asset-html .compare {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.portal-asset-html .compare > div {
+  padding: 24px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.portal-asset-html .compare > div:last-child { border-right: 0; }
+.portal-asset-html .compare .pick { background: var(--clay-soft); }
+.portal-asset-html .compare .name {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 10px;
+}
+.portal-asset-html .compare .h {
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+.portal-asset-html .compare p { font-size: 13.5px; line-height: 1.6; color: var(--text-2); }
 
-  /* -- Why section -- */
-  .portal-asset-html .why-section{ padding-bottom: 16px; }
+/* ---------- callout ---------- */
+.portal-asset-html .callout {
+  border-left: 3px solid var(--clay);
+  background: var(--clay-soft);
+  border-radius: 0 12px 12px 0;
+  padding: 22px 26px;
+  margin-top: 26px;
+}
+.portal-asset-html .callout .ql {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 10px;
+}
+.portal-asset-html .callout p {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2.4vw, 23px);
+  line-height: 1.42;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.portal-asset-html .callout.flat p {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+  letter-spacing: 0;
+}
+.portal-asset-html .callout.flat p strong { color: var(--text); }
 
-  .portal-asset-html .why-section h2{
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--clay);
-    margin-bottom: 16px;
-    letter-spacing: -0.01em;
-  }
+/* ---------- terminal (genuine CLI / file trees only) ---------- */
+.portal-asset-html .term {
+  background: var(--term-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 22px;
+}
+.portal-asset-html .term .bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 16px;
+  background: rgba(255,255,255,0.025);
+  border-bottom: 1px solid var(--border);
+}
+.portal-asset-html .term .dot { width: 11px; height: 11px; border-radius: 50%; }
+.portal-asset-html .term .dot.r { background: #FF5F57; }
+.portal-asset-html .term .dot.y { background: #FEBC2E; }
+.portal-asset-html .term .dot.g { background: #28C840; }
+.portal-asset-html .term .ti {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: 8px;
+}
+.portal-asset-html .term pre {
+  padding: 18px 20px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #C9C8C2;
+  overflow-x: auto;
+  white-space: pre;
+}
+.portal-asset-html .term pre .c { color: var(--text-3); }
+.portal-asset-html .term pre .k { color: var(--clay); }
+.portal-asset-html .term pre .s { color: var(--green); }
 
-  .portal-asset-html .why-section p{
-    font-size: 16px;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    max-width: 720px;
-    margin-bottom: 14px;
-  }
+/* ---------- vertical flow stepper ---------- */
+.portal-asset-html .flow {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.portal-asset-html .flow .step {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 18px;
+  padding-bottom: 26px;
+  position: relative;
+}
+.portal-asset-html .flow .step:last-child { padding-bottom: 0; }
+.portal-asset-html .flow .step::before {
+  content: "";
+  position: absolute;
+  left: 21px; top: 40px; bottom: -2px;
+  width: 1.5px;
+  background: var(--border-strong);
+}
+.portal-asset-html .flow .step:last-child::before { display: none; }
+.portal-asset-html .flow .badge {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clay-line);
+  background: var(--clay-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--clay);
+  position: relative;
+  z-index: 1;
+}
+.portal-asset-html .flow .body4 { padding-top: 4px; }
+.portal-asset-html .flow .body4 .who {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 5px;
+}
+.portal-asset-html .flow .body4 h4 {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.portal-asset-html .flow .body4 p { font-size: 14.5px; line-height: 1.6; color: var(--text-2); }
+.portal-asset-html .flow .body4 .meta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-3);
+  margin-top: 8px;
+  line-height: 1.7;
+}
 
-  /* -- Tip cards -- */
-  .portal-asset-html .tip-card{
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    margin-bottom: 20px;
-    position: relative;
-    transition: border-color 0.2s ease;
-  }
+/* ---------- layered architecture ---------- */
+.portal-asset-html .layers { margin-top: 26px; }
+.portal-asset-html .layer {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  background: var(--surface);
+  position: relative;
+}
+.portal-asset-html .layer.top { border-color: var(--clay-line); background: var(--clay-soft); }
+.portal-asset-html .layer + .layer { margin-top: 30px; }
+.portal-asset-html .layer + .layer::before {
+  content: "";
+  position: absolute;
+  top: -23px; left: 50%;
+  width: 1.5px; height: 16px;
+  background: var(--border-strong);
+  transform: translateX(-50%);
+}
+.portal-asset-html .layer + .layer::after {
+  content: "";
+  position: absolute;
+  top: -9px; left: 50%;
+  width: 7px; height: 7px;
+  border-right: 1.5px solid var(--border-strong);
+  border-bottom: 1.5px solid var(--border-strong);
+  transform: translateX(-50%) rotate(45deg);
+}
+.portal-asset-html .layer .ll {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 6px;
+}
+.portal-asset-html .layer .lt { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.portal-asset-html .layer p { font-size: 13.5px; color: var(--text-2); line-height: 1.55; }
+.portal-asset-html .layer .subagents {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.portal-asset-html .layer .subagents > span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--term-bg);
+  text-align: center;
+}
 
-  .portal-asset-html .tip-card:hover{ border-color: rgba(217, 119, 87, 0.25); }
+/* ---------- pipeline (3 columns) ---------- */
+.portal-asset-html .pipe {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+.portal-asset-html .phase {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 20px;
+}
+.portal-asset-html .phase .ph {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 14px;
+}
+.portal-asset-html .phase .pn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clay-line);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px;
+}
+.portal-asset-html .phase .it {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+}
+.portal-asset-html .phase .it:nth-child(2) { border-top: 0; }
+.portal-asset-html .phase .it .x { color: var(--text-3); }
 
-  .portal-asset-html .tip-number{
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--clay);
-    background: rgba(217, 119, 87, 0.1);
-    padding: 3px 10px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: 12px;
-    letter-spacing: 0.04em;
-  }
+/* ---------- fleet row ---------- */
+.portal-asset-html .fleet {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+.portal-asset-html .ct {
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--term-bg);
+}
+.portal-asset-html .ct .cn {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--clay);
+  margin-bottom: 10px;
+}
+.portal-asset-html .ct .cl {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.8;
+}
 
-  .portal-asset-html .tip-card h3{
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 14px;
-    line-height: 1.25;
-  }
+/* ---------- 3-path interaction ---------- */
+.portal-asset-html .paths {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+.portal-asset-html .path {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--surface);
+}
+.portal-asset-html .path .pl {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 12px;
+}
+.portal-asset-html .path .route {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.9;
+  padding: 12px;
+  background: var(--term-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.portal-asset-html .path .route .a { color: var(--clay); }
+.portal-asset-html .path p { font-size: 13px; color: var(--text-2); line-height: 1.55; }
 
-  .portal-asset-html .tip-card h4{
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    margin-top: 22px;
-    margin-bottom: 10px;
-    line-height: 1.3;
-  }
+/* ---------- disclosure (3 levels) ---------- */
+.portal-asset-html .disc {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+.portal-asset-html .disc .d {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--surface);
+  position: relative;
+}
+.portal-asset-html .disc .d .lv {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 8px;
+}
+.portal-asset-html .disc .d h4 { font-weight:700; font-size:15px; margin-bottom:6px; }
+.portal-asset-html .disc .d p { font-size: 13px; color: var(--text-2); line-height: 1.55; }
 
-  .portal-asset-html .tip-card p{
-    font-size: 15.5px;
-    color: var(--text-secondary);
-    line-height: 1.78;
-    margin-bottom: 12px;
-  }
+/* ---------- timeline (day 1/30/90) ---------- */
+.portal-asset-html .tl {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 0;
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.portal-asset-html .tl .t {
+  padding: 24px;
+  border-right: 1px solid var(--border);
+}
+.portal-asset-html .tl .t:last-child { border-right: 0; }
+.portal-asset-html .tl .t .day {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 26px;
+  color: var(--clay);
+  margin-bottom: 10px;
+}
+.portal-asset-html .tl .t h4 { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+.portal-asset-html .tl .t p { font-size: 13px; color: var(--text-2); line-height: 1.55; }
 
-  .portal-asset-html .tip-card p:last-child{ margin-bottom: 0; }
+/* ---------- levels (operator levels) ---------- */
+.portal-asset-html .level {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 28px;
+  padding: 34px 0;
+  border-top: 1px solid var(--border);
+}
+.portal-asset-html .level:first-of-type { border-top: 0; }
+.portal-asset-html .level .ln {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 52px;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--text);
+}
+.portal-asset-html .level .lk {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--clay);
+  display: block;
+  margin-bottom: 8px;
+}
+.portal-asset-html .level h3 { font-weight: 700; font-size: 21px; letter-spacing: -0.01em; margin: 0 0 8px; }
 
-  .portal-asset-html .tip-card ul,
-.portal-asset-html .tip-card ol{
-    margin: 12px 0;
-    padding-left: 20px;
-  }
+/* ---------- CTA ---------- */
+.portal-asset-html .cta {
+  border: 1px solid var(--clay-line);
+  background: var(--clay-soft);
+  border-radius: 16px;
+  padding: 40px;
+  margin-top: 8px;
+}
+.portal-asset-html .cta h2 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(24px, 3.4vw, 32px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  max-width: 24ch;
+}
+.portal-asset-html .cta p { font-size: 15px; color: var(--text-2); line-height: 1.7; margin-top: 16px; max-width: 60ch; }
 
-  .portal-asset-html .tip-card ul li,
-.portal-asset-html .tip-card ol li{
-    font-size: 15px;
-    color: var(--text-secondary);
-    line-height: 1.78;
-    margin-bottom: 6px;
-  }
+/* ---------- chips ---------- */
+.portal-asset-html .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.portal-asset-html .chip {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
 
-  .portal-asset-html .tip-card strong{ color: var(--text); font-weight: 600; }
+/* ---------- responsive ---------- */
+@media (max-width: 760px) {
+  .portal-asset-html { font-size: 15.5px; }
+  .portal-asset-html .stats { grid-template-columns: repeat(3,1fr); }
+  .portal-asset-html .stat:nth-child(3n) { border-right: 0; }
+  .portal-asset-html .stat:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
+  .portal-asset-html .grid.c2,
+  .portal-asset-html .grid.c3,
+  .portal-asset-html .compare,
+  .portal-asset-html .pipe,
+  .portal-asset-html .fleet,
+  .portal-asset-html .paths,
+  .portal-asset-html .disc,
+  .portal-asset-html .tl { grid-template-columns: 1fr; }
+  .portal-asset-html .compare > div { border-right: 0; border-bottom: 1px solid var(--border); }
+  .portal-asset-html .compare > div:last-child { border-bottom: 0; }
+  .portal-asset-html .tl .t { border-right: 0; border-bottom: 1px solid var(--border); }
+  .portal-asset-html .tl .t:last-child { border-bottom: 0; }
+  .portal-asset-html .level { grid-template-columns: 1fr; gap: 12px; }
+  .portal-asset-html .level .ln { font-size: 40px; }
+  .portal-asset-html .layer .subagents { grid-template-columns: 1fr; }
+  .portal-asset-html .cta { padding: 28px; }
+  .portal-asset-html .term pre { font-size: 11px; }
+}
 
-  .portal-asset-html .tip-card a{
-    color: var(--clay);
-    text-decoration: none;
-  }
-  .portal-asset-html .tip-card a:hover{ text-decoration: underline; color: var(--clay-hover); }
-
-  /* Inline code chip */
-  .portal-asset-html .tip-card code,
-.portal-asset-html .why-section code,
-.portal-asset-html .my-take code{
-    font-family: var(--font-mono);
-    font-size: 12.5px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
-  }
-
-  /* Why-it-matters strip */
-  .portal-asset-html .why-it-matters{
-    font-size: 14px;
-    color: var(--clay);
-    font-weight: 500;
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-  .portal-asset-html .why-it-matters strong{ color: var(--clay); font-weight: 700; }
-
-  /* My-take callout */
-  .portal-asset-html .my-take{
-    border-left: 3px solid var(--clay);
-    padding: 14px 20px;
-    margin-top: 18px;
-    background: rgba(217, 119, 87, 0.04);
-    border-radius: 0 8px 8px 0;
-  }
-
-  .portal-asset-html .my-take-label{
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--clay);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-  }
-
-  .portal-asset-html .my-take p{
-    font-size: 14.5px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    font-style: italic;
-    margin-bottom: 0;
-  }
-
-  /* Terminal blocks */
-  .portal-asset-html .terminal{
-    background: var(--terminal-bg);
-    border-radius: 10px;
-    margin: 16px 0;
-    overflow-x: auto;
-    border: 1px solid rgba(61, 61, 58, 0.3);
-  }
-
-  .portal-asset-html .terminal-bar{
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(61, 61, 58, 0.2);
-  }
-
-  .portal-asset-html .terminal-dot{
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  .portal-asset-html .terminal-dot.red{ background: #FF5F57; }
-  .portal-asset-html .terminal-dot.yellow{ background: #FEBC2E; }
-  .portal-asset-html .terminal-dot.green{ background: #28C840; }
-
-  .portal-asset-html .terminal-title{
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-left: 8px;
-  }
-
-  .portal-asset-html .terminal pre{
-    padding: 18px 20px;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.65;
-    color: #C4C3BE;
-    overflow-x: auto;
-    white-space: pre;
-    word-wrap: normal;
-  }
-
-  .portal-asset-html .terminal pre .cmd{ color: var(--clay); }
-  .portal-asset-html .terminal pre .comment{ color: var(--text-dim); }
-  .portal-asset-html .terminal pre .flag{ color: #7DAEA3; }
-  .portal-asset-html .terminal pre .string{ color: #A9B665; }
-
-  /* Pillars grid */
-  .portal-asset-html .pillars{
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-top: 12px;
-  }
-  .portal-asset-html .pillar{
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-    background: rgba(255,255,255,0.015);
-  }
-  .portal-asset-html .pillar-n{
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--clay);
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-  .portal-asset-html .pillar-name{
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .portal-asset-html .pillar-desc{
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  /* Pipeline (3-column) */
-  .portal-asset-html .pipeline{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin: 16px 0 4px;
-  }
-  .portal-asset-html .phase{
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-    background: rgba(255,255,255,0.015);
-  }
-  .portal-asset-html .phase-label{
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--clay);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .portal-asset-html .phase-num{
-    width: 22px; height: 22px;
-    display: inline-flex; align-items: center; justify-content: center;
-    border: 1px solid var(--clay); color: var(--clay);
-    border-radius: 50%; font-size: 11px;
-  }
-  .portal-asset-html .phase-step{
-    font-family: var(--font-mono);
-    font-size: 12.5px;
-    color: var(--text);
-    padding: 6px 0;
-    border-top: 1px solid rgba(61, 61, 58, 0.25);
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    gap: 8px;
-  }
-  .portal-asset-html .phase-step:first-of-type{ border-top: 0; }
-  .portal-asset-html .phase-step span.n{ color: var(--text-dim); font-size: 11px; }
-
-  /* Compare row (vs others) */
-  .portal-asset-html .compare{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin: 16px 0;
-  }
-  .portal-asset-html .compare-col{
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-    background: rgba(255,255,255,0.015);
-  }
-  .portal-asset-html .compare-col.pick{
-    border-color: rgba(217, 119, 87, 0.45);
-    background: rgba(217, 119, 87, 0.05);
-  }
-  .portal-asset-html .compare-name{
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--clay);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .portal-asset-html .compare-tag{
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-  .portal-asset-html .compare-body{
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  /* Stat strip */
-  .portal-asset-html .stats{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 18px;
-  }
-  .portal-asset-html .stat{
-    padding: 16px 18px;
-    border-right: 1px solid var(--border);
-    background: rgba(255,255,255,0.01);
-  }
-  .portal-asset-html .stat:last-child{ border-right: 0; }
-  .portal-asset-html .stat-num{
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .portal-asset-html .stat-num em{
-    font-style: normal;
-    color: var(--clay);
-  }
-  .portal-asset-html .stat-label{
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* CTA section */
-  .portal-asset-html .cta-section{
-    border-left: 4px solid var(--clay);
-    background: rgba(217, 119, 87, 0.04);
-    border-radius: 0 12px 12px 0;
-    padding: 36px 32px;
-    margin-top: 16px;
-  }
-  .portal-asset-html .cta-section h2{
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 14px;
-    line-height: 1.2;
-  }
-  .portal-asset-html .cta-section p{
-    font-size: 15px;
-    color: var(--text-secondary);
-    line-height: 1.75;
-    margin-bottom: 14px;
-  }
-  .portal-asset-html .cta-section p:last-child{ margin-bottom: 0; }
-
-  /* Responsive */
-  @media (max-width: 720px) {
-    .portal-asset-html .page-wrapper{ padding: 48px 22px 64px; }
-    .portal-asset-html .cover-layout{
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-    .portal-asset-html .spark-icon-wrap{ margin-top: 0; }
-    .portal-asset-html .cover-text h1{ font-size: 32px; }
-    .portal-asset-html .cover-subtitle{ font-size: 16px; }
-    .portal-asset-html .tip-card{ padding: 24px; }
-    .portal-asset-html .pillars,
-.portal-asset-html .pipeline,
-.portal-asset-html .compare,
-.portal-asset-html .stats{
-      grid-template-columns: 1fr;
-    }
-    .portal-asset-html .stat{ border-right: 0; border-bottom: 1px solid var(--border); }
-    .portal-asset-html .stat:last-child{ border-bottom: 0; }
-    .portal-asset-html .terminal pre{ font-size: 12px; padding: 14px; }
-  }
+@media (prefers-reduced-motion: reduce) {
+  .portal-asset-html .card { transition: none; }
+}
 </style>
 </head>
 <body>
-<div class="page-wrapper">
+<article class="wrap">
 
-  <!-- ═══════════ COVER ═══════════ -->
-  <section class="cover">
-    <div class="muditek-logo">
-      <img src="/playbooks/mudiagent-operator-guide/muditek-logo.svg" alt="Muditek" />
-    </div>
-    <div class="cover-layout">
-      <div class="spark-icon-wrap">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#D97757" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="8" y="8" width="48" height="48" rx="3"/>
-          <line x1="20" y1="22" x2="44" y2="22"/>
-          <line x1="20" y1="32" x2="38" y2="32"/>
-          <line x1="20" y1="42" x2="32" y2="42"/>
-          <circle cx="48" cy="42" r="3" fill="#D97757"/>
-        </svg>
-      </div>
-      <div class="cover-text">
-        <h1>The MudiAgent <span>Operator</span> Guide</h1>
-        <p class="cover-subtitle">Build a marketing company on one VPS. From one agent on your laptop to a fully automated agent team you run from your phone.</p>
-        <p class="cover-byline">By <strong>Ghiles Moussaoui</strong> &mdash; Muditek</p>
-      </div>
-    </div>
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+    <span class="kicker">The MudiAgent Operator Guide</span>
+    <h1>Build a marketing company on <span class="accent">one VPS.</span></h1>
+    <p class="lede">Most AI tools answer questions. MudiAgent runs your workflows end to end. It navigates your browser, runs terminal commands, schedules cron jobs, watches your inboxes, drafts the work, and posts the result to wherever you live: Telegram, Discord, Slack, the email thread you are in right now.</p>
+    <p class="byline">By <strong>Ghiles Moussaoui</strong> &nbsp;·&nbsp; Muditek</p>
 
     <div class="stats">
-      <div class="stat">
-        <div class="stat-num">123<em>+</em></div>
-        <div class="stat-label">Bundled skills</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">300<em>+</em></div>
-        <div class="stat-label">Routable models</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">4</div>
-        <div class="stat-label">Operator levels</div>
-      </div>
+      <div class="stat"><div class="n">123<em>+</em></div><div class="l">Bundled skills</div></div>
+      <div class="stat"><div class="n">300<em>+</em></div><div class="l">Models</div></div>
+      <div class="stat"><div class="n">70<em>+</em></div><div class="l">Gateway tools</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">Deploy targets</div></div>
+      <div class="stat"><div class="n">20<em>+</em></div><div class="l">Surfaces</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">Levels</div></div>
     </div>
   </section>
 
-  <div class="sep"></div>
+  <hr class="rule">
 
-  <!-- ═══════════ WHY ═══════════ -->
-  <section class="why-section">
-    <h2>What you get from this guide</h2>
-    <p>Most AI tools answer questions. MudiAgent runs your workflows end to end. It navigates your browser, executes terminal commands, schedules cron jobs, monitors your inboxes, drafts the work, and posts the result to wherever you live. Telegram. Discord. Slack. The email thread you are in right now.</p>
-    <p>This guide is the architecture: brain, soul, skillset, in one folder. The use cases that actually run on this stack. The four-part mental model (you, control room, agents, optional task bus) and the four levels of setup. The prototype to production methodology. The honest trade-offs and where it still breaks.</p>
+  <!-- ════════ WHAT YOU GET ════════ -->
+  <section>
+    <span class="kicker">What you'll get</span>
+    <h2 class="sec">Productive on day one. <span class="accent">Compounding by day ninety.</span></h2>
+    <ul class="list">
+      <li>What MudiAgent is, and why marketers (not just developers) should care.</li>
+      <li>The architecture in plain language: the brain, the soul, the skillset, and how they live in one folder.</li>
+      <li>How a single request flows through the system, and how skills load without bloating the context.</li>
+      <li>The four-part mental model and the four operator levels, from one agent on a laptop to an automated team you run from your phone.</li>
+      <li>The setup, the API-key discipline, the first cron, and the prototype-to-production loop.</li>
+      <li>The honest trade-offs and where this still breaks.</li>
+    </ul>
   </section>
 
-  <div class="sep"></div>
+  <hr class="rule">
 
-  <!-- ═══════════ 01 — WHAT IT IS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">01 &mdash; FOUNDATIONS</span>
-    <h3>What MudiAgent is</h3>
-    <p><strong>Short version:</strong> an autonomous agent that gets more capable the longer it runs.</p>
-    <p><strong>Longer version:</strong> MudiAgent is a framework that turns a model into a persistent operator. It has its own memory that survives between sessions. It writes its own skills as it works. It ships with 123 skills already built in (GitHub workflows, Obsidian, Google Workspace, Linear, Notion, Typefully, Perplexity, deep research, plus 100+ more). It lives wherever you put it: your laptop, a Docker container, a VPS, a serverless runtime. And you can talk to it through 20+ surfaces.</p>
+  <!-- ════════ 01 WHAT IT IS ════════ -->
+  <section>
+    <span class="kicker">01 · Foundations</span>
+    <h2 class="sec">An agent that <span class="accent">gets sharper the longer it runs.</span></h2>
+    <p class="body"><strong>Short version:</strong> an autonomous agent with memory that survives between sessions and a skill library that grows as it works.</p>
+    <p class="body"><strong>Longer version:</strong> MudiAgent turns a model into a persistent operator. It ships with 123 skills already built in: GitHub workflows, Obsidian, Google Workspace, Linear, Notion, Typefully, Perplexity, deep research, and 100+ more. It lives wherever you put it (laptop, Docker, VPS, serverless) and you talk to it through 20+ surfaces.</p>
 
-    <div class="my-take">
-      <div class="my-take-label">Take</div>
-      <p>It routes tasks to the right model based on complexity and cost. Learns your voice and preferences over time. Handles context switching without losing the thread.</p>
+    <div class="callout">
+      <div class="ql">Why it's different</div>
+      <p>It routes tasks to the right model by complexity and cost, learns your voice over time, and handles context switching without losing the thread.</p>
     </div>
 
-    <h4>MudiAgent vs. a coding assistant vs. an agent primitive</h4>
-    <p>If you have used Claude Code or other terminal coding agents, MudiAgent is the same shape with a different philosophy.</p>
-
+    <h3 class="sub">MudiAgent vs. a coding assistant vs. agent primitives</h3>
+    <p class="body">If you have used Claude Code or another terminal coding agent, MudiAgent is the same shape with a different philosophy.</p>
     <div class="compare">
-      <div class="compare-col">
-        <div class="compare-name">Coding assistant</div>
-        <div class="compare-tag">A pair programmer</div>
-        <p class="compare-body">Lives in your terminal next to your code. Best for sitting down, opening an editor, and drafting code with you all day. Day-driver for desk work.</p>
+      <div>
+        <div class="name">Coding assistant</div>
+        <div class="h">A pair programmer</div>
+        <p>Lives in your terminal next to your code. Best for sitting down and drafting code with you all day. The day-driver for desk work.</p>
       </div>
-      <div class="compare-col pick">
-        <div class="compare-name">MudiAgent</div>
-        <div class="compare-tag">Rails. Productive day one.</div>
-        <p class="compare-body">Opinionated defaults, batteries included, the agent does more thinking for you. Lighter, faster, focused on the self-improvement loop. Built for work that runs without you watching.</p>
+      <div class="pick">
+        <div class="name">MudiAgent</div>
+        <div class="h">Rails — productive day one</div>
+        <p>Opinionated defaults, batteries included. Lighter, faster, focused on the self-improvement loop. Built for work that runs without you watching.</p>
       </div>
-      <div class="compare-col">
-        <div class="compare-name">Agent primitives</div>
-        <div class="compare-tag">Linux. Explicit control.</div>
-        <p class="compare-body">Primitives, guarantees, the agent does exactly what you told it to and nothing more. The right choice if you want explicit control over every step.</p>
+      <div>
+        <div class="name">Agent primitives</div>
+        <div class="h">Linux — explicit control</div>
+        <p>Primitives and guarantees. The agent does exactly what you told it and nothing more. The right pick if you want control over every step.</p>
+      </div>
+    </div>
+    <p class="body">Both directions are valid. We run MudiAgent because the bundled defaults compound. Every project starts with the agent already knowing how to do 100+ things before a line of configuration.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 02 HOW A REQUEST FLOWS (6 steps) ════════ -->
+  <section>
+    <span class="kicker">02 · The engine</span>
+    <h2 class="sec">How a single request <span class="accent">flows through the system.</span></h2>
+    <p class="lead">Six steps, every part of the engine visible. This is what happens between you asking and the work landing.</p>
+
+    <div class="flow">
+      <div class="step">
+        <div class="badge">1</div>
+        <div class="body4">
+          <div class="who">You ask</div>
+          <h4>You give it a task</h4>
+          <p>CLI, Telegram, Discord, Slack, email, SMS, 20+ surfaces. Plain language, no slash command needed. It runs on a $5 VPS, not your laptop.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">2</div>
+        <div class="body4">
+          <div class="who">It scans</div>
+          <h4>It reads the skill index</h4>
+          <p>A one-line description per skill sits in the system prompt at all times. 200 skills is a tiny token cost. 123 bundled, plus your own, plus hub-installed and tapped repos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">3</div>
+        <div class="body4">
+          <div class="who">It loads</div>
+          <h4>It opens the matching SKILL.md</h4>
+          <p>When-to-use phrasing match, the procedure as ordered steps, pitfalls with fixes, and a verification check. Reference files load only if that turn needs them.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">4</div>
+        <div class="body4">
+          <div class="who">It stacks context</div>
+          <h4>It pulls what it knows about you</h4>
+          <p><code>MEMORY.md</code> for agreed facts, <code>USER.md</code> for who you are, full-text search over past conversations, and a dialectic user model. Memory and skills stack, they don't compete.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">5</div>
+        <div class="body4">
+          <div class="who">It runs the work</div>
+          <h4>It executes against your environment</h4>
+          <p>Shell, files, git, MCP, web search. Six backends: local, Docker, SSH, Daytona, Singularity, Modal. Serverless options hibernate when idle. Output streams back in real time.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">6</div>
+        <div class="body4">
+          <div class="who">It saves what it learned</div>
+          <h4>It nudges itself to persist</h4>
+          <p>"Want me to save this as a skill?" It writes a new <code>SKILL.md</code> with the pitfalls it hit, patches in place when it finds a new edge, and syncs across machines via git.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 03 BRAIN / SOUL / SKILLSET ════════ -->
+  <section>
+    <span class="kicker">03 · Anatomy</span>
+    <h2 class="sec">A brain. A soul. A skillset. <span class="accent">One folder.</span></h2>
+    <p class="lead">Every MudiAgent is built from three parts plus the surfaces it can reach and the places it can live.</p>
+
+    <div class="grid c3">
+      <div class="card">
+        <div class="tag">Brain</div>
+        <h4>Memory that survives sessions</h4>
+        <p>Lives at <code>~/.mudiagent/memories/</code>. <code>MEMORY.md</code> and <code>USER.md</code> inject at session start. Sessions store in SQLite, searchable across time.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Soul</div>
+        <h4>A personality you tune</h4>
+        <p><code>SOUL.md</code> holds the voice: concise, blunt, formal, fast. Six agents can share one brain, each with a different soul.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Skillset</div>
+        <h4>123 skills out of the box</h4>
+        <p>GitHub PRs, Obsidian, Workspace, Linear, Notion, browser control, scraping, vision, voice, scheduling. The library grows as it works.</p>
       </div>
     </div>
 
-    <p>Both directions are valid. We run MudiAgent because the bundled defaults compound. Every project starts with the agent already knowing how to do 100+ things before a line of configuration. That head start is worth it.</p>
-
-    <div class="why-it-matters"><strong>Why it matters:</strong> the bundled defaults are the whole pitch. They are also opinions. Pick the tool that matches your philosophy.</div>
-  </div>
-
-  <!-- ═══════════ 02 — HOW IT WORKS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">02 &mdash; ARCHITECTURE</span>
-    <h3>A brain. A soul. A skillset. One folder.</h3>
-    <p>Every MudiAgent has three things.</p>
-
-    <h4>A brain</h4>
-    <p>Memory lives at <code>~/.mudiagent/memories/</code>. Two files, <code>MEMORY.md</code> and <code>USER.md</code>, inject at session start. Your voice rubric, your brand notes, your customer language, last week's corrections, all of it loads before the first prompt. Sessions are stored in SQLite. Recall across sessions is full-text searchable.</p>
-
-    <h4>A soul</h4>
-    <p><code>SOUL.md</code> is where the vibe lives. Concise. Sarcastic. Blunt. Formal. Fast or thoughtful. You can spin up six agents and give each one a different soul, same brain underneath. One is your outbound rep with a closer's energy. One is your researcher who likes long sentences. One is your assistant who keeps it short.</p>
-
-    <h4>A skillset</h4>
-    <p>123 skills out of the box: GitHub PRs, Obsidian, Google Workspace, Linear, Notion, Typefully, Perplexity, deep research, browser control, web scraping, vision, voice, scheduling. And the closed learning loop: as the agent works, it writes new skills along the way. Your library grows on top of the 123 without you having to write any of them.</p>
-
-    <h4>What the agent can talk to</h4>
-    <ul>
-      <li><strong>Tool gateway:</strong> one subscription, 300+ models, plus web scraping and browser automation built in.</li>
-      <li><strong>MCP integration:</strong> any external service that speaks Model Context Protocol becomes a tool the agent can use.</li>
-      <li><strong>20+ messaging surfaces:</strong> Telegram, Discord, Slack, email, voice, plus the CLI itself.</li>
-    </ul>
-
-    <h4>Where the agent can live</h4>
-    <ul>
-      <li><strong>Local:</strong> your laptop. Simplest start.</li>
-      <li><strong>Docker:</strong> isolated, portable, the way we run ours.</li>
-      <li><strong>SSH on a VPS:</strong> so it runs even when your laptop is closed.</li>
-      <li><strong>Serverless:</strong> if you don't want to manage infrastructure.</li>
-    </ul>
-
-    <h4>The closed learning loop</h4>
-    <p>The closed learning loop is what makes this different from a smart chatbot. The agent watches itself work, writes new skills as it learns the shape of your work, refines its memory periodically, and recalls past context across sessions using a mix of full-text search and LLM summarization. You do not have to re-teach it next week.</p>
-
-    <div class="my-take">
-      <div class="my-take-label">Day one rule</div>
-      <p>Do not try to write your own skills on day one. Run real work, let the agent watch, and let the harness write the skills. You build a custom skill library faster by working than by writing prompts.</p>
+    <h3 class="sub">What the agent can talk to</h3>
+    <div class="grid c3">
+      <div class="card"><div class="tag">Tool gateway</div><p>One subscription, 300+ models, plus web scraping and browser automation built in.</p></div>
+      <div class="card"><div class="tag">MCP</div><p>Any service that speaks Model Context Protocol becomes a tool the agent can use.</p></div>
+      <div class="card"><div class="tag">20+ surfaces</div><p>Telegram, Discord, Slack, email, voice, plus the CLI itself.</p></div>
     </div>
-  </div>
 
-  <!-- ═══════════ 03 — FIVE PILLARS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">03 &mdash; MENTAL MODEL</span>
-    <h3>The five pillars</h3>
-    <p>These five concepts cover everything MudiAgent does. Internalize them and the rest is naming.</p>
-
-    <div class="pillars">
-      <div class="pillar">
-        <div class="pillar-n">01 &middot; MEMORY</div>
-        <div class="pillar-name">Stable facts that survive sessions</div>
-        <div class="pillar-desc"><code>MEMORY.md</code> and <code>USER.md</code> load at session start. Auto-extracts facts during work. Update inline ("flush that") at any time. Never holds raw secrets.</div>
-      </div>
-      <div class="pillar">
-        <div class="pillar-n">02 &middot; SKILLS</div>
-        <div class="pillar-name">Procedural memory</div>
-        <div class="pillar-desc">Reusable playbooks stored as <code>SKILL.md</code> files with YAML front-matter. The agent reads your conversations, turns repeated patterns into skills, evolves them with feedback.</div>
-      </div>
-      <div class="pillar">
-        <div class="pillar-n">03 &middot; SOUL</div>
-        <div class="pillar-name">Personality on top of the brain</div>
-        <div class="pillar-desc"><code>SOUL.md</code> shapes voice. Multiple agents, one soul each, all sharing the same memory underneath. Tunes itself as you correct it.</div>
-      </div>
-      <div class="pillar">
-        <div class="pillar-n">04 &middot; CRONS</div>
-        <div class="pillar-name">Where this leaves your laptop in the dust</div>
-        <div class="pillar-desc">Every cron job runs in a fresh isolated session. Flags: <code>CONTEXT</code>, <code>MEMORY</code>, <code>NO_LOOP</code>. Time-bounded crons work to-do loop style. No recursive cron creation.</div>
-      </div>
-      <div class="pillar">
-        <div class="pillar-n">05 &middot; SELF-IMPROVING LOOP</div>
-        <div class="pillar-name">Why the longer it runs, the better it gets</div>
-        <div class="pillar-desc">Do work, get feedback, memory grows, turn steps into skills, search past sessions. Honest caveat: prune and consolidate the skill library, or it bloats.</div>
-      </div>
+    <h3 class="sub">Where the agent can live</h3>
+    <div class="fleet">
+      <div class="ct"><div class="cn">local</div><div class="cl">your laptop<br>simplest start</div></div>
+      <div class="ct"><div class="cn">docker</div><div class="cl">isolated, portable<br>how we run ours</div></div>
+      <div class="ct"><div class="cn">ssh / vps</div><div class="cl">runs with your<br>laptop closed</div></div>
+      <div class="ct"><div class="cn">serverless</div><div class="cl">daytona · modal<br>no infra to manage</div></div>
     </div>
-  </div>
+  </section>
 
-  <!-- ═══════════ 04 — WHAT WE RUN ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">04 &mdash; USE CASES</span>
-    <h3>What we actually run on it</h3>
-    <p>Most of what runs on this stack is marketing infrastructure with the occasional internal tool. The fleet looks like this:</p>
-    <ul>
-      <li><strong>Personal assistant.</strong> Handles business and private. Lives in Telegram. Flags the four emails worth reading every morning, schedules reminders, summarizes meetings you missed.</li>
-      <li><strong>Workflow prototyping bench.</strong> Where new flows (lead magnet, ad creative review, content sprint) get tested against real work for 2 to 3 runs before they get promoted.</li>
-      <li><strong>Specialized agents.</strong> SEO, outbound, design review, content writing. Each one with its own soul and scope.</li>
-      <li><strong>Company brain.</strong> Monitors Slack, chats, emails, transcripts, voice memos. Makes all of it queryable. "What did we say to that client about pricing last month" returns in three seconds instead of thirty minutes of digging.</li>
-      <li><strong>SEO agent.</strong> Runs the full pipeline from keyword seed to published article in one Docker container. 21 steps. No human in the middle until final review.</li>
-      <li><strong>Content distribution.</strong> Takes a long-form piece (this guide, for example) and atomizes it across LinkedIn, X, Threads, with platform-specific hooks.</li>
-      <li><strong>Orchestrator.</strong> Does not produce work itself. Routes requests to the right specialist based on what you are asking for.</li>
-      <li><strong>Design review.</strong> Sees draft ads, hero crops, brand-mark placements, screenshots. Flags what is off-system before it ships.</li>
-      <li><strong>Internal tooler.</strong> Builds the small one-off scripts you would otherwise never finish. Plus the cron jobs that catch the silent fail before customers do.</li>
-    </ul>
-  </div>
+  <hr class="rule">
 
-  <!-- ═══════════ 05 — SEO PIPELINE ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">05 &mdash; ZOOM IN: SEO AGENT</span>
-    <h3>Five layers. One container. 21 steps.</h3>
-    <p>The SEO agent is worth zooming in on. It is the one we ship publicly and the one that maps cleanest to the architecture in the rest of this guide. Five layers, all inside one Docker container, 21 steps from keyword seed to published article.</p>
+  <!-- ════════ 04 HOW SKILLS WORK ════════ -->
+  <section>
+    <span class="kicker">04 · Skills</span>
+    <h2 class="sec">How skills work, and <span class="accent">why they cost almost nothing.</span></h2>
+    <p class="lead">A skill is a Markdown procedure loaded on demand: a <code>SKILL.md</code> with YAML front-matter (name, description, when-to-use, procedure, pitfalls) plus optional reference, template, and script subfolders.</p>
 
-    <div class="pipeline">
+    <h3 class="sub">Where they come from</h3>
+    <div class="grid c3">
+      <div class="card"><div class="tag">Bundled · 123+</div><p>Ship with every install. GitHub PRs, planning, research, ASCII art, and more.</p></div>
+      <div class="card"><div class="tag">Agent-authored</div><p>MudiAgent offers to save the complex workflows it just solved. Say yes and it persists them.</p></div>
+      <div class="card"><div class="tag">Hub + taps</div><p>Community-published, single URL, GitHub repo. Shared across a team via git.</p></div>
+    </div>
+
+    <h3 class="sub">Progressive disclosure: three levels of loading</h3>
+    <div class="disc">
+      <div class="d"><div class="lv">Level 0 · Index</div><h4>Name + description</h4><p>In the system prompt always. 200 skills is a tiny cost. This is how the agent picks one.</p></div>
+      <div class="d"><div class="lv">Level 1 · Open</div><h4>Full SKILL.md</h4><p>Loads only when the agent decides to use it: when-to-use, procedure, pitfalls, verification.</p></div>
+      <div class="d"><div class="lv">Level 2 · References</div><h4>Files on demand</h4><p>Long tables and vendor docs load only in the turn that needs them. Nothing wasted.</p></div>
+    </div>
+
+    <h3 class="sub">The learning loop</h3>
+    <div class="flow">
+      <div class="step"><div class="badge">1</div><div class="body4"><h4>A new task arrives</h4><p>Complex, multi-step, not covered by an existing skill.</p></div></div>
+      <div class="step"><div class="badge">2</div><div class="body4"><h4>The agent solves it</h4><p>Discovering the pitfalls and the order of operations as it goes.</p></div></div>
+      <div class="step"><div class="badge">3</div><div class="body4"><h4>It offers to save</h4><p>"Want this as a skill?" You say yes.</p></div></div>
+      <div class="step"><div class="badge">4</div><div class="body4"><h4>It writes the SKILL.md</h4><p>Next time a similar task appears, the skill is already loaded. It even patches the file as it learns more.</p></div></div>
+    </div>
+
+    <div class="callout">
+      <div class="ql">Day one rule</div>
+      <p>Do not write your own skills on day one. Run real work, let the agent watch, and let the harness write the skills. You build a custom library faster by working than by prompting.</p>
+    </div>
+    <div class="callout flat">
+      <p><strong>Watch out for:</strong> skill explosion and adjacent duplicates. Prune and consolidate the library over time, or it bloats.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 05 FIVE PILLARS ════════ -->
+  <section>
+    <span class="kicker">05 · Mental model</span>
+    <h2 class="sec">The five pillars.</h2>
+    <p class="lead">Internalize these five and the rest of the system is just naming.</p>
+    <div class="grid c2">
+      <div class="card ncard"><span class="num">i</span><h4>Memory</h4><p><code>MEMORY.md</code> and <code>USER.md</code> load at session start. The agent auto-extracts durable facts during work. Update inline at any time. Never holds raw secrets.</p></div>
+      <div class="card ncard"><span class="num">ii</span><h4>Skills</h4><p>Procedural memory stored as <code>SKILL.md</code> files. The agent turns repeated patterns into skills and evolves them with your feedback.</p></div>
+      <div class="card ncard"><span class="num">iii</span><h4>Soul</h4><p><code>SOUL.md</code> shapes voice. Multiple agents, one soul each, all sharing the same memory underneath.</p></div>
+      <div class="card ncard"><span class="num">iv</span><h4>Crons</h4><p>Where this leaves your laptop in the dust. Every job runs in a fresh isolated session. Flags: <code>CONTEXT</code>, <code>MEMORY</code>, <code>NO_LOOP</code>. No recursive cron creation.</p></div>
+    </div>
+    <div class="grid c2" style="margin-top:16px;">
+      <div class="card ncard"><span class="num">v</span><h4>The self-improving loop</h4><p>Do work, get feedback, memory grows, steps become skills, past sessions stay searchable. The more you use it, the better it gets.</p></div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;background:var(--clay-soft);border-color:var(--clay-line);"><p style="color:var(--text);font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.4;">The pillars are not features. They are the reason it compounds.</p></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 06 WHY IT COMPOUNDS ════════ -->
+  <section>
+    <span class="kicker">06 · The payoff</span>
+    <h2 class="sec">Why it <span class="accent">compounds.</span></h2>
+    <div class="tl">
+      <div class="t"><div class="day">Day one</div><h4>123+ recipes loaded</h4><p>Productive immediately. The agent already knows how to do 100+ things.</p></div>
+      <div class="t"><div class="day">Day thirty</div><h4>10–30 custom skills</h4><p>Added from your real work. Research and execution roughly 40% faster.</p></div>
+      <div class="t"><div class="day">Day ninety</div><h4>An agent shaped by you</h4><p>Memory, voice, and skills tuned to your business. It compounds the longer it runs.</p></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 07 WHAT WE RUN ════════ -->
+  <section>
+    <span class="kicker">07 · In production</span>
+    <h2 class="sec">What we actually run on it.</h2>
+    <p class="lead">Mostly marketing infrastructure with the occasional internal tool. The real list:</p>
+    <div class="grid c3">
+      <div class="card"><div class="tag">Personal assistant</div><p>Lives in Telegram. Flags the four emails worth reading every morning, schedules reminders, summarizes meetings you missed.</p></div>
+      <div class="card"><div class="tag">Prototyping bench</div><p>Where new flows get tested against real work for two or three runs before promotion.</p></div>
+      <div class="card"><div class="tag">Specialist agents</div><p>SEO, outbound, design review, content. Each with its own soul and scope.</p></div>
+      <div class="card"><div class="tag">Company brain</div><p>Monitors Slack, email, transcripts, voice memos. "What did we tell that client about pricing last month?" answers in three seconds.</p></div>
+      <div class="card"><div class="tag">SEO agent</div><p>Keyword seed to published article in one container. 21 steps. No human until final review.</p></div>
+      <div class="card"><div class="tag">Content distribution</div><p>Atomizes one long-form piece across LinkedIn, X, Threads, with platform-specific hooks.</p></div>
+      <div class="card"><div class="tag">Orchestrator</div><p>Produces no work itself. Routes requests to the right specialist.</p></div>
+      <div class="card"><div class="tag">Design review</div><p>Sees draft ads, crops, brand-mark placement. Flags what is off-system before it ships.</p></div>
+      <div class="card"><div class="tag">Internal tooler</div><p>Builds the one-off scripts you would never finish, plus the crons that catch silent fails.</p></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 08 SEO AGENT ════════ -->
+  <section>
+    <span class="kicker">08 · Zoom in</span>
+    <h2 class="sec">The SEO agent: <span class="accent">five layers, one container, 21 steps.</span></h2>
+    <p class="lead">The one we ship publicly, and the one that maps cleanest to the architecture. Keyword seed to published article, no human in the middle until the final review.</p>
+
+    <div class="pipe">
       <div class="phase">
-        <div class="phase-label"><span class="phase-num">1</span>Research + ideate</div>
-        <div class="phase-step"><span class="n">01</span>keyword seed</div>
-        <div class="phase-step"><span class="n">02</span>serp snapshot</div>
-        <div class="phase-step"><span class="n">03</span>competitor extraction</div>
-        <div class="phase-step"><span class="n">04</span>intent + format analysis</div>
-        <div class="phase-step"><span class="n">05</span>content + visual gap</div>
-        <div class="phase-step"><span class="n">06</span>internal validation</div>
-        <div class="phase-step"><span class="n">07</span>external validation</div>
+        <div class="ph"><span class="pn">1</span>Research + ideate</div>
+        <div class="it"><span class="x">01</span>keyword seed</div>
+        <div class="it"><span class="x">02</span>serp snapshot</div>
+        <div class="it"><span class="x">03</span>competitor extraction</div>
+        <div class="it"><span class="x">04</span>intent + format</div>
+        <div class="it"><span class="x">05</span>content + visual gap</div>
+        <div class="it"><span class="x">06</span>internal validation</div>
+        <div class="it"><span class="x">07</span>external validation</div>
       </div>
       <div class="phase">
-        <div class="phase-label"><span class="phase-num">2</span>Production</div>
-        <div class="phase-step"><span class="n">08</span>angle + positioning brief</div>
-        <div class="phase-step"><span class="n">09</span>visual strategy brief</div>
-        <div class="phase-step"><span class="n">10</span>outline</div>
-        <div class="phase-step"><span class="n">11</span>draft</div>
-        <div class="phase-step"><span class="n">12</span>image gen</div>
-        <div class="phase-step"><span class="n">13</span>flowchart gen</div>
-        <div class="phase-step"><span class="n">14</span>visual qa</div>
-        <div class="phase-step"><span class="n">15</span>article qa</div>
+        <div class="ph"><span class="pn">2</span>Production</div>
+        <div class="it"><span class="x">08</span>positioning brief</div>
+        <div class="it"><span class="x">09</span>visual strategy</div>
+        <div class="it"><span class="x">10</span>outline</div>
+        <div class="it"><span class="x">11</span>draft</div>
+        <div class="it"><span class="x">12</span>image gen</div>
+        <div class="it"><span class="x">13</span>flowchart gen</div>
+        <div class="it"><span class="x">14</span>visual qa</div>
+        <div class="it"><span class="x">15</span>article qa</div>
       </div>
       <div class="phase">
-        <div class="phase-label"><span class="phase-num">3</span>Distribution</div>
-        <div class="phase-step"><span class="n">16</span>publish prep</div>
-        <div class="phase-step"><span class="n">17</span>schema</div>
-        <div class="phase-step"><span class="n">18</span>internal linking</div>
-        <div class="phase-step"><span class="n">19</span>syndication</div>
-        <div class="phase-step"><span class="n">20</span>analytics setup</div>
-        <div class="phase-step"><span class="n">21</span>monitoring</div>
+        <div class="ph"><span class="pn">3</span>Distribution</div>
+        <div class="it"><span class="x">16</span>publish prep</div>
+        <div class="it"><span class="x">17</span>schema</div>
+        <div class="it"><span class="x">18</span>internal linking</div>
+        <div class="it"><span class="x">19</span>syndication</div>
+        <div class="it"><span class="x">20</span>analytics setup</div>
+        <div class="it"><span class="x">21</span>monitoring</div>
       </div>
     </div>
 
-    <h4>The five layers above the pipeline</h4>
-    <ul>
-      <li><strong>Layer 1 &middot; Company brain.</strong> Vision, brand, audience, products. Every agent reads from this.</li>
-      <li><strong>Layer 2 &middot; Orchestrator.</strong> Takes the topic or keyword seed and routes it to the SEO agent.</li>
-      <li><strong>Layer 3 &middot; SEO brain.</strong> Ranking playbook, voice rules, content formats, visual style guide, success criteria per format.</li>
-      <li><strong>Layer 4 &middot; Three sub-agents</strong>, one per phase: research + ideate, production, distribution.</li>
-      <li><strong>Layer 5 &middot; One Docker container.</strong> All three sub-agents share env, memory, and tools. Sub-profiles switch context per phase. One process. One filesystem. One set of credentials.</li>
-    </ul>
-
-    <div class="why-it-matters"><strong>Why one container instead of three:</strong> SEO work is sequential. Research feeds the brief. The brief feeds production. Production feeds distribution. Every step needs memory of what was decided upstream. Splitting into three containers means shuttling state across boundaries, which gets expensive and breaks the chain.</div>
-
-    <p>Every other specialized agent runs on the same template. Clone the SEO agent template, swap the brain (SEO brain to outbound brain, or design brain, or support brain), and you have a new agent for any function with the same five-layer shape.</p>
-  </div>
-
-  <!-- ═══════════ 06 — MENTAL MODEL: 4 PARTS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">06 &mdash; MENTAL MODEL</span>
-    <h3>You, the control room, the agents, the task bus</h3>
-    <p>Before the four levels, the four-part mental model. Holding this in your head makes everything else click.</p>
-
-    <ul>
-      <li><strong>You</strong> are the operator. You have direct access to every part of the system.</li>
-      <li>The <strong>agent control room</strong> is the side control plane. It is not an agent you chat through. It is a folder at <code>/root/vps-agents</code> that documents and governs the whole fleet. You open it, edit it, inspect it, or ask any coding agent on your laptop to use it when you are managing the system.</li>
-      <li>The <strong>MudiAgents</strong> are the workers. Some are specialists (SEO, dev, CMO, ops). One of them can optionally be an orchestrator.</li>
-      <li>The <strong>agent task bus</strong> is an optional handoff desk that sits between the orchestrator and the specialists. You only need it once you have an orchestrator in play.</li>
-    </ul>
-
-    <h4>The whole thing, in one box</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">system map</span>
+    <h3 class="sub">The five layers above the pipeline</h3>
+    <div class="layers">
+      <div class="layer top"><div class="ll">Layer 1 · Company brain</div><div class="lt">The context every agent inherits</div><p>Vision, brand, audience, products. Stays stable while the worker iterates.</p></div>
+      <div class="layer"><div class="ll">Layer 2 · Orchestrator</div><div class="lt">Routing</div><p>Takes the topic or keyword seed and hands it to the SEO agent.</p></div>
+      <div class="layer"><div class="ll">Layer 3 · SEO brain</div><div class="lt">Domain context</div><p>Ranking playbook, voice rules, content formats, visual style guide, success criteria per format.</p></div>
+      <div class="layer">
+        <div class="ll">Layer 4 · Three sub-agents</div><div class="lt">One per phase</div>
+        <div class="subagents"><span>research + ideate</span><span>production</span><span>distribution</span></div>
       </div>
-      <pre>          <span class="cmd">YOU</span> &mdash; the operator
-           &#x2502;
-   &#x250C;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x253C;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x2510;
-   &#x25BC;              &#x25BC;              &#x25BC;
-<span class="cmd">CONTROL ROOM</span>   <span class="cmd">ORCHESTRATOR</span>   <span class="cmd">SPECIALIST</span>
-/root/vps-     (optional        seo  &middot;  dev
-agents         front door)      cmo  &middot;  ops  &middot;  life
-docs  &middot;       &#x2502;                <span class="comment">talk to one directly</span>
-rules  &middot;      &#x25BC; delegates       <span class="comment">no routing</span>
-runbooks       <span class="cmd">TASK BUS</span>
-env-map  &middot;    /srv/agent-bus
-registry       &#x2502; routes
-               &#x25BC;
-<span class="comment">no raw       SPECIALISTS</span>
-<span class="comment">secrets</span></pre>
+      <div class="layer"><div class="ll">Layer 5 · One Docker container</div><div class="lt">Shared env, memory, tools</div><p>Sub-profiles switch context per phase. One process, one filesystem, one set of credentials.</p></div>
     </div>
 
-    <p>The control room governs every agent in this diagram. It is the single source of truth, and the place you go to manage the fleet, not the place you go to run work through it.</p>
-  </div>
+    <div class="callout flat">
+      <p><strong>Why one container, not three:</strong> SEO work is sequential. Research feeds the brief, the brief feeds production, production feeds distribution. Every step needs memory of what was decided upstream. Splitting it means shuttling state across boundaries, which gets expensive and breaks the chain.</p>
+    </div>
+    <p class="body">The layers are not decoration. They are the reason the agent does not lose context as the work specializes. The company brain stays stable while the worker iterates, which makes the worker disposable. Clone the template, swap the brain (SEO → outbound → design → support), and you have a new agent with the same five-layer shape.</p>
+  </section>
 
-  <!-- ═══════════ 07 — STORAGE SPLIT ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">07 &mdash; STORAGE SPLIT</span>
-    <h3>Why <code>/root</code> and <code>/srv</code> are different things</h3>
-    <p>The storage split matters more than people think.</p>
+  <hr class="rule">
 
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">filesystem</span>
+  <!-- ════════ 09 MENTAL MODEL ════════ -->
+  <section>
+    <span class="kicker">09 · The fleet</span>
+    <h2 class="sec">You, the control room, the agents, <span class="accent">the task bus.</span></h2>
+    <p class="lead">Before the levels, the four-part mental model. Hold this and everything else clicks.</p>
+    <ul class="list">
+      <li><strong>You</strong> are the operator, with direct access to every part of the system.</li>
+      <li>The <strong>control room</strong> is the side control plane: a folder at <code>/root/vps-agents</code> that documents and governs the fleet. Not an agent you chat through.</li>
+      <li>The <strong>MudiAgents</strong> are the workers. Specialists (SEO, dev, CMO, ops), one optionally an orchestrator.</li>
+      <li>The <strong>task bus</strong> is an optional handoff desk between the orchestrator and the specialists. You only need it once an orchestrator is in play.</li>
+    </ul>
+
+    <h3 class="sub">Three ways you interact</h3>
+    <div class="paths">
+      <div class="path">
+        <div class="pl">Control path</div>
+        <div class="route">you <span class="a">&rarr;</span> control room</div>
+        <p>The meta layer. Add agents, rotate keys, update docs, debug setup.</p>
       </div>
-      <pre><span class="cmd">/root/vps-agents</span>          <span class="comment">&rarr; control room: docs, rules, runbooks, architecture
+      <div class="path">
+        <div class="pl">Direct path</div>
+        <div class="route">you <span class="a">&rarr;</span> mudiagent-seo</div>
+        <p>The fastest. Used when you already know which agent owns the job.</p>
+      </div>
+      <div class="path">
+        <div class="pl">Orchestrated path</div>
+        <div class="route">you <span class="a">&rarr;</span> orchestrator <span class="a">&rarr;</span> bus <span class="a">&rarr;</span> specialists</div>
+        <p>The synthesizer. One front door routes and combines work across specialists.</p>
+      </div>
+    </div>
+    <div class="callout flat">
+      <p>The control room governs every agent in this picture. It is the single source of truth and the place you manage the fleet, <strong>not</strong> the place you run work through.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 10 STORAGE SPLIT ════════ -->
+  <section>
+    <span class="kicker">10 · Storage split</span>
+    <h2 class="sec">Why <span class="accent">/root</span> and <span class="accent">/srv</span> are different things.</h2>
+    <p class="lead">This split matters more than people think.</p>
+
+    <div class="term">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ti">filesystem</span></div>
+<pre><span class="k">/root/vps-agents</span>          <span class="c">&rarr; control room: docs, rules, runbooks, architecture
                             no raw secrets, ever</span>
 
-<span class="cmd">/srv/&lt;agent-name&gt;/data</span>    <span class="comment">&rarr; live runtime: secrets, memory, skills, sessions, crons
-                            this is where each MudiAgent lives</span></pre>
+<span class="k">/srv/&lt;agent&gt;/data</span>         <span class="c">&rarr; live runtime: secrets, memory, skills, sessions, crons
+                            this is where each MudiAgent actually lives</span></pre>
     </div>
 
-    <p>The control room contains the answers to questions like which agents exist, what they do, what ports they use, what credentials they reference, what each agent can and cannot do, and how to restart, debug, or rebuild any of them. The live runtime contains the actual workings.</p>
-
-    <div class="my-take">
-      <div class="my-take-label">Core principle</div>
-      <p>The control room is the brain that defines the system. The live runtime is the body that runs it. You can rebuild the body from the brain. You cannot rebuild the brain from the body.</p>
+    <div class="callout">
+      <div class="ql">Core principle</div>
+      <p>The control room is the brain that defines the system. The runtime is the body that runs it. You can rebuild the body from the brain. You cannot rebuild the brain from the body.</p>
     </div>
 
-    <h4>Inside the control room</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">/root/vps-agents</span>
-      </div>
-      <pre><span class="cmd">/root/vps-agents/</span>
-&#x251C;&#x2500;&#x2500; README.md
-&#x251C;&#x2500;&#x2500; CLAUDE.md
-&#x251C;&#x2500;&#x2500; agents/
-&#x2502;   &#x2514;&#x2500;&#x2500; &lt;agent-name&gt;/
-&#x2502;       &#x251C;&#x2500;&#x2500; inventory.md         <span class="comment"># ip, hostname, where it runs, who owns it</span>
-&#x2502;       &#x251C;&#x2500;&#x2500; docker.md            <span class="comment"># docker-compose + first-boot checklist</span>
-&#x2502;       &#x251C;&#x2500;&#x2500; env-map.md           <span class="comment"># table of which keys live where, no values</span>
-&#x2502;       &#x251C;&#x2500;&#x2500; runbook.md           <span class="comment"># "it broke, what now" common scenarios</span>
-&#x2502;       &#x2514;&#x2500;&#x2500; backup.md            <span class="comment"># github backup + vps hardening checklist</span>
-&#x2514;&#x2500;&#x2500; shared/
-    &#x251C;&#x2500;&#x2500; security.md
-    &#x251C;&#x2500;&#x2500; commands.md
-    &#x251C;&#x2500;&#x2500; api-keys-sop.md
-    &#x2514;&#x2500;&#x2500; orchestrator-and-fleet-skills.md</pre>
+    <h3 class="sub">Inside the control room</h3>
+    <div class="term">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ti">/root/vps-agents</span></div>
+<pre>/root/vps-agents/
+&#x251C;&#x2500; README.md
+&#x251C;&#x2500; CLAUDE.md
+&#x251C;&#x2500; agents/
+&#x2502;  &#x2514;&#x2500; &lt;agent&gt;/
+&#x2502;     &#x251C;&#x2500; inventory.md      <span class="c"># ip, hostname, where it runs, who owns it</span>
+&#x2502;     &#x251C;&#x2500; docker.md         <span class="c"># compose draft + first-boot checklist</span>
+&#x2502;     &#x251C;&#x2500; env-map.md        <span class="c"># which keys live where, no values</span>
+&#x2502;     &#x251C;&#x2500; runbook.md        <span class="c"># "it broke, what now" scenarios</span>
+&#x2502;     &#x2514;&#x2500; backup.md         <span class="c"># github backup + hardening checklist</span>
+&#x2514;&#x2500; shared/
+   &#x251C;&#x2500; security.md
+   &#x251C;&#x2500; commands.md
+   &#x251C;&#x2500; api-keys-sop.md
+   &#x2514;&#x2500; orchestrator-and-fleet-skills.md</pre>
     </div>
 
-    <h4>Inside each agent's runtime</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">/srv/&lt;agent-name&gt;/data</span>
-      </div>
-      <pre>.env
-config.yaml
-SOUL.md
-memories/
-skills/
-cron/
-sessions/
-logs/
-state.db</pre>
+    <h3 class="sub">Inside each agent's runtime</h3>
+    <div class="term">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ti">/srv/&lt;agent&gt;/data</span></div>
+<pre>.env          config.yaml    SOUL.md
+memories/     skills/        cron/
+sessions/     logs/          state.db</pre>
     </div>
-  </div>
-
-  <!-- ═══════════ 08 — THREE WAYS YOU INTERACT ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">08 &mdash; INTERACTION</span>
-    <h3>Three ways you interact</h3>
-    <p>You have three routes into the system. Each one is for a different job.</p>
-
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">interaction paths</span>
-      </div>
-      <pre><span class="cmd">control path:</span>
-you &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x25B6; agent control room
-            <span class="comment">(add agents, rotate keys, update docs, debug setup)</span>
-
-<span class="cmd">direct path:</span>
-you &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x25B6; mudiagent-seo
-            <span class="comment">(talk to a specialist directly, fastest)</span>
-
-<span class="cmd">orchestrated path:</span>
-you &mdash;&#x25B6; mudiagent-orchestrator &mdash;&#x25B6; task bus &mdash;&#x25B6; specialists &mdash;&#x25B6; you
-        <span class="comment">(one front door, routes and synthesizes multi-agent work)</span></pre>
-    </div>
-
-    <ul>
-      <li><strong>Control path</strong> is the meta layer. Used when adding agents, reviewing docs, checking ports, rotating keys, debugging setup.</li>
-      <li><strong>Direct path</strong> is the fastest. Used when you already know which agent does the work.</li>
-      <li><strong>Orchestrated path</strong> is the synthesizer. Used when you want one front door that routes and combines work across multiple specialists.</li>
-    </ul>
-  </div>
-
-  <!-- ═══════════ 09 — LEVEL 1 ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">09 &mdash; LEVEL 1</span>
-    <h3>One agent</h3>
-    <p>You have one MudiAgent. That is it. The control room can still exist (recommended) but it only documents that one agent.</p>
-
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">level 1</span>
-      </div>
-      <pre>you &mdash;&#x25B6; one MudiAgent
-
-control room &mdash;&#x25B6; documents that one agent</pre>
-    </div>
-
-    <h4>Best for</h4>
-    <p>Initial setup. Your personal MudiAgent. Root install documentation. Simple Docker migration.</p>
-    <p>One agent, lived in, with a personality you have tuned and a memory that has started to build. Fill in <code>SOUL.md</code> with the voice you want. <code>MEMORY.md</code> with the stable facts about your business. <code>USER.md</code> with the stable facts about you. Connect it to Telegram or Discord so it lives where you do. Start using it on real tasks. Let it touch your tools. Let it write its own skills along the way.</p>
-    <p><code>MEMORY.md</code> holds the stable facts (what your business is, who your customers are, what your products do). <code>USER.md</code> holds the stable facts about you (timezone, working hours, recurring projects, preferred output formats). Both get refined every week as you correct the agent in real conversations.</p>
-  </div>
-
-  <!-- ═══════════ 10 — LEVEL 2 ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">10 &mdash; LEVEL 2</span>
-    <h3>Direct specialist agents</h3>
-    <p>You have multiple specialized agents, but you still talk to each one directly. No orchestrator yet.</p>
-
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">level 2</span>
-      </div>
-      <pre>you &mdash;&#x25B6; mudiagent-life
-you &mdash;&#x25B6; mudiagent-seo
-you &mdash;&#x25B6; mudiagent-dev
-you &mdash;&#x25B6; mudiagent-cmo
-
-<span class="comment">the control room documents all of them.</span></pre>
-    </div>
-
-    <h4>Best for</h4>
-    <p>Clear role separation. Testing which agents are useful. Avoiding premature orchestration. Keeping credentials scoped per agent.</p>
-    <p>The trap to avoid here is reaching for an orchestrator before you have proven your specialists are useful. Spin up two or three, run them directly, and only add an orchestrator when you find yourself wanting one front door.</p>
-
-    <h4>When to spin up a new agent vs. stay with what you have</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">decision table</span>
-      </div>
-      <pre>needs its own credentials              &mdash;&#x25B6; new agent
-needs its own long-term memory         &mdash;&#x25B6; new agent
-ongoing repeated work as a separate    &mdash;&#x25B6; new agent
-  role
-otherwise                              &mdash;&#x25B6; stay with what you have</pre>
-    </div>
-
-    <div class="my-take">
-      <div class="my-take-label">Bad pattern</div>
-      <p>One mega-agent with every credential and every memory layer mashed together. You lose isolation. You lose the ability to revoke access cleanly. The agent gets confused about which voice to use.</p>
-    </div>
-  </div>
-
-  <!-- ═══════════ 11 — LEVEL 3 ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">11 &mdash; LEVEL 3</span>
-    <h3>Orchestrator + specialists</h3>
-    <p>You add <code>mudiagent-orchestrator</code> as a front door. You can still talk directly to specialists, but the orchestrator can route work and synthesize results.</p>
-    <p>The orchestrator reads the control room to know which agents exist, what each one does, where task queues live, what requires approval, which actions are forbidden, and where docs and runbooks are. It does not need to ask you any of that. It reads it.</p>
-
-    <h4>Best for</h4>
-    <p>Cross-functional work. Delegation. Summary and synthesis. One main interface for multi-agent workflows.</p>
-    <p>The orchestrator is the moment your setup stops being a collection of agents and starts being a team. It is also the moment where the control room earns its keep, because the orchestrator is only as good as the docs it reads.</p>
-
-    <h4>A quick check-in on the fleet from your laptop or phone</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">ssh mudiagent</span>
-      </div>
-      <pre><span class="cmd">$ ssh mudiagent</span>
-welcome to mudiagent-vps-1.
-last login: thu may 15 09:14:22
-
-<span class="cmd">mudiagent-vps-1 ~ $</span> cd vps-agents
-<span class="cmd">mudiagent-vps-1 ~/vps-agents $</span> docker ps --format \
-"table {{.Names}}\t{{.Status}}\t{{.Image}}"
-
-NAMES                       STATUS        IMAGE
-mudiagent-orchestrator      up 14 hours   mudiagent-runtime
-mudiagent-seo               up  8 hours   mudiagent-runtime
-mudiagent-cmo               up  8 hours   mudiagent-runtime
-mudiagent-outbound          up  4 hours   mudiagent-runtime
-mudiagent-life              up 12 hours   mudiagent-runtime
-
-<span class="cmd">mudiagent-vps-1 ~/vps-agents $</span> cat agents/mudiagent-seo/runbook.md
-<span class="comment"># runbook: mudiagent-seo
-restart: docker compose restart mudiagent-seo
-logs:    docker logs -f mudiagent-seo
-shell:   docker exec -it mudiagent-seo bash
-...</span></pre>
-    </div>
-  </div>
-
-  <!-- ═══════════ 12 — LEVEL 4 ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">12 &mdash; LEVEL 4</span>
-    <h3>Automated agent team</h3>
-    <p>Same shape as level 3, but with recurring workflows and stronger automation. Weekly SEO reports run on cron. Server health checks fire daily. Backup verification runs without you asking. Cross-agent business workflows kick off on schedule.</p>
-
-    <h4>Best for</h4>
-    <p>Weekly SEO reports. Content operations. Server health checks. Backup verification. Cross-agent business workflows.</p>
-    <p>Level 4 is what a marketing department in your terminal looks like. It does not need you to start the day. It shows up to work on its own, files reports, checks itself, and only pings you for the decisions that need taste.</p>
-
-    <div class="my-take">
-      <div class="my-take-label">Control hierarchy</div>
-      <p>The control room is for config, docs, runbooks, and governance. It is the admin panel for the fleet, including the orchestrator. It is not where you go to do work. For work, you talk to the agents directly. Either a specialist (when you know which agent owns the job) or the orchestrator (when you want one front door to route across specialists).</p>
-    </div>
-  </div>
-
-  <!-- ═══════════ 13 — SETUP ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">13 &mdash; SETUP</span>
-    <h3>Point your coding agent at the repo. Walk away.</h3>
-    <p>Now you understand the architecture. Here is how you build it.</p>
-    <p>The exact structure described above lives in a public control-room template, plus the skills the agent needs to set it up for you. You can clone it manually, but the point is that you do not have to. If you have a coding agent on your laptop, the agents do most of the work after you hand over a VPS provider API key.</p>
-
-    <h4>The automated flow</h4>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">setup pipeline</span>
-      </div>
-      <pre><span class="cmd">01 you</span>     &mdash;&#x25B6; generate a VPS provider API key
-              <span class="comment">(5 min: sign up, generate a token, drop it in your .env)</span>
-              &#x2502;
-              &#x25BC;
-<span class="cmd">02 agent</span>   &mdash;&#x25B6; create-vps skill
-              <span class="comment">spins up a box, generates an SSH key,
-              writes the alias to ~/.ssh/config so `ssh mudiagent` works</span>
-              &#x2502;
-              &#x25BC;
-<span class="cmd">03 agent</span>   &mdash;&#x25B6; setup-control-room skill
-              <span class="comment">installs Node, Docker, your coding agent, MudiAgent.
-              clones the repo to the VPS at /root/agent-control-room</span>
-              &#x2502;
-              &#x25BC;
-<span class="cmd">04 you</span>     &mdash;&#x25B6; finish interactive auth on the VPS
-              <span class="comment">(coding agent login, MudiAgent login)</span>
-              &#x2502;
-              &#x25BC;
-<span class="cmd">05 agent</span>   &mdash;&#x25B6; agent-control-room skill
-              <span class="comment">registers your first MudiAgent in the docs,
-              fills in the runbook, sets up the env-map</span>
-              &#x2502;
-              &#x25BC;
-<span class="cmd">DONE</span>       &mdash;&#x25B6; you are at level 1 with a documented agent</pre>
-    </div>
-
-    <h4>Within ten to fifteen minutes you have</h4>
-    <ul>
-      <li>A fresh VPS with the right tooling installed.</li>
-      <li>The control room cloned at <code>/root/agent-control-room</code> on the VPS.</li>
-      <li>The bundled skills linked into <code>~/.&lt;coding-agent&gt;/skills</code> on the VPS.</li>
-      <li>One MudiAgent registered, runbook filled in, env-map written.</li>
-      <li>An SSH alias on your laptop so <code>ssh mudiagent</code> connects instantly.</li>
-    </ul>
-  </div>
-
-  <!-- ═══════════ 14 — PROTOTYPE → PRODUCTION ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">14 &mdash; METHODOLOGY</span>
-    <h3>Prototype in MudiAgent. Deploy when it survives. Walk away.</h3>
-    <p>Most workflows do not start as production ones. They start messy. A flow that runs SEO research, drafts an article, schedules it in Typefully, and posts it to LinkedIn does not exist in your head fully formed. You discover it by running it.</p>
-    <p>MudiAgent is the prototyping environment for this. Here is the four-step path to take any new marketing workflow from idea to autonomous deployment.</p>
-
-    <ol>
-      <li><strong>Prototype in MudiAgent.</strong> Open your main agent, describe what you want to happen, and let it try. It will get most of it wrong on the first run. That is fine.</li>
-      <li><strong>Run it 2 to 3 times against real work, correcting drift each time.</strong> The harness watches every correction and starts writing the skill as it learns the shape. By run three the agent is doing most of what you want without coaching.</li>
-      <li><strong>Fine-tune in a dedicated workspace.</strong> Pull the workflow into a separate coding-agent workspace (or a fresh MudiAgent). Tighten the prompts. Lock the routing. Add error handling. Decide what should run on cron and what should be triggered.</li>
-      <li><strong>Deploy to a VPS on a schedule.</strong> Once it survives a week of real runs without you babysitting it, push it to its own Docker container on your VPS, set the cron, walk away.</li>
-    </ol>
-
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">flow</span>
-      </div>
-      <pre>prototype in MudiAgent
-   &#x2502;
-   &#x25BC;
-fine-tune in a dedicated workspace
-   &#x2502;
-   &#x25BC;
-deploy autonomous on a VPS</pre>
-    </div>
-
-    <div class="my-take">
-      <div class="my-take-label">Lesson learned the hard way</div>
-      <p>You cannot write a production agent from scratch. You have to grow one. MudiAgent makes the growing part fast.</p>
-    </div>
-  </div>
-
-  <!-- ═══════════ 15 — MODELS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">15 &mdash; MODELS</span>
-    <h3>The framework gives you the shape. The model gives you the taste.</h3>
-    <p>MudiAgent gives you the framework. The model underneath is your choice. Through the tool gateway you can route to 300+ models from one subscription, switching per agent or per task.</p>
-
-    <h4>What we run today</h4>
-    <ul>
-      <li><strong>Claude Opus 4.7</strong> for the creative work: copywriting, voice, hook generation, content drafting, anything where taste and writing quality matter.</li>
-      <li><strong>Codex (GPT 5.5 class)</strong> for the structured work: coding, planning, multi-step workflows, browser automation, scraping, anything where the steps need to be tight and the output predictable.</li>
-    </ul>
-    <p>Run both. Opus writes. Codex builds and plans. MudiAgent makes routing easy. Point each agent at the model that fits the work it does.</p>
-
-    <h4>If you can only run one</h4>
-    <p>The answer depends on what kind of work your fleet is doing. Heavy on content and copy? Start with Claude Opus. Heavy on infrastructure, automation, and engineering workflows? Start with Codex. You can always add the second model later through the same tool gateway.</p>
-  </div>
-
-  <!-- ═══════════ 16 — TRADE-OFFS ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">16 &mdash; HONEST TRADE-OFFS</span>
-    <h3>Where this still breaks</h3>
-    <p>Three real trade-offs. None of these are dealbreakers, but you should know them before you commit.</p>
-
-    <h4>01 &middot; The bundled defaults are also opinions</h4>
-    <p>MudiAgent ships with strong defaults for how memory works, how skills get written, how the agent uses tools. That is the whole pitch. But it also means if you want primitives with explicit control over every step, MudiAgent will feel heavy. A primitives framework is the better fit for that taste. Pick the tool that matches your philosophy.</p>
-
-    <h4>02 &middot; Level 3 and 4 have a real learning curve</h4>
-    <p>Docker, VPS, SSH, the control room folder structure, the orchestrator skills, none of this is "install and go." You should not jump to level 3 if you are not already running MudiAgent at level 1 daily.</p>
-
-    <h4>03 &middot; The model still matters</h4>
-    <p>MudiAgent is a framework that makes a good model great. It does not make a small model into a strategist. Use the strongest models you can afford for the work that matters (your orchestrator, your strategy agent, your brain). Drop to cheaper models for the work that does not (research scraping, draft generation, batch processing).</p>
-
-    <div class="why-it-matters"><strong>None of this is magic.</strong> It is a framework that pays back because the memory persists, the skills accumulate, and the agents stay scoped. Apply it to the wrong-sized model and you get a confused team. Apply it to the right one and you get a team.</div>
-  </div>
-
-  <!-- ═══════════ 17 — RESOURCES ═══════════ -->
-  <div class="tip-card">
-    <span class="tip-number">17 &mdash; RESOURCES</span>
-    <h3>What to read in order</h3>
-    <ul>
-      <li><strong>The official docs.</strong> Start with the install guide, then read the skills page so you understand what ships out of the box.</li>
-      <li><strong>The control room template.</strong> The exact structure described above, ready to clone. Fork it. Make it yours.</li>
-      <li><strong>The community atlas.</strong> A curated map of open source tools, plugins, workspaces, and integrations built on top of the framework. Categorized by domain (memory providers, workspaces, skill registries, deployment, orchestration). Free, weekly updates.</li>
-      <li><strong>The handbook.</strong> A beginner-friendly walkthrough that covers the install, the first agent, and the first cron.</li>
-      <li><strong>Meetups in person.</strong> Worth showing up if there is one near you. You learn more in 90 minutes of side conversations than in a week of reading.</li>
-    </ul>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- ═══════════ CTA ═══════════ -->
-  <section class="cta-section">
-    <h2>In one line</h2>
-    <p>Memory persists. Skills accumulate. Agents stay scoped. The framework pays back.</p>
-    <p>MudiAgent is open source. Most of the community ecosystem is free. Fork, change, make it yours.</p>
   </section>
 
-</div>
+  <hr class="rule">
+
+  <!-- ════════ 11 LEVELS ════════ -->
+  <section>
+    <span class="kicker">11 · Operator levels</span>
+    <h2 class="sec">From one agent <span class="accent">to a full fleet.</span></h2>
+
+    <div class="level">
+      <div class="ln">01</div>
+      <div>
+        <span class="lk">One agent</span>
+        <h3>Your personal MudiAgent</h3>
+        <p class="body" style="margin-top:0;">One agent, lived-in, with a tuned soul and a memory that has started to build. Fill in <code>SOUL.md</code>, <code>MEMORY.md</code>, and <code>USER.md</code>. Connect Telegram or Discord so it lives where you do. Run real tasks. Let it write its own skills. The control room can exist already, documenting that one agent.</p>
+      </div>
+    </div>
+    <div class="level">
+      <div class="ln">02</div>
+      <div>
+        <span class="lk">Direct specialists</span>
+        <h3>Several agents, talked to directly</h3>
+        <p class="body" style="margin-top:0;">Clear role separation, credentials scoped per agent, no orchestrator yet. The trap is reaching for an orchestrator too early. Spin up two or three, run them directly, and add routing only when you find yourself wanting one front door.</p>
+        <div class="callout flat" style="margin-top:18px;"><p><strong>Spin up a new agent when</strong> it needs its own credentials, its own long-term memory, or it owns an ongoing separate role. Otherwise stay with what you have. <strong>Avoid</strong> one mega-agent with every credential mashed together: you lose isolation and clean revocation.</p></div>
+      </div>
+    </div>
+    <div class="level">
+      <div class="ln">03</div>
+      <div>
+        <span class="lk">Orchestrator + specialists</span>
+        <h3>The moment it becomes a team</h3>
+        <p class="body" style="margin-top:0;">Add an orchestrator as the front door. It reads the control room to learn which agents exist, what each does, what needs approval, and what is forbidden. It does not ask, it reads. This is where the control room earns its keep, because the orchestrator is only as good as the docs it reads.</p>
+        <div class="term">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ti">ssh mudiagent</span></div>
+<pre><span class="k">$ ssh mudiagent</span>
+<span class="k">~/vps-agents $</span> docker ps --format "table {{.Names}}\t{{.Status}}"
+
+NAMES                     STATUS
+mudiagent-orchestrator    up 14 hours
+mudiagent-seo             up  8 hours
+mudiagent-cmo             up  8 hours
+mudiagent-outbound        up  4 hours
+mudiagent-life            up 12 hours</pre>
+        </div>
+      </div>
+    </div>
+    <div class="level">
+      <div class="ln">04</div>
+      <div>
+        <span class="lk">Automated team</span>
+        <h3>A marketing department in your terminal</h3>
+        <p class="body" style="margin-top:0;">Same shape as level 3, with recurring workflows. Weekly SEO reports on cron, daily health checks, backup verification without you asking. It shows up to work on its own, files reports, checks itself, and only pings you for the decisions that need taste.</p>
+      </div>
+    </div>
+
+    <div class="callout flat">
+      <p><strong>The control hierarchy:</strong> the control room is for config, docs, runbooks, and governance. It is the admin panel for the fleet, including the orchestrator. It is not where you do work. For work, you talk to a specialist directly, or to the orchestrator when you want one front door.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 12 SETUP ════════ -->
+  <section>
+    <span class="kicker">12 · Setup</span>
+    <h2 class="sec">Point your coding agent at the repo. <span class="accent">Walk away.</span></h2>
+    <p class="lead">A public control-room template holds the exact structure above, plus the skills to set it up for you. You can clone it by hand, but you don't have to. Hand over one VPS provider API key and the agents do the rest.</p>
+
+    <div class="flow">
+      <div class="step"><div class="badge">1</div><div class="body4"><div class="who">You · 5 min</div><h4>Generate a VPS provider API key</h4><p>Sign up, generate a token, drop it in your <code>.env</code>.</p></div></div>
+      <div class="step"><div class="badge">2</div><div class="body4"><div class="who">Agent</div><h4>create-vps skill</h4><p>Spins up a box, generates an SSH key, writes the alias to <code>~/.ssh/config</code> so <code>ssh mudiagent</code> works.</p></div></div>
+      <div class="step"><div class="badge">3</div><div class="body4"><div class="who">Agent</div><h4>setup-control-room skill</h4><p>Installs Node, Docker, your coding agent, and MudiAgent. Clones the repo to <code>/root/agent-control-room</code>.</p></div></div>
+      <div class="step"><div class="badge">4</div><div class="body4"><div class="who">You</div><h4>Finish interactive auth on the VPS</h4><p>Log into your coding agent and MudiAgent.</p></div></div>
+      <div class="step"><div class="badge">5</div><div class="body4"><div class="who">Agent</div><h4>agent-control-room skill</h4><p>Registers your first MudiAgent in the docs, fills in the runbook, writes the env-map. You are now at level 1 with a documented agent.</p></div></div>
+    </div>
+
+    <h3 class="sub">Within ten to fifteen minutes you have</h3>
+    <ul class="list">
+      <li>A fresh VPS with the right tooling installed.</li>
+      <li>The control room cloned at <code>/root/agent-control-room</code>.</li>
+      <li>Bundled skills linked into <code>~/.&lt;coding-agent&gt;/skills</code>.</li>
+      <li>One MudiAgent registered, runbook filled, env-map written.</li>
+      <li>An SSH alias so <code>ssh mudiagent</code> connects instantly.</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 13 API KEYS ════════ -->
+  <section>
+    <span class="kicker">13 · Security</span>
+    <h2 class="sec">API keys, <span class="accent">done right.</span></h2>
+    <p class="lead">Treat the agent like a new hire: its own accounts, scoped access, least privilege. Never your personal credit card.</p>
+    <div class="grid c2">
+      <div class="card"><div class="tag">Never paste into chat</div><p>Don't drop keys into a container's chat. SSH into the container and set them through config, where they don't land in session logs.</p></div>
+      <div class="card"><div class="tag">One key per agent</div><p>Keys saved to <code>/root/.env/&lt;agent&gt;</code>, named per agent. Revoke one agent without touching the others.</p></div>
+      <div class="card"><div class="tag">Least privilege</div><p>Scoped read access by default. A marketing agent never gets finance credentials.</p></div>
+      <div class="card"><div class="tag">Never commit secrets</div><p>The control room documents <em>which</em> keys live where, never the values. <code>.env</code> stays out of git.</p></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 14 FIRST CRON ════════ -->
+  <section>
+    <span class="kicker">14 · The first cron</span>
+    <h2 class="sec">The one cron <span class="accent">to build first.</span></h2>
+    <p class="lead">Before anything fancy, build the nightly backup. If the VPS dies, your shell and memory die with it. With a backup, you spin up again.</p>
+    <div class="callout">
+      <div class="ql">Nightly GitHub sync</div>
+      <p>"Every night at midnight, push everything except secrets to GitHub."</p>
+    </div>
+    <p class="body">That single job is the difference between a setback and a disaster. Everything else (weekly reports, health checks, content runs) comes after the thing that lets you rebuild exists.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 15 PROTOTYPE TO PROD ════════ -->
+  <section>
+    <span class="kicker">15 · Methodology</span>
+    <h2 class="sec">Prototype it. Let it survive a week. <span class="accent">Then walk away.</span></h2>
+    <p class="lead">Most workflows start messy. You discover them by running them, not by designing them in your head.</p>
+    <div class="flow">
+      <div class="step"><div class="badge">1</div><div class="body4"><h4>Prototype in MudiAgent</h4><p>Describe what you want and let it try. It gets most of it wrong on run one. That's fine.</p></div></div>
+      <div class="step"><div class="badge">2</div><div class="body4"><h4>Run it 2–3 times against real work</h4><p>Correct the drift each time. The harness writes the skill as it learns the shape. By run three it's mostly right without coaching.</p></div></div>
+      <div class="step"><div class="badge">3</div><div class="body4"><h4>Fine-tune in a dedicated workspace</h4><p>Tighten prompts, lock routing, add error handling, decide what runs on cron vs. on trigger.</p></div></div>
+      <div class="step"><div class="badge">4</div><div class="body4"><h4>Deploy to a VPS on a schedule</h4><p>Once it survives a week without babysitting, push it to its own container, set the cron, walk away.</p></div></div>
+    </div>
+    <div class="callout"><div class="ql">The lesson</div><p>You cannot write a production agent from scratch. You have to grow one. MudiAgent makes the growing fast.</p></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 16 MODELS ════════ -->
+  <section>
+    <span class="kicker">16 · Models</span>
+    <h2 class="sec">The framework gives you the shape. <span class="accent">The model gives you the taste.</span></h2>
+    <p class="lead">Route to 300+ models from one subscription through the tool gateway, switching per agent or per task.</p>
+    <div class="grid c2">
+      <div class="card"><div class="tag">Creative work</div><h4>Claude Opus 4.7</h4><p>Copywriting, voice, hooks, content drafting. Anything where taste and writing quality matter.</p></div>
+      <div class="card"><div class="tag">Structured work</div><h4>Codex (GPT 5.5 class)</h4><p>Coding, planning, multi-step workflows, browser automation, scraping. Anything where the steps must be tight.</p></div>
+    </div>
+    <p class="body">Run both. Opus writes, Codex builds and plans. If you can only run one: heavy on content, start with Opus; heavy on infrastructure and automation, start with Codex. Add the second later through the same gateway.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 17 TRADE-OFFS ════════ -->
+  <section>
+    <span class="kicker">17 · Honest trade-offs</span>
+    <h2 class="sec">Where this <span class="accent">still breaks.</span></h2>
+    <div class="grid c3">
+      <div class="card ncard"><span class="num">i</span><h4>The defaults are opinions</h4><p>Strong defaults for memory, skills, and tool use are the whole pitch. But if you want explicit control over every step, this will feel heavy. A primitives framework fits that taste better.</p></div>
+      <div class="card ncard"><span class="num">ii</span><h4>Levels 3 and 4 have a curve</h4><p>Docker, VPS, SSH, the control-room structure, orchestrator skills. None of it is "install and go." Don't jump to level 3 if you aren't running level 1 daily.</p></div>
+      <div class="card ncard"><span class="num">iii</span><h4>The model still matters</h4><p>The framework makes a good model great. It won't make a small model a strategist. Use the strongest model you can afford for the work that matters; drop to cheaper ones for scraping and batch jobs.</p></div>
+    </div>
+    <div class="callout flat"><p><strong>None of this is magic.</strong> It pays back because memory persists, skills accumulate, and agents stay scoped. Apply it to the wrong-sized model and you get a confused team. Apply it to the right one and you get a team.</p></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ════════ 18 RESOURCES ════════ -->
+  <section>
+    <span class="kicker">18 · Resources</span>
+    <h2 class="sec">What to read, <span class="accent">in order.</span></h2>
+    <ul class="list">
+      <li><strong>The official docs.</strong> Start with the install guide, then the skills page to see what ships out of the box.</li>
+      <li><strong>The control-room template.</strong> The exact structure above, ready to clone. Fork it, make it yours.</li>
+      <li><strong>The community atlas.</strong> A curated map of open-source tools, plugins, and integrations built on the framework. Free, weekly updates.</li>
+      <li><strong>The handbook.</strong> A beginner walkthrough: the install, the first agent, the first cron.</li>
+      <li><strong>Meetups in person.</strong> Worth showing up if there's one near you. Ninety minutes of side conversations beats a week of reading.</li>
+    </ul>
+  </section>
+
+  <hr class="rule clay">
+
+  <!-- ════════ CTA ════════ -->
+  <section class="cta">
+    <h2>Memory persists. Skills accumulate. Agents stay scoped. The framework pays back.</h2>
+    <p>MudiAgent is open source and most of the community ecosystem is free. Fork it, change it, make it yours.</p>
+    <div class="chips">
+      <span class="chip">Operator</span>
+      <span class="chip">VPS</span>
+      <span class="chip">Docker</span>
+      <span class="chip">SEO</span>
+      <span class="chip">Marketing ops</span>
+      <span class="chip">Self-improving</span>
+    </div>
+  </section>
+
+</article>
 </body>
 </html>

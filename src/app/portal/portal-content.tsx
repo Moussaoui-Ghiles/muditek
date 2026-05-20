@@ -146,8 +146,8 @@ function SectionHeading({
   return (
     <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.07] pb-5 md:flex-row md:items-end md:justify-between">
       <div>
-        <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#3ECF8E]">
-          <span aria-hidden className="h-px w-7 bg-[#3ECF8E]/50" />
+        <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
+          <span aria-hidden className="h-px w-7 bg-primary/60" />
           {kicker}
         </p>
         <h2 className="mt-3 text-[24px] font-black leading-none tracking-[-0.02em] text-white md:text-[28px]">
@@ -157,7 +157,7 @@ function SectionHeading({
       {action ? (
         <Link
           href={action.href}
-          className="group inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-[#3ECF8E] transition-colors hover:text-[#62dca9]"
+          className="group inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-primary transition-opacity hover:opacity-80"
         >
           {action.label}
           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -174,9 +174,9 @@ function SkillRow({ item, access }: { item: ContentItem; access: PortalAccess })
   return (
     <Link
       href={itemHref(item)}
-      className="group flex min-h-[92px] items-center gap-4 rounded-[10px] border border-white/[0.08] bg-card/40 px-5 py-4 transition-colors hover:border-[#3ECF8E]/30 hover:bg-white/[0.03]"
+      className="group flex min-h-[92px] items-center gap-4 rounded-[10px] border border-white/[0.08] bg-card/40 px-5 py-4 transition-colors hover:border-white/20 hover:bg-white/[0.03]"
     >
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-[#3ECF8E]">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-white/80">
         <Wand2 className="size-[17px]" />
       </span>
       <div className="min-w-0 flex-1">
@@ -191,7 +191,7 @@ function SkillRow({ item, access }: { item: ContentItem; access: PortalAccess })
           <div className="mt-0.5 truncate text-[12.5px] text-white/70">{item.description}</div>
         ) : null}
       </div>
-      <span className="shrink-0 text-[12px] font-bold text-[#3ECF8E] transition-colors group-hover:text-white">
+      <span className="shrink-0 text-white/70 transition-colors group-hover:text-primary">
         <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
       </span>
     </Link>
@@ -206,7 +206,7 @@ function ResourceCard({ item, access }: { item: ContentItem; access: PortalAcces
   return (
     <Link
       href={itemHref(item)}
-      className="card-lift group flex h-full flex-col overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/50 transition-colors hover:border-[#3ECF8E]/30"
+      className="card-lift group flex h-full flex-col overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/50 transition-colors hover:border-white/20"
     >
       <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.06] bg-white/[0.03]">
         {item.thumbnail_url ? (
@@ -240,7 +240,7 @@ function ResourceCard({ item, access }: { item: ContentItem; access: PortalAcces
         {item.description ? (
           <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/70">{item.description}</p>
         ) : null}
-        <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[12px] font-bold text-[#3ECF8E] transition-colors group-hover:text-white">
+        <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[12px] font-bold text-white/85 transition-colors group-hover:text-primary">
           {accessible ? "Open" : "Preview"}
           <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </span>
@@ -254,10 +254,10 @@ function ToolCard({ tool }: { tool: (typeof PORTAL_TOOLS)[number] }) {
   return (
     <Link
       href={`/portal/tools/${encodeURIComponent(tool.slug)}`}
-      className="card-lift group flex h-full flex-col rounded-[10px] border border-white/[0.08] bg-card/50 p-6 transition-colors hover:border-[#3ECF8E]/30"
+      className="card-lift group flex h-full flex-col rounded-[10px] border border-white/[0.08] bg-card/50 p-6 transition-colors hover:border-white/20"
     >
       <div className="flex items-center justify-between">
-        <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-[#3ECF8E]">
+        <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-white/85">
           <Wrench className="size-[18px]" />
         </span>
         <span className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/70">
@@ -269,7 +269,7 @@ function ToolCard({ tool }: { tool: (typeof PORTAL_TOOLS)[number] }) {
       </h3>
       <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/70">{tool.short}</p>
       <span className="mt-auto pt-6">
-        <span className="inline-flex items-center gap-2 rounded-[8px] border border-[#3ECF8E]/30 bg-[#3ECF8E]/10 px-4 py-2.5 text-[12px] font-bold text-[#3ECF8E] transition-colors group-hover:bg-[#3ECF8E]/20">
+        <span className="inline-flex items-center gap-2 rounded-[8px] border border-white/15 bg-white/[0.04] px-4 py-2.5 text-[12px] font-bold text-white transition-colors group-hover:border-primary/40 group-hover:text-primary">
           Open tool
           <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </span>
@@ -321,7 +321,7 @@ export default function PortalHomeContent({
       <section className="relative overflow-hidden border-b border-white/[0.06]">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(62,207,142,0.07),transparent_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]"
         />
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-12 sm:px-6 md:pb-16 md:pt-16 lg:px-10">
           {hasHero ? (
@@ -330,8 +330,8 @@ export default function PortalHomeContent({
                 Welcome back, {displayName}.
               </p>
               {hero!.eyebrow ? (
-                <p className="reveal reveal-delay-1 mt-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#3ECF8E]">
-                  <span aria-hidden className="h-px w-8 bg-[#3ECF8E]/50" />
+                <p className="reveal reveal-delay-1 mt-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
+                  <span aria-hidden className="h-px w-8 bg-primary/60" />
                   {hero!.eyebrow}
                 </p>
               ) : null}
@@ -348,7 +348,7 @@ export default function PortalHomeContent({
               {hero!.ctaLabel && hero!.ctaHref ? (
                 <a
                   href={hero!.ctaHref}
-                  className="btn-press reveal reveal-delay-3 mt-7 inline-flex items-center gap-2 rounded-[8px] bg-[#3ECF8E] px-6 py-3.5 text-[13px] font-black uppercase tracking-[0.12em] text-[#0a0a0c]"
+                  className="btn-press reveal reveal-delay-3 mt-7 inline-flex items-center gap-2 rounded-[8px] bg-primary px-6 py-3.5 text-[13px] font-black uppercase tracking-[0.12em] text-primary-foreground"
                 >
                   {hero!.ctaLabel}
                   <ArrowRight className="size-4" />
@@ -430,9 +430,9 @@ export default function PortalHomeContent({
             <InView>
               <Link
                 href={`/portal/newsletter/${encodeURIComponent(latestIssue.slug)}`}
-                className="card-lift group grid gap-5 rounded-[10px] border border-white/[0.08] bg-card/50 p-6 transition-colors hover:border-[#3ECF8E]/30 md:grid-cols-[auto_1fr_auto] md:items-center"
+                className="card-lift group grid gap-5 rounded-[10px] border border-white/[0.08] bg-card/50 p-6 transition-colors hover:border-white/20 md:grid-cols-[auto_1fr_auto] md:items-center"
               >
-                <span className="flex size-12 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-[#3ECF8E]">
+                <span className="flex size-12 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-white/85">
                   <Newspaper className="size-5" />
                 </span>
                 <div className="min-w-0">
@@ -446,7 +446,7 @@ export default function PortalHomeContent({
                     {latestIssue.subject}
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#3ECF8E] transition-colors group-hover:text-white">
+                <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-white/85 transition-colors group-hover:text-primary">
                   Read
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>

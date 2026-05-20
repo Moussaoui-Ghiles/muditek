@@ -210,7 +210,7 @@ function HtmlAssetFrame({
       src={src}
       sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
       allow="clipboard-write"
-      className="block w-full rounded-[2px] border border-white/[0.08] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.32)]"
+      className="block w-full border-0 bg-white"
       style={{ height }}
     />
   );
@@ -373,7 +373,7 @@ export default function AssetDetailContent({
       </section>
 
       {/* BODY */}
-      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
+      <div className={html ? "w-full pb-24 pt-4" : "mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10"}>
         {showDownloadCta && downloadHref && actionLabel && (
           <ScrollReveal>
           <section className="mb-12">
@@ -421,7 +421,7 @@ export default function AssetDetailContent({
         <section>
           {html ? (
             <>
-              <div className="mb-5 flex items-center justify-between gap-4">
+              <div className="mx-auto mb-4 flex w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
                 <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
                   <span aria-hidden className="h-px w-6 bg-white/20" />
                   Read in portal

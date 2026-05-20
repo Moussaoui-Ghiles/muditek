@@ -66,7 +66,7 @@ function normalizeStandalonePlaybook(html: string): string {
   const withBodyReset = /<\/head>/i.test(html)
     ? html.replace(
         /<\/head>/i,
-        `<style>html,body{margin:0;padding:0;background:#0a0a0a;}</style></head>`
+        `<style>html,body{margin:0;padding:0;background:#0a0a0a;overflow-x:hidden;}.playbook-scaler{min-height:100vh;}</style></head>`
       )
     : html;
 

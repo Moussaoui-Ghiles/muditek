@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -9,7 +9,6 @@ import {
   Lock,
   Newspaper,
   Package,
-  Sparkles,
   Wand2,
   Wrench,
 } from "lucide-react";
@@ -93,165 +92,238 @@ function formatShortDate(date: Date | string | null): string {
   return d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short", day: "numeric" });
 }
 
-function latestTitle(items: ContentItem[], fallback: string): string {
-  const latest = [...items].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  )[0];
-  return latest?.title || fallback;
-}
+/* ─── Scroll reveal: toggles the globals.css .sr / .sr.visible system ─── */
+function InView({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
 
-function StatPill({ label, value }: { label: string; value: number | string }) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setVisible(true);
+            io.disconnect();
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="rounded-[2px] border border-white/[0.07] bg-white/[0.025] px-4 py-3">
-      <div className="font-mono text-[20px] font-semibold leading-none tracking-[-0.02em] text-white">
-        {value}
-      </div>
-      <div className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-white/45">
-        {label}
-      </div>
+    <div
+      ref={ref}
+      className={`sr ${visible ? "visible" : ""} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
     </div>
   );
 }
 
-function SectionKicker({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.26em] text-white/55">
-      <span aria-hidden className="h-px w-7 bg-white/20" />
-      {children}
-    </p>
-  );
-}
-
-function CategoryTile({
-  href,
+function SectionHeading({
+  kicker,
   title,
-  body,
-  count,
-  latest,
-  icon: Icon,
-  locked,
+  action,
 }: {
-  href: string;
+  kicker: string;
   title: string;
-  body: string;
-  count: number;
-  latest: string;
-  icon: typeof BookText;
-  locked?: boolean;
+  action?: { href: string; label: string };
 }) {
   return (
-    <Link
-      href={href}
-      className="group relative isolate min-h-[220px] overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.35] p-5 transition-all duration-500 hover:border-white/[0.16] hover:bg-card/[0.55]"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_260px_at_20%_0%,rgba(245,204,120,0.10),transparent_60%)] opacity-70 transition-opacity group-hover:opacity-100" />
-      <div className="relative flex h-full flex-col justify-between gap-8">
-        <div>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex size-9 items-center justify-center rounded-[2px] border border-white/[0.08] bg-black/25 text-primary">
-              <Icon className="size-4" />
-            </div>
-            {locked ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
-                <Lock className="size-3" />
-                MudiKit
-              </span>
-            ) : null}
-          </div>
-          <h2 className="mt-5 text-[25px] font-black leading-[1] tracking-[-0.025em] text-white">
-            {title}
-          </h2>
-          <p className="mt-3 max-w-[34ch] text-[13.5px] leading-6 text-white/58">{body}</p>
-        </div>
-        <div className="border-t border-white/[0.07] pt-4">
-          <div className="flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <div className="font-mono text-[22px] font-semibold leading-none text-white">{count}</div>
-              <div className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-white/42">
-                Items
-              </div>
-            </div>
-            <div className="min-w-0 flex-1 text-right">
-              <div className="truncate text-[12.5px] font-medium text-white/75">{latest}</div>
-              <div className="mt-1 inline-flex items-center gap-1 text-[11.5px] font-semibold text-primary">
-                Open <ArrowRight className="size-3" />
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.06] pb-5 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.26em] text-primary">
+          <span aria-hidden className="h-px w-7 bg-primary/60" />
+          {kicker}
+        </p>
+        <h2 className="mt-3 text-[26px] font-black leading-none tracking-[-0.025em] text-foreground md:text-[30px]">
+          {title}
+        </h2>
       </div>
-    </Link>
+      {action ? (
+        <Link
+          href={action.href}
+          className="group inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-primary"
+        >
+          {action.label}
+          <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      ) : null}
+    </div>
   );
 }
 
-function DropCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
+/* ─── Skill card: no thumbnail (skills are instruction files), icon-led ─── */
+function SkillCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
   const accessible = isAccessible(item, access);
   const date = formatShortDate(item.created_at);
 
   return (
     <Link
       href={itemHref(item)}
-      className="group relative isolate overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.35] transition-all duration-500 hover:border-white/[0.16] hover:bg-card/[0.55]"
+      className="card-lift group relative isolate flex min-h-[210px] flex-col justify-between overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/60 p-6 transition-colors hover:border-primary/40"
     >
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.06] bg-white/[0.03]">
-        {item.thumbnail_url ? (
-          <img
-            src={item.thumbnail_url}
-            alt=""
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-            loading="lazy"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(450px_220px_at_10%_0%,rgba(245,204,120,0.16),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01))]" />
-        )}
-        {!accessible && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
-            <Lock className="size-5 text-white/85" />
-          </div>
-        )}
-      </div>
-      <div className="p-5">
-        <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/45">
-          <span>{categoryLabel(item)}</span>
-          {date && <span>{date}</span>}
+      <div className="pointer-events-none absolute -right-16 -top-16 size-44 rounded-full bg-primary/10 blur-[70px] transition-opacity duration-500 group-hover:opacity-100 opacity-70" />
+      <div className="relative">
+        <div className="flex items-center justify-between">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/[0.08] bg-black/30 text-primary">
+            <Wand2 className="size-[18px]" />
+          </span>
+          {!accessible ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/80">
+              <Lock className="size-3" />
+              MudiKit
+            </span>
+          ) : null}
         </div>
-        <h3 className="mt-3 line-clamp-2 text-[17px] font-semibold leading-[1.2] tracking-[-0.01em] text-white">
+        <h3 className="mt-5 line-clamp-2 text-[18px] font-bold leading-[1.25] tracking-[-0.01em] text-foreground">
           {item.title}
         </h3>
-        {item.description && (
-          <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/55">{item.description}</p>
-        )}
-        <div className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold text-primary">
+        {item.description ? (
+          <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/70">{item.description}</p>
+        ) : null}
+      </div>
+      <div className="relative mt-6 flex items-center justify-between border-t border-white/[0.06] pt-4">
+        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+          Skill{date ? ` · ${date}` : ""}
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-primary">
           {accessible ? "Open" : "Preview"}
           <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </div>
+        </span>
       </div>
     </Link>
   );
 }
 
-function NewsletterStrip({ issue }: { issue: NewsletterIssue }) {
-  const date = formatShortDate(issue.sent_at);
+/* ─── Resource card: uses the real cover thumbnail ─── */
+function ResourceCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
+  const accessible = isAccessible(item, access);
+  const date = formatShortDate(item.created_at);
 
   return (
     <Link
-      href={`/portal/newsletter/${encodeURIComponent(issue.slug)}`}
-      className="group relative isolate grid gap-5 overflow-hidden rounded-[2px] border border-white/[0.08] bg-white/[0.025] p-5 transition-all duration-500 hover:border-white/[0.16] hover:bg-white/[0.04] md:grid-cols-[auto_1fr_auto] md:items-center"
+      href={itemHref(item)}
+      className="card-lift group relative isolate flex flex-col overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/60 transition-colors hover:border-primary/40"
     >
-      <div className="flex size-11 items-center justify-center rounded-[2px] border border-white/[0.08] bg-black/20 text-primary">
-        <Newspaper className="size-4" />
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.06] bg-white/[0.03]">
+        {item.thumbnail_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.thumbnail_url}
+            alt=""
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[radial-gradient(420px_220px_at_15%_0%,rgba(245,158,11,0.18),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01))]" />
+        )}
+        {!accessible ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
+              <Lock className="size-3.5" />
+              MudiKit
+            </span>
+          </div>
+        ) : null}
       </div>
-      <div className="min-w-0">
-        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/45">
-          Latest article{date ? ` - ${date}` : ""}
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
+          <span>{categoryLabel(item)}</span>
+          {date ? <span>{date}</span> : null}
         </div>
-        <div className="mt-1 truncate text-[17px] font-semibold tracking-[-0.01em] text-white">
-          {issue.subject}
-        </div>
+        <h3 className="mt-3 line-clamp-2 text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-foreground">
+          {item.title}
+        </h3>
+        {item.description ? (
+          <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/70">{item.description}</p>
+        ) : null}
+        <span className="mt-5 inline-flex items-center gap-1.5 text-[12px] font-bold text-primary">
+          {accessible ? "Open" : "Preview"}
+          <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </span>
       </div>
-      <span className="inline-flex items-center gap-2 text-[12px] font-semibold text-primary">
-        Read
-        <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
+function ItemCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
+  if (item.category === SKILL_CATEGORY) return <SkillCard item={item} access={access} />;
+  return <ResourceCard item={item} access={access} />;
+}
+
+function BrowseTile({
+  href,
+  title,
+  caption,
+  icon: Icon,
+  locked,
+}: {
+  href: string;
+  title: string;
+  caption: string;
+  icon: typeof BookText;
+  locked?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className="card-lift group relative flex items-center gap-4 overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/50 p-5 transition-colors hover:border-primary/40"
+    >
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] border border-white/[0.08] bg-black/30 text-primary">
+        <Icon className="size-[18px]" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-[16px] font-bold tracking-[-0.01em] text-foreground">{title}</span>
+          {locked ? <Lock className="size-3 text-white/70" /> : null}
+        </div>
+        <p className="mt-0.5 truncate text-[12.5px] text-white/70">{caption}</p>
+      </div>
+      <ArrowRight className="size-4 shrink-0 text-white/70 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+    </Link>
+  );
+}
+
+function ToolCard({ tool }: { tool: (typeof PORTAL_TOOLS)[number] }) {
+  return (
+    <Link
+      href={`/portal/tools/${encodeURIComponent(tool.slug)}`}
+      className="card-lift group relative flex h-full flex-col rounded-[10px] border border-white/[0.08] bg-card/55 p-6 transition-colors hover:border-primary/40"
+    >
+      <div className="flex items-center justify-between">
+        <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/[0.08] bg-black/30 text-primary">
+          <Wrench className="size-[18px]" />
+        </span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
+          {tool.category}
+        </span>
+      </div>
+      <h3 className="mt-5 text-[17px] font-bold leading-[1.25] tracking-[-0.01em] text-foreground">
+        {tool.title}
+      </h3>
+      <p className="mt-2 line-clamp-2 text-[13px] leading-6 text-white/70">{tool.short}</p>
+      <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[12px] font-bold text-primary">
+        Open tool
+        <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </span>
     </Link>
   );
@@ -264,8 +336,6 @@ export default function PortalHomeContent({
   paidItems,
   playbookGuideItems,
   issues,
-  thisWeek,
-  upcoming,
   hero,
 }: HomeContentProps) {
   const isFreeOnly = !access.isMudikit && !access.isAdmin;
@@ -280,244 +350,198 @@ export default function PortalHomeContent({
     [allItems]
   );
 
-  const playbooks = useMemo(
+  const resources = useMemo(
     () => playbookGuideItems.filter((item) => isPlaybookResourceCategory(item.category)),
     [playbookGuideItems]
   );
 
-  const paidCount = useMemo(
+  const byDateDesc = (items: ContentItem[]) =>
+    [...items].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+  // Primary grid: newest real items, mixing skills (icon cards) and resources (thumbnails).
+  const latest = useMemo(
     () =>
-      allItems.filter((item) => !item.is_free).length +
-      PORTAL_TOOLS.filter((tool) => tool.access === "mudikit").length,
-    [allItems]
+      uniqueItems([
+        ...byDateDesc(resources).slice(0, 3),
+        ...byDateDesc(skills).slice(0, 3),
+        ...byDateDesc(allItems),
+      ]).slice(0, 6),
+    [allItems, resources, skills]
   );
 
-  const recent = useMemo(
-    () => {
-      const byDate = (items: ContentItem[]) =>
-        [...items].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-
-      return uniqueItems([
-        ...byDate(playbooks).slice(0, 2),
-        ...byDate(skills).slice(0, 2),
-        ...byDate(paidItems).slice(0, 2),
-        ...byDate(allItems),
-      ]).slice(0, 6);
-    },
-    [allItems, paidItems, playbooks, skills]
+  const tools = useMemo(
+    () => PORTAL_TOOLS.filter((tool) => tool.access === "free" || !isFreeOnly),
+    [isFreeOnly]
   );
 
   const latestIssue = issues[0];
-  const latestTool = PORTAL_TOOLS[0]?.title || "Tool shelf";
+  const hasHero = !!(hero && hero.title);
 
   return (
-    <main className="relative">
-      <section className="relative overflow-hidden border-b border-white/[0.04]">
-        <div className="mesh-subtle pointer-events-none absolute inset-0 opacity-60" />
-        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-[1.25fr_0.75fr] md:items-end md:gap-14 md:pb-18 md:pt-18 lg:px-10">
-          <div>
-            <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-primary">
-              <span aria-hidden className="h-px w-8 bg-primary/50" />
-              Portal home
-            </p>
-            <h1 className="mt-5 text-[42px] font-black leading-[0.94] tracking-[-0.04em] text-white sm:text-[56px] md:text-[72px]">
-              Hey, {displayName}.
-            </h1>
-            <p className="mt-6 max-w-[58ch] text-[15px] leading-[1.75] text-white/65">
-              Your Muditek library is here: skills, playbooks, tools, and newsletter articles. Everything opens inside the portal so every link can bring people back into the system.
-            </p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
-            <StatPill label="Library" value={allItems.length + PORTAL_TOOLS.length} />
-            {paidCount > 0 && <StatPill label="MudiKit" value={paidCount} />}
-            <StatPill label="Articles" value={issues.length} />
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 sm:px-6 lg:px-10">
-        {hero?.title ? (
-          <section className="mb-12 relative isolate overflow-hidden rounded-[2px] border border-primary/20 bg-card/[0.42] p-7 md:p-9">
-            <div className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full bg-primary/10 blur-[90px]" />
-            <div className="relative max-w-3xl">
-              {hero.eyebrow && (
-                <p className="text-[11px] font-black uppercase tracking-[0.25em] text-primary">
-                  {hero.eyebrow}
+    <main className="relative noise">
+      {/* ── Hero band ── */}
+      <section className="relative overflow-hidden border-b border-white/[0.05]">
+        <div className="mesh-subtle pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-12 sm:px-6 md:pb-16 md:pt-16 lg:px-10">
+          {hasHero ? (
+            <div className="max-w-3xl">
+              <p className="reveal text-[13px] font-bold tracking-[-0.01em] text-white/70">
+                Welcome back, {displayName}.
+              </p>
+              {hero!.eyebrow ? (
+                <p className="reveal reveal-delay-1 mt-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.26em] text-primary">
+                  <span aria-hidden className="h-px w-8 bg-primary/60" />
+                  {hero!.eyebrow}
                 </p>
-              )}
-              <h2 className="mt-3 text-[34px] font-black leading-[1] tracking-[-0.03em] text-white md:text-[46px]">
-                {hero.title}
-              </h2>
-              {hero.body && (
-                <div className="mt-4 space-y-3 text-[14.5px] leading-7 text-white/68">
-                  {hero.body.split(/\n\s*\n/).map((para, index) => (
+              ) : null}
+              <h1 className="reveal reveal-delay-1 mt-4 text-[40px] font-black leading-[0.96] tracking-[-0.035em] text-foreground sm:text-[52px] md:text-[64px]">
+                {hero!.title}
+              </h1>
+              {hero!.body ? (
+                <div className="reveal reveal-delay-2 mt-6 max-w-2xl space-y-3 text-[15.5px] leading-[1.7] text-white/75">
+                  {hero!.body.split(/\n\s*\n/).map((para, index) => (
                     <p key={index}>{para}</p>
                   ))}
                 </div>
-              )}
-              {hero.ctaLabel && hero.ctaHref && (
+              ) : null}
+              {hero!.ctaLabel && hero!.ctaHref ? (
                 <a
-                  href={hero.ctaHref}
-                  className="mt-6 inline-flex items-center gap-2 rounded-[2px] bg-white px-5 py-3 text-[12px] font-black uppercase tracking-[0.16em] text-[#0a0a0c]"
+                  href={hero!.ctaHref}
+                  className="btn-press reveal reveal-delay-3 mt-7 inline-flex items-center gap-2 rounded-[8px] bg-primary px-6 py-3.5 text-[13px] font-black uppercase tracking-[0.14em] text-primary-foreground"
                 >
-                  {hero.ctaLabel}
-                  <ArrowRight className="size-3.5" />
+                  {hero!.ctaLabel}
+                  <ArrowRight className="size-4" />
                 </a>
-              )}
+              ) : null}
+            </div>
+          ) : (
+            <div className="max-w-3xl">
+              <h1 className="reveal text-[40px] font-black leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[56px] md:text-[68px]">
+                Hey, {displayName}.
+              </h1>
+              <p className="reveal reveal-delay-1 mt-6 max-w-2xl text-[16px] leading-[1.7] text-white/75">
+                Your Muditek library: skills, resources, tools, and every newsletter issue. Everything
+                opens inside the portal.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
+        {/* ── Latest in library (primary, thumbnail-led) ── */}
+        {latest.length > 0 ? (
+          <section>
+            <SectionHeading
+              kicker="Library"
+              title="Latest in your library."
+              action={{ href: "/portal/playbooks", label: "Browse all" }}
+            />
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {latest.map((item, index) => (
+                <InView key={`${item.id}-${item.slug}`} delay={(index % 3) * 80}>
+                  <ItemCard item={item} access={access} />
+                </InView>
+              ))}
             </div>
           </section>
         ) : null}
 
-        <section>
-          <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.05] pb-5 md:flex-row md:items-end md:justify-between">
-            <div>
-              <SectionKicker>Library</SectionKicker>
-              <h2 className="mt-3 text-[28px] font-black leading-none tracking-[-0.025em] text-white">
-                Choose the shelf you need.
-              </h2>
-            </div>
-            {isFreeOnly && paidCount > 0 && (
-              <Link
+        {/* ── Browse shelves ── */}
+        <section className={latest.length > 0 ? "mt-16" : ""}>
+          <InView>
+            <p className="mb-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.26em] text-primary">
+              <span aria-hidden className="h-px w-7 bg-primary/60" />
+              Browse
+            </p>
+          </InView>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <InView delay={0}>
+              <BrowseTile
+                href="/portal/skills"
+                title="Skills"
+                caption="Agent instruction files"
+                icon={Wand2}
+              />
+            </InView>
+            <InView delay={70}>
+              <BrowseTile
+                href="/portal/playbooks"
+                title="Resources"
+                caption="Guides, templates, scorecards"
+                icon={BookText}
+              />
+            </InView>
+            <InView delay={140}>
+              <BrowseTile
+                href="/portal/tools"
+                title="Tools"
+                caption="Interactive workbenches"
+                icon={Wrench}
+              />
+            </InView>
+            <InView delay={210}>
+              <BrowseTile
                 href="/portal/mudikit"
-                className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-primary"
-              >
-                {paidCount} MudiKit items locked
-                <ArrowRight className="size-3.5" />
-              </Link>
-            )}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <CategoryTile
-              href="/portal/skills"
-              title="Skills"
-              body="Reusable agent instructions and operating files for Claude, Codex, GTM, and research."
-              count={skills.length}
-              latest={latestTitle(skills, "Skill shelf")}
-              icon={Wand2}
-            />
-            <CategoryTile
-              href="/portal/playbooks"
-              title="Resources"
-              body="Guides, scorecards, templates, and implementation docs grouped by motion."
-              count={playbooks.length}
-              latest={latestTitle(playbooks, "Resource shelf")}
-              icon={BookText}
-            />
-            <CategoryTile
-              href="/portal/tools"
-              title="Tools"
-              body="Live workbenches that run searches, calculators, and lead workflows inside the portal."
-              count={PORTAL_TOOLS.length}
-              latest={latestTool}
-              icon={Wrench}
-            />
-            <CategoryTile
-              href="/portal/mudikit"
-              title="MudiKit"
-              body="The paid shelf for deeper skills, resource drops, and subscriber tools."
-              count={paidCount}
-              latest={latestTitle(paidItems, "MudiKit shelf")}
-              icon={Package}
-              locked={isFreeOnly}
-            />
+                title="MudiKit"
+                caption="The paid shelf"
+                icon={Package}
+                locked={isFreeOnly}
+              />
+            </InView>
           </div>
         </section>
 
+        {/* ── Tools ── */}
+        {tools.length > 0 ? (
+          <section className="mt-16">
+            <SectionHeading
+              kicker="Tools"
+              title="Run them inside the portal."
+              action={{ href: "/portal/tools", label: "All tools" }}
+            />
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {tools.map((tool, index) => (
+                <InView key={tool.slug} delay={(index % 3) * 80}>
+                  <ToolCard tool={tool} />
+                </InView>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {/* ── Newsletter ── */}
         {latestIssue ? (
-          <section className="mt-12">
-            <NewsletterStrip issue={latestIssue} />
-          </section>
-        ) : null}
-
-        {thisWeek ? (
-          <section className="mt-12 grid gap-5 border-y border-white/[0.06] py-8 md:grid-cols-[0.65fr_1fr]">
-            <SectionKicker>Note</SectionKicker>
-            <div>
-              <p className="text-[16px] leading-8 text-white/82">{thisWeek}</p>
-              <a
-                href="mailto:biz@ghiless.com?subject=Muditek%20portal%20-%20what%20I%27m%20solving"
-                className="mt-4 inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-primary"
-              >
-                Reply directly
-                <ArrowRight className="size-3.5" />
-              </a>
-            </div>
-          </section>
-        ) : null}
-
-        {recent.length > 0 && (
-          <section className="mt-14">
-            <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.05] pb-5">
-              <div>
-                <SectionKicker>Recent drops</SectionKicker>
-                <h2 className="mt-3 text-[28px] font-black leading-none tracking-[-0.025em] text-white">
-                  Fresh items in the portal.
-                </h2>
-              </div>
+          <section className="mt-16">
+            <InView>
               <Link
-                href="/portal/playbooks"
-                className="hidden items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-primary sm:inline-flex"
+                href={`/portal/newsletter/${encodeURIComponent(latestIssue.slug)}`}
+                className="card-lift group relative grid gap-5 overflow-hidden rounded-[10px] border border-white/[0.08] bg-card/55 p-6 transition-colors hover:border-primary/40 md:grid-cols-[auto_1fr_auto] md:items-center"
               >
-                Browse library
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {recent.map((item) => (
-                <DropCard key={`${item.id}-${item.slug}`} item={item} access={access} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {upcoming.length > 0 && (
-          <section className="mt-14">
-            <div className="mb-6 border-b border-white/[0.05] pb-5">
-              <SectionKicker>Coming next</SectionKicker>
-            </div>
-            <div className="grid gap-3 md:grid-cols-3">
-              {upcoming.slice(0, 3).map((item) => (
-                <div key={`${item.date}-${item.title}`} className="rounded-[2px] border border-white/[0.08] bg-white/[0.025] p-5">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/45">
-                    <Sparkles className="size-3 text-primary" />
-                    {item.type}
+                <span className="flex size-12 items-center justify-center rounded-[8px] border border-white/[0.08] bg-black/30 text-primary">
+                  <Newspaper className="size-5" />
+                </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+                    From the newsletter
+                    {formatShortDate(latestIssue.sent_at)
+                      ? ` · ${formatShortDate(latestIssue.sent_at)}`
+                      : ""}
                   </div>
-                  <h3 className="mt-3 text-[16px] font-semibold leading-snug text-white">{item.title}</h3>
-                  <p className="mt-2 text-[12px] text-white/45">{item.date}</p>
+                  <div className="mt-1.5 truncate text-[19px] font-bold tracking-[-0.01em] text-foreground">
+                    {latestIssue.subject}
+                  </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {isFreeOnly && paidCount > 0 && (
-          <section className="mt-16 overflow-hidden rounded-[2px] border border-primary/25 bg-primary/[0.08] p-7 md:p-9">
-            <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-              <div>
-                <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.24em] text-primary">
-                  <Lock className="size-3.5" />
-                  MudiKit
-                </p>
-                <h2 className="mt-4 max-w-2xl text-[28px] font-black leading-[1] tracking-[-0.025em] text-white md:text-[36px]">
-                  Unlock the paid shelf when the library is useful enough.
-                </h2>
-                <p className="mt-4 max-w-2xl text-[14px] leading-7 text-white/62">
-                  Paid drops live here too, with the same sidebar and account flow. No second product area, no separate library.
-                </p>
-              </div>
-              <Link
-                href="/portal/mudikit"
-                className="inline-flex items-center justify-center gap-2 rounded-[2px] bg-white px-7 py-4 text-[12px] font-black uppercase tracking-[0.18em] text-[#0a0a0c]"
-              >
-                View MudiKit
-                <ArrowRight className="size-3.5" />
+                <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-primary">
+                  Read
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </Link>
-            </div>
+            </InView>
           </section>
-        )}
+        ) : null}
       </div>
     </main>
   );

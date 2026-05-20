@@ -58,6 +58,27 @@ function injectRuntime(html: string, frameId: string): string {
   return `${html}${runtime}`;
 }
 
+function normalizeStandalonePlaybook(html: string): string {
+  if (!/\.playbook-scaler\b/.test(html) || /\bclass=["'][^"']*\bplaybook-scaler\b/i.test(html)) {
+    return html;
+  }
+
+  const withBodyReset = /<\/head>/i.test(html)
+    ? html.replace(
+        /<\/head>/i,
+        `<style>html,body{margin:0;padding:0;background:#0a0a0a;}</style></head>`
+      )
+    : html;
+
+  if (/<body\b[^>]*>/i.test(withBodyReset) && /<\/body>/i.test(withBodyReset)) {
+    return withBodyReset
+      .replace(/<body\b([^>]*)>/i, `<body$1><div class="playbook-scaler">`)
+      .replace(/<\/body>/i, `</div></body>`);
+  }
+
+  return `<div class="playbook-scaler">${withBodyReset}</div>`;
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
@@ -92,7 +113,7 @@ export async function GET(
     const rawHtml = await readFile(htmlPath, "utf-8");
     const frameId = new URL(req.url).searchParams.get("frame") ?? "";
     const html = injectRuntime(
-      ensureHtmlBaseHref(rawHtml, new URL(req.url).origin),
+      normalizeStandalonePlaybook(ensureHtmlBaseHref(rawHtml, new URL(req.url).origin)),
       frameId
     );
 

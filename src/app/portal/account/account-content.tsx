@@ -229,7 +229,8 @@ export default function AccountContent({
     : newsletter?.status
       ? sentenceCase(newsletter.status)
       : "Active";
-  const roleList = roles.length > 0 ? roles.map(sentenceCase).join(", ") : accessLine(access);
+  const visibleRoles = roles.filter((role) => role.toLowerCase() !== "free");
+  const roleList = visibleRoles.length > 0 ? visibleRoles.map(sentenceCase).join(", ") : accessLine(access);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 sm:px-6 lg:px-10">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -177,52 +177,15 @@ function ShareResourceButton({ item }: { item: ContentItem }) {
 }
 
 function HtmlAssetFrame({
-  html,
+  slug,
   title,
 }: {
-  html: { document: string };
+  slug: string;
   title: string;
 }) {
   const [height, setHeight] = useState(900);
   const frameId = useId();
-  const srcDoc = useMemo(() => {
-    const runtime = `<script>
-      (() => {
-        const id = ${JSON.stringify(frameId)};
-        let last = 0;
-        const measure = () => {
-          if (!document.body) return;
-          const height = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            document.body.offsetHeight,
-            document.documentElement.offsetHeight
-          );
-          if (Math.abs(height - last) > 4) {
-            last = height;
-            parent.postMessage({ type: "muditek:asset-height", id, height }, "*");
-          }
-        };
-        if (window.ResizeObserver && document.body) {
-          new ResizeObserver(measure).observe(document.body);
-        }
-        window.addEventListener("load", measure);
-        setTimeout(measure, 80);
-        setTimeout(measure, 500);
-        setTimeout(measure, 1500);
-      })();
-    </script>`;
-
-    if (/<\/body>/i.test(html.document)) {
-      return html.document.replace(/<\/body>/i, `${runtime}</body>`);
-    }
-
-    if (/<\/html>/i.test(html.document)) {
-      return html.document.replace(/<\/html>/i, `${runtime}</html>`);
-    }
-
-    return `${html.document}${runtime}`;
-  }, [frameId, html.document]);
+  const src = `/api/portal/resources/${encodeURIComponent(slug)}/html?frame=${encodeURIComponent(frameId)}`;
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -233,7 +196,7 @@ function HtmlAssetFrame({
         data.id === frameId &&
         typeof data.height === "number"
       ) {
-        setHeight(Math.min(Math.max(data.height, 420), 30000));
+        setHeight(Math.min(Math.max(data.height, 420), 160000));
       }
     }
 
@@ -244,8 +207,9 @@ function HtmlAssetFrame({
   return (
     <iframe
       title={title}
-      srcDoc={srcDoc}
-      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      src={src}
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
+      allow="clipboard-write"
       className="block w-full rounded-[2px] border border-white/[0.08] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.32)]"
       style={{ height }}
     />
@@ -462,7 +426,7 @@ export default function AssetDetailContent({
                 <span aria-hidden className="h-px w-6 bg-white/20" />
                 Read in portal
               </div>
-              <HtmlAssetFrame html={html} title={item.title} />
+              <HtmlAssetFrame slug={item.slug} title={item.title} />
             </>
           ) : pageImages.length > 0 ? (
             <>

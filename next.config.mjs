@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingIncludes: {
+    "/portal/playbooks/[slug]": [
+      "./content/playbooks/**/*.html",
+      "./content/downloads/playbooks/**/*",
+      "./public/playbooks/**/*",
+    ],
+    "/portal/skills/[slug]": [
+      "./content/playbooks/**/*.html",
+      "./content/downloads/playbooks/**/*",
+      "./public/playbooks/**/*",
+    ],
+    "/api/portal/resources/[slug]/html": [
+      "./content/playbooks/**/*.html",
+      "./public/playbooks/**/*",
+    ],
+    "/api/portal/resources/[slug]/download": [
+      "./content/playbooks/**/*.html",
+      "./content/downloads/playbooks/**/*",
+      "./public/playbooks/**/*",
+    ],
+    "/api/portal/resources/[slug]/page/[file]": [
+      "./content/downloads/playbooks/**/*",
+    ],
+  },
   images: {
     remotePatterns: [
       {

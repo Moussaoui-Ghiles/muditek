@@ -15,14 +15,10 @@ export type HtmlContent = {
   body: string;
 };
 
-function stripScripts(html: string): string {
-  return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
-}
-
-function ensureBaseHref(html: string): string {
+export function ensureHtmlBaseHref(html: string, baseHref = BASE_URL): string {
   if (/<base\b/i.test(html)) return html;
 
-  const base = `<base href="${BASE_URL}/" />`;
+  const base = `<base href="${baseHref.replace(/\/$/, "")}/" />`;
   if (/<head\b[^>]*>/i.test(html)) {
     return html.replace(/<head\b([^>]*)>/i, `<head$1>\n${base}`);
   }
@@ -37,7 +33,7 @@ function ensureBaseHref(html: string): string {
 export function getHTMLContent(slug: string): HtmlContent | null {
   try {
     const rawHtml = readFileSync(join(CONTENT_DIR, `${slug}.html`), "utf-8");
-    const document = ensureBaseHref(stripScripts(rawHtml));
+    const document = ensureHtmlBaseHref(rawHtml);
     const styleMatch = document.match(/<style[^>]*>([\s\S]*?)<\/style>/);
     const bodyMatch = document.match(/<body[^>]*>([\s\S]*?)<\/body>/);
     return {

@@ -341,6 +341,18 @@ export default function AssetDetailContent({
                   </div>
                 )}
               </dl>
+              {html && isHtml && (
+                <div className="relative border-t border-white/[0.06] px-5 py-4">
+                  <a
+                    href={`/api/portal/resources/${encodeURIComponent(item.slug)}/download`}
+                    download={`${item.slug}.html`}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-[2px] border border-white/[0.12] bg-white/[0.03] px-4 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-foreground/85 transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    <Download className="size-3.5" />
+                    Download HTML
+                  </a>
+                </div>
+              )}
               {item.is_free && (
                 <div className="relative border-t border-white/[0.06] px-5 py-4">
                   <p className="mb-3 text-[11.5px] leading-5 text-foreground/55">

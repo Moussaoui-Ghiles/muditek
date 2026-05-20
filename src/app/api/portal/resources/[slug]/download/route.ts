@@ -59,7 +59,19 @@ export async function GET(
   }
 
   if (item.file_type?.toLowerCase() === "html") {
-    return NextResponse.json({ error: "HTML resources open in the portal." }, { status: 400 });
+    const htmlPath = join(process.cwd(), "content/playbooks", `${basename(item.slug)}.html`);
+    try {
+      const file = await readFile(htmlPath);
+      return new NextResponse(new Uint8Array(file), {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Disposition": `attachment; filename="${basename(item.slug)}.html"`,
+          "Cache-Control": "private, max-age=60",
+        },
+      });
+    } catch {
+      return NextResponse.json({ error: "Resource file not found." }, { status: 404 });
+    }
   }
 
   const localPath = localPlaybookPath(item.download_url);

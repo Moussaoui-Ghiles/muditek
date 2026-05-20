@@ -1,60 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#141413"/>
-      <stop offset="1" stop-color="#1A1A19"/>
+      <stop offset="0" stop-color="#0f0f0f"/>
+      <stop offset="1" stop-color="#0a0a0a"/>
     </linearGradient>
-    <linearGradient id="clayGlow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#D97757" stop-opacity="0.16"/>
-      <stop offset="1" stop-color="#D97757" stop-opacity="0"/>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3FB082" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#3FB082" stop-opacity="0"/>
     </linearGradient>
-    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
-      <path d="M42 0L0 0L0 42" fill="none" stroke="rgba(250,249,245,0.035)" stroke-width="1"/>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0L0 0L0 44" fill="none" stroke="rgba(245,244,241,0.030)" stroke-width="1"/>
     </pattern>
     <filter id="noise">
       <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
-      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.045 0"/>
     </filter>
   </defs>
 
   <rect width="1200" height="800" fill="url(#bg)"/>
   <rect width="1200" height="800" fill="url(#grid)"/>
-  <rect width="1200" height="380" fill="url(#clayGlow)"/>
-  <rect width="1200" height="800" filter="url(#noise)" opacity="0.6"/>
+  <rect width="1200" height="420" fill="url(#glow)"/>
+  <rect width="1200" height="800" filter="url(#noise)" opacity="0.55"/>
 
   <g transform="translate(80, 80)">
-    <rect width="42" height="42" rx="3" fill="none" stroke="#D97757" stroke-width="2.4"/>
-    <line x1="10" y1="14" x2="32" y2="14" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
-    <line x1="10" y1="22" x2="26" y2="22" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
-    <line x1="10" y1="30" x2="20" y2="30" stroke="#D97757" stroke-width="2.4" stroke-linecap="round"/>
-    <circle cx="34" cy="30" r="3" fill="#D97757"/>
+    <rect width="42" height="42" rx="3" fill="none" stroke="#3FB082" stroke-width="2.4"/>
+    <line x1="10" y1="14" x2="32" y2="14" stroke="#3FB082" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="10" y1="22" x2="26" y2="22" stroke="#3FB082" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="10" y1="30" x2="20" y2="30" stroke="#3FB082" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="30" r="3" fill="#3FB082"/>
   </g>
 
-  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#D97757" font-size="14" letter-spacing="4">
-    <text x="148" y="106">MUDITEK &#183; PORTAL PLAYBOOK</text>
+  <g font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#3FB082" font-size="14" letter-spacing="4">
+    <text x="148" y="106">MUDITEK &#183; OPERATOR GUIDE</text>
   </g>
 
-  <g font-family="'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#FAF9F5">
-    <text x="80" y="320" font-weight="800" font-size="108" letter-spacing="-3">The MudiAgent</text>
-    <text x="80" y="440" font-weight="800" font-size="108" letter-spacing="-3">
-      <tspan fill="#D97757">Operator</tspan> Guide
+  <g font-family="'Geist', 'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#F5F4F1">
+    <text x="80" y="328" font-weight="700" font-size="104" letter-spacing="-4">The MudiAgent</text>
+    <text x="80" y="446" font-weight="700" font-size="104" letter-spacing="-4">
+      <tspan fill="#3FB082">Operator</tspan> Guide
     </text>
   </g>
 
-  <g font-family="'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#87867F" font-size="22" font-weight="400">
-    <text x="80" y="510">Build a marketing company on one VPS.</text>
+  <g font-family="'Geist', 'Outfit', ui-sans-serif, system-ui, sans-serif" fill="#a6a59f" font-size="23" font-weight="400">
+    <text x="80" y="520">Set up the control room. Grow from one agent to a team.</text>
   </g>
 
-  <g stroke="rgba(217,119,87,0.3)" stroke-width="1">
-    <line x1="80" y1="660" x2="1120" y2="660"/>
+  <g stroke="rgba(63,176,130,0.3)" stroke-width="1">
+    <line x1="80" y1="678" x2="1120" y2="678"/>
   </g>
 
-  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#87867F" font-size="13" letter-spacing="3">
-    <text x="80" y="700">17 SECTIONS &#183; 123+ SKILLS &#183; 300+ MODELS &#183; 4 OPERATOR LEVELS</text>
-  </g>
-
-  <g font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#5E5D59" font-size="12" letter-spacing="3">
-    <text x="80" y="740">BY GHILES MOUSSAOUI</text>
-    <text x="1120" y="740" text-anchor="end">READ IN PORTAL &#x2192;</text>
+  <g font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace" fill="#6c6b66" font-size="13" letter-spacing="3">
+    <text x="80" y="720">FOUR LEVELS &#183; ONE AGENT TO A FULL FLEET</text>
+    <text x="1120" y="720" text-anchor="end">READ IN PORTAL &#x2192;</text>
   </g>
 </svg>

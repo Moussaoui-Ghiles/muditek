@@ -139,7 +139,7 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
     <motion.div whileHover={reduce ? undefined : { y: -6 }} transition={springCard}>
       <Link
         href={href}
-        className="group relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_36px_72px_-20px_rgba(0,0,0,0.55)] md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
+        className="group relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_36px_72px_-20px_rgba(0,0,0,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
       >
         <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
         <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-colors group-hover:bg-primary/10" />
@@ -211,7 +211,7 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
     >
       <Link
         href={href}
-        className="group relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]"
+        className="group relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
         <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px] transition-colors group-hover:bg-primary/10" />
@@ -316,7 +316,7 @@ function MagneticCta({ href, children }: { href: string; children: React.ReactNo
     >
       <Link
         href={href}
-        className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background"
+        className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {children}
       </Link>
@@ -370,9 +370,10 @@ function FilterPill({
       whileTap={reduce ? undefined : { scale: 0.95 }}
       transition={springButton}
       className={
-        active
+        "touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
+        (active
           ? "inline-flex h-9 items-center rounded-[2px] border border-primary/40 bg-primary/15 px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-primary transition-colors"
-          : "inline-flex h-9 items-center rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/60 transition-colors hover:border-white/[0.2] hover:bg-white/[0.05] hover:text-foreground"
+          : "inline-flex h-9 items-center rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/60 transition-colors hover:border-white/[0.2] hover:bg-white/[0.05] hover:text-foreground")
       }
     >
       {children}
@@ -597,9 +598,11 @@ export default function PlaybooksContent({
                   )}
                 </div>
                 {showSearch && (
-                  <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-3 lg:w-[300px]">
-                    <Search className="size-3.5 shrink-0 text-foreground/55" />
+                  <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-3 transition-colors focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/30 lg:w-[300px]">
+                    <Search aria-hidden className="size-3.5 shrink-0 text-foreground/55" />
                     <Input
+                      type="search"
+                      aria-label="Search the resource shelf"
                       value={query}
                       onChange={(event) => setQuery(event.target.value)}
                       placeholder="Search the shelf"

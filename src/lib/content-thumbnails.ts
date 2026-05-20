@@ -39,6 +39,14 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
 
   if (item.thumbnail_url) return item;
 
+  const htmlAsset = join(process.cwd(), "content/playbooks", `${item.slug}.html`);
+  if (existsSync(htmlAsset)) {
+    return {
+      ...item,
+      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
+    };
+  }
+
   const dir = join(process.cwd(), "content/downloads/playbooks", item.slug);
   const preferred = ["page-1.jpg", "page-01.jpg", "page-001.jpg"];
   const preferredFile = preferred.find((file) => existsSync(join(dir, file)));

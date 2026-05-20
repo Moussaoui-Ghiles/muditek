@@ -183,7 +183,30 @@ function HtmlAssetFrame({
   slug: string;
   title: string;
 }) {
-  const [height, setHeight] = useState(900);
+  const desktopHeightBySlug: Record<string, number> = {
+    "claude-code-self-evolving": 36600,
+    "claude-code-tips": 37000,
+    "clawchief-blueprint": 47400,
+    "google-maps-outbound": 9300,
+    "judgment-moat": 4700,
+    "mudiagent-operator-guide": 15700,
+    "skill-creator-blueprint": 19000,
+  };
+  const mobileHeightBySlug: Record<string, number> = {
+    "claude-code-self-evolving": 44500,
+    "claude-code-tips": 91300,
+    "clawchief-blueprint": 65600,
+    "google-maps-outbound": 4300,
+    "judgment-moat": 2200,
+    "mudiagent-operator-guide": 18900,
+    "skill-creator-blueprint": 25700,
+  };
+  const [height, setHeight] = useState(() => {
+    const map = typeof window !== "undefined" && window.innerWidth < 768
+      ? mobileHeightBySlug
+      : desktopHeightBySlug;
+    return map[slug] ?? 18000;
+  });
   const frameId = useId();
   const src = `/api/portal/resources/${encodeURIComponent(slug)}/html?frame=${encodeURIComponent(frameId)}`;
 
@@ -212,6 +235,7 @@ function HtmlAssetFrame({
       allow="clipboard-write"
       className="block w-full border-0 bg-white"
       style={{ height }}
+      loading="eager"
     />
   );
 }

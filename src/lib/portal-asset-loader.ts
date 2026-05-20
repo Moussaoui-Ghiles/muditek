@@ -9,14 +9,41 @@ import { buildPortalAccess, type PortalAccess } from "@/lib/portal-access";
 const CONTENT_DIR = join(process.cwd(), "content/playbooks");
 const BASE_URL = "https://muditek.com";
 
-export function getHTMLContent(slug: string): { styles: string; body: string } | null {
+export type HtmlContent = {
+  document: string;
+  styles: string;
+  body: string;
+};
+
+function stripScripts(html: string): string {
+  return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+}
+
+function ensureBaseHref(html: string): string {
+  if (/<base\b/i.test(html)) return html;
+
+  const base = `<base href="${BASE_URL}/" />`;
+  if (/<head\b[^>]*>/i.test(html)) {
+    return html.replace(/<head\b([^>]*)>/i, `<head$1>\n${base}`);
+  }
+
+  if (/<html\b[^>]*>/i.test(html)) {
+    return html.replace(/<html\b([^>]*)>/i, `<html$1>\n<head>${base}</head>`);
+  }
+
+  return `<!doctype html><html><head>${base}</head><body>${html}</body></html>`;
+}
+
+export function getHTMLContent(slug: string): HtmlContent | null {
   try {
-    const html = readFileSync(join(CONTENT_DIR, `${slug}.html`), "utf-8");
-    const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/);
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/);
+    const rawHtml = readFileSync(join(CONTENT_DIR, `${slug}.html`), "utf-8");
+    const document = ensureBaseHref(stripScripts(rawHtml));
+    const styleMatch = document.match(/<style[^>]*>([\s\S]*?)<\/style>/);
+    const bodyMatch = document.match(/<body[^>]*>([\s\S]*?)<\/body>/);
     return {
+      document,
       styles: styleMatch ? styleMatch[1] : "",
-      body: bodyMatch ? bodyMatch[1].replace(/<script[\s\S]*?<\/script>/g, "") : "",
+      body: bodyMatch ? bodyMatch[1] : "",
     };
   } catch {
     return null;

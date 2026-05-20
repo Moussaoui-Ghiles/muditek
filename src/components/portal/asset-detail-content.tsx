@@ -180,27 +180,18 @@ function HtmlAssetFrame({
   html,
   title,
 }: {
-  html: { styles: string; body: string };
+  html: { document: string };
   title: string;
 }) {
   const [height, setHeight] = useState(900);
   const frameId = useId();
-  const srcDoc = useMemo(
-    () => `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <base href="${typeof window === "undefined" ? "https://muditek.com" : window.location.origin}/" />
-    <style>${html.styles}</style>
-  </head>
-  <body>
-    ${html.body}
-    <script>
+  const srcDoc = useMemo(() => {
+    const runtime = `<script>
       (() => {
         const id = ${JSON.stringify(frameId)};
         let last = 0;
         const measure = () => {
+          if (!document.body) return;
           const height = Math.max(
             document.body.scrollHeight,
             document.documentElement.scrollHeight,
@@ -212,17 +203,26 @@ function HtmlAssetFrame({
             parent.postMessage({ type: "muditek:asset-height", id, height }, "*");
           }
         };
-        new ResizeObserver(measure).observe(document.body);
+        if (window.ResizeObserver && document.body) {
+          new ResizeObserver(measure).observe(document.body);
+        }
         window.addEventListener("load", measure);
         setTimeout(measure, 80);
         setTimeout(measure, 500);
         setTimeout(measure, 1500);
       })();
-    </script>
-  </body>
-</html>`,
-    [frameId, html.body, html.styles]
-  );
+    </script>`;
+
+    if (/<\/body>/i.test(html.document)) {
+      return html.document.replace(/<\/body>/i, `${runtime}</body>`);
+    }
+
+    if (/<\/html>/i.test(html.document)) {
+      return html.document.replace(/<\/html>/i, `${runtime}</html>`);
+    }
+
+    return `${html.document}${runtime}`;
+  }, [frameId, html.document]);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -264,7 +264,7 @@ export default function AssetDetailContent({
   access: PortalAccess;
   email?: string;
   displayName?: string;
-  html: { styles: string; body: string } | null;
+  html: { document: string } | null;
   pageImages: string[];
   downloadHref: string | null;
   labels: AssetLabels;

@@ -26,6 +26,7 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
 
@@ -55,6 +56,8 @@ export function PortalSidebar({
   const pathname = usePathname() || "/portal";
   const search = useSearchParams();
   const legacyView = search?.get("view");
+  const { setOpenMobile } = useSidebar();
+  const closeMobile = () => setOpenMobile(false);
 
   const homeActive = pathname === "/portal" && !legacyView;
 
@@ -76,6 +79,7 @@ export function PortalSidebar({
       <SidebarHeader>
         <Link
           href="/portal"
+          onClick={closeMobile}
           className="flex h-14 items-center gap-2.5 rounded-md px-2 outline-none transition-colors hover:bg-white/[0.04] focus-visible:ring-1 focus-visible:ring-white/30"
         >
           <Logo variant="mark" size={28} />
@@ -96,7 +100,7 @@ export function PortalSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/portal" />}
+                  render={<Link href="/portal" onClick={closeMobile} />}
                   isActive={homeActive}
                   tooltip="Home"
                   className="h-8 text-[13px]"
@@ -118,7 +122,7 @@ export function PortalSidebar({
               {libraryItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
-                    render={<Link href={item.href} />}
+                    render={<Link href={item.href} onClick={closeMobile} />}
                     isActive={isItemActive(item, pathname)}
                     tooltip={item.title}
                     className="h-8 text-[13px]"
@@ -145,7 +149,7 @@ export function PortalSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/portal/newsletter" />}
+                  render={<Link href="/portal/newsletter" onClick={closeMobile} />}
                   isActive={pathname === "/portal/newsletter" || pathname.startsWith("/portal/newsletter/")}
                   tooltip="Newsletter"
                   className="h-8 text-[13px]"
@@ -166,7 +170,7 @@ export function PortalSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/portal/account" />}
+                  render={<Link href="/portal/account" onClick={closeMobile} />}
                   isActive={pathname === "/portal/account"}
                   tooltip="Account"
                   className="h-8 text-[13px]"

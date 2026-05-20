@@ -6,8 +6,8 @@ import { getPortalSkill, portalSkillToContentItem } from "@/lib/portal-skills";
 import {
   buildAssetAccess,
   getDownloadHref,
-  getHTMLContent,
   getPdfPageImages,
+  itemHasHtmlAsset,
   loadAssetBySlugAndCategories,
 } from "@/lib/portal-asset-loader";
 
@@ -87,7 +87,7 @@ export default async function SkillDetailPage({
   }
 
   const hasAccess = item.is_free || access.isMudikit || access.isAdmin;
-  const html = hasAccess ? getHTMLContent(item.slug) : null;
+  const html = hasAccess && itemHasHtmlAsset(item) ? { document: "" } : null;
   const pageImages = hasAccess ? getPdfPageImages(item.slug) : [];
   const downloadHref = hasAccess ? getDownloadHref(item) : null;
 

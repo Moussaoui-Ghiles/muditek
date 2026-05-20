@@ -253,8 +253,7 @@ export default function AssetDetailContent({
   const updated = formatLongDate(item.updated_at ?? null);
   const accentClass = "text-primary";
   const accessText = accessLabel(item);
-  const isHtml = (item.file_type || "").toLowerCase() === "html";
-  const showDownloadCta = !!downloadHref && !!actionLabel && !(html && isHtml);
+  const showDownloadCta = !!downloadHref && !!actionLabel && !html;
 
   return (
     <main className="relative">

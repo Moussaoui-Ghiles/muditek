@@ -15,6 +15,20 @@ export type HtmlContent = {
   body: string;
 };
 
+const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
+  "claude-code-self-evolving",
+  "claude-code-tips",
+  "clawchief-blueprint",
+  "google-maps-outbound",
+  "judgment-moat",
+  "mudiagent-operator-guide",
+  "skill-creator-blueprint",
+]);
+
+export function itemHasHtmlAsset(item: Pick<ContentItem, "slug" | "file_type">): boolean {
+  return item.file_type?.toLowerCase() === "html" || LOCAL_HTML_PLAYBOOK_SLUGS.has(item.slug);
+}
+
 export function ensureHtmlBaseHref(html: string, baseHref = BASE_URL): string {
   if (/<base\b/i.test(html)) return html;
 

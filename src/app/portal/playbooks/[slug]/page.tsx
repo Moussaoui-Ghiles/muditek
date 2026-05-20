@@ -4,8 +4,8 @@ import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-
 import {
   buildAssetAccess,
   getDownloadHref,
-  getHTMLContent,
   getPdfPageImages,
+  itemHasHtmlAsset,
   loadAssetBySlugAndCategories,
 } from "@/lib/portal-asset-loader";
 import { PLAYBOOK_RESOURCE_CATEGORIES } from "@/lib/content-item";
@@ -67,7 +67,7 @@ export default async function PlaybookDetailPage({
   }
 
   const hasAccess = item.is_free || access.isMudikit || access.isAdmin;
-  const html = hasAccess ? getHTMLContent(item.slug) : null;
+  const html = hasAccess && itemHasHtmlAsset(item) ? { document: "" } : null;
   const pageImages = hasAccess ? getPdfPageImages(item.slug) : [];
   const downloadHref = hasAccess ? getDownloadHref(item) : null;
 

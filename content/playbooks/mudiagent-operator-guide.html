@@ -20,7 +20,7 @@
     --accent-line: rgba(63, 176, 130, 0.30);
     --text: #f5f4f1;
     --text-mid: #a6a59f;
-    --text-dim: #6c6b66;
+    --text-dim: #8a8984;
     --line: rgba(245, 244, 241, 0.09);
     --line-soft: rgba(245, 244, 241, 0.05);
     --sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -155,7 +155,8 @@
     margin: 52px 0 16px;
   }
   .playbook-scaler h3:first-of-type { margin-top: 0; }
-  .playbook-scaler h4 {
+  .playbook-scaler h4,
+  .playbook-scaler h3.mono-label {
     font-family: var(--mono);
     font-size: 12px;
     font-weight: 500;
@@ -164,6 +165,7 @@
     color: var(--accent);
     margin: 40px 0 14px;
   }
+  .playbook-scaler h3.mono-label:first-of-type { margin-top: 0; }
 
   .playbook-scaler p {
     font-size: 17px;
@@ -396,10 +398,10 @@
       <p>Most AI tools answer questions. MudiAgent runs your workflows end to end. It navigates your browser, executes terminal commands, schedules cron jobs, monitors your inboxes, drafts the work, and posts the result to wherever you work: Telegram, Discord, Slack, or the email thread you are already in.</p>
       <p>The longer version: MudiAgent is a framework that turns a model into a persistent operator. It has its own memory that survives between sessions. It writes its own skills as it works. It ships with 123 skills already built in. It lives wherever you put it, on your laptop, in a Docker container, on a VPS, or in a serverless runtime. And you can talk to it through more than 20 surfaces.</p>
 
-      <h4>The shape of it</h4>
+      <h3 class="mono-label">The shape of it</h3>
       <p>If you have used Claude Code, MudiAgent is the same shape with a different philosophy. It is the batteries-included option: opinionated defaults, productive on day one with minimal setup, the agent does more of the thinking for you. Lower-level frameworks give you primitives and explicit control instead, where the agent does exactly what you told it and nothing more. Both are valid. The bundled defaults compound. Every project you start is one where the agent already knows how to do a hundred things before you write a line of configuration.</p>
 
-      <h4>What you get out of the box</h4>
+      <h3 class="mono-label">What you get out of the box</h3>
       <ul class="list">
         <li><strong>123 bundled skills</strong> before the agent writes one of its own</li>
         <li><strong>70+ built-in tools</strong> in the gateway, plus 300+ models through one subscription</li>
@@ -540,33 +542,35 @@
       </ul>
 
       <p>The whole thing looks like this:</p>
-      <pre class="diagram">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
-&#9474;  YOU  &#9474; the operator
-&#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9496;
-    &#9474;
-    &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
-    &#9474;               &#9474;               &#9474;
-control path     orchestrated     direct path
-    &#9474;            path  &#9474;            &#9474;
-    &#9660;               &#9660;               &#9660;
-&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
-&#9474; CONTROL ROOM &#9474;  &#9474; ORCHESTRA- &#9474;  &#9474; SPECIALIST &#9474;
-&#9474; /root/       &#9474;  &#9474; TOR        &#9474;  &#9474; AGENT      &#9474;
-&#9474;   vps-agents &#9474;  &#9474; (optional) &#9474;  &#9474;            &#9474;
-&#9474;              &#9474;  &#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9474; seo  dev   &#9474;
-&#9474; docs  rules  &#9474;     &#9474; delegate  &#9474; cmo  ops   &#9474;
-&#9474; runbooks     &#9474;     &#9660;          &#9474; life       &#9474;
-&#9474; env-map      &#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9474;            &#9474;
-&#9474; registry     &#9474;  &#9474; TASK BUS   &#9474;  &#9474; talk to it &#9474;
-&#9474;              &#9474;  &#9474; /srv/      &#9474;  &#9474; directly,  &#9474;
-&#9474; no secrets   &#9474;  &#9474;  agent-bus &#9474;  &#9474; no routing &#9474;
-&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
-                     &#9474; routes   &#9650;
-                     &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+      <pre class="diagram">┌───────┐
+│  YOU  │ the operator
+└───┬───┘
+    │
+    ┌─────────────────────────────┼─────────────────────────────┐
+    │                             │                             │
+control path                orchestrated path              direct path
+    │                             │                             │
+    ▼                             ▼                             ▼
+┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
+│ AGENT CONTROL ROOM │   │     MUDIAGENT      │   │  SPECIALIST AGENT  │
+│   /root/vps-agents │   │   ORCHESTRATOR     │   │                    │
+│                    │   │  (optional door)   │   │  seo · dev · cmo · │
+│  docs · rules ·    │   └─────────┬──────────┘   │   ops · life       │
+│ runbooks · env-map │             │ delegates    │                    │
+│  · registry        │             ▼              │  talk to it        │
+│                    │   ┌────────────────────┐   │   directly,        │
+│ side control plane │   │   AGENT TASK BUS   │   │   no routing       │
+│  no raw secrets    │   │   /srv/agent-bus   │   │                    │
+│                    │   └─────────┬──────────┘   │                    │
+└────────────────────┘             │              │                    │
+                                   │   routes     │                    │
+                                   └───────────────▶                   │
+                                                  │                    │
+                                                  └────────────────────┘
 
-the control room governs every agent. it is the single
-source of truth and the place you go to manage the fleet,
-not the place you go to run work through it.</pre>
+the agent control room governs every agent. it is the
+single source of truth, and the place you go to manage the fleet, not
+the place you go to run work through it.</pre>
 
       <h3>The storage split matters more than people think</h3>
       <pre class="diagram">/root/vps-agents        &#8594; control room: docs, rules, runbooks,
@@ -698,7 +702,7 @@ shell:   docker exec -it mudiagent-seo bash
       <h2>Point a coding agent at the template</h2>
       <p>Now you understand the architecture. The control-room template holds the exact structure described above, plus the skills your agent needs to set it up for you. You can clone it manually, but the point is that you do not have to. If you have Claude Code or Codex on your laptop, the agents do most of the work after you hand over a Hetzner API key.</p>
 
-      <h4>The automated flow</h4>
+      <h3 class="mono-label">The automated flow</h3>
       <pre class="diagram">you  &#8594;  generate a Hetzner API key
          (sign up, generate a token, drop it in your .env)
          &#9660;

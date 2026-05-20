@@ -421,9 +421,19 @@ export default function AssetDetailContent({
         <section>
           {html ? (
             <>
-              <div className="mb-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
-                <span aria-hidden className="h-px w-6 bg-white/20" />
-                Read in portal
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                  <span aria-hidden className="h-px w-6 bg-white/20" />
+                  Read in portal
+                </div>
+                <a
+                  href={`/api/portal/resources/${encodeURIComponent(item.slug)}/download`}
+                  download={`${item.slug}.html`}
+                  className="inline-flex items-center gap-2 rounded-[2px] border border-white/[0.12] bg-white/[0.03] px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80 transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  <Download className="size-3.5" />
+                  Download HTML
+                </a>
               </div>
               <HtmlAssetFrame slug={item.slug} title={item.title} />
             </>

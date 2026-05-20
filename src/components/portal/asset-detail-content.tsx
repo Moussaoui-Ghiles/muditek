@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -183,60 +183,174 @@ function HtmlAssetFrame({
   slug: string;
   title: string;
 }) {
-  const desktopHeightBySlug: Record<string, number> = {
-    "claude-code-self-evolving": 36600,
-    "claude-code-tips": 37000,
-    "clawchief-blueprint": 47400,
-    "google-maps-outbound": 9300,
-    "judgment-moat": 4700,
-    "mudiagent-operator-guide": 15700,
-    "skill-creator-blueprint": 19000,
-  };
-  const mobileHeightBySlug: Record<string, number> = {
-    "claude-code-self-evolving": 44500,
-    "claude-code-tips": 91300,
-    "clawchief-blueprint": 65600,
-    "google-maps-outbound": 4300,
-    "judgment-moat": 2200,
-    "mudiagent-operator-guide": 18900,
-    "skill-creator-blueprint": 25700,
-  };
-  const [height, setHeight] = useState(() => {
-    const map = typeof window !== "undefined" && window.innerWidth < 768
-      ? mobileHeightBySlug
-      : desktopHeightBySlug;
-    return map[slug] ?? 18000;
-  });
-  const frameId = useId();
-  const src = `/api/portal/resources/${encodeURIComponent(slug)}/html?frame=${encodeURIComponent(frameId)}`;
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const src = `/api/portal/resources/${encodeURIComponent(slug)}/html`;
 
   useEffect(() => {
-    function onMessage(event: MessageEvent) {
-      const data = event.data;
-      if (
-        data &&
-        data.type === "muditek:asset-height" &&
-        data.id === frameId &&
-        typeof data.height === "number"
-      ) {
-        setHeight(Math.min(Math.max(data.height, 420), 160000));
+    const maybeHost = hostRef.current;
+    if (!maybeHost) return;
+    const currentHost: HTMLDivElement = maybeHost;
+
+    const shadow = currentHost.shadowRoot ?? currentHost.attachShadow({ mode: "open" });
+    let cancelled = false;
+    const cleanup: Array<() => void> = [];
+    setError(null);
+    shadow.innerHTML = `
+      <style>
+        :host { display: block; min-height: 70vh; background: #0a0a0a; }
+        .muditek-html-loading {
+          min-height: 70vh;
+          display: grid;
+          place-items: center;
+          color: rgba(255,255,255,.55);
+          font: 700 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+          letter-spacing: .22em;
+          text-transform: uppercase;
+        }
+      </style>
+      <div class="muditek-html-loading">Loading ${title}</div>
+    `;
+
+    async function loadHtml() {
+      const response = await fetch(src, { credentials: "same-origin" });
+      if (!response.ok) throw new Error("Unable to load this resource.");
+      const html = await response.text();
+      if (cancelled) return;
+
+      const documentHtml = new DOMParser().parseFromString(html, "text/html");
+      const headNodes = Array.from(documentHtml.head.children)
+        .filter((node) => !["SCRIPT", "BASE"].includes(node.tagName))
+        .map((node) => {
+          if (node.tagName !== "STYLE") return node.outerHTML;
+          return `<style>${node.textContent?.replace(/:root/g, ":host") ?? ""}</style>`;
+        })
+        .join("");
+      const body = documentHtml.body.innerHTML;
+
+      shadow.innerHTML = `
+        ${headNodes}
+        <style id="muditek-shadow-reader">
+          :host {
+            display: block;
+            background: #0a0a0a;
+            contain: content;
+          }
+          :host *, :host *::before, :host *::after {
+            box-sizing: border-box;
+          }
+          img, svg, video, canvas {
+            max-width: 100%;
+            height: auto;
+          }
+          pre, table {
+            max-width: 100%;
+            overflow-x: auto;
+          }
+          .muditek-fixed-pages {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(14px, 2vw, 28px);
+            padding: clamp(12px, 2vw, 28px) 0 56px;
+            background: #0a0a0a;
+          }
+          .muditek-page-shell {
+            position: relative;
+            flex: none;
+            max-width: calc(100vw - 24px);
+            overflow: visible;
+          }
+          .muditek-page-shell > .page {
+            margin: 0 !important;
+            transform-origin: top left !important;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+          }
+          @media (max-width: 640px) {
+            :where(.toc ol) {
+              columns: 1 !important;
+            }
+            :where(.g2, .g3, .cmp, .stats, .layers-grid, .toc-grid) {
+              grid-template-columns: 1fr !important;
+            }
+            :where(.stats) {
+              flex-direction: column !important;
+            }
+            :where(pre, code) {
+              white-space: pre-wrap !important;
+              overflow-wrap: anywhere;
+            }
+          }
+        </style>
+        ${body}
+      `;
+
+      const pages = Array.from(shadow.querySelectorAll(".page"));
+      if (pages.length > 0) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "muditek-fixed-pages";
+        const firstPage = pages[0];
+        firstPage.parentNode?.insertBefore(wrapper, firstPage);
+        for (const page of pages) {
+          if (page.parentElement?.classList.contains("muditek-page-shell")) continue;
+          const shell = document.createElement("div");
+          shell.className = "muditek-page-shell";
+          page.parentNode?.insertBefore(shell, page);
+          shell.appendChild(page);
+          wrapper.appendChild(shell);
+        }
+
+        const scalePages = () => {
+          for (const shell of Array.from(shadow.querySelectorAll(".muditek-page-shell"))) {
+            const page = shell.firstElementChild;
+            if (!(page instanceof HTMLElement) || !(shell instanceof HTMLElement)) continue;
+            page.style.transform = "";
+            shell.style.width = "";
+            shell.style.height = "";
+            const rect = page.getBoundingClientRect();
+            const naturalWidth = rect.width || page.offsetWidth || 794;
+            const naturalHeight = rect.height || page.offsetHeight || 1123;
+            const available = Math.max(280, currentHost.clientWidth - 24);
+            const scale = Math.min(1, available / naturalWidth);
+            shell.style.width = `${naturalWidth * scale}px`;
+            shell.style.height = `${naturalHeight * scale}px`;
+            page.style.transform = `scale(${scale})`;
+          }
+        };
+
+        scalePages();
+        const resizeObserver = new ResizeObserver(scalePages);
+        resizeObserver.observe(currentHost);
+        window.addEventListener("resize", scalePages);
+        cleanup.push(() => resizeObserver.disconnect());
+        cleanup.push(() => window.removeEventListener("resize", scalePages));
+        setTimeout(scalePages, 250);
+        setTimeout(scalePages, 1000);
       }
     }
 
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [frameId]);
+    loadHtml().catch(() => {
+      if (!cancelled) {
+        setError("This resource could not be loaded.");
+        shadow.innerHTML = "";
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup.forEach((fn) => fn());
+    };
+  }, [src, title]);
 
   return (
-    <iframe
-      title={title}
-      src={src}
-      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
-      allow="clipboard-write"
-      className="block w-full border-0 bg-white"
-      style={{ height }}
-      loading="eager"
-    />
+    <>
+      <div ref={hostRef} aria-label={title} className="block w-full bg-[#0a0a0a]" />
+      {error && (
+        <div className="mx-auto max-w-3xl rounded-[2px] border border-dashed border-white/[0.12] bg-white/[0.02] p-8 text-[13.5px] leading-7 text-foreground/65">
+          {error}
+        </div>
+      )}
+    </>
   );
 }
 

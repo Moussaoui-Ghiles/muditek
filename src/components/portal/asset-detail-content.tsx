@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -48,27 +48,6 @@ function formatLongDate(value: string | Date | null | undefined): string | null 
   if (Number.isNaN(date.getTime())) return null;
   return date.toLocaleDateString("en-US", { timeZone: "UTC", month: "long", day: "numeric", year: "numeric" });
 }
-
-const playbookResponsiveStyles = `
-  .portal-asset-html { max-width: 100%; overflow-x: hidden; }
-  .portal-asset-html .page {
-    margin: 0 auto 24px;
-    max-width: 100% !important;
-    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
-    border-radius: 4px;
-  }
-  @media (max-width: 850px) {
-    .portal-asset-html .page {
-      width: 100% !important;
-      height: auto !important;
-      min-height: unset !important;
-      padding: 32px 24px !important;
-      page-break-after: unset !important;
-    }
-    .portal-asset-html .page img { max-width: 100% !important; height: auto !important; }
-    .portal-asset-html .page [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
-  }
-`;
 
 function BackLink({ href, label }: { href: string; label: string }) {
   return (
@@ -194,6 +173,82 @@ function ShareResourceButton({ item }: { item: ContentItem }) {
       {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
       {copied ? "Copied" : "Copy share link"}
     </Button>
+  );
+}
+
+function HtmlAssetFrame({
+  html,
+  title,
+}: {
+  html: { styles: string; body: string };
+  title: string;
+}) {
+  const [height, setHeight] = useState(900);
+  const frameId = useId();
+  const srcDoc = useMemo(
+    () => `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="${typeof window === "undefined" ? "https://muditek.com" : window.location.origin}/" />
+    <style>${html.styles}</style>
+  </head>
+  <body>
+    ${html.body}
+    <script>
+      (() => {
+        const id = ${JSON.stringify(frameId)};
+        let last = 0;
+        const measure = () => {
+          const height = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.offsetHeight
+          );
+          if (Math.abs(height - last) > 4) {
+            last = height;
+            parent.postMessage({ type: "muditek:asset-height", id, height }, "*");
+          }
+        };
+        new ResizeObserver(measure).observe(document.body);
+        window.addEventListener("load", measure);
+        setTimeout(measure, 80);
+        setTimeout(measure, 500);
+        setTimeout(measure, 1500);
+      })();
+    </script>
+  </body>
+</html>`,
+    [frameId, html.body, html.styles]
+  );
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      const data = event.data;
+      if (
+        data &&
+        data.type === "muditek:asset-height" &&
+        data.id === frameId &&
+        typeof data.height === "number"
+      ) {
+        setHeight(Math.min(Math.max(data.height, 420), 30000));
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [frameId]);
+
+  return (
+    <iframe
+      title={title}
+      srcDoc={srcDoc}
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      className="block w-full rounded-[2px] border border-white/[0.08] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.32)]"
+      style={{ height }}
+    />
   );
 }
 
@@ -341,18 +396,6 @@ export default function AssetDetailContent({
                   </div>
                 )}
               </dl>
-              {html && isHtml && (
-                <div className="relative border-t border-white/[0.06] px-5 py-4">
-                  <a
-                    href={`/api/portal/resources/${encodeURIComponent(item.slug)}/download`}
-                    download={`${item.slug}.html`}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-[2px] border border-white/[0.12] bg-white/[0.03] px-4 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-foreground/85 transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  >
-                    <Download className="size-3.5" />
-                    Download HTML
-                  </a>
-                </div>
-              )}
               {item.is_free && (
                 <div className="relative border-t border-white/[0.06] px-5 py-4">
                   <p className="mb-3 text-[11.5px] leading-5 text-foreground/55">
@@ -415,16 +458,11 @@ export default function AssetDetailContent({
         <section>
           {html ? (
             <>
-              <style dangerouslySetInnerHTML={{ __html: html.styles }} />
-              <style dangerouslySetInnerHTML={{ __html: playbookResponsiveStyles }} />
               <div className="mb-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
                 <span aria-hidden className="h-px w-6 bg-white/20" />
                 Read in portal
               </div>
-              <div
-                className="portal-asset-html rounded-[2px] border border-white/[0.08] bg-card/[0.3] p-3 backdrop-blur-md sm:p-6"
-                dangerouslySetInnerHTML={{ __html: html.body }}
-              />
+              <HtmlAssetFrame html={html} title={item.title} />
             </>
           ) : pageImages.length > 0 ? (
             <>

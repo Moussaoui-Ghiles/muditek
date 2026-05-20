@@ -83,6 +83,11 @@
   --ring: hsl(210 15% 45%);
   --radius: 0.625rem;
 
+  /* Sidebar layout dimensions — defined in CSS so first paint is correct
+     before SidebarProvider injects its inline style (prevents layout flash). */
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 3rem;
+
   --sidebar: hsl(215 35% 7%);
   --sidebar-foreground: hsl(210 15% 92%);
   --sidebar-primary: #F59E0B;

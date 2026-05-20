@@ -1,13 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, Filter, Lock, Search } from "lucide-react";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
 import { Input } from "@/components/ui/input";
-import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
 import { CONTENT_TOPIC_LABEL, type ContentTopic } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import {
+  ease,
+  fadeUp,
+  gridStagger,
+  heroStagger,
+  inViewOnce,
+  springButton,
+  springCard,
+  springMagnetic,
+} from "@/lib/motion";
 
 type TypeFilter = "all" | "playbook" | "guide" | "resource";
 type TopicFilter = "all" | ContentTopic;
@@ -116,130 +133,140 @@ function CoverFrame({
 
 function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAccess }) {
   const accessible = isAccessible(item, access);
+  const reduce = useReducedMotion();
   const href = `/portal/playbooks/${encodeURIComponent(item.slug)}`;
   return (
-    <Link
-      href={href}
-      className="group card-lift relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
-    >
-      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
-      <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-colors group-hover:bg-primary/10" />
+    <motion.div whileHover={reduce ? undefined : { y: -6 }} transition={springCard}>
+      <Link
+        href={href}
+        className="group relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_36px_72px_-20px_rgba(0,0,0,0.55)] md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
+      >
+        <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-colors group-hover:bg-primary/10" />
 
-      <CoverFrame item={item} ratio="16/10" />
+        <CoverFrame item={item} ratio="16/10" />
 
-      <div className="relative z-10 flex min-w-0 flex-col justify-between gap-5 p-2 md:py-6 md:pr-6">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
-            <span aria-hidden className="h-px w-6 bg-primary/50" />
-            Featured · {typeLabel(item)}
-            {item.is_new && (
-              <span className="text-emerald-300/90">· New drop</span>
+        <div className="relative z-10 flex min-w-0 flex-col justify-between gap-5 p-2 md:py-6 md:pr-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+              <span aria-hidden className="h-px w-6 bg-primary/50" />
+              Featured · {typeLabel(item)}
+              {item.is_new && (
+                <span className="text-emerald-300/90">· New drop</span>
+              )}
+            </div>
+            <h2 className="mt-5 text-[28px] font-black leading-[0.95] tracking-[-0.03em] text-foreground md:text-[40px]">
+              {item.title}
+            </h2>
+            {item.description && (
+              <p className="mt-5 max-w-xl text-[14.5px] leading-[1.7] text-foreground/65">
+                {item.description}
+              </p>
             )}
           </div>
-          <h2 className="mt-5 text-[28px] font-black leading-[0.95] tracking-[-0.03em] text-foreground md:text-[40px]">
-            {item.title}
-          </h2>
-          {item.description && (
-            <p className="mt-5 max-w-xl text-[14.5px] leading-[1.7] text-foreground/65">
-              {item.description}
-            </p>
-          )}
-        </div>
 
-        <div className="flex flex-col gap-5 pt-6 border-t border-white/[0.06]">
-          <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.18em] text-foreground/55">
-            {!accessible ? (
-              <span className="inline-flex items-center gap-2">
-                <Lock className="size-3" /> Locked · MudiKit
-              </span>
-            ) : !item.is_free ? (
-              <span className="inline-flex items-center gap-2">
-                <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
-                MudiKit
-              </span>
-            ) : null}
-            {(!accessible || !item.is_free) && (
-              <span aria-hidden className="inline-block h-3 w-px bg-white/10" />
-            )}
-            <span>{readingHint(item)}</span>
-            {item.created_at && (
-              <>
+          <div className="flex flex-col gap-5 pt-6 border-t border-white/[0.06]">
+            <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.18em] text-foreground/55">
+              {!accessible ? (
+                <span className="inline-flex items-center gap-2">
+                  <Lock className="size-3" /> Locked · MudiKit
+                </span>
+              ) : !item.is_free ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
+                  MudiKit
+                </span>
+              ) : null}
+              {(!accessible || !item.is_free) && (
                 <span aria-hidden className="inline-block h-3 w-px bg-white/10" />
-                <span>{formatDate(item.created_at)}</span>
-              </>
-            )}
+              )}
+              <span>{readingHint(item)}</span>
+              {item.created_at && (
+                <>
+                  <span aria-hidden className="inline-block h-3 w-px bg-white/10" />
+                  <span>{formatDate(item.created_at)}</span>
+                </>
+              )}
+            </div>
+            <span className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+              {accessible ? "Open in portal" : "Preview locked card"}
+              <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+            </span>
           </div>
-          <span className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
-            {accessible ? "Open in portal" : "Preview locked card"}
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
-          </span>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 }
 
 function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess }) {
   const accessible = isAccessible(item, access);
+  const reduce = useReducedMotion();
   const href = `/portal/playbooks/${encodeURIComponent(item.slug)}`;
   return (
-    <Link
-      href={href}
-      className="group card-lift relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6]"
+    <motion.div
+      variants={reduce ? undefined : fadeUp}
+      whileHover={reduce ? undefined : { y: -6 }}
+      transition={springCard}
     >
-      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
-      <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px] transition-colors group-hover:bg-primary/10" />
+      <Link
+        href={href}
+        className="group relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]"
+      >
+        <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px] transition-colors group-hover:bg-primary/10" />
 
-      <CoverFrame item={item} ratio="16/10" />
+        <CoverFrame item={item} ratio="16/10" />
 
-      <div className="relative z-10 flex flex-1 flex-col px-1 pb-2 pt-4">
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
-          <span>{typeLabel(item)}</span>
-          {item.is_new && (
-            <>
-              <span aria-hidden>·</span>
-              <span className="text-emerald-300/90">New</span>
-            </>
-          )}
-          {!accessible && (
-            <>
-              <span aria-hidden>·</span>
-              <span className="inline-flex items-center gap-1 text-primary/80">
-                <Lock className="size-3" /> Locked
-              </span>
-            </>
-          )}
-        </div>
-        <h3 className="mt-3 text-[17px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
-          {item.title}
-        </h3>
-        {item.description && (
-          <p className="mt-3 line-clamp-3 text-[13.5px] leading-6 text-foreground/65">
-            {item.description}
-          </p>
-        )}
-        <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-          <span className="inline-flex items-center gap-1.5">
-            {!accessible ? (
-              <span className="inline-flex items-center gap-1">
-                <Lock className="size-3" /> MudiKit
-              </span>
-            ) : !item.is_free ? (
+        <div className="relative z-10 flex flex-1 flex-col px-1 pb-2 pt-4">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
+            <span>{typeLabel(item)}</span>
+            {item.is_new && (
               <>
-                <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
-                MudiKit
+                <span aria-hidden>·</span>
+                <span className="text-emerald-300/90">New</span>
               </>
-            ) : (
-              <span>{typeLabel(item)}</span>
             )}
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
-            View
-            <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </span>
+            {!accessible && (
+              <>
+                <span aria-hidden>·</span>
+                <span className="inline-flex items-center gap-1 text-primary/80">
+                  <Lock className="size-3" /> Locked
+                </span>
+              </>
+            )}
+          </div>
+          <h3 className="mt-3 text-[17px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+            {item.title}
+          </h3>
+          {item.description && (
+            <p className="mt-3 line-clamp-3 text-[13.5px] leading-6 text-foreground/65">
+              {item.description}
+            </p>
+          )}
+          <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+            <span className="inline-flex items-center gap-1.5">
+              {!accessible ? (
+                <span className="inline-flex items-center gap-1">
+                  <Lock className="size-3" /> MudiKit
+                </span>
+              ) : !item.is_free ? (
+                <>
+                  <span className="inline-block size-1.5 rounded-full bg-amber-300/80" />
+                  MudiKit
+                </>
+              ) : (
+                <span>{typeLabel(item)}</span>
+              )}
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
+              View
+              <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
+          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -260,6 +287,43 @@ function EmptyState() {
   );
 }
 
+function MagneticCta({ href, children }: { href: string; children: React.ReactNode }) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, springMagnetic);
+  const sy = useSpring(y, springMagnetic);
+
+  const handleMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (reduce || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((event.clientX - (rect.left + rect.width / 2)) * 0.25);
+    y.set((event.clientY - (rect.top + rect.height / 2)) * 0.4);
+  };
+  const reset = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={reset}
+      style={reduce ? undefined : { x: sx, y: sy }}
+      className="inline-block"
+    >
+      <Link
+        href={href}
+        className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background"
+      >
+        {children}
+      </Link>
+    </motion.div>
+  );
+}
+
 function UpgradeBand({ count }: { count: number }) {
   return (
     <section className="mesh-subtle relative mt-16 overflow-hidden rounded-[2px] border border-primary/20 bg-card/[0.4] backdrop-blur-md">
@@ -277,16 +341,13 @@ function UpgradeBand({ count }: { count: number }) {
             MudiKit unlocks the full resource library and every new drop, alongside the paid skills.
           </p>
         </div>
-        <Link
-          href="/portal/mudikit"
-          className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background"
-        >
+        <MagneticCta href="/portal/mudikit">
           <span className="relative z-10 inline-flex items-center gap-3">
             Unlock MudiKit
             <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
           </span>
           <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />
-        </Link>
+        </MagneticCta>
       </div>
     </section>
   );
@@ -301,10 +362,13 @@ function FilterPill({
   onClick: () => void;
   children: React.ReactNode;
 }) {
+  const reduce = useReducedMotion();
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={reduce ? undefined : { scale: 0.95 }}
+      transition={springButton}
       className={
         active
           ? "inline-flex h-9 items-center rounded-[2px] border border-primary/40 bg-primary/15 px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-primary transition-colors"
@@ -312,11 +376,27 @@ function FilterPill({
       }
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
 
 function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [display, setDisplay] = useState(0);
+  const shown = reduce ? value : display;
+
+  useEffect(() => {
+    if (reduce || !inView) return;
+    const controls = animate(0, value, {
+      duration: 1.1,
+      ease,
+      onUpdate: (latest) => setDisplay(Math.round(latest)),
+    });
+    return () => controls.stop();
+  }, [inView, value, reduce]);
+
   return (
     <div className="flex flex-col gap-1">
       <dt className="text-[9.5px] font-black uppercase tracking-[0.25em] text-foreground/55">
@@ -329,7 +409,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
             : "text-[28px] font-black tracking-[-0.03em] text-foreground tnum"
         }
       >
-        {value}
+        <span ref={ref}>{shown}</span>
       </dd>
     </div>
   );
@@ -344,9 +424,17 @@ export default function PlaybooksContent({
   email: string;
   displayName: string;
 }) {
+  const reduce = useReducedMotion();
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [topicFilter, setTopicFilter] = useState<TopicFilter>("all");
+
+  const heroProps = reduce
+    ? {}
+    : { initial: "hidden" as const, animate: "visible" as const };
+  const revealProps = reduce
+    ? {}
+    : { initial: "hidden" as const, whileInView: "visible" as const, viewport: inViewOnce };
 
   const counts = useMemo(
     () => ({
@@ -416,8 +504,12 @@ export default function PlaybooksContent({
             backgroundSize: "64px 64px",
           }}
         />
-        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-16 md:pb-20 md:pt-20 lg:px-10">
-          <div className="reveal">
+        <motion.div
+          variants={reduce ? undefined : heroStagger}
+          {...heroProps}
+          className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-16 md:pb-20 md:pt-20 lg:px-10"
+        >
+          <motion.div variants={reduce ? undefined : fadeUp}>
             <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
               <span aria-hidden className="h-px w-8 bg-primary/50" />
               The resource shelf
@@ -428,15 +520,18 @@ export default function PlaybooksContent({
             <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
               Deeper docs, scorecards, templates, and implementation assets. Read HTML in the portal, open PDFs cleanly, and keep useful resources tied to one account.
             </p>
-          </div>
-          <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
+          </motion.div>
+          <motion.dl
+            variants={reduce ? undefined : fadeUp}
+            className="grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10"
+          >
             <Stat label="Total" value={counts.total} />
             <Stat label="Playbooks" value={counts.playbooks} />
             <Stat label="Guides" value={counts.guides} />
             <Stat label="Resources" value={counts.resources} />
             {counts.paid > 0 && <Stat label="MudiKit" value={counts.paid} />}
-          </dl>
-        </div>
+          </motion.dl>
+        </motion.div>
       </section>
 
       <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
@@ -446,20 +541,18 @@ export default function PlaybooksContent({
           <>
             {/* Featured */}
             {featured && (
-              <ScrollReveal>
-                <section className="mb-14">
-                  <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
-                    <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
-                      <span aria-hidden className="h-px w-6 bg-white/20" />
-                      Featured drop
-                    </h2>
-                    <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-                      Resource · in portal
-                    </span>
-                  </div>
-                  <FeaturedItem item={featured} access={access} />
-                </section>
-              </ScrollReveal>
+              <motion.section className="mb-14" variants={reduce ? undefined : fadeUp} {...revealProps}>
+                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
+                  <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                    <span aria-hidden className="h-px w-6 bg-white/20" />
+                    Featured drop
+                  </h2>
+                  <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                    Resource · in portal
+                  </span>
+                </div>
+                <FeaturedItem item={featured} access={access} />
+              </motion.section>
             )}
 
             {/* Filter strip */}
@@ -535,13 +628,16 @@ export default function PlaybooksContent({
                     </span>
                   )}
                 </div>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                  {grid.map((item, i) => (
-                    <ScrollReveal key={item.id} delay={Math.min(i * 60, 360)}>
-                      <LibraryCard item={item} access={access} />
-                    </ScrollReveal>
+                <motion.div
+                  key={`${typeFilter}-${topicFilter}-${query.trim()}`}
+                  variants={reduce ? undefined : gridStagger}
+                  {...revealProps}
+                  className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+                >
+                  {grid.map((item) => (
+                    <LibraryCard key={item.id} item={item} access={access} />
                   ))}
-                </div>
+                </motion.div>
               </section>
             )}
 

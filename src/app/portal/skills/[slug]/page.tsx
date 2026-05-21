@@ -20,9 +20,9 @@ const LABELS: AssetLabels = {
   backHref: "/portal/skills",
   backLabel: "All skills",
   notFoundBody: "No skill exists at this slug, or it is no longer published.",
-  lockedTitle: "MudiKit unlocks this skill",
+  lockedTitle: "This skill is not available in the portal right now",
   lockedBody:
-    "MudiKit gives access to every paid Claude Code skill, plus future drops.",
+    "Open skills stay visible in the library. Anything unpublished or reserved is hidden until it is ready.",
   emptyAssetBody: "This skill exists in the library, but no asset has been attached yet.",
 };
 

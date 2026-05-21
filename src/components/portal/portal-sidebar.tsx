@@ -29,6 +29,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 
 type NavItem = {
@@ -65,13 +66,17 @@ export function PortalSidebar({
     { href: "/portal/skills", title: "Skills", icon: Wand2, matchPrefix: "/portal/skills" },
     { href: "/portal/playbooks", title: "Resources", icon: BookText, matchPrefix: "/portal/playbooks" },
     { href: "/portal/tools", title: "Tools", icon: Wrench, matchPrefix: "/portal/tools" },
-    {
-      href: "/portal/mudikit",
-      title: "MudiKit",
-      icon: Package,
-      matchPrefix: "/portal/mudikit",
-      locked: !access.isMudikit,
-    },
+    ...(SHOW_MUDIKIT_IN_PORTAL
+      ? [
+          {
+            href: "/portal/mudikit",
+            title: "MudiKit",
+            icon: Package,
+            matchPrefix: "/portal/mudikit",
+            locked: !access.isMudikit,
+          },
+        ]
+      : []),
   ];
 
   return (

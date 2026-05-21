@@ -11,6 +11,7 @@ import {
   type ContentItem,
 } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 interface NewsletterIssue {
   slug: string;
@@ -58,6 +59,7 @@ function uniqueItems(items: ContentItem[]): ContentItem[] {
 }
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
+  if (!SHOW_MUDIKIT_IN_PORTAL && !item.is_free) return false;
   return item.is_free || access.isMudikit || access.isAdmin;
 }
 
@@ -288,10 +290,21 @@ export default function PortalHomeContent({
   hero,
 }: HomeContentProps) {
   const isFreeOnly = !access.isMudikit && !access.isAdmin;
+  const visiblePaidItems = useMemo(
+    () => (SHOW_MUDIKIT_IN_PORTAL ? paidItems : []),
+    [paidItems]
+  );
+  const visiblePlaybookGuideItems = useMemo(
+    () =>
+      SHOW_MUDIKIT_IN_PORTAL
+        ? playbookGuideItems
+        : playbookGuideItems.filter((item) => item.is_free),
+    [playbookGuideItems]
+  );
 
   const allItems = useMemo(
-    () => uniqueItems([...freeItems, ...paidItems, ...playbookGuideItems]),
-    [freeItems, paidItems, playbookGuideItems]
+    () => uniqueItems([...freeItems, ...visiblePaidItems, ...visiblePlaybookGuideItems]),
+    [freeItems, visiblePaidItems, visiblePlaybookGuideItems]
   );
 
   const skills = useMemo(
@@ -302,13 +315,16 @@ export default function PortalHomeContent({
   const resources = useMemo(
     () =>
       byDateDesc(
-        playbookGuideItems.filter((item) => isPlaybookResourceCategory(item.category))
+        visiblePlaybookGuideItems.filter((item) => isPlaybookResourceCategory(item.category))
       ).slice(0, 6),
-    [playbookGuideItems]
+    [visiblePlaybookGuideItems]
   );
 
   const tools = useMemo(
-    () => PORTAL_TOOLS.filter((tool) => tool.access === "free" || !isFreeOnly),
+    () =>
+      PORTAL_TOOLS.filter(
+        (tool) => tool.access === "free" || (SHOW_MUDIKIT_IN_PORTAL && !isFreeOnly)
+      ),
     [isFreeOnly]
   );
 

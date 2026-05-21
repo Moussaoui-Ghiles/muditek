@@ -48,8 +48,8 @@ const PORTAL_ROUTE_REWRITES: Array<[RegExp, string]> = [
   [/^\/playbooks\/([\w-]+)\.html(?:\?[^#]*)?(?:#.*)?$/i, "/r/$1"],
   [/^https?:\/\/(?:www\.)?muditek\.com\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
   [/^\/tools\/revenue-leak-calculator\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/tools/revenue-leak-calculator"],
-  [/^https?:\/\/(?:www\.)?muditek\.com\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/mudikit"],
-  [/^\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal/mudikit"],
+  [/^https?:\/\/(?:www\.)?muditek\.com\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal"],
+  [/^\/mudikit\/?(?:\?[^#]*)?(?:#.*)?$/i, "/portal"],
 ];
 
 function rewritePortalLinks(html: string): string {
@@ -161,7 +161,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
         <div className="min-w-0 flex-1">
           <div className="text-[13.5px] font-medium text-foreground">Reading inside the portal</div>
           <p className="mt-0.5 text-[12px] leading-5 text-muted-foreground">
-            The full library is in <Link href="/portal" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">your portal</Link>. MudiKit access lives in <Link href="/portal/mudikit" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">/portal/mudikit</Link>.
+            The full library is in <Link href="/portal" className="text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground">your portal</Link>. Skills, resources, tools, and newsletter articles stay in one account.
           </p>
         </div>
       </section>

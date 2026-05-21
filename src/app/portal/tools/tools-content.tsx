@@ -16,6 +16,7 @@ import {
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { Input } from "@/components/ui/input";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import { PORTAL_TOOLS, type PortalTool } from "@/app/portal/tools-catalog";
 
 type AccessFilter = "all" | "mudikit";
@@ -150,17 +151,21 @@ export default function ToolsContent({
 }) {
   const [query, setQuery] = useState("");
   const [accessFilter, setAccessFilter] = useState<AccessFilter>("all");
+  const visibleTools = useMemo(
+    () => (SHOW_MUDIKIT_IN_PORTAL ? PORTAL_TOOLS : PORTAL_TOOLS.filter((tool) => tool.access === "free")),
+    []
+  );
 
   const counts = useMemo(() => {
-    const included = PORTAL_TOOLS.filter((tool) => tool.access === "free").length;
-    const paid = PORTAL_TOOLS.length - included;
-    const locked = PORTAL_TOOLS.filter((tool) => isToolLocked(tool, access)).length;
-    return { total: PORTAL_TOOLS.length, included, paid, locked };
-  }, [access]);
+    const included = visibleTools.filter((tool) => tool.access === "free").length;
+    const paid = visibleTools.length - included;
+    const locked = visibleTools.filter((tool) => isToolLocked(tool, access)).length;
+    return { total: visibleTools.length, included, paid, locked };
+  }, [access, visibleTools]);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return PORTAL_TOOLS.filter((tool) => {
+    return visibleTools.filter((tool) => {
       if (accessFilter === "mudikit" && tool.access !== "mudikit") return false;
       if (!needle) return true;
       const haystack = [tool.title, tool.short, tool.description, tool.category]
@@ -169,7 +174,7 @@ export default function ToolsContent({
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [query, accessFilter]);
+  }, [query, accessFilter, visibleTools]);
 
   const grid = filtered;
   const hasBothAccess = counts.included > 0 && counts.paid > 0;

@@ -7,6 +7,7 @@ import { GoogleMapsLeadWorkbench } from "@/components/portal/google-maps-lead-wo
 import { LinkedInSerperLeadWorkbench } from "@/components/portal/linkedin-serper-lead-workbench";
 import { RevenueLeakWorkbench } from "@/components/portal/revenue-leak-workbench";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 export const dynamic = "force-dynamic";
 
@@ -246,6 +247,7 @@ export default async function ToolDetailPage({
   const workbench = getPortalTool(slug);
 
   if (!workbench) redirect("/portal/tools");
+  if (!SHOW_MUDIKIT_IN_PORTAL && workbench.access === "mudikit") redirect("/portal/tools");
 
   const locked = workbench.access === "mudikit" && !access.isMudikit && !access.isAdmin;
   return (

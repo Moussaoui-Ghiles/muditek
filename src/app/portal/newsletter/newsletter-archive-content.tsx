@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Mail,
   Newspaper,
-  Package,
   Search,
   Sparkles,
   Wand2,
@@ -492,12 +491,6 @@ export default function NewsletterArchiveContent({
                       title="Tools"
                       body="Live calculators and lead workbenches."
                       icon={<Wrench className="size-4" />}
-                    />
-                    <PointerCard
-                      href="/portal/mudikit"
-                      title="MudiKit"
-                      body="Paid library and access."
-                      icon={<Package className="size-4" />}
                     />
                   </div>
                 </section>

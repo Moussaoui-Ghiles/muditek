@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 type AccessFilter = "all" | "mudikit";
 
@@ -309,39 +310,43 @@ export default function SkillsContent({
 }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<AccessFilter>("all");
-
-  const total = skills.length;
-  const freeCount = useMemo(() => skills.filter((s) => s.is_free).length, [skills]);
-  const paidCount = total - freeCount;
-  const newCount = useMemo(
-    () => skills.filter((s) => s.is_new && isRecent(s)).length,
+  const visibleSkills = useMemo(
+    () => (SHOW_MUDIKIT_IN_PORTAL ? skills : skills.filter((skill) => skill.is_free)),
     [skills]
   );
+
+  const total = visibleSkills.length;
+  const freeCount = useMemo(() => visibleSkills.filter((s) => s.is_free).length, [visibleSkills]);
+  const paidCount = total - freeCount;
+  const newCount = useMemo(
+    () => visibleSkills.filter((s) => s.is_new && isRecent(s)).length,
+    [visibleSkills]
+  );
   const lockedCount = useMemo(
-    () => skills.filter((s) => !s.is_free && !(access.isMudikit || access.isAdmin)).length,
-    [skills, access]
+    () => visibleSkills.filter((s) => !s.is_free && !(access.isMudikit || access.isAdmin)).length,
+    [visibleSkills, access]
   );
 
   const featured: ContentItem | null = useMemo(() => {
     if (access.isMudikit || access.isAdmin) {
-      return skills.find((s) => isRecent(s) && s.is_new) ?? skills[0] ?? null;
+      return visibleSkills.find((s) => isRecent(s) && s.is_new) ?? visibleSkills[0] ?? null;
     }
-    return skills.find((s) => s.is_free) ?? skills[0] ?? null;
-  }, [skills, access]);
+    return visibleSkills.find((s) => s.is_free) ?? visibleSkills[0] ?? null;
+  }, [visibleSkills, access]);
 
   const newest = useMemo(() => {
-    return [...skills]
+    return [...visibleSkills]
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .filter((s) => s.id !== featured?.id)
       .slice(0, 4);
-  }, [skills, featured]);
+  }, [visibleSkills, featured]);
 
   const showAccessFilter = freeCount > 0 && paidCount > 0;
   const showSearch = total >= 5;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return skills.filter((skill) => {
+    return visibleSkills.filter((skill) => {
       if (filter === "mudikit" && skill.is_free) return false;
       if (!needle) return true;
       const haystack = [skill.title, skill.description, skill.file_type]
@@ -350,7 +355,7 @@ export default function SkillsContent({
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [skills, filter, query]);
+  }, [visibleSkills, filter, query]);
 
   // When idle (no search/filter), hide featured from the grid below to avoid duplication
   const gridSkills = useMemo(() => {
@@ -372,7 +377,7 @@ export default function SkillsContent({
               </h1>
               <p className="mt-2 max-w-[60ch] text-[14px] text-white/45">
                 Working assets you can drop into Claude, Codex, GTM motions, research and outreach.
-                Open skills come with every portal account. MudiKit unlocks the rest.
+                Open skills come with every portal account.
               </p>
             </div>
             <div className="flex items-center gap-5 text-[12px] text-white/40">
@@ -547,7 +552,7 @@ export default function SkillsContent({
                 )}
 
                 {/* Recent stream and activity aside */}
-                {!query && filter === "all" && skills.length >= 4 && (
+                {!query && filter === "all" && visibleSkills.length >= 4 && (
                   <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-10">
                     <div>
                       <div className="mb-4 flex items-baseline justify-between">
@@ -557,7 +562,7 @@ export default function SkillsContent({
                         <span className="text-[13px] text-white/40">By date</span>
                       </div>
                       <ul className="divide-y divide-white/[0.05]">
-                        {[...skills]
+                        {[...visibleSkills]
                           .sort(
                             (a, b) =>
                               new Date(b.created_at).getTime() -
@@ -583,7 +588,7 @@ export default function SkillsContent({
                             {total} {total === 1 ? "skill" : "skills"} on the shelf
                           </p>
                           <p className="mt-0.5 text-[12px] text-white/40">
-                            {freeCount} open · {paidCount} MudiKit
+                            {SHOW_MUDIKIT_IN_PORTAL ? `${freeCount} open · ${paidCount} MudiKit` : `${freeCount} open`}
                           </p>
                         </li>
                         {newCount > 0 && (

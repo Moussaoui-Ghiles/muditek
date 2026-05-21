@@ -9,6 +9,7 @@ import { ensureMudikitMembership } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
 import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
 
 const PORTAL_CONTENT_DIR = join(process.cwd(), "content/portal");
@@ -132,7 +133,7 @@ export default async function PortalPage({
   const activeView = normalizeView(params.view);
   const activeSlug = normalizeSlug(params.slug);
 
-  if (activeView === "mudikit") redirect("/portal/mudikit");
+  if (activeView === "mudikit") redirect(SHOW_MUDIKIT_IN_PORTAL ? "/portal/mudikit" : "/portal");
   if (activeView === "newsletter") redirect("/portal/newsletter");
   if (activeView === "skills") redirect("/portal/skills");
   if (activeView === "playbooks") redirect("/portal/playbooks");

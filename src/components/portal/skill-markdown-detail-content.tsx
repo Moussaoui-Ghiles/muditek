@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import type { PortalSkillFileEntry, SkillFileKind } from "@/lib/portal-skills";
 
 /* ---------- helpers ---------- */
@@ -214,7 +215,7 @@ function LockedState({ item }: { item: ContentItem }) {
               className="pointer-events-none absolute -right-32 -top-32 size-[520px] rounded-full bg-amber-400/[0.08] blur-3xl"
             />
             <span className="relative font-mono text-[10.5px] uppercase tracking-[0.22em] text-amber-300/85">
-              Skill · MudiKit
+              Skill
             </span>
             <h1 className="relative text-[34px] font-semibold leading-[1.05] tracking-[-0.025em] text-white md:text-[46px]">
               {item.title}
@@ -231,17 +232,17 @@ function LockedState({ item }: { item: ContentItem }) {
               <Lock className="size-4" />
             </span>
             <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-white">
-              Unlock with MudiKit
+              Not available right now
             </h2>
             <p className="text-[13.5px] leading-[1.6] text-white/55">
-              This skill is part of the paid operator library. One subscription opens every paid
-              skill, with its full file tree and references, plus everything new as it ships.
+              Open skills stay visible in the library. Anything unpublished or reserved is hidden
+              until it is ready.
             </p>
             <Link
-              href="/portal/mudikit"
+              href="/portal/skills"
               className="group mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 hover:gap-3 hover:bg-amber-50"
             >
-              Open MudiKit
+              Back to skills
               <ArrowUpRight className="size-3.5" />
             </Link>
           </aside>
@@ -321,7 +322,9 @@ export function SkillMarkdownDetailContent({
                 <Terminal className="size-3.5 text-amber-300/80" />
                 <span className="text-amber-300/85">Skill</span>
                 <span className="text-white/30">/</span>
-                <span className="text-white/55">{item.is_free ? "Included" : "MudiKit"}</span>
+                <span className="text-white/55">
+                  {item.is_free || !SHOW_MUDIKIT_IN_PORTAL ? "Included" : "MudiKit"}
+                </span>
               </div>
               <h1 className="mt-3 text-[34px] font-semibold leading-[1.04] tracking-[-0.025em] text-white md:text-[46px]">
                 {item.title}

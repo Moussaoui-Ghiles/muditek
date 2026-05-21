@@ -5,6 +5,7 @@ import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import type { ContentItem } from "@/lib/content-item";
 import MudikitContent from "./mudikit-content";
 
@@ -17,6 +18,8 @@ export const metadata = {
 };
 
 export default async function PortalMudikitPage() {
+  if (!SHOW_MUDIKIT_IN_PORTAL) redirect("/portal");
+
   const { isAuthenticated } = await auth();
   if (!isAuthenticated) redirect("/sign-in?redirect_url=/portal/mudikit");
 

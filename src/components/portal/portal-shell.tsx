@@ -6,6 +6,7 @@ import { createContext, useContext } from "react";
 import { Menu } from "lucide-react";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import { PortalSidebar } from "./portal-sidebar";
 
 const PortalShellMountedContext = createContext(false);
@@ -16,7 +17,7 @@ const LEAF_LABEL: Record<string, string> = {
   skills: "Skills",
   playbooks: "Resources",
   tools: "Tools",
-  mudikit: "MudiKit",
+  ...(SHOW_MUDIKIT_IN_PORTAL ? { mudikit: "MudiKit" } : {}),
   newsletter: "Newsletter",
   account: "Account",
 };

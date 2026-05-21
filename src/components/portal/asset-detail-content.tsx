@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 export type AssetLabels = {
   kindSingular: string;
@@ -39,6 +40,7 @@ function fileTypeLabel(value: string): string {
 }
 
 function accessLabel(item: ContentItem): string | null {
+  if (!SHOW_MUDIKIT_IN_PORTAL) return null;
   return item.is_free ? null : "MudiKit";
 }
 
@@ -91,7 +93,7 @@ function LockedState({ item, labels }: { item: ContentItem; labels: AssetLabels 
         <div className="reveal">
           <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
             <span aria-hidden className="h-px w-6 bg-primary/50" />
-            {labels.kindSingular} · MudiKit
+            {labels.kindSingular}
           </p>
           <h1 className="mt-6 text-[40px] font-black leading-[0.95] tracking-[-0.035em] text-foreground md:text-[60px]">
             {item.title}
@@ -107,7 +109,7 @@ function LockedState({ item, labels }: { item: ContentItem; labels: AssetLabels 
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-primary">
               <Lock className="size-3" />
-              MudiKit only
+              Not available
             </span>
             {created && (
               <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/75">
@@ -129,11 +131,11 @@ function LockedState({ item, labels }: { item: ContentItem; labels: AssetLabels 
             {labels.lockedBody}
           </p>
           <Link
-            href="/portal/mudikit"
+            href={labels.backHref}
             className="group btn-press relative z-10 mt-8 inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-8 py-4 text-[11px] font-black uppercase tracking-[0.22em] text-background"
           >
             <span className="relative z-10 inline-flex items-center gap-3">
-              Unlock MudiKit
+              Back to library
               <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
             </span>
             <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />

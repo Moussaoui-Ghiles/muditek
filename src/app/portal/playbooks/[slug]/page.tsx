@@ -18,8 +18,8 @@ const LABELS: AssetLabels = {
   backHref: "/portal/playbooks",
   backLabel: "All resources",
   notFoundBody: "No portal resource exists at this slug, or it is no longer published.",
-  lockedTitle: "MudiKit unlocks this resource",
-  lockedBody: "MudiKit gives access to every paid resource, playbook, and future drop.",
+  lockedTitle: "This resource is not available in the portal right now",
+  lockedBody: "Open resources stay visible in the library. Anything unpublished or reserved is hidden until it is ready.",
   emptyAssetBody: "This resource exists in the library, but no asset has been attached yet.",
 };
 

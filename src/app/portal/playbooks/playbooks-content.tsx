@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import type { ContentItem } from "@/lib/content-item";
 import { CONTENT_TOPIC_LABEL, type ContentTopic } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 type TypeFilter = "all" | "playbook" | "guide" | "resource";
 type TopicFilter = "all" | ContentTopic;
@@ -35,10 +36,6 @@ function typeLabel(item: ContentItem): string {
   if (item.category === "template") return "Template";
   if (item.category === "tool") return "Scorecard";
   return "Resource";
-}
-
-function accessLabel(item: ContentItem): string | null {
-  return item.is_free ? null : "MudiKit";
 }
 
 function topicForItem(item: ContentItem): ContentTopic {
@@ -395,18 +392,22 @@ export default function PlaybooksContent({
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [topicFilter, setTopicFilter] = useState<TopicFilter>("all");
+  const visibleItems = useMemo(
+    () => (SHOW_MUDIKIT_IN_PORTAL ? items : items.filter((item) => item.is_free)),
+    [items]
+  );
 
   const counts = useMemo(
     () => ({
-      total: items.length,
-      playbooks: items.filter((item) => item.category === "playbook").length,
-      guides: items.filter((item) => item.category === "guide").length,
-      resources: items.filter(isResourceFile).length,
-      included: items.filter((item) => item.is_free).length,
-      paid: items.filter((item) => !item.is_free).length,
-      locked: items.filter((item) => !item.is_free && !(access.isMudikit || access.isAdmin)).length,
+      total: visibleItems.length,
+      playbooks: visibleItems.filter((item) => item.category === "playbook").length,
+      guides: visibleItems.filter((item) => item.category === "guide").length,
+      resources: visibleItems.filter(isResourceFile).length,
+      included: visibleItems.filter((item) => item.is_free).length,
+      paid: visibleItems.filter((item) => !item.is_free).length,
+      locked: visibleItems.filter((item) => !item.is_free && !(access.isMudikit || access.isAdmin)).length,
     }),
-    [items, access]
+    [visibleItems, access]
   );
 
   const visibleTypes = [
@@ -417,21 +418,21 @@ export default function PlaybooksContent({
   const hasMultipleTypes = visibleTypes.length > 1;
   const topicCounts = useMemo(() => {
     const map: Record<TopicFilter, number> = {
-      all: items.length,
+      all: visibleItems.length,
       "lead-gen": 0,
       sales: 0,
       marketing: 0,
       gtm: 0,
     };
-    for (const item of items) map[topicForItem(item)] += 1;
+    for (const item of visibleItems) map[topicForItem(item)] += 1;
     return map;
-  }, [items]);
+  }, [visibleItems]);
   const visibleTopics = TOPIC_OPTIONS.filter((topic) => topic.value === "all" || topicCounts[topic.value] > 0);
-  const showSearch = items.length >= 5;
+  const showSearch = visibleItems.length >= 5;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return items.filter((item) => {
+    return visibleItems.filter((item) => {
       if (typeFilter === "playbook" && item.category !== "playbook") return false;
       if (typeFilter === "guide" && item.category !== "guide") return false;
       if (typeFilter === "resource" && !isResourceFile(item)) return false;
@@ -443,7 +444,7 @@ export default function PlaybooksContent({
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [items, query, typeFilter, topicFilter]);
+  }, [visibleItems, query, typeFilter, topicFilter]);
 
   const isFilteredView =
     query.trim().length > 0 || typeFilter !== "all" || topicFilter !== "all";
@@ -489,7 +490,7 @@ export default function PlaybooksContent({
       </section>
 
       <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
-        {items.length === 0 ? (
+        {visibleItems.length === 0 ? (
           <EmptyState />
         ) : (
           <>

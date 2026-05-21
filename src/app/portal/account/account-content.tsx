@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
 interface NewsletterAccountState {
   status: string;
@@ -35,7 +36,7 @@ interface ResourceUnlock {
 
 function accessLine(access: PortalAccess): string {
   if (access.isAdmin) return "Admin";
-  if (access.isMudikit) return "MudiKit";
+  if (SHOW_MUDIKIT_IN_PORTAL && access.isMudikit) return "MudiKit";
   return "Portal";
 }
 
@@ -245,7 +246,7 @@ export default function AccountContent({
               {displayName}
             </h1>
             <p className="mt-4 max-w-xl text-[14.5px] leading-7 text-foreground/60">
-              Access, billing, newsletter settings, and the resources this account has unlocked.
+              Access, newsletter settings, and the resources this account has unlocked.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 lg:w-[390px]">
@@ -279,42 +280,44 @@ export default function AccountContent({
           </dl>
         </Panel>
 
-        <Panel
-          icon={<CreditCard className="size-4" />}
-          eyebrow="Billing"
-          title={access.isMudikit ? "MudiKit active" : "No active subscription"}
-          body={
-            access.isMudikit
-              ? "Stripe manages subscription changes, invoices, and card details when this account has a Stripe customer."
-              : "MudiKit billing appears here after checkout."
-          }
-        >
-          <dl className="mb-5">
-            <Row
-              label="Status"
-              value={subscriptionStatus ? sentenceCase(subscriptionStatus) : access.isMudikit ? "Active" : "None"}
-            />
-            {renewalDate && <Row label="Renews" value={renewalDate} />}
-          </dl>
-          {access.isMudikit && stripeCustomerId ? (
-            <Button
-              render={<Link href="/api/portal/billing" prefetch={false} />}
-              nativeButton={false}
-            >
-              <CreditCard className="size-4" />
-              Manage billing
-            </Button>
-          ) : access.isMudikit ? (
-            <p className="text-[12.5px] leading-6 text-foreground/55">
-              Billing management is unavailable because this account has MudiKit access without a linked Stripe customer.
-            </p>
-          ) : (
-            <Button render={<Link href="/portal/mudikit" />} nativeButton={false}>
-              View MudiKit
-              <ArrowUpRight className="size-4" />
-            </Button>
-          )}
-        </Panel>
+        {SHOW_MUDIKIT_IN_PORTAL && (
+          <Panel
+            icon={<CreditCard className="size-4" />}
+            eyebrow="Billing"
+            title={access.isMudikit ? "MudiKit active" : "No active subscription"}
+            body={
+              access.isMudikit
+                ? "Stripe manages subscription changes, invoices, and card details when this account has a Stripe customer."
+                : "MudiKit billing appears here after checkout."
+            }
+          >
+            <dl className="mb-5">
+              <Row
+                label="Status"
+                value={subscriptionStatus ? sentenceCase(subscriptionStatus) : access.isMudikit ? "Active" : "None"}
+              />
+              {renewalDate && <Row label="Renews" value={renewalDate} />}
+            </dl>
+            {access.isMudikit && stripeCustomerId ? (
+              <Button
+                render={<Link href="/api/portal/billing" prefetch={false} />}
+                nativeButton={false}
+              >
+                <CreditCard className="size-4" />
+                Manage billing
+              </Button>
+            ) : access.isMudikit ? (
+              <p className="text-[12.5px] leading-6 text-foreground/55">
+                Billing management is unavailable because this account has MudiKit access without a linked Stripe customer.
+              </p>
+            ) : (
+              <Button render={<Link href="/portal/mudikit" />} nativeButton={false}>
+                View MudiKit
+                <ArrowUpRight className="size-4" />
+              </Button>
+            )}
+          </Panel>
+        )}
 
         <Panel
           icon={<Mail className="size-4" />}

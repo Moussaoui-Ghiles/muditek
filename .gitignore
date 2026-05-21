@@ -39,3 +39,6 @@ next-env.d.ts
 .playwright-cli/
 .superpowers/
 CLAUDE.md
+
+# clerk configuration (can include secrets)
+/.clerk/

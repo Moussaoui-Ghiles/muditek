@@ -321,40 +321,53 @@ export default function PortalHomeContent({
       <section className="relative overflow-hidden border-b border-white/[0.06]">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="portal-hero-grid absolute inset-0" />
-          <div className="portal-hero-sweep absolute inset-y-0 -left-1/3 w-1/3" />
-          <div className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]" />
+          <div className="portal-hero-aurora absolute -inset-x-1/4 -top-1/2 h-[180%]" />
+          <div className="portal-hero-sweep absolute inset-y-0 -left-1/3 w-2/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.04),transparent_72%)]" />
         </div>
         <style>{`
           .portal-hero-grid {
             background-image:
-              linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 56px 56px;
-            -webkit-mask-image: radial-gradient(125% 80% at 50% 0%, #000 0%, transparent 72%);
-            mask-image: radial-gradient(125% 80% at 50% 0%, #000 0%, transparent 72%);
-            animation: portalHeroGridDrift 26s linear infinite;
+              linear-gradient(to right, rgba(255,255,255,0.09) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.09) 1px, transparent 1px);
+            background-size: 46px 46px;
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%);
+            animation: portalHeroGridDrift 14s linear infinite;
             will-change: transform;
           }
           @keyframes portalHeroGridDrift {
-            from { transform: translateY(0); }
-            to   { transform: translateY(56px); }
+            from { transform: translateY(-46px); }
+            to   { transform: translateY(0); }
+          }
+          .portal-hero-aurora {
+            background:
+              radial-gradient(40% 60% at 25% 40%, rgba(245,158,11,0.18), transparent 60%),
+              radial-gradient(38% 55% at 75% 55%, rgba(255,255,255,0.12), transparent 60%);
+            filter: blur(44px);
+            animation: portalHeroAurora 18s ease-in-out infinite alternate;
+            will-change: transform;
+          }
+          @keyframes portalHeroAurora {
+            from { transform: translate3d(-4%, -2%, 0) scale(1); }
+            to   { transform: translate3d(7%, 4%, 0) scale(1.12); }
           }
           .portal-hero-sweep {
-            background: linear-gradient(100deg, transparent 0%, rgba(245,158,11,0.10) 45%, rgba(255,255,255,0.06) 60%, transparent 100%);
-            filter: blur(26px);
+            background: linear-gradient(100deg, transparent 0%, rgba(245,158,11,0.18) 45%, rgba(255,255,255,0.12) 60%, transparent 100%);
+            filter: blur(22px);
             opacity: 0;
-            animation: portalHeroSweep 17s ease-in-out infinite;
+            animation: portalHeroSweep 12s ease-in-out infinite;
             will-change: transform, opacity;
           }
           @keyframes portalHeroSweep {
             0%   { transform: translateX(0); opacity: 0; }
-            12%  { opacity: 1; }
-            58%  { opacity: 1; }
-            100% { transform: translateX(420%); opacity: 0; }
+            15%  { opacity: 1; }
+            55%  { opacity: 1; }
+            100% { transform: translateX(320%); opacity: 0; }
           }
           @media (prefers-reduced-motion: reduce) {
-            .portal-hero-grid { animation: none; }
-            .portal-hero-sweep { animation: none; opacity: 0; }
+            .portal-hero-grid, .portal-hero-aurora, .portal-hero-sweep { animation: none; }
+            .portal-hero-sweep { opacity: 0; }
           }
         `}</style>
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-12 sm:px-6 md:pb-16 md:pt-16 lg:px-10">

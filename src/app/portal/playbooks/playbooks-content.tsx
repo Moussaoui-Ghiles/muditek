@@ -81,7 +81,7 @@ function CoverFrame({
   const style: React.CSSProperties = { aspectRatio: ratio };
   if (item.thumbnail_url) {
     return (
-      <div className="relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-white/[0.02]" style={style}>
+      <div className="relative w-full min-w-0 max-w-full overflow-hidden rounded-[2px] border border-white/[0.08] bg-white/[0.02]" style={style}>
         <img
           src={item.thumbnail_url}
           alt=""
@@ -94,7 +94,7 @@ function CoverFrame({
   }
   const label = typeLabel(item).toUpperCase();
   return (
-    <div className="relative overflow-hidden rounded-[2px] border border-white/[0.08]" style={style}>
+    <div className="relative w-full min-w-0 max-w-full overflow-hidden rounded-[2px] border border-white/[0.08]" style={style}>
       <div className="absolute inset-0 bg-[radial-gradient(900px_400px_at_20%_-10%,rgba(245,158,11,0.12),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
       <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.025)_0_1px,transparent_1px_14px)]" />
       <div className="absolute inset-0 flex flex-col justify-between p-5">

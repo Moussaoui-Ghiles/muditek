@@ -43,7 +43,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (existsSync(htmlAsset)) {
     return {
       ...item,
-      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
+      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}?v=2`,
     };
   }
 
@@ -77,7 +77,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
 
       return {
         ...item,
-        thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
+        thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}?v=2`,
       };
     }
 
@@ -96,7 +96,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
 
     return {
       ...item,
-      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}`,
+      thumbnail_url: `/api/portal/covers/${encodeURIComponent(item.slug)}?v=2`,
     };
   }
 }

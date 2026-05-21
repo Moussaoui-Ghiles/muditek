@@ -12,6 +12,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (process.env.NURTURE_SEQUENCE_ENABLED !== "true") {
+    return NextResponse.json({
+      processed: 0,
+      sent: 0,
+      skipped: 0,
+      errors: 0,
+      paused: true,
+    });
+  }
+
   const sql = getDb();
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";

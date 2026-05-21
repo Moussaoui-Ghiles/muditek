@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { trackEvent } from "@/lib/client-analytics";
 
 const VALID_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"] as const;
 type Topic = (typeof VALID_TOPICS)[number];
@@ -90,13 +91,15 @@ export function EmailCapture({
     setErrorMsg("");
 
     try {
+      const derivedSource = deriveSource(source, tags);
+      const derivedTopics = deriveTopics(topics, tags);
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          source: deriveSource(source, tags),
-          topics: deriveTopics(topics, tags),
+          source: derivedSource,
+          topics: derivedTopics,
         }),
       });
 
@@ -106,6 +109,10 @@ export function EmailCapture({
       }
 
       setStatus("success");
+      trackEvent("newsletter_signup", {
+        source: derivedSource,
+        topics: derivedTopics.join(","),
+      });
       onSuccess?.();
     } catch (err) {
       setStatus("error");

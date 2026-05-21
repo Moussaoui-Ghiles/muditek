@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { ArrowRight, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { categoryLabel, formatContentDate, resourceDetailHref } from "@/lib/content-item";
 import { getContentItemBySlug } from "@/lib/content-library";
 import { trackResourceLead } from "@/lib/resource-leads";
+import { ResourceUnlockActions } from "./resource-unlock-actions";
 
 const BASE_URL = "https://muditek.com";
 
@@ -107,21 +107,11 @@ export default async function ResourceUnlockPage({
               </p>
             )}
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={`/sign-up?redirect_url=${encodedRedirect}`}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-[4px] bg-foreground px-6 text-sm font-black uppercase tracking-[0.16em] text-background transition-transform hover:scale-[1.02]"
-              >
-                Create account
-                <ArrowRight className="size-4" strokeWidth={2} />
-              </Link>
-              <Link
-                href={`/sign-in?redirect_url=${encodedRedirect}`}
-                className="inline-flex h-12 items-center justify-center rounded-[4px] border border-white/[0.1] px-6 text-sm font-black uppercase tracking-[0.16em] text-foreground/70 transition-colors hover:border-white/[0.22] hover:text-foreground"
-              >
-                Sign in
-              </Link>
-            </div>
+            <ResourceUnlockActions
+              slug={slug}
+              createHref={`/sign-up?redirect_url=${encodedRedirect}`}
+              signInHref={`/sign-in?redirect_url=${encodedRedirect}`}
+            />
 
             <p className="mt-4 max-w-xl text-xs leading-5 text-foreground/35">
               Portal account. Unlock this resource and the Muditek library.

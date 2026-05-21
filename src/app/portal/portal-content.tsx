@@ -347,33 +347,33 @@ export default function PortalHomeContent({
           .portal-blob-1 {
             width: 46%; height: 150%; left: -8%; top: -25%;
             background: radial-gradient(circle at 50% 50%, #3b6cf5, transparent 60%);
-            animation: portalBlob1 24s ease-in-out infinite alternate;
+            animation: portalBlob1 12s ease-in-out infinite alternate;
           }
           .portal-blob-2 {
             width: 42%; height: 155%; left: 22%; top: -30%;
             background: radial-gradient(circle at 50% 50%, #7c3aed, transparent 60%);
-            animation: portalBlob2 30s ease-in-out infinite alternate;
+            animation: portalBlob2 15s ease-in-out infinite alternate;
           }
           .portal-blob-3 {
             width: 46%; height: 150%; right: 8%; top: -22%;
             background: radial-gradient(circle at 50% 50%, #d6409f, transparent 60%);
-            animation: portalBlob3 27s ease-in-out infinite alternate;
+            animation: portalBlob3 11s ease-in-out infinite alternate;
           }
           .portal-blob-4 {
             width: 40%; height: 150%; right: -10%; top: -18%;
             background: radial-gradient(circle at 50% 50%, #22b8cf, transparent 60%);
-            animation: portalBlob4 33s ease-in-out infinite alternate;
+            animation: portalBlob4 14s ease-in-out infinite alternate;
           }
           .portal-blob-5 {
             width: 34%; height: 140%; left: 6%; top: -8%; opacity: 0.5;
             background: radial-gradient(circle at 50% 50%, #f59e0b, transparent 62%);
-            animation: portalBlob5 22s ease-in-out infinite alternate;
+            animation: portalBlob5 10s ease-in-out infinite alternate;
           }
-          @keyframes portalBlob1 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(7%,6%,0) scale(1.14); } }
-          @keyframes portalBlob2 { from { transform: translate3d(0,0,0) scale(1.05); } to { transform: translate3d(-6%,-5%,0) scale(0.95); } }
-          @keyframes portalBlob3 { from { transform: translate3d(0,0,0) scale(0.96); } to { transform: translate3d(-7%,6%,0) scale(1.16); } }
-          @keyframes portalBlob4 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-8%,-6%,0) scale(1.12); } }
-          @keyframes portalBlob5 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(9%,5%,0) scale(1.18); } }
+          @keyframes portalBlob1 { from { transform: translate3d(-8%,-6%,0) scale(0.9); } to { transform: translate3d(16%,12%,0) scale(1.28); } }
+          @keyframes portalBlob2 { from { transform: translate3d(10%,8%,0) scale(1.2); } to { transform: translate3d(-14%,-10%,0) scale(0.85); } }
+          @keyframes portalBlob3 { from { transform: translate3d(6%,-8%,0) scale(0.95); } to { transform: translate3d(-16%,12%,0) scale(1.3); } }
+          @keyframes portalBlob4 { from { transform: translate3d(0,0,0) scale(1.1); } to { transform: translate3d(-18%,-12%,0) scale(0.9); } }
+          @keyframes portalBlob5 { from { transform: translate3d(-6%,4%,0) scale(0.95); } to { transform: translate3d(20%,-10%,0) scale(1.3); } }
           .portal-hero-grid {
             background-image:
               linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),

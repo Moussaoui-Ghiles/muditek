@@ -2,16 +2,10 @@ import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join, relative } from "path";
 import type { ContentItem } from "@/lib/content-item";
 
-const SKILL_DIRS = [
-  join(process.cwd(), "content/skills"),
-  ...(process.env.NODE_ENV === "production"
-    ? []
-    : [
-        join(process.cwd(), "../../..", ".claude/skills"),
-        join(process.cwd(), "../../..", ".agents/skills"),
-        join(process.cwd(), "../../..", ".codex/skills"),
-      ]),
-];
+// Portal skills come ONLY from content/skills — the shipped, customer-facing set.
+// (Previously this also pulled .claude/.agents/.codex skill dirs in dev, which
+// leaked internal tooling skills like manim/codex-loop into the local portal.)
+const SKILL_DIRS = [join(process.cwd(), "content/skills")];
 
 export interface PortalSkillFile {
   slug: string;

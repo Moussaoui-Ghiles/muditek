@@ -319,10 +319,44 @@ export default function PortalHomeContent({
     <main className="relative noise">
       {/* ── Hero band ── */}
       <section className="relative overflow-hidden border-b border-white/[0.06]">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]"
-        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="portal-hero-grid absolute inset-0" />
+          <div className="portal-hero-sweep absolute inset-y-0 -left-1/3 w-1/3" />
+          <div className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]" />
+        </div>
+        <style>{`
+          .portal-hero-grid {
+            background-image:
+              linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 56px 56px;
+            -webkit-mask-image: radial-gradient(125% 80% at 50% 0%, #000 0%, transparent 72%);
+            mask-image: radial-gradient(125% 80% at 50% 0%, #000 0%, transparent 72%);
+            animation: portalHeroGridDrift 26s linear infinite;
+            will-change: transform;
+          }
+          @keyframes portalHeroGridDrift {
+            from { transform: translateY(0); }
+            to   { transform: translateY(56px); }
+          }
+          .portal-hero-sweep {
+            background: linear-gradient(100deg, transparent 0%, rgba(245,158,11,0.10) 45%, rgba(255,255,255,0.06) 60%, transparent 100%);
+            filter: blur(26px);
+            opacity: 0;
+            animation: portalHeroSweep 17s ease-in-out infinite;
+            will-change: transform, opacity;
+          }
+          @keyframes portalHeroSweep {
+            0%   { transform: translateX(0); opacity: 0; }
+            12%  { opacity: 1; }
+            58%  { opacity: 1; }
+            100% { transform: translateX(420%); opacity: 0; }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .portal-hero-grid { animation: none; }
+            .portal-hero-sweep { animation: none; opacity: 0; }
+          }
+        `}</style>
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-12 sm:px-6 md:pb-16 md:pt-16 lg:px-10">
           {hasHero ? (
             <div className="max-w-3xl">

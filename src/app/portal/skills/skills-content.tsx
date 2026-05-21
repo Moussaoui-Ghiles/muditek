@@ -44,53 +44,6 @@ function accessLabel(skill: ContentItem, accessible: boolean): {
   return { text: "Locked", tone: "locked" };
 }
 
-function SkillThumbBanner({
-  skill,
-  accessible,
-}: {
-  skill: ContentItem;
-  accessible: boolean;
-}) {
-  if (skill.thumbnail_url) {
-    return (
-      <div className="relative h-32 w-full overflow-hidden rounded-lg border border-white/[0.05]">
-        <img
-          src={skill.thumbnail_url}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-          loading="lazy"
-        />
-        {!accessible && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
-            <Lock className="size-4 text-white/85" />
-          </div>
-        )}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#0a0a0c]/40 to-transparent" />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="relative h-32 w-full overflow-hidden rounded-lg border border-white/[0.05]"
-      style={{
-        background:
-          "radial-gradient(120% 90% at 18% 12%, rgba(255,255,255,0.08), transparent 52%), linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.005))",
-      }}
-    >
-      <div className="absolute inset-0 opacity-[0.14] mix-blend-overlay [background-image:repeating-linear-gradient(0deg,rgba(255,255,255,0.5)_0px,rgba(255,255,255,0.5)_1px,transparent_1px,transparent_3px)]" />
-      <div className="absolute bottom-3 left-3">
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
-          {skill.file_type ? `.${skill.file_type.toLowerCase()}` : "skill"}
-        </span>
-      </div>
-      <div className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full border border-white/[0.10] bg-black/35 text-white/70">
-        {accessible ? <Terminal className="size-3.5" /> : <Lock className="size-3.5" />}
-      </div>
-    </div>
-  );
-}
-
 function FeaturedSkill({
   skill,
   access,
@@ -208,55 +161,53 @@ function SkillCard({
   return (
     <Link
       href={`/portal/skills/${encodeURIComponent(skill.slug)}`}
-      style={{ animationDelay: `${index * 55}ms` }}
-      className={`skill-card-in group relative isolate flex h-full flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br p-6 transition-all duration-300 hover:bg-white/[0.03] md:p-7 ${accent} to-transparent`}
+      style={{ animationDelay: `${index * 45}ms` }}
+      className={`skill-card-in group relative isolate flex h-full min-h-[196px] flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br p-6 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.035] md:p-7 ${accent} to-transparent`}
     >
       <div
         aria-hidden
         className={`pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-gradient-to-br ${accent} to-transparent blur-3xl`}
       />
 
-      <div className="relative flex flex-col gap-5">
-        <SkillThumbBanner skill={skill} accessible={accessible} />
-
-        <div className="min-w-0">
+      <div className="relative">
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex size-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/70 transition-colors group-hover:border-white/[0.16] group-hover:text-white">
+            {accessible ? <Terminal className="size-4" /> : <Lock className="size-4" />}
+          </span>
           <div className="flex items-center gap-2">
-            <h3 className="text-[18px] font-semibold leading-[1.2] tracking-[-0.015em] text-white">
-              {skill.title}
-            </h3>
             {isNew && (
-              <span className="relative inline-flex size-1.5 shrink-0 rounded-full bg-amber-400">
+              <span className="relative inline-flex size-1.5 rounded-full bg-amber-400">
                 <span className="absolute inset-0 animate-ping rounded-full bg-amber-400 opacity-60" />
               </span>
             )}
+            {label.text && (
+              <span
+                className={`font-mono text-[10px] uppercase tracking-[0.16em] ${
+                  label.tone === "mudikit" ? "text-amber-300/85" : "text-white/45"
+                }`}
+              >
+                {label.text}
+              </span>
+            )}
           </div>
-          {skill.description && (
-            <p className="mt-2 line-clamp-3 text-[13.5px] leading-[1.55] text-white/55">
-              {skill.description}
-            </p>
-          )}
         </div>
+
+        <h3 className="mt-4 text-[17px] font-semibold leading-[1.25] tracking-[-0.015em] text-white">
+          {skill.title}
+        </h3>
+        {skill.description && (
+          <p className="mt-2 line-clamp-3 text-[13px] leading-[1.55] text-white/55">
+            {skill.description}
+          </p>
+        )}
       </div>
 
-      <div className="relative mt-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-[11px]">
-          {skill.file_type && (
-            <span className="font-mono uppercase tracking-[0.16em] text-white/45">
-              .{skill.file_type.toLowerCase()}
-            </span>
-          )}
-          {label.text && (
-            <span
-              className={`font-mono uppercase tracking-[0.16em] ${
-                label.tone === "mudikit" ? "text-amber-300/85" : "text-white/45"
-              }`}
-            >
-              {label.text}
-            </span>
-          )}
-        </div>
-        <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-white/70 transition-colors group-hover:text-amber-300/85">
-          View
+      <div className="relative mt-6 flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate font-mono text-[10.5px] uppercase tracking-[0.16em] text-white/30">
+          skills/{skill.slug}
+        </span>
+        <span className="inline-flex shrink-0 items-center gap-1.5 text-[12.5px] font-medium text-white/70 transition-colors group-hover:text-amber-300/85">
+          Open
           <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </span>
       </div>

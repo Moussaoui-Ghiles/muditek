@@ -2,7 +2,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-detail-content";
 import { SkillMarkdownDetailContent } from "@/components/portal/skill-markdown-detail-content";
-import { getPortalSkill, portalSkillToContentItem } from "@/lib/portal-skills";
+import { getPortalSkillBundle } from "@/lib/portal-skills";
+import type { ContentItem } from "@/lib/content-item";
 import {
   buildAssetAccess,
   getDownloadHref,
@@ -51,21 +52,32 @@ export default async function SkillDetailPage({
 
   const access = await buildAssetAccess(email, user.id);
   const item = await loadAssetBySlugAndCategories(slug, ["skill"]);
-  const localSkill = getPortalSkill(slug);
+  const bundle = getPortalSkillBundle(slug);
 
   const displayName = user.firstName || email.split("@")[0];
 
-  if (localSkill) {
-    const localItem = portalSkillToContentItem(localSkill);
+  if (bundle) {
+    const mergedItem = {
+      id: item?.id ?? `local-skill-${bundle.slug}`,
+      title: item?.title ?? bundle.name,
+      slug: bundle.slug,
+      description: item?.description ?? bundle.description,
+      category: "skill",
+      topic: item?.topic ?? null,
+      download_url: bundle.downloadUrl,
+      file_type: "md",
+      thumbnail_url: item?.thumbnail_url ?? null,
+      is_new: item?.is_new ?? false,
+      is_free: item?.is_free ?? bundle.is_free,
+      created_at: item?.created_at ?? bundle.createdAt,
+      updated_at: item?.updated_at ?? bundle.updatedAt,
+    } satisfies ContentItem;
+
     return (
       <SkillMarkdownDetailContent
-        item={{
-          ...localItem,
-          ...(item ?? {}),
-          download_url: localItem.download_url,
-          file_type: "md",
-        }}
-        markdown={localSkill.markdown}
+        item={mergedItem}
+        files={bundle.files}
+        downloadUrl={bundle.downloadUrl}
         access={access}
       />
     );

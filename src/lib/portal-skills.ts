@@ -235,3 +235,97 @@ export function getPortalSkillArchiveFiles(slug: string): Array<{ path: string; 
     data: readFileSync(file),
   }));
 }
+
+const SKILL_TEXT_EXTENSIONS = new Set([
+  "md", "markdown", "mdx", "txt", "rst",
+  "json", "jsonc", "yaml", "yml", "toml", "ini", "env", "conf", "cfg",
+  "ts", "tsx", "js", "jsx", "mjs", "cjs", "py", "rb", "go", "rs", "java",
+  "kt", "php", "c", "cc", "cpp", "h", "hpp", "swift", "lua",
+  "sh", "bash", "zsh", "fish", "sql", "css", "scss", "less",
+  "html", "xml", "svg", "csv", "tsv", "graphql", "gql",
+]);
+
+const SKILL_NO_EXT_TEXT = new Set([
+  "license", "dockerfile", "makefile", "readme", "gitignore", "npmrc", "nvmrc",
+]);
+
+const MAX_TEXT_FILE_BYTES = 512 * 1024;
+
+export type SkillFileKind = "markdown" | "code" | "binary";
+
+export interface PortalSkillFileEntry {
+  path: string;
+  name: string;
+  ext: string;
+  kind: SkillFileKind;
+  language: string | null;
+  raw: string | null;
+  size: number;
+}
+
+export interface PortalSkillBundle {
+  slug: string;
+  name: string;
+  description: string | null;
+  is_free: boolean;
+  createdAt: string;
+  updatedAt: string;
+  downloadUrl: string;
+  fileCount: number;
+  files: PortalSkillFileEntry[];
+}
+
+function fileExtension(name: string): string {
+  const dot = name.lastIndexOf(".");
+  if (dot <= 0) return "";
+  return name.slice(dot + 1).toLowerCase();
+}
+
+function classifySkillFile(name: string, ext: string): { kind: SkillFileKind; isText: boolean } {
+  if (ext === "md" || ext === "markdown" || ext === "mdx") return { kind: "markdown", isText: true };
+  if (SKILL_TEXT_EXTENSIONS.has(ext)) return { kind: "code", isText: true };
+  if (ext === "" && SKILL_NO_EXT_TEXT.has(name.toLowerCase())) return { kind: "code", isText: true };
+  return { kind: "binary", isText: false };
+}
+
+export function getPortalSkillBundle(slug: string): PortalSkillBundle | null {
+  const skill = getPortalSkill(slug);
+  if (!skill) return null;
+
+  const files: PortalSkillFileEntry[] = listFilesRecursive(skill.dir).map((absPath) => {
+    const rel = relative(skill.dir, absPath).split("\\").join("/");
+    const name = rel.split("/").pop() ?? rel;
+    const ext = fileExtension(name);
+    const { kind, isText } = classifySkillFile(name, ext);
+    const stats = statSync(absPath);
+
+    let raw: string | null = null;
+    if (isText && stats.size <= MAX_TEXT_FILE_BYTES) {
+      try {
+        raw = readFileSync(absPath, "utf-8");
+      } catch {
+        raw = null;
+      }
+    }
+
+    return { path: rel, name, ext, kind, language: ext || null, raw, size: stats.size };
+  });
+
+  files.sort((a, b) => {
+    if (a.path === "SKILL.md") return -1;
+    if (b.path === "SKILL.md") return 1;
+    return a.path.localeCompare(b.path, undefined, { numeric: true });
+  });
+
+  return {
+    slug: skill.slug,
+    name: skill.name,
+    description: skill.description,
+    is_free: skill.is_free,
+    createdAt: skill.createdAt,
+    updatedAt: skill.updatedAt,
+    downloadUrl: `/api/portal/skills/${encodeURIComponent(skill.slug)}/download`,
+    fileCount: files.length,
+    files,
+  };
+}

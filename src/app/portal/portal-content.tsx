@@ -374,7 +374,7 @@ export default function PortalHomeContent({
           {hasHero ? (
             <div className="max-w-3xl">
               <p className="reveal text-[13px] font-bold tracking-[-0.01em] text-white/75">
-                Welcome back, {displayName}.
+                {displayName ? `Welcome back, ${displayName}.` : "Welcome back."}
               </p>
               {hero!.eyebrow ? (
                 <p className="reveal reveal-delay-1 mt-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
@@ -405,7 +405,7 @@ export default function PortalHomeContent({
           ) : (
             <div className="max-w-3xl">
               <h1 className="reveal text-[40px] font-black leading-[0.96] tracking-[-0.04em] text-white sm:text-[56px] md:text-[68px]">
-                Hey, {displayName}.
+                {displayName ? `Hey, ${displayName}.` : "Welcome back."}
               </h1>
               <p className="reveal reveal-delay-1 mt-6 max-w-2xl text-[16px] leading-[1.7] text-white/75">
                 Your Muditek library: skills, resources, tools, and every newsletter issue.

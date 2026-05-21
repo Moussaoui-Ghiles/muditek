@@ -222,7 +222,7 @@ export default async function PortalPage({
     LIMIT 40
   `) as NewsletterIssue[];
 
-  const displayName = user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
+  const displayName = user.firstName || (paidSub?.name as string | undefined) || "";
 
   const thisWeek = readThisWeek();
   const upcoming = readUpcoming();

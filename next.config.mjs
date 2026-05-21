@@ -54,7 +54,7 @@ const nextConfig = {
       },
       {
         source: "/buy",
-        destination: "/mudikit",
+        destination: "/",
         permanent: true,
       },
       {

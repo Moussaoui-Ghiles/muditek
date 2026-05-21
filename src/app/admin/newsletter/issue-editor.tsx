@@ -205,17 +205,19 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     }
   }
 
-  async function doSend() {
+  async function doSend(limit?: number) {
     if (dirtyRef.current) await save();
     setSending(true);
     setSendResult(null);
     try {
       const res = await fetch(`/api/admin/newsletter/issues/${issueId}/send`, {
         method: "POST",
+        headers: limit ? { "content-type": "application/json" } : undefined,
+        body: limit ? JSON.stringify({ limit }) : undefined,
       });
       const data = await res.json();
       if (res.ok) {
-        setSendResult(`Sent ${data.sent} · Failed ${data.failed}`);
+        setSendResult(`Sent ${data.sent} · Failed ${data.failed} · Remaining ${data.remaining}`);
         const refreshed = await fetch(`/api/admin/newsletter/issues/${issueId}`).then(
           (r) => r.json(),
         );
@@ -508,8 +510,11 @@ export default function IssueEditor({ issueId, onClose }: Props) {
             >
               Cancel
             </Button>
-            <Button onClick={doSend} disabled={sending}>
-              {sending ? "Sending…" : "Confirm send"}
+            <Button variant="secondary" onClick={() => doSend(100)} disabled={sending}>
+              {sending ? "Sending…" : "Send 100"}
+            </Button>
+            <Button onClick={() => doSend()} disabled={sending}>
+              {sending ? "Sending…" : "Send all"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -69,15 +69,8 @@ export async function GET(request: Request) {
 
       if (now < dueDate) break; // Not due yet, and later steps won't be either
 
-      // Build email content
-      const checkoutUrl = `${baseUrl}/mudikit?email=${encodeURIComponent(lead.email)}`;
-      const html =
-        step.step === 5
-          ? (step.buildHtml as (name: string, url: string) => string)(
-              lead.name || "there",
-              checkoutUrl
-            )
-          : step.buildHtml(lead.name || "there");
+      const portalUrl = `${baseUrl}/portal`;
+      const html = step.buildHtml(lead.name || "there", portalUrl);
 
       try {
         await sendSequenceEmail(lead.email, step.subject, html, step.step);

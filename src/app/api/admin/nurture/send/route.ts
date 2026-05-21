@@ -90,8 +90,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const checkoutUrl = `${baseUrl}/mudikit?email=${encodeURIComponent(normalizedEmail)}`;
-  const html = stepConfig.buildHtml(lead.name || "there", checkoutUrl);
+  const portalUrl = `${baseUrl}/portal`;
+  const html = stepConfig.buildHtml(lead.name || "there", portalUrl);
 
   try {
     await sendSequenceEmail(normalizedEmail, stepConfig.subject, html, stepConfig.step);

@@ -89,23 +89,122 @@ type ActiveSub = {
   unsub_token: string;
 };
 
-export async function listActiveSubscribers(audienceFilter?: string | null): Promise<ActiveSub[]> {
+export async function listActiveSubscribers(
+  audienceFilter?: string | null,
+  issueId?: string,
+  limit?: number,
+): Promise<ActiveSub[]> {
   const sql = getDb();
   if (audienceFilter === "HOT" || audienceFilter === "WARM" || audienceFilter === "COLD") {
+    if (issueId && limit) {
+      const rows = await sql`
+        SELECT id, email, unsub_token FROM newsletter_subscribers s
+        WHERE status = 'active'
+          AND segment = ${audienceFilter}
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ORDER BY subscribed_at ASC NULLS LAST, id ASC
+        LIMIT ${limit}
+      `;
+      return rows as ActiveSub[];
+    }
+    if (issueId) {
+      const rows = await sql`
+        SELECT id, email, unsub_token FROM newsletter_subscribers s
+        WHERE status = 'active'
+          AND segment = ${audienceFilter}
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ORDER BY subscribed_at ASC NULLS LAST, id ASC
+      `;
+      return rows as ActiveSub[];
+    }
     const rows = await sql`
       SELECT id, email, unsub_token FROM newsletter_subscribers
       WHERE status = 'active' AND segment = ${audienceFilter}
+      ORDER BY subscribed_at ASC NULLS LAST, id ASC
+    `;
+    return rows as ActiveSub[];
+  }
+  if (issueId && limit) {
+    const rows = await sql`
+      SELECT id, email, unsub_token FROM newsletter_subscribers s
+      WHERE status = 'active'
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+      ORDER BY subscribed_at ASC NULLS LAST, id ASC
+      LIMIT ${limit}
+    `;
+    return rows as ActiveSub[];
+  }
+  if (issueId) {
+    const rows = await sql`
+      SELECT id, email, unsub_token FROM newsletter_subscribers s
+      WHERE status = 'active'
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+      ORDER BY subscribed_at ASC NULLS LAST, id ASC
     `;
     return rows as ActiveSub[];
   }
   const rows = await sql`
     SELECT id, email, unsub_token FROM newsletter_subscribers
     WHERE status = 'active'
+    ORDER BY subscribed_at ASC NULLS LAST, id ASC
   `;
   return rows as ActiveSub[];
 }
 
-export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sent: number; failed: number }> {
+async function countRemainingSubscribers(audienceFilter: string | null | undefined, issueId: string): Promise<number> {
+  const sql = getDb();
+  if (audienceFilter === "HOT" || audienceFilter === "WARM" || audienceFilter === "COLD") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count FROM newsletter_subscribers s
+      WHERE status = 'active'
+        AND segment = ${audienceFilter}
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return Number(rows[0]?.count ?? 0);
+  }
+  const rows = await sql`
+    SELECT COUNT(*)::int AS count FROM newsletter_subscribers s
+    WHERE status = 'active'
+      AND NOT EXISTS (
+        SELECT 1 FROM newsletter_events e
+        WHERE e.issue_id = ${issueId}
+          AND e.subscriber_id = s.id
+          AND e.event = 'sent'
+      )
+  `;
+  return Number(rows[0]?.count ?? 0);
+}
+
+export async function sendIssue(
+  issueId: string,
+  baseUrl: string,
+  options: { limit?: number } = {},
+): Promise<{ sent: number; failed: number; remaining: number }> {
   const sql = getDb();
   const issueRows = await sql`
     SELECT id, subject, html, slug, audience_filter, status, stats
@@ -120,7 +219,10 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
     throw new Error("Issue contains inline images. Configure Vercel Blob or replace them with hosted image URLs before sending.");
   }
 
-  const subs = await listActiveSubscribers(issue.audience_filter);
+  const limit = options.limit && Number.isFinite(options.limit)
+    ? Math.max(1, Math.min(100, Math.floor(options.limit)))
+    : undefined;
+  const subs = await listActiveSubscribers(issue.audience_filter, issueId, limit);
   if (subs.length === 0) throw new Error("No active subscribers for this audience");
 
   const resend = getResend();
@@ -182,17 +284,33 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
     throw new Error("No emails were sent. Check Resend configuration and sender domain.");
   }
 
+  const previousStats = normalizeNewsletterStats(issue.stats);
+  const previousSent = typeof previousStats.sent === "number" ? previousStats.sent : 0;
+  const previousFailed = typeof previousStats.failed === "number" ? previousStats.failed : 0;
+  const remaining = await countRemainingSubscribers(issue.audience_filter, issueId);
+
   const nextStats = {
-    ...normalizeNewsletterStats(issue.stats),
-    sent,
-    failed,
+    ...previousStats,
+    sent: previousSent + sent,
+    failed: previousFailed + failed,
+    last_batch_sent: sent,
+    last_batch_failed: failed,
+    remaining,
   };
 
-  await sql`
-    UPDATE newsletter_issues
-    SET status = 'sent', sent_at = NOW(), stats = ${JSON.stringify(nextStats)}::jsonb
-    WHERE id = ${issueId}
-  `;
+  if (remaining === 0) {
+    await sql`
+      UPDATE newsletter_issues
+      SET status = 'sent', sent_at = NOW(), stats = ${JSON.stringify(nextStats)}::jsonb
+      WHERE id = ${issueId}
+    `;
+  } else {
+    await sql`
+      UPDATE newsletter_issues
+      SET stats = ${JSON.stringify(nextStats)}::jsonb, updated_at = NOW()
+      WHERE id = ${issueId}
+    `;
+  }
 
-  return { sent, failed };
+  return { sent, failed, remaining };
 }

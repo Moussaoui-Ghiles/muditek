@@ -158,7 +158,10 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
 
     try {
       const result = await resend.batch.send(emails);
-      const items: any[] = (result as any)?.data?.data ?? [];
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+      const items = result.data?.data ?? [];
       for (let k = 0; k < chunk.length; k++) {
         const sub = chunk[k];
         const emailId = items[k]?.id ?? null;
@@ -173,6 +176,10 @@ export async function sendIssue(issueId: string, baseUrl: string): Promise<{ sen
     } catch {
       failed += chunk.length;
     }
+  }
+
+  if (sent === 0) {
+    throw new Error("No emails were sent. Check Resend configuration and sender domain.");
   }
 
   const nextStats = {

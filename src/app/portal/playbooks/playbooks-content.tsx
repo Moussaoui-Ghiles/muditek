@@ -340,41 +340,28 @@ function FilterPill({
 }
 
 function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
-  const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setDisplay(value);
       return;
     }
     let raf = 0;
-    let started = false;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting || started) continue;
-          started = true;
-          observer.disconnect();
-          const start = performance.now();
-          const duration = 900;
-          const tick = (now: number) => {
-            const t = Math.min(1, (now - start) / duration);
-            const eased = 1 - Math.pow(1 - t, 3);
-            setDisplay(Math.round(value * eased));
-            if (t < 1) raf = requestAnimationFrame(tick);
-          };
-          raf = requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0 }
-    );
-    observer.observe(el);
+    const start = performance.now();
+    const duration = 900;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    // Fallback: guarantee the real value shows even if rAF is throttled (background tab).
+    const fallback = setTimeout(() => setDisplay(value), 1500);
     return () => {
-      observer.disconnect();
       cancelAnimationFrame(raf);
+      clearTimeout(fallback);
     };
   }, [value]);
 
@@ -390,7 +377,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
             : "text-[28px] font-black tracking-[-0.03em] text-foreground tnum"
         }
       >
-        <span ref={ref}>{display}</span>
+        {display}
       </dd>
     </div>
   );

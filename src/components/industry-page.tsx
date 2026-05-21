@@ -8,6 +8,7 @@ import { NewsletterInline } from "@/components/newsletter-inline";
 import { FaqBlock, type FaqItem } from "@/components/faq-block";
 import { StatStrip } from "@/components/stat-strip";
 import { MudikitCta } from "@/components/mudikit-cta";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 import {
   INDUSTRIES,
   type IndustryConfig,
@@ -113,6 +114,14 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
   const heroBtn = ACCENT_HEX_HERO_BTN[config.accent];
   const url = `https://muditek.com/who-we-help/${config.slug}`;
   const related = config.relatedIndustries.map((s) => INDUSTRIES[s]);
+  const primaryServicePath =
+    !SHOW_MUDIKIT_ON_WEBSITE && config.primaryServicePath === "/mudikit"
+      ? "/newsletter"
+      : config.primaryServicePath;
+  const primaryServiceLabel =
+    !SHOW_MUDIKIT_ON_WEBSITE && config.primaryServicePath === "/mudikit"
+      ? "Read the newsletter"
+      : config.primaryServiceLabel;
 
   return (
     <div
@@ -194,11 +203,11 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
           <ScrollReveal delay={240}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
               <Link
-                href={config.primaryServicePath}
+                href={primaryServicePath}
                 className={`group relative inline-flex items-center px-10 py-5 ${heroBtn} font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press`}
               >
                 <span className="relative z-10 flex items-center gap-3">
-                  {config.primaryServiceLabel}
+                  {primaryServiceLabel}
                   <svg
                     width="12"
                     height="12"
@@ -409,7 +418,7 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
       <FaqBlock items={data.faqs} accentColor={config.accent} />
 
       {/* OPTIONAL MUDIKIT CTA */}
-      {config.showMudikit ? (
+      {SHOW_MUDIKIT_ON_WEBSITE && config.showMudikit ? (
         <MudikitCta
           headline={`Ship a ${config.shortLabel.toLowerCase()} system this weekend with MudiKit · $47/mo`}
           body="Paid Claude Code skills and portal resource drops for operators who want deployable assets, not another course."

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { EmailCapture } from "./email-capture";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 export function Footer() {
   return (
@@ -42,7 +43,9 @@ export function Footer() {
               <Link href="/mudiagent" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Operational Infrastructure</Link>
-              <Link href="/mudikit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">MudiKit ($47/mo)</Link>
+              {SHOW_MUDIKIT_ON_WEBSITE ? (
+                <Link href="/mudikit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">MudiKit ($47/mo)</Link>
+              ) : null}
               <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
             </div>
             <div>

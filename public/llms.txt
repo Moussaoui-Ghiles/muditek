@@ -10,10 +10,6 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - [Revenue Leak Audit](https://muditek.com/revenue-leak-audit): Diagnoses where B2B SaaS pipelines lose €80-180K/year with exact formulas. Builds AI systems to fix speed-to-lead, pipeline conversion, churn, and outbound performance. €50K guarantee.
 - [Operational Infrastructure for Private Equity & Investment Banking](https://muditek.com/pe-ops): Custom operational infrastructure for private equity and investment banking firms. Investor onboarding, KYC automation, document generation, e-signatures, fee computation. Alternative to Juniper Square at a fraction of the cost.
 
-## Product
-
-- [MudiKit](https://muditek.com/mudikit): $47/month paid portal library — Claude Code skills, portal resource drops, tools, and account access. Cancel anytime via Stripe.
-
 ## Tools
 
 - [Revenue Leak Calculator](https://muditek.com/tools/revenue-leak-calculator): Free calculator that estimates annual revenue leakage from speed-to-lead decay, pipeline conversion gaps, and excess churn.
@@ -23,7 +19,7 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - [Who We Help (index)](https://muditek.com/who-we-help): Five industries served by Muditek with industry-specific AI systems and case studies.
 - [Private Equity & VC](https://muditek.com/who-we-help/private-equity): Custom operational infrastructure for PE and VC firms — investor onboarding in 3-5 days, KYC, fee computation, document generation. You own the platform.
 - [B2B SaaS](https://muditek.com/who-we-help/b2b-saas): B2B SaaS at €800K-€1.8M ARR — diagnose where pipeline, conversion, and churn leak money in euros, then ship the AI systems that fix each leak.
-- [Marketing & Dev Agencies](https://muditek.com/who-we-help/agencies): Recover 20+ hours/week from manual content, reporting, and client ops. MudiKit operator library plus targeted custom builds.
+- [Marketing & Dev Agencies](https://muditek.com/who-we-help/agencies): Recover 20+ hours/week from manual content, reporting, and client ops with targeted custom builds.
 - [Telecom Operators](https://muditek.com/who-we-help/telecom): On-premises AI for SLA reporting, NOC automation, knowledge search, and software operation. No cloud, no per-user fees.
 - [Fintech & Payments](https://muditek.com/who-we-help/fintech): Custom operational infrastructure for KYC review queues, automated expiry alerts, reconciliation, and compliance workflows you own.
 
@@ -40,13 +36,10 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 
 - [mudiAgent vs ChatGPT Enterprise](https://muditek.com/mudiagent-vs-chatgpt): On-premises digital employee with workflow automation vs cloud chatbox. Data sovereignty, no per-user fees, scheduled autonomous operation.
 - [Muditek vs Juniper Square](https://muditek.com/pe-ops-vs-juniper-square): Own a custom PE ops platform for €40-80K vs rent Juniper Square at $700K+/year. KYC, e-signatures, fee computation, full source.
-- [MudiKit vs Skool](https://muditek.com/mudikit-vs-skool): $47/mo Claude Code skills library you install and run vs hosted community platform with courses, threads, and gamification.
-- [MudiKit vs Circle](https://muditek.com/mudikit-vs-circle): $47/mo Claude Code skills library vs tiered community platform with spaces, events, and white-label apps.
-
 ## Newsletter & Resources
 
 - [Muditek Newsletter](https://muditek.com/newsletter): Weekly playbooks for AI operators, B2B operators, and investment professionals. 5,000+ subscribers across telecom, SaaS, and finance. Archive of 29+ issues.
-- [Portal Resources](https://muditek.com/portal): Signed-in library for playbooks, guides, skills, tools, newsletter articles, and MudiKit drops. Public resource links now use tracked unlock routes like `https://muditek.com/r/ai-data-agent-guide` and require account creation before opening inside the portal.
+- [Portal Resources](https://muditek.com/portal): Signed-in library for playbooks, guides, skills, tools, and newsletter articles. Public resource links now use tracked unlock routes like `https://muditek.com/r/ai-data-agent-guide` and require account creation before opening inside the portal.
 - [About / Founder](https://muditek.com/about): Background on Ghiles Moussaoui, the methodology, and how to book a call.
 
 ## Target Audiences
@@ -56,7 +49,7 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - Private equity, venture capital, and investment banking firms managing investor operations across multiple jurisdictions
 - Marketing and development agencies (3+ people, 3+ retainer clients) recovering hours from manual content and reporting
 - Fintech and payments firms automating KYC, expiry tracking, and compliance ops
-- Solo operators, AI builders, and consultants using Claude Code who want production-grade skills they can deploy this week (MudiKit)
+- Solo operators, AI builders, and consultants following the B2B Agents newsletter
 
 ## Key Differentiators
 
@@ -70,7 +63,6 @@ Muditek diagnoses where companies lose money to manual operations and builds AI 
 - mudiAgent: 40 hours saved in 90 days or reconfigured at no cost
 - Revenue Leak Audit: €50K in annual leakage found or you pay nothing
 - Operational Infrastructure: €150K+ in annual operational waste identified or you pay nothing
-- MudiKit: cancel anytime via Stripe customer portal, no annual lock-in
 
 ## Contact
 
@@ -92,7 +84,6 @@ These pages are also available in clean Markdown for AI agents that prefer text/
 - https://muditek.com/mudiagent.md
 - https://muditek.com/revenue-leak-audit.md
 - https://muditek.com/pe-ops.md
-- https://muditek.com/mudikit.md (MudiKit)
 - https://muditek.com/about.md
 
 Each page also declares its Markdown alternate via `<link rel="alternate" type="text/markdown">` in the HTML head.

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDY_SLUGS } from "@/lib/case-studies";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const BASE = "https://muditek.com";
 
@@ -14,21 +15,28 @@ const MARKETING: Array<{ path: string; priority: number; changeFrequency: Metada
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/mudikit", priority: 0.8, changeFrequency: "monthly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
   { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly" },
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/mudikit-vs-skool", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/mudikit-vs-circle", priority: 0.7, changeFrequency: "monthly" },
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
 ];
 
+const MUDIKIT_MARKETING: typeof MARKETING = [
+  { path: "/mudikit", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/mudikit-vs-skool", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/mudikit-vs-circle", priority: 0.7, changeFrequency: "monthly" },
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  const entries: MetadataRoute.Sitemap = MARKETING.map((m) => ({
+  const marketing = SHOW_MUDIKIT_ON_WEBSITE
+    ? [...MARKETING, ...MUDIKIT_MARKETING]
+    : MARKETING;
+
+  const entries: MetadataRoute.Sitemap = marketing.map((m) => ({
     url: `${BASE}${m.path}`,
     lastModified: now,
     changeFrequency: m.changeFrequency,

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 interface MudikitCtaProps {
   variant?: "inline" | "section";
@@ -20,6 +21,8 @@ export function MudikitCta({
   body = DEFAULT_BODY,
   ctaLabel = DEFAULT_CTA_LABEL,
 }: MudikitCtaProps) {
+  if (!SHOW_MUDIKIT_ON_WEBSITE) return null;
+
   if (variant === "inline") {
     return (
       <aside

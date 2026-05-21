@@ -111,7 +111,7 @@ export default function B2bSaasIndustryPage() {
           },
           {
             q: "We're not at €800K ARR yet. Should we wait?",
-            a: "If you're under €500K ARR, the leakage usually doesn't justify the build cost — start with the newsletter and MudiKit ($47/mo) to build the operator muscles yourself. Above €800K, the math typically works. Book a 30-minute call if you want a direct read on where you stand.",
+            a: "If you're under €500K ARR, the leakage usually doesn't justify the build cost — start with the newsletter to build the operator muscles yourself. Above €800K, the math typically works. Book a 30-minute call if you want a direct read on where you stand.",
           },
         ],
         serviceSchemaName: "B2B SaaS Revenue Leak Diagnostic + AI Fix Systems",

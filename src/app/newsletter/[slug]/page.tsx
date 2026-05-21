@@ -5,6 +5,7 @@ import { neon } from "@neondatabase/serverless";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { TldrBox } from "@/components/tldr-box";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 export const revalidate = 3600;
 
@@ -71,10 +72,14 @@ function pickRelated(subject: string): [RelatedLink, RelatedLink] {
   const hasAgent = /\b(agent|agents|claude|automation|automations)\b/.test(s);
   const hasPe = /\b(pe\b|investor|investors|fund\b|funds|private equity|kyc)\b/.test(s);
 
-  if (hasPe) return [RELATED_PE_OPS, RELATED_BUY];
-  if (hasOutbound) return [RELATED_REVENUE_LEAK, RELATED_BUY];
-  if (hasAgent) return [RELATED_MUDIAGENT, RELATED_BUY];
-  return [RELATED_BUY, RELATED_NEWSLETTER_ARCHIVE];
+  const secondary = SHOW_MUDIKIT_ON_WEBSITE ? RELATED_BUY : RELATED_NEWSLETTER_ARCHIVE;
+
+  if (hasPe) return [RELATED_PE_OPS, secondary];
+  if (hasOutbound) return [RELATED_REVENUE_LEAK, secondary];
+  if (hasAgent) return [RELATED_MUDIAGENT, secondary];
+  return SHOW_MUDIKIT_ON_WEBSITE
+    ? [RELATED_BUY, RELATED_NEWSLETTER_ARCHIVE]
+    : [RELATED_NEWSLETTER_ARCHIVE, RELATED_REVENUE_LEAK];
 }
 
 async function getIssue(slug: string): Promise<Issue | null> {

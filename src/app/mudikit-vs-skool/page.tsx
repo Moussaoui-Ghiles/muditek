@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { FaqBlock } from "@/components/faq-block";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 export const metadata: Metadata = {
   title: "MudiKit vs Skool in 2026 | AI Skills Library vs Community Platform | Muditek",
@@ -60,6 +62,8 @@ const FAQ = [
 ];
 
 export default function MudikitVsSkoolPage() {
+  if (!SHOW_MUDIKIT_ON_WEBSITE) redirect("/");
+
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <Navbar />

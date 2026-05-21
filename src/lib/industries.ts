@@ -55,7 +55,7 @@ export const INDUSTRIES: Record<IndustrySlug, IndustryConfig> = {
     primaryServiceLabel: "Run a Revenue Leak Audit",
     caseStudySlug: "saas-revenue-leak",
     relatedIndustries: ["agencies", "fintech"],
-    showMudikit: true,
+    showMudikit: false,
     newsletterTag: "industry-b2b-saas",
   },
   agencies: {
@@ -65,14 +65,14 @@ export const INDUSTRIES: Record<IndustrySlug, IndustryConfig> = {
     accent: "primary",
     metaTitle: "AI Systems for Marketing & Dev Agencies in 2026 | Muditek",
     metaDescription:
-      "Marketing & dev agencies lose 20+ hours/week to manual content, reporting, and ops in 2026. MudiKit + custom builds reclaim margin.",
+      "Marketing & dev agencies lose 20+ hours/week to manual content, reporting, and ops in 2026. Custom AI systems reclaim margin.",
     oneLiner:
-      "Marketing and dev agencies recovering 20+ hours/week from manual content, reporting, and client ops — with MudiKit and targeted custom builds.",
-    primaryServicePath: "/mudikit",
-    primaryServiceLabel: "Get MudiKit - $47/mo",
+      "Marketing and dev agencies recovering 20+ hours/week from manual content, reporting, and client ops with targeted custom builds.",
+    primaryServicePath: "/newsletter",
+    primaryServiceLabel: "Read the newsletter",
     caseStudySlug: "agency-content-engine",
     relatedIndustries: ["b2b-saas", "telecom"],
-    showMudikit: true,
+    showMudikit: false,
     newsletterTag: "industry-agencies",
   },
   telecom: {
@@ -89,7 +89,7 @@ export const INDUSTRIES: Record<IndustrySlug, IndustryConfig> = {
     primaryServiceLabel: "See mudiAgent",
     caseStudySlug: "telecom-noc-automation",
     relatedIndustries: ["fintech", "agencies"],
-    showMudikit: true,
+    showMudikit: false,
     newsletterTag: "industry-telecom",
   },
   fintech: {

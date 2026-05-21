@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { CheckoutButton } from "./checkout-button";
 import { FaqItem } from "./faq-item";
 import { listShippedPortalSkills } from "@/lib/portal-skills";
+import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const FEATURED_SKILL_SLUGS = [
   "cold-email",
@@ -47,6 +49,8 @@ interface PageProps {
 }
 
 export default async function MudikitPage({ searchParams }: PageProps) {
+  if (!SHOW_MUDIKIT_ON_WEBSITE) redirect("/");
+
   const params = await searchParams;
   const emailParam = typeof params.email === "string" ? params.email : undefined;
   const allSkills = listShippedPortalSkills();

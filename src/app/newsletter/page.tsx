@@ -21,8 +21,8 @@ const NEWSLETTER_FAQ = [
     a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
   },
   {
-    q: "Will issues move into MudiKit later?",
-    a: "No. The newsletter is the front door. MudiKit, audits, and custom builds live separately. Selected article-style issues stay readable in the archive.",
+    q: "Will issues move behind a paywall later?",
+    a: "No. The newsletter is the front door. Audits and custom builds live separately. Selected article-style issues stay readable in the archive.",
   },
   {
     q: "Who reads it?",

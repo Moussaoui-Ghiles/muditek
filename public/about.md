@@ -54,8 +54,7 @@ We built mudiAgent to run Muditek. When clients saw the results, they asked us t
 ## Three Doors to Get Started
 
 1. **Newsletter** for weekly systems and playbooks. https://muditek.com/newsletter
-2. **MudiKit ($47/mo)** for the paid portal library. https://muditek.com/mudikit
-3. **30-minute call** to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure). https://muditek.com/about
+2. **30-minute call** to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure). https://muditek.com/about
 
 ## Who Works With Muditek
 
@@ -64,7 +63,7 @@ We built mudiAgent to run Muditek. When clients saw the results, they asked us t
 - Private equity, VC, merchant banking firms managing investor operations across multiple jurisdictions
 - Marketing and dev agencies (3-10 people, 3+ retainer clients) recovering hours from manual content and reporting
 - Fintech and payments firms automating KYC, expiry tracking, compliance ops
-- Solo operators, AI builders, and consultants using Claude Code (MudiKit ICP)
+- Solo operators, AI builders, and consultants following the B2B Agents newsletter
 
 We take 1-2 build clients at a time per offer to ensure each engagement gets full attention. Diagnostic offers (Revenue Leak Audit, mudiAgent discovery) have wider availability.
 
@@ -83,7 +82,7 @@ Ghiles Moussaoui — engineer turned operator. Started building automation syste
 Europe-based, fully remote engagements. Most clients in Europe and North America. We take 1-2 build clients at a time so each gets full attention. Diagnostic offers have wider availability.
 
 **How do I get started?**
-Three doors: newsletter, MudiKit subscription, or 30-minute call.
+Two doors: newsletter or 30-minute call.
 
 **Do you publish anything else?**
 Yes. Weekly newsletter (5,000+ subscribers), daily LinkedIn posts (35K followers), public archive at /newsletter. The newsletter is the source of truth — everything else mirrors it.

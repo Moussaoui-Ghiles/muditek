@@ -24,7 +24,7 @@ const ABOUT_FAQ = [
   },
   {
     q: "How do I get started?",
-    a: "Three doors. Start with the newsletter for weekly systems and playbooks. Subscribe to MudiKit ($47/mo) for the paid portal library. Or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
+    a: "Two doors. Start with the newsletter for weekly systems and playbooks, or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
   },
   {
     q: "Do you publish anything else?",

@@ -14,8 +14,6 @@ Three service offers, each starting with a diagnostic that quantifies waste in e
 - **Revenue Leak Audit** — B2B SaaS pipeline diagnostics. Find €80-180K/year in leakage with formulas. €50K guarantee or pay nothing. €2K diagnostic. https://muditek.com/revenue-leak-audit
 - **Operational Infrastructure** — Custom-built systems for PE, VC, merchant banking. Juniper Square alternative. €40-80K build, €5-10K/mo retainer. https://muditek.com/pe-ops
 
-Plus **MudiKit** — $47/mo paid portal library: Claude Code skills, resource drops, tools, and account access. https://muditek.com/mudikit
-
 ## Numbers (2026)
 
 - 35+ AI systems deployed
@@ -36,13 +34,12 @@ Plus **MudiKit** — $47/mo paid portal library: Claude Code skills, resource dr
 - **mudiAgent**: 40 hours saved in 90 days, or reconfigured at no cost.
 - **Revenue Leak Audit**: €50K in annual leakage found, or you pay nothing.
 - **Operational Infrastructure**: €150K+ in annual operational waste identified, or you pay nothing.
-- **MudiKit**: cancel anytime via Stripe customer portal, no annual lock-in.
 
 ## Industries Served
 
 - **Private Equity & VC** — operational infrastructure (https://muditek.com/who-we-help/private-equity)
 - **B2B SaaS** at €800K-€1.8M ARR — Revenue Leak Audit (https://muditek.com/who-we-help/b2b-saas)
-- **Marketing & Dev Agencies** — content/reporting automation + MudiKit (https://muditek.com/who-we-help/agencies)
+- **Marketing & Dev Agencies** — content/reporting automation and custom AI systems (https://muditek.com/who-we-help/agencies)
 - **Telecom Operators** with 50+ employees — mudiAgent (https://muditek.com/who-we-help/telecom)
 - **Fintech & Payments** — KYC/compliance ops infrastructure (https://muditek.com/who-we-help/fintech)
 

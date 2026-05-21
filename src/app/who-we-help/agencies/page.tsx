@@ -36,11 +36,11 @@ export default function AgenciesIndustryPage() {
         heroSubhead:
           "Every retainer comes with weekly content, monthly reports, daily inboxes, and constant context-switching. The work expands faster than the headcount can absorb. Margin disappears into work nobody got hired to do.",
         heroSecondaryParagraph:
-          "MudiKit is the paid portal library for agencies that want deployable Claude Code skills and resource drops. Where MudiKit isn't enough, we build custom on top.",
+          "We build the content, reporting, and outbound systems that remove the repeated work without adding headcount.",
         stats: [
           { value: "20+ hrs", label: "Weekly busywork in 2026" },
           { value: "60x", label: "Throughput on social production" },
-          { value: "$47/mo", label: "MudiKit subscription" },
+          { value: "3-10", label: "Person agency sweet spot" },
         ],
         problems: [
           {
@@ -65,9 +65,9 @@ export default function AgenciesIndustryPage() {
         solutions: [
           {
             num: "01",
-            title: "MudiKit content engine",
+            title: "Client voice content engine",
             body: "Configure each client's voice once. The engine ingests their newsletter, blog, and product updates, then generates platform-specific drafts. The senior reviews 30+ posts in 20 minutes — same quality bar, sixty times the throughput.",
-            via: "MudiKit linkedin-content-writer + source-ingest skills",
+            via: "Custom content system built around your client inputs",
           },
           {
             num: "02",
@@ -79,7 +79,7 @@ export default function AgenciesIndustryPage() {
             num: "03",
             title: "Agentic outbound for new business",
             body: "Ideal-customer-profile defined once. The system identifies prospects, enriches contacts, drafts personalized first-touch, and tracks responses. The agency owner approves a daily list and pre-written messages in under 15 minutes.",
-            via: "MudiKit outreach skills + custom configuration",
+            via: "Custom outbound workflow and approval queue",
           },
         ],
         caseStudy: {
@@ -99,11 +99,11 @@ export default function AgenciesIndustryPage() {
           },
           {
             q: "Can we white-label this for our clients?",
-            a: "MudiKit is licensed for your agency's use, including using it to deliver to your clients. You can't redistribute the library to your clients as their own subscription. The custom systems we build on top — voice configurations, reporting templates, outbound configurations — are yours to brand and resell.",
+            a: "Yes. The custom systems we build — voice configurations, reporting templates, outbound configurations — are yours to brand and resell.",
           },
           {
             q: "How is this different from Jasper, Copy.ai, or other AI content tools?",
-            a: "Those tools are general-purpose content generators. MudiKit is specifically the skills, prompts, and configurations that I run my own business on, plus implementation playbooks. The difference is depth: Jasper writes; MudiKit ships systems that include voice config, review queue, scheduling integration, and per-client routing.",
+            a: "Those tools are general-purpose content generators. The difference here is the full workflow: voice config, source ingestion, review queue, scheduling integration, and per-client routing.",
           },
           {
             q: "What's the smallest agency this makes sense for?",
@@ -111,12 +111,12 @@ export default function AgenciesIndustryPage() {
           },
           {
             q: "Do we need engineers on staff?",
-            a: "Comfortable with a terminal and one engineer-or-engineering-curious team member is enough. If your agency has zero technical capacity, start with MudiKit's playbooks and a 30-minute call — we'll tell you whether to bring in a fractional implementer or wait until you have one in-house.",
+            a: "One engineer-or-engineering-curious team member helps. If your agency has zero technical capacity, start with the newsletter and a 30-minute call — we'll tell you whether to bring in a fractional implementer or wait until you have one in-house.",
           },
         ],
         serviceSchemaName: "AI Content + Outbound Systems for Marketing & Dev Agencies",
         serviceSchemaDescription:
-          "MudiKit operator library plus custom AI systems for marketing and development agencies — content production engines, reporting automation, and agentic outbound for agency new business.",
+          "Custom AI systems for marketing and development agencies — content production engines, reporting automation, and agentic outbound for agency new business.",
         datePublished: "2026-05-03",
         dateModified: "2026-05-04",
       }}

@@ -123,7 +123,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
             <p className="text-sm mb-4">You are currently unsubscribed.</p>
             <button
               onClick={async () => {
-                const res = await fetch(`/api/newsletter/subscribe`, {
+                const res = await fetch(`/api/subscribe`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ email, topics: TOPICS.map((t) => t.value) }),

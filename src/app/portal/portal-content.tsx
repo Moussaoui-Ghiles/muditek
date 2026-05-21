@@ -320,57 +320,74 @@ export default function PortalHomeContent({
       {/* ── Hero band ── */}
       <section className="relative overflow-hidden border-b border-white/[0.06]">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="portal-mesh">
+            <span className="portal-blob portal-blob-1" />
+            <span className="portal-blob portal-blob-2" />
+            <span className="portal-blob portal-blob-3" />
+            <span className="portal-blob portal-blob-4" />
+            <span className="portal-blob portal-blob-5" />
+          </div>
           <div className="portal-hero-grid absolute inset-0" />
-          <div className="portal-hero-aurora absolute -inset-x-1/4 -top-1/2 h-[180%]" />
-          <div className="portal-hero-sweep absolute inset-y-0 -left-1/3 w-2/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgba(255,255,255,0.04),transparent_72%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,12,0.8)_0%,rgba(10,10,12,0.28)_38%,transparent_70%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_bottom,transparent_0%,rgba(10,10,12,0.55)_78%,#0a0a0c_100%)]" />
         </div>
         <style>{`
+          .portal-mesh {
+            position: absolute;
+            inset: 0;
+            filter: blur(56px) saturate(150%);
+          }
+          .portal-blob {
+            position: absolute;
+            border-radius: 9999px;
+            mix-blend-mode: screen;
+            opacity: 0.7;
+            will-change: transform;
+          }
+          .portal-blob-1 {
+            width: 46%; height: 150%; left: -8%; top: -25%;
+            background: radial-gradient(circle at 50% 50%, #3b6cf5, transparent 60%);
+            animation: portalBlob1 24s ease-in-out infinite alternate;
+          }
+          .portal-blob-2 {
+            width: 42%; height: 155%; left: 22%; top: -30%;
+            background: radial-gradient(circle at 50% 50%, #7c3aed, transparent 60%);
+            animation: portalBlob2 30s ease-in-out infinite alternate;
+          }
+          .portal-blob-3 {
+            width: 46%; height: 150%; right: 8%; top: -22%;
+            background: radial-gradient(circle at 50% 50%, #d6409f, transparent 60%);
+            animation: portalBlob3 27s ease-in-out infinite alternate;
+          }
+          .portal-blob-4 {
+            width: 40%; height: 150%; right: -10%; top: -18%;
+            background: radial-gradient(circle at 50% 50%, #22b8cf, transparent 60%);
+            animation: portalBlob4 33s ease-in-out infinite alternate;
+          }
+          .portal-blob-5 {
+            width: 34%; height: 140%; left: 6%; top: -8%; opacity: 0.5;
+            background: radial-gradient(circle at 50% 50%, #f59e0b, transparent 62%);
+            animation: portalBlob5 22s ease-in-out infinite alternate;
+          }
+          @keyframes portalBlob1 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(7%,6%,0) scale(1.14); } }
+          @keyframes portalBlob2 { from { transform: translate3d(0,0,0) scale(1.05); } to { transform: translate3d(-6%,-5%,0) scale(0.95); } }
+          @keyframes portalBlob3 { from { transform: translate3d(0,0,0) scale(0.96); } to { transform: translate3d(-7%,6%,0) scale(1.16); } }
+          @keyframes portalBlob4 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-8%,-6%,0) scale(1.12); } }
+          @keyframes portalBlob5 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(9%,5%,0) scale(1.18); } }
           .portal-hero-grid {
             background-image:
-              linear-gradient(to right, rgba(255,255,255,0.09) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.09) 1px, transparent 1px);
-            background-size: 46px 46px;
-            -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%);
-            animation: portalHeroGridDrift 14s linear infinite;
-            will-change: transform;
-          }
-          @keyframes portalHeroGridDrift {
-            from { transform: translateY(-46px); }
-            to   { transform: translateY(0); }
-          }
-          .portal-hero-aurora {
-            background:
-              radial-gradient(40% 60% at 25% 40%, rgba(245,158,11,0.18), transparent 60%),
-              radial-gradient(38% 55% at 75% 55%, rgba(255,255,255,0.12), transparent 60%);
-            filter: blur(44px);
-            animation: portalHeroAurora 18s ease-in-out infinite alternate;
-            will-change: transform;
-          }
-          @keyframes portalHeroAurora {
-            from { transform: translate3d(-4%, -2%, 0) scale(1); }
-            to   { transform: translate3d(7%, 4%, 0) scale(1.12); }
-          }
-          .portal-hero-sweep {
-            background: linear-gradient(100deg, transparent 0%, rgba(245,158,11,0.18) 45%, rgba(255,255,255,0.12) 60%, transparent 100%);
-            filter: blur(22px);
-            opacity: 0;
-            animation: portalHeroSweep 12s ease-in-out infinite;
-            will-change: transform, opacity;
-          }
-          @keyframes portalHeroSweep {
-            0%   { transform: translateX(0); opacity: 0; }
-            15%  { opacity: 1; }
-            55%  { opacity: 1; }
-            100% { transform: translateX(320%); opacity: 0; }
+              linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 48px 48px;
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+            mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+            opacity: 0.5;
           }
           @media (prefers-reduced-motion: reduce) {
-            .portal-hero-grid, .portal-hero-aurora, .portal-hero-sweep { animation: none; }
-            .portal-hero-sweep { opacity: 0; }
+            .portal-blob-1, .portal-blob-2, .portal-blob-3, .portal-blob-4, .portal-blob-5 { animation: none; }
           }
         `}</style>
-        <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-12 sm:px-6 md:pb-16 md:pt-16 lg:px-10">
+        <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 md:pb-24 md:pt-24 lg:px-10">
           {hasHero ? (
             <div className="max-w-3xl">
               <p className="reveal text-[13px] font-bold tracking-[-0.01em] text-white/75">

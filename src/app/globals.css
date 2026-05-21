@@ -215,17 +215,23 @@
     padding-left: 1.25rem;
   }
 
-  /* ─── Scroll Reveal ─── */
+  /* ─── Scroll Reveal ───
+     Self-playing CSS animation (no JS dependency) so content is never stuck
+     invisible while the bundle hydrates. The IntersectionObserver still adds
+     .visible as a harmless enhancement. */
   .sr {
-    opacity: 0;
-    transform: translateY(2rem);
-    filter: blur(3px);
-    transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: portalReveal 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .sr.visible {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: none;
+    filter: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sr {
+      animation: none !important;
+      opacity: 1;
+    }
   }
 
   /* ─── Portal CSS-only mount reveal (no JS) ─── */
@@ -313,6 +319,22 @@
     background:
       radial-gradient(ellipse 60% 40% at 20% 30%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
       radial-gradient(ellipse 40% 60% at 80% 70%, rgba(245, 158, 11, 0.03) 0%, transparent 45%);
+  }
+
+  /* ─── Animated hero aurora (always-on ambient drift) ─── */
+  .hero-aurora {
+    background:
+      radial-gradient(ellipse 50% 42% at 28% 22%, rgba(245, 158, 11, 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 46% 54% at 78% 68%, rgba(245, 158, 11, 0.06) 0%, transparent 52%);
+    animation: auroraDrift 16s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes auroraDrift {
+    0%, 100% { transform: translate3d(-3%, -2%, 0) scale(1); opacity: 0.55; }
+    50%      { transform: translate3d(3%, 3%, 0) scale(1.12); opacity: 0.9; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-aurora { animation: none; }
   }
 
   /* ─── Stat Glow ─── */

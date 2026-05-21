@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, Filter, Lock, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ContentItem } from "@/lib/content-item";
 import { CONTENT_TOPIC_LABEL, type ContentTopic } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -120,7 +119,7 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
   return (
     <Link
       href={href}
-      className="group card-lift relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
+      className="group card-lift relative grid items-stretch gap-6 overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:border-primary/30 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background md:grid-cols-[1.05fr_1fr] md:gap-8 md:p-4"
     >
       <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
       <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-colors group-hover:bg-primary/10" />
@@ -185,7 +184,7 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
   return (
     <Link
       href={href}
-      className="group card-lift relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="group card-lift relative flex h-[460px] flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-3 backdrop-blur-md transition-all duration-700 hover:border-primary/30 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
       <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px] transition-colors group-hover:bg-primary/10" />
@@ -260,6 +259,38 @@ function EmptyState() {
   );
 }
 
+function MagneticUnlock({ href }: { href: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  const handleMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const rect = el.getBoundingClientRect();
+    const x = (event.clientX - (rect.left + rect.width / 2)) * 0.3;
+    const y = (event.clientY - (rect.top + rect.height / 2)) * 0.45;
+    el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  };
+  const reset = () => {
+    if (ref.current) ref.current.style.transform = "translate3d(0, 0, 0)";
+  };
+
+  return (
+    <Link
+      ref={ref}
+      href={href}
+      onMouseMove={handleMove}
+      onMouseLeave={reset}
+      className="group magnetic-cta relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      <span className="relative z-10 inline-flex items-center gap-3">
+        Unlock MudiKit
+        <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+      </span>
+      <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />
+    </Link>
+  );
+}
+
 function UpgradeBand({ count }: { count: number }) {
   return (
     <section className="mesh-subtle relative mt-16 overflow-hidden rounded-[2px] border border-primary/20 bg-card/[0.4] backdrop-blur-md">
@@ -277,16 +308,7 @@ function UpgradeBand({ count }: { count: number }) {
             MudiKit unlocks the full resource library and every new drop, alongside the paid skills.
           </p>
         </div>
-        <Link
-          href="/portal/mudikit"
-          className="group btn-press relative inline-flex items-center justify-center overflow-hidden rounded-[2px] bg-foreground px-10 py-5 text-[12px] font-black uppercase tracking-[0.2em] text-background touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          <span className="relative z-10 inline-flex items-center gap-3">
-            Unlock MudiKit
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
-          </span>
-          <span className="absolute inset-0 z-0 w-0 bg-primary transition-all duration-500 ease-in-out group-hover:w-full" />
-        </Link>
+        <MagneticUnlock href="/portal/mudikit" />
       </div>
     </section>
   );
@@ -446,6 +468,7 @@ export default function PlaybooksContent({
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/[0.04]">
         <div className="mesh-subtle pointer-events-none absolute inset-0 opacity-60" />
+        <div aria-hidden className="hero-aurora pointer-events-none absolute inset-0" />
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.025]"
@@ -485,20 +508,18 @@ export default function PlaybooksContent({
           <>
             {/* Featured */}
             {featured && (
-              <ScrollReveal>
-                <section className="mb-14">
-                  <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
-                    <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
-                      <span aria-hidden className="h-px w-6 bg-white/20" />
-                      Featured drop
-                    </h2>
-                    <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-                      Resource · in portal
-                    </span>
-                  </div>
-                  <FeaturedItem item={featured} access={access} />
-                </section>
-              </ScrollReveal>
+              <section className="reveal mb-14">
+                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
+                  <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
+                    <span aria-hidden className="h-px w-6 bg-white/20" />
+                    Featured drop
+                  </h2>
+                  <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                    Resource · in portal
+                  </span>
+                </div>
+                <FeaturedItem item={featured} access={access} />
+              </section>
             )}
 
             {/* Filter strip */}
@@ -578,9 +599,13 @@ export default function PlaybooksContent({
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                   {grid.map((item, i) => (
-                    <ScrollReveal key={item.id} delay={Math.min(i * 60, 360)}>
+                    <div
+                      key={item.id}
+                      className="reveal h-full"
+                      style={{ animationDelay: `${Math.min(i * 70, 560)}ms` }}
+                    >
                       <LibraryCard item={item} access={access} />
-                    </ScrollReveal>
+                    </div>
                   ))}
                 </div>
               </section>

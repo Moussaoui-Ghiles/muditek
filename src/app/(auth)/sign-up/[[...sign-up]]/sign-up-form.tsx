@@ -12,11 +12,10 @@ const CLERK_ELEMENTS = {
   card: "bg-white/[0.018] border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_30px_60px_-25px_rgba(0,0,0,0.7)] rounded-[12px] w-full! backdrop-blur-md px-6! py-7!",
   logoBox: "hidden!",
   header: "hidden!",
-  socialButtons: "hidden!",
-  socialButtonsBlockButton: "hidden!",
+  socialButtonsBlockButton:
+    "border border-white/[0.08] bg-transparent hover:bg-white/[0.04] hover:border-white/[0.16] transition-all duration-200 rounded-[8px] h-10 text-[13px] font-medium text-white",
   socialButtonsBlockButtonText: "text-[13px] font-medium text-white",
   socialButtonsProviderIcon: "w-4 h-4",
-  dividerRow: "hidden!",
   dividerLine: "bg-white/[0.06]",
   dividerText: "text-[10px] uppercase tracking-[0.18em] text-white/35",
   formFieldLabel: "text-[11px] font-medium text-white/55",

@@ -16,6 +16,7 @@ import {
   LogOut,
   MoreVertical,
   Newspaper,
+  Activity,
 } from "lucide-react";
 
 import {
@@ -48,6 +49,7 @@ const NAV = [
     label: "Audience",
     items: [
       { href: "/admin/newsletter", title: "Newsletter", icon: Newspaper },
+      { href: "/admin/usage", title: "Usage", icon: Activity },
       { href: "/admin/subscribers", title: "Paying customers", icon: CreditCard },
       { href: "/admin/leads", title: "Leads", icon: Users },
     ],

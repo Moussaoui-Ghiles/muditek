@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search, Loader2, MapPin, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { trackPortalUsage } from "@/components/portal/portal-usage-tracker";
 
 type Place = {
   name: string;
@@ -47,6 +48,10 @@ export function GoogleMapsLeadWorkbench() {
         });
         return;
       }
+      trackPortalUsage("tool_used", {
+        resourceSlug: "google-maps-lead-finder",
+        metadata: { keyword, location, result_count: Array.isArray(data.results) ? data.results.length : 0 },
+      });
       setResults(data.results || []);
     } catch (err) {
       setNotice({

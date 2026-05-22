@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExternalLink, Loader2, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { trackPortalUsage } from "@/components/portal/portal-usage-tracker";
 
 type LinkedInResult = {
   title: string;
@@ -45,6 +46,10 @@ export function LinkedInSerperLeadWorkbench() {
         });
         return;
       }
+      trackPortalUsage("tool_used", {
+        resourceSlug: "linkedin-serper-lead-finder",
+        metadata: { role, market, company, result_count: Array.isArray(data.results) ? data.results.length : 0 },
+      });
       setQuery(data.query || "");
       setResults(data.results || []);
     } catch (err) {

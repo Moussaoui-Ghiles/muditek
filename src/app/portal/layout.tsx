@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { ensureMudikitMembership, ensurePortalAccount } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { PortalShell } from "@/components/portal/portal-shell";
+import { PortalUsageTracker } from "@/components/portal/portal-usage-tracker";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <PortalShell email={email} displayName={displayName} access={access}>
+      <PortalUsageTracker />
       {children}
     </PortalShell>
   );

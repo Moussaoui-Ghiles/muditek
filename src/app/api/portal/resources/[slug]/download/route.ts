@@ -7,6 +7,8 @@ import {
   loadAssetBySlugAndCategories,
 } from "@/lib/portal-asset-loader";
 import { PLAYBOOK_RESOURCE_CATEGORIES } from "@/lib/content-item";
+import { getDb } from "@/lib/db";
+import { recordUsageEvent } from "@/lib/usage-analytics";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +59,15 @@ export async function GET(
   if (!item.is_free && !access.isMudikit && !access.isAdmin) {
     return NextResponse.json({ error: "MudiKit required." }, { status: 403 });
   }
+
+  recordUsageEvent(getDb(), {
+    email,
+    clerkUserId: user.id,
+    event: "resource_downloaded",
+    path: new URL(req.url).pathname,
+    resourceSlug: item.slug,
+    metadata: { file_type: item.file_type, title: item.title },
+  }).catch(() => {});
 
   if (item.file_type?.toLowerCase() === "html") {
     const htmlPath = join(process.cwd(), "content/playbooks", `${basename(item.slug)}.html`);

@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { createTar } from "@/lib/tar";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
 import { getPortalSkill, getPortalSkillArchiveFiles } from "@/lib/portal-skills";
+import { getDb } from "@/lib/db";
+import { recordUsageEvent } from "@/lib/usage-analytics";
 
 export const dynamic = "force-dynamic";
 
@@ -21,13 +23,13 @@ export async function GET(
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
-  if (!skill.is_free) {
-    const user = await currentUser();
-    const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
-    if (!user || !email) {
-      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-    }
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
+  if (!user || !email) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  }
 
+  if (!skill.is_free) {
     const access = await buildAssetAccess(email, user.id);
     if (!access.isMudikit && !access.isAdmin) {
       return NextResponse.json({ error: "MudiKit required." }, { status: 403 });
@@ -38,6 +40,15 @@ export async function GET(
   if (files.length === 0) {
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
+
+  recordUsageEvent(getDb(), {
+    email,
+    clerkUserId: user.id,
+    event: "skill_downloaded",
+    path: `/api/portal/skills/${slug}/download`,
+    resourceSlug: slug,
+    metadata: { title: skill.name },
+  }).catch(() => {});
 
   const body = createTar(files);
   return new NextResponse(new Uint8Array(body), {

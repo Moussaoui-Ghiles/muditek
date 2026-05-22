@@ -57,69 +57,52 @@ function ctaButton(href: string, label: string): string {
 export const NURTURE_SEQUENCE: SequenceStep[] = [
   {
     step: 2,
-    delayDays: 2,
-    subject: "2,000 leads a day for $10/month",
+    delayDays: 3,
+    subject: "Quit paying for lead lists",
     buildHtml: (name: string, portalUrl?: string) => {
       const safeName = escapeHtml(name);
       const base = portalUrl || "https://muditek.com/portal";
       return wrapEmail(`
         ${p(`Hey ${safeName},`)}
-        ${p(`The fastest system to get running in the portal is the Google Maps one.`)}
-        ${p(`Claude Code points at Google Maps, pulls businesses by location and category, and hands you a clean lead list. 2,000 a day, for about $10 a month.`)}
-        ${p(`The playbook is the full build. The portal also has the tool already wired up, so you can pull a list before you build anything yourself.`)}
-        ${p(`If pipeline is the thing keeping you up, start here.`)}
+        ${p(`Most lead lists you buy are stale, overpriced, and sold to your competitors too.`)}
+        ${p(`Here's the better way, and you can run it yourself. Pick a tight niche and location. Not "businesses" but "dental clinics in Lyon." Pull them straight from Google Maps with their name, site, phone, and reviews. Then keep only the ones that fit you, the ones with no website or weak reviews, whatever signals they need what you sell. Now you have a clean, current list nobody else is working.`)}
+        ${p(`The Google Maps Outbound playbook in the portal walks the full build, with AI doing the pulling and filtering for you. You could have your first list today.`)}
         ${ctaButton(`${base}/playbooks/google-maps-outbound`, "Open the Google Maps playbook")}
       `);
     },
   },
   {
     step: 3,
-    delayDays: 5,
-    subject: "300K cold emails. 153 calls booked. $1,200.",
+    delayDays: 7,
+    subject: "Your cold emails are getting deleted",
     buildHtml: (name: string, portalUrl?: string) => {
       const safeName = escapeHtml(name);
       const base = portalUrl || "https://muditek.com/portal";
       return wrapEmail(`
-        ${p(`${safeName},`)}
-        ${p(`Once you have a list, this is what you do with it.`)}
-        ${p(`OpenClaw Outbound is the cold email system I documented in the portal. 300,000 emails in a month, 153 calls booked, $1,200 in total cost. Infrastructure, warmup, sending, the full setup.`)}
-        ${p(`Agencies quote ten times that for the same output and call it a retainer.`)}
-        ${p(`It's one of the playbooks you probably haven't opened yet.`)}
-        ${ctaButton(`${base}/playbooks/openclaw-outbound`, "Open the OpenClaw playbook")}
+        ${p(`Hey ${safeName},`)}
+        ${p(`When cold email doesn't work, it's almost never the sending. It's the first line.`)}
+        ${p(`"Hope you're well, I wanted to reach out about..." tells them in one second it's a template. Deleted.`)}
+        ${p(`The fix: open with something only true about them. A specific detail, a recent move, a problem their kind of business has. Then one plain sentence on what you do about it. Then one small ask. That's the entire email.`)}
+        ${p(`The cold-email skill in the portal writes them that way for you, personalized per prospect, so you're never staring at a blank draft.`)}
+        ${ctaButton(`${base}/skills/cold-email`, "Open the cold-email skill")}
       `);
     },
   },
   {
     step: 4,
-    delayDays: 8,
-    subject: "7 text files replaced a $75K/year hire",
+    delayDays: 11,
+    subject: "Your buyers asked AI about you. It said nothing.",
     buildHtml: (name: string, portalUrl?: string) => {
       const safeName = escapeHtml(name);
       const base = portalUrl || "https://muditek.com/portal";
       return wrapEmail(`
-        ${p(`${safeName},`)}
-        ${p(`The instinct when you're drowning in admin is to hire. Here's the cheaper version.`)}
-        ${p(`The Chief of Staff Blueprint in the portal is a full build: 7 text files that do what a $75K/year executive assistant did. Inbox, scheduling, prep, follow-up.`)}
-        ${p(`Want the sales version instead? The Agentic SDR guide runs three channels for $269 a month and booked 157 calls.`)}
-        ${p(`Both are sitting in the portal. Worth a look before your next hire.`)}
-        ${ctaButton(`${base}/playbooks`, "Open the playbooks")}
-      `);
-    },
-  },
-  {
-    step: 5,
-    delayDays: 12,
-    subject: "Which of these do you actually want running?",
-    buildHtml: (name: string, portalUrl?: string) => {
-      const safeName = escapeHtml(name);
-      const base = portalUrl || "https://muditek.com/portal";
-      return wrapEmail(`
-        ${p(`${safeName},`)}
-        ${p(`You've had a few of these now. Lead scraping, cold outbound, an AI chief of staff, a data agent that enriches and organizes on its own.`)}
-        ${p(`Simple question: which one do you actually want running in your business?`)}
-        ${p(`Reply with that, and where it breaks today. One paragraph is enough. I read replies, and the useful ones turn into teardowns or new resources.`)}
-        ${p(`If you'd rather just dig, there are fifteen systems in the portal and you've probably opened two.`)}
-        ${ctaButton(base, "Open your portal")}
+        ${p(`Hey ${safeName},`)}
+        ${p(`Your next customer probably won't find you by scrolling Google. They'll ask ChatGPT or an AI search for the best in your category near them, and go with whatever it names.`)}
+        ${p(`If your site isn't built so AI can read and recommend it, you're not in that answer. Same goes for the competitors ranking above you on plain Google.`)}
+        ${p(`Gut check: search your own category the way a customer would, on Google and on an AI tool. Not there? That's the leak.`)}
+        ${p(`Start with the SEO audit skill in the portal. It tells you exactly why you're invisible and what to fix first. The AI-search skill handles getting named in AI answers.`)}
+        ${ctaButton(`${base}/skills/seo-audit`, "Run the SEO audit skill")}
+        ${p(`That's the three I wanted to send. If one of these is the problem you actually care about, reply and tell me where it's stuck. I'll point you to the fastest fix.`)}
       `);
     },
   },

@@ -42,7 +42,7 @@ export async function sendFreeWelcomeEmail(
 ): Promise<void> {
   const portalUrl = `${baseUrl}/portal`;
   const safeName = escapeHtml(name || "there");
-  const subject = "Welcome to Muditek. Start with the lead machine.";
+  const subject = "AI won't replace you. Someone using it will.";
 
   const { data, error } = await getResend().emails.send({
     from: FROM,
@@ -52,25 +52,23 @@ export async function sendFreeWelcomeEmail(
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
         <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">You're in, ${safeName}.</h2>
         <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
-          Quick orientation. Muditek isn't a tips newsletter. The portal is a stack of systems I've actually deployed, with the architecture and the steps to run them yourself.
+          Quick truth. AI isn't going to replace your business. A competitor who puts it to work will.
         </p>
-        <p style="margin: 0 0 8px; font-size: 16px; color: #444; line-height: 1.6;">
-          A few worth opening first:
+        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
+          That's why Muditek exists. Not AI tips. The skills and playbooks that get AI doing real work in your business, so you come out of this shift ahead instead of behind. Tools you'll use day to day are on the way too.
         </p>
-        <ul style="margin: 0 0 20px; padding-left: 20px; font-size: 16px; color: #444; line-height: 1.7;">
-          <li><strong>Google Maps Outbound:</strong> 2,000 leads a day for $10/month.</li>
-          <li><strong>OpenClaw Outbound:</strong> 300K cold emails a month, 153 calls booked, $1,200 total cost.</li>
-          <li><strong>The Chief of Staff Blueprint:</strong> 7 text files that replaced a $75K/year EA.</li>
-        </ul>
+        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
+          It's all free. I'd rather hand you the stuff that works and earn the relationship than sell you something you don't need yet.
+        </p>
         <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
-          That's three of fifteen. Playbooks, setup guides, live lead tools, and the full newsletter archive are all in there under one login.
+          Over the next week and a half I'll send you three short emails. Each one fixes a specific problem and points you to exactly what handles it.
         </p>
         <a href="${escapeHtml(portalUrl)}"
            style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">
           Open your portal
         </a>
         <p style="margin: 24px 0 0; font-size: 16px; color: #444; line-height: 1.6;">
-          Pick one system and get it running this week. Reply if you get stuck. I read every email.
+          And if there's something you're trying to get AI to do in your business, just reply and tell me. I read every email.
         </p>
         <p style="margin: 24px 0 0; font-size: 14px; color: #666; line-height: 1.5;">
           - Ghiles

@@ -230,6 +230,21 @@ function HtmlAssetFrame({
         .join("");
       const body = documentHtml.body.innerHTML;
 
+      // Light-themed docs declare their page background/text on <body>, which is
+      // dropped when only body.innerHTML is injected — leaving them on the dark
+      // host. Read those values (read-only) and override the host background so
+      // the doc paints its own surface. Dark docs resolve to their own dark
+      // background here, so nothing changes for them.
+      const bodyStyleText = Array.from(documentHtml.querySelectorAll("style"))
+        .map((node) => node.textContent || "")
+        .join("\n");
+      const bodyRule = bodyStyleText.match(/(?:^|[^-\w])body\s*\{([^}]*)\}/i)?.[1] ?? "";
+      const docBg = bodyRule.match(/background(?:-color)?\s*:\s*([^;]+)/i)?.[1]?.trim();
+      const docFg = bodyRule.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i)?.[1]?.trim();
+      const surfaceStyle = docBg
+        ? `<style id="muditek-surface">:host{background:${docBg} !important;}${docFg ? `:host{color:${docFg};}` : ""}</style>`
+        : "";
+
       shadow.innerHTML = `
         ${headNodes}
         <style id="muditek-shadow-reader">
@@ -284,10 +299,19 @@ function HtmlAssetFrame({
             }
           }
         </style>
+        ${surfaceStyle}
         ${body}
       `;
 
-      const pages = Array.from(shadow.querySelectorAll(".page"));
+      const pages = Array.from(shadow.querySelectorAll(".page")).filter((page) => {
+        if (!(page instanceof HTMLElement)) return false;
+        const rect = page.getBoundingClientRect();
+        const w = rect.width || page.offsetWidth;
+        const h = rect.height || page.offsetHeight;
+        // Only scale genuine fixed-size deck pages (portrait-ish). A long,
+        // continuous document that uses .page must render at full flow.
+        return w > 0 && h > 0 && h / w < 2.2;
+      });
       if (pages.length > 0) {
         const wrapper = document.createElement("div");
         wrapper.className = "muditek-fixed-pages";

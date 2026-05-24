@@ -96,12 +96,12 @@ function CoverFrame({
       <div className="absolute inset-0 bg-[radial-gradient(900px_400px_at_20%_-10%,rgba(245,158,11,0.12),transparent_60%),linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
       <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.025)_0_1px,transparent_1px_14px)]" />
       <div className="absolute inset-0 flex flex-col justify-between p-5">
-        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.3em] text-foreground/60">
+        <div className="flex items-center justify-between text-[12px] font-black uppercase tracking-[0.22em] text-foreground">
           <span>{label}</span>
           <span aria-hidden>{(item.slug || "").slice(0, 3).toUpperCase() || "···"}</span>
         </div>
         <div>
-          <p className="line-clamp-2 text-[17px] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
+          <p className="line-clamp-2 text-[18px] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
             {item.title}
           </p>
           <div className="mt-3 h-px w-12 bg-primary/60" />
@@ -126,25 +126,25 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
 
       <div className="relative z-10 flex min-w-0 flex-col justify-between gap-5 p-2 md:py-6 md:pr-6">
         <div>
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+          <div className="flex flex-wrap items-center gap-2.5 text-[12.5px] font-black uppercase tracking-[0.22em] text-primary">
             <span aria-hidden className="h-px w-6 bg-primary/50" />
             Featured · {typeLabel(item)}
             {item.is_new && (
-              <span className="text-emerald-300/90">· New drop</span>
+              <span className="text-emerald-300">· New drop</span>
             )}
           </div>
           <h2 className="mt-5 text-[28px] font-black leading-[0.95] tracking-[-0.03em] text-foreground md:text-[40px]">
             {item.title}
           </h2>
           {item.description && (
-            <p className="mt-5 max-w-xl text-[14.5px] leading-[1.7] text-foreground/65">
+            <p className="mt-5 max-w-xl text-[15.5px] leading-[1.7] text-foreground">
               {item.description}
             </p>
           )}
         </div>
 
         <div className="flex flex-col gap-5 pt-6 border-t border-white/[0.06]">
-          <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.18em] text-foreground/55">
+          <div className="flex items-center gap-4 text-[12.5px] font-bold uppercase tracking-[0.16em] text-foreground">
             {!accessible ? (
               <span className="inline-flex items-center gap-2">
                 <Lock className="size-3" /> Locked · MudiKit
@@ -166,7 +166,7 @@ function FeaturedItem({ item, access }: { item: ContentItem; access: PortalAcces
               </>
             )}
           </div>
-          <span className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+          <span className="inline-flex items-center gap-3 text-[13.5px] font-black uppercase tracking-[0.18em] text-foreground transition-colors group-hover:text-primary">
             {accessible ? "Open in portal" : "Preview locked card"}
             <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
           </span>
@@ -190,32 +190,32 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
       <CoverFrame item={item} ratio="16/10" />
 
       <div className="relative z-10 flex flex-1 flex-col px-1 pb-2 pt-4">
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
+        <div className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-foreground">
           <span>{typeLabel(item)}</span>
           {item.is_new && (
             <>
               <span aria-hidden>·</span>
-              <span className="text-emerald-300/90">New</span>
+              <span className="text-emerald-300">New</span>
             </>
           )}
           {!accessible && (
             <>
               <span aria-hidden>·</span>
-              <span className="inline-flex items-center gap-1 text-primary/80">
+              <span className="inline-flex items-center gap-1 text-primary">
                 <Lock className="size-3" /> Locked
               </span>
             </>
           )}
         </div>
-        <h3 className="mt-3 text-[17px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+        <h3 className="mt-3 text-[19.5px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
           {item.title}
         </h3>
         {item.description && (
-          <p className="mt-3 line-clamp-3 text-[13.5px] leading-6 text-foreground/65">
+          <p className="mt-3 line-clamp-3 text-[14.5px] leading-[1.55] text-foreground">
             {item.description}
           </p>
         )}
-        <div className="mt-auto flex items-center justify-between pt-5 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
+        <div className="mt-auto flex items-center justify-between pt-5 text-[12px] font-black uppercase tracking-[0.18em] text-foreground">
           <span className="inline-flex items-center gap-1.5">
             {!accessible ? (
               <span className="inline-flex items-center gap-1">
@@ -230,7 +230,7 @@ function LibraryCard({ item, access }: { item: ContentItem; access: PortalAccess
               <span>{typeLabel(item)}</span>
             )}
           </span>
-          <span className="inline-flex items-center gap-1.5 text-foreground/75 group-hover:text-primary">
+          <span className="inline-flex items-center gap-1.5 text-foreground group-hover:text-primary">
             View
             <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
@@ -250,7 +250,7 @@ function EmptyState() {
       <h3 className="mt-4 text-[24px] font-black leading-[1] tracking-[-0.02em] text-foreground">
         Nothing on the shelf yet.
       </h3>
-      <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-foreground/65">
+      <p className="mt-3 max-w-xl text-[14.5px] leading-7 text-foreground">
         When playbooks or guides ship, they will appear here.
       </p>
     </div>
@@ -302,7 +302,7 @@ function UpgradeBand({ count }: { count: number }) {
           <h3 className="mt-5 max-w-xl text-[26px] font-black leading-[1] tracking-[-0.025em] text-foreground md:text-[34px]">
             {count} {count === 1 ? "resource is" : "resources are"} part of <span className="text-primary italic font-medium">MudiKit</span>.
           </h3>
-          <p className="mt-4 max-w-lg text-[13.5px] leading-7 text-foreground/65">
+          <p className="mt-4 max-w-lg text-[14.5px] leading-7 text-foreground">
             MudiKit unlocks the full resource library and every new drop, alongside the paid skills.
           </p>
         </div>
@@ -328,8 +328,8 @@ function FilterPill({
       className={
         "touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
         (active
-          ? "inline-flex h-9 items-center rounded-[2px] border border-primary/40 bg-primary/15 px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-primary transition-colors"
-          : "inline-flex h-9 items-center rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-4 text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/60 transition-colors hover:border-white/[0.2] hover:bg-white/[0.05] hover:text-foreground")
+          ? "inline-flex h-10 items-center rounded-[2px] border border-primary/40 bg-primary/15 px-4 text-[12.5px] font-black uppercase tracking-[0.16em] text-primary transition-colors"
+          : "inline-flex h-10 items-center rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-4 text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground transition-colors hover:border-white/[0.2] hover:bg-white/[0.06]")
       }
     >
       {children}
@@ -365,7 +365,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
 
   return (
     <div className="flex flex-col gap-1">
-      <dt className="text-[9.5px] font-black uppercase tracking-[0.25em] text-foreground/55">
+      <dt className="text-[11.5px] font-black uppercase tracking-[0.2em] text-foreground">
         {label}
       </dt>
       <dd
@@ -463,14 +463,11 @@ export default function PlaybooksContent({
             {/* Featured */}
             {featured && (
               <section className="reveal mb-14">
-                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
-                  <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
-                    <span aria-hidden className="h-px w-6 bg-white/20" />
+                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
+                  <h2 className="flex items-center gap-3 text-[13px] font-black uppercase tracking-[0.22em] text-foreground">
+                    <span aria-hidden className="h-px w-7 bg-primary/60" />
                     Featured drop
                   </h2>
-                  <span className="text-[10.5px] font-black uppercase tracking-[0.2em] text-foreground/55">
-                    Resource · in portal
-                  </span>
                 </div>
                 <FeaturedItem item={featured} access={access} />
               </section>
@@ -480,8 +477,8 @@ export default function PlaybooksContent({
             <section className="sticky top-14 z-20 -mx-4 mb-10 border-y border-white/[0.06] bg-[#0a0a0c]/85 px-4 py-3.5 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/55">
-                    <Filter className="size-3" />
+                  <span className="inline-flex items-center gap-2 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground">
+                    <Filter className="size-3.5" />
                     Browse
                   </span>
                   {hasMultipleTypes && (
@@ -495,7 +492,7 @@ export default function PlaybooksContent({
                           active={typeFilter === type.value}
                           onClick={() => setTypeFilter(type.value)}
                         >
-                          {type.label} <span className="ml-2 opacity-60">{type.count}</span>
+                          {type.label} <span className="ml-2 text-primary">{type.count}</span>
                         </FilterPill>
                       ))}
                     </div>
@@ -511,7 +508,7 @@ export default function PlaybooksContent({
                           active={topicFilter === topic.value}
                           onClick={() => setTopicFilter(topic.value)}
                         >
-                          {topic.label} <span className="ml-2 opacity-60">{topicCounts[topic.value]}</span>
+                          {topic.label} <span className="ml-2 text-primary">{topicCounts[topic.value]}</span>
                         </FilterPill>
                       ))}
                     </div>
@@ -519,7 +516,7 @@ export default function PlaybooksContent({
                 </div>
                 {showSearch && (
                   <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.08] bg-white/[0.025] px-3 transition-colors focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/30 lg:w-[300px]">
-                    <Search aria-hidden className="size-3.5 shrink-0 text-foreground/55" />
+                    <Search aria-hidden className="size-4 shrink-0 text-foreground" />
                     <Input
                       type="search"
                       aria-label="Search the resource shelf"
@@ -535,18 +532,18 @@ export default function PlaybooksContent({
 
             {/* Results */}
             {filtered.length === 0 ? (
-              <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.015] p-10 text-[13.5px] text-foreground/65">
+              <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.015] p-10 text-[14.5px] text-foreground">
                 Nothing matches the current search and filters. Try removing one or two.
               </div>
             ) : (
               <section>
-                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.04] pb-4">
-                  <h2 className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/55">
-                    <span aria-hidden className="h-px w-6 bg-white/20" />
+                <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
+                  <h2 className="flex items-center gap-3 text-[13px] font-black uppercase tracking-[0.22em] text-foreground">
+                    <span aria-hidden className="h-px w-7 bg-primary/60" />
                     {isFilteredView ? `Results · ${filtered.length}` : "Everything on the shelf"}
                   </h2>
                   {!isFilteredView && counts.locked > 0 && (
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                    <span className="text-[12.5px] font-black uppercase tracking-[0.16em] text-primary">
                       {counts.locked} {counts.locked === 1 ? "item" : "items"} need MudiKit
                     </span>
                   )}

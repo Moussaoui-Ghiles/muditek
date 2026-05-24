@@ -29,20 +29,21 @@ function extractHtmlThumbnail(slug: string): string | null {
 }
 
 export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
-  const publicCover = join(process.cwd(), "public/playbooks", item.slug, "cover.svg");
-  if (existsSync(publicCover)) {
-    return {
-      ...item,
-      thumbnail_url: `/playbooks/${item.slug}/cover.svg`,
-    };
-  }
-
-  // First-page screenshot cover (rendered from the HTML), if present.
+  // First-page screenshot cover (rendered from the real HTML) wins over any
+  // synthetic SVG fallback.
   const publicCoverPng = join(process.cwd(), "public/playbooks", item.slug, "cover.png");
   if (existsSync(publicCoverPng)) {
     return {
       ...item,
       thumbnail_url: `/playbooks/${item.slug}/cover.png?v=3`,
+    };
+  }
+
+  const publicCover = join(process.cwd(), "public/playbooks", item.slug, "cover.svg");
+  if (existsSync(publicCover)) {
+    return {
+      ...item,
+      thumbnail_url: `/playbooks/${item.slug}/cover.svg`,
     };
   }
 

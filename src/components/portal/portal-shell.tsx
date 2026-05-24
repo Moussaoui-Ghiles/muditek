@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -86,6 +86,21 @@ export function PortalShell({
   const alreadyMounted = useContext(PortalShellMountedContext);
   const pathname = usePathname() || "/portal";
   const crumbs = buildCrumbs(pathname);
+
+  // Kill macOS horizontal rubber-band / sideways pan inside the portal (the
+  // document scrolls vertically only). Scoped to the portal: restored on leave.
+  useEffect(() => {
+    if (alreadyMounted) return;
+    const html = document.documentElement;
+    const prevOverflowX = html.style.overflowX;
+    const prevOverscrollX = html.style.overscrollBehaviorX;
+    html.style.overflowX = "hidden";
+    html.style.overscrollBehaviorX = "none";
+    return () => {
+      html.style.overflowX = prevOverflowX;
+      html.style.overscrollBehaviorX = prevOverscrollX;
+    };
+  }, [alreadyMounted]);
 
   if (alreadyMounted) {
     if (pageEyebrow || pageTitle || rightSlot) {

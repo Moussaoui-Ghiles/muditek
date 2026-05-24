@@ -37,6 +37,15 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
     };
   }
 
+  // First-page screenshot cover (rendered from the HTML), if present.
+  const publicCoverPng = join(process.cwd(), "public/playbooks", item.slug, "cover.png");
+  if (existsSync(publicCoverPng)) {
+    return {
+      ...item,
+      thumbnail_url: `/playbooks/${item.slug}/cover.png`,
+    };
+  }
+
   if (item.thumbnail_url) return item;
 
   const htmlAsset = join(process.cwd(), "content/playbooks", `${item.slug}.html`);

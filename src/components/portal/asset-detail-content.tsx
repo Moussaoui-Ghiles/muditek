@@ -418,6 +418,9 @@ export default function AssetDetailContent({
   const accentClass = "text-primary";
   const accessText = accessLabel(item);
   const showDownloadCta = !!downloadHref && !!actionLabel && !html;
+  // HTML playbooks render their full content inline below, so the hero is kept
+  // compact (no oversized side card) to surface the content immediately.
+  const compact = !!html;
 
   return (
     <main className="relative">
@@ -433,10 +436,10 @@ export default function AssetDetailContent({
             backgroundSize: "64px 64px",
           }}
         />
-        <div className="relative mx-auto w-full max-w-6xl px-4 pb-14 pt-10 sm:px-6 md:pb-20 md:pt-14 lg:px-10">
+        <div className={`relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 ${compact ? "pb-7 pt-8 md:pb-8 md:pt-10" : "pb-14 pt-10 md:pb-20 md:pt-14"}`}>
           <BackLink href={labels.backHref} label={labels.backLabel} />
 
-          <div className="reveal mt-8 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className={`reveal grid gap-10 ${compact ? "mt-5" : "mt-8 lg:grid-cols-[1.4fr_1fr] lg:items-start"}`}>
             <div>
               <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
                 <span aria-hidden className="h-px w-6 bg-primary/50" />
@@ -454,11 +457,11 @@ export default function AssetDetailContent({
                   </>
                 )}
               </p>
-              <h1 className="mt-6 text-[40px] font-black leading-[0.92] tracking-[-0.04em] text-foreground md:text-[68px]">
+              <h1 className={`font-black leading-[0.92] tracking-[-0.04em] text-foreground ${compact ? "mt-4 text-[30px] md:text-[44px]" : "mt-6 text-[40px] md:text-[68px]"}`}>
                 {item.title}
               </h1>
               {item.description && (
-                <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-foreground/65">
+                <p className={`max-w-2xl text-[15px] leading-[1.75] text-foreground/65 ${compact ? "mt-3" : "mt-6"}`}>
                   {item.description}
                 </p>
               )}
@@ -480,6 +483,7 @@ export default function AssetDetailContent({
               </div>
             </div>
 
+            {!compact && (
             <aside className="card-lift relative overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] backdrop-blur-md">
               <div className="pointer-events-none absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
               {item.thumbnail_url ? (
@@ -532,6 +536,7 @@ export default function AssetDetailContent({
                 </div>
               )}
             </aside>
+            )}
           </div>
         </div>
       </section>

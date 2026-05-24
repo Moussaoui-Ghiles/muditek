@@ -31,6 +31,25 @@ const COVER_SELECTORS = [
 
 const onlyArg = process.argv[2]; // optional: single slug
 
+// Slugs whose stylesheet scopes ALL vars/styles to `.playbook-scaler` (a class
+// the portal injects at serve time but the raw file lacks). Rendered standalone
+// they fall back to serif/no-color/full-width, producing a lopsided cover. For
+// these we replicate the portal wrapper and compose the editorial hero into the
+// 16:10 frame instead of clipping the raw full-width wrap.
+const SCALER_HERO_SLUGS = new Set(["clawchief-blueprint"]);
+
+const HERO_COMPOSE_CSS = `
+  html,body{margin:0!important;padding:0!important;background:#0a0a0a!important;overflow:hidden!important}
+  .playbook-scaler{background:#0a0a0a!important;padding:0!important}
+  .hero{padding:0!important;border:none!important;height:1000px!important;display:flex!important;align-items:center!important}
+  .hero .wrap{max-width:none!important;width:100%!important;padding:0 112px!important;margin:0!important}
+  .hero-eyebrow{font-size:23px!important;margin-bottom:44px!important;letter-spacing:0.2em!important}
+  .hero h1{max-width:24ch!important;font-size:100px!important;line-height:0.95!important;margin:0 0 48px 0!important}
+  .hero-sub{font-size:34px!important;max-width:30ch!important;line-height:1.35!important;margin:0!important;
+    display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .hero-meta{display:none!important}
+`;
+
 const files = readdirSync(HTML_DIR)
   .filter((f) => f.endsWith(".html"))
   .filter((f) => (onlyArg ? basename(f, ".html") === onlyArg : true));
@@ -45,6 +64,29 @@ for (const file of files) {
   const slug = basename(file, ".html");
   const page = await ctx.newPage();
   try {
+    // Scaler-hero slugs render at a fixed 16:10 viewport, wrapped + composed.
+    if (SCALER_HERO_SLUGS.has(slug)) {
+      await page.setViewportSize({ width: 1600, height: 1000 });
+      await page.goto(`file://${join(HTML_DIR, file)}`, { waitUntil: "networkidle", timeout: 30000 });
+      await page.evaluate(() => {
+        if (!document.querySelector(".playbook-scaler")) {
+          const w = document.createElement("div");
+          w.className = "playbook-scaler";
+          while (document.body.firstChild) w.appendChild(document.body.firstChild);
+          document.body.appendChild(w);
+        }
+      });
+      await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+      await page.addStyleTag({ content: HERO_COMPOSE_CSS });
+      await page.waitForTimeout(400);
+      const outPath = join(OUT_DIR, slug, "cover.png");
+      await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });
+      console.log(`OK   ${slug}  via composed-hero  1600x1000`);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.close();
+      continue;
+    }
+
     await page.goto(`file://${join(HTML_DIR, file)}`, { waitUntil: "networkidle", timeout: 30000 });
     await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
     await page.waitForTimeout(400);

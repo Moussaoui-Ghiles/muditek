@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { resourceShareHref, type ContentItem } from "@/lib/content-item";
+import { categoryLabel, resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
 import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 
@@ -422,6 +422,51 @@ export default function AssetDetailContent({
   // compact (no oversized side card) to surface the content immediately.
   const compact = !!html;
 
+  if (compact) {
+    return (
+      <main className="relative">
+        {/* Minimal reader header — type, format, share, download. Title/description
+            live in the embedded content below, so they are not repeated here. */}
+        <section className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#0a0a0c]/90 backdrop-blur-xl">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <BackLink href={labels.backHref} label="Back" />
+              <span aria-hidden className="h-3.5 w-px bg-white/15" />
+              <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80">
+                {categoryLabel(item.category)}
+              </span>
+              {item.file_type && (
+                <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                  {fileTypeLabel(item.file_type)}
+                </span>
+              )}
+              {accessText && (
+                <span className="inline-flex items-center rounded-[2px] border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                  {accessText}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {item.is_free && <ShareResourceButton item={item} />}
+              <a
+                href={`/api/portal/resources/${encodeURIComponent(item.slug)}/download`}
+                download={`${item.slug}.html`}
+                className="inline-flex items-center gap-2 rounded-[2px] border border-white/[0.12] bg-white/[0.03] px-3.5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80 transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <Download className="size-3.5" />
+                Download
+              </a>
+            </div>
+          </div>
+        </section>
+        <HtmlAssetFrame slug={item.slug} title={item.title} />
+        <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-10">
+          <BackLink href={labels.backHref} label={labels.backLabel} />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="relative">
       {/* HERO */}
@@ -436,10 +481,10 @@ export default function AssetDetailContent({
             backgroundSize: "64px 64px",
           }}
         />
-        <div className={`relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 ${compact ? "pb-7 pt-8 md:pb-8 md:pt-10" : "pb-14 pt-10 md:pb-20 md:pt-14"}`}>
+        <div className="relative mx-auto w-full max-w-6xl px-4 pb-14 pt-10 sm:px-6 md:pb-20 md:pt-14 lg:px-10">
           <BackLink href={labels.backHref} label={labels.backLabel} />
 
-          <div className={`reveal grid gap-10 ${compact ? "mt-5" : "mt-8 lg:grid-cols-[1.4fr_1fr] lg:items-start"}`}>
+          <div className="reveal mt-8 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
             <div>
               <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
                 <span aria-hidden className="h-px w-6 bg-primary/50" />
@@ -457,11 +502,11 @@ export default function AssetDetailContent({
                   </>
                 )}
               </p>
-              <h1 className={`font-black leading-[0.92] tracking-[-0.04em] text-foreground ${compact ? "mt-4 text-[30px] md:text-[44px]" : "mt-6 text-[40px] md:text-[68px]"}`}>
+              <h1 className="mt-6 text-[40px] font-black leading-[0.92] tracking-[-0.04em] text-foreground md:text-[68px]">
                 {item.title}
               </h1>
               {item.description && (
-                <p className={`max-w-2xl text-[15px] leading-[1.75] text-foreground/65 ${compact ? "mt-3" : "mt-6"}`}>
+                <p className="mt-6 max-w-2xl text-[15px] leading-[1.75] text-foreground/65">
                   {item.description}
                 </p>
               )}

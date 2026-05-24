@@ -455,22 +455,7 @@ export default function PlaybooksContent({
 
   return (
     <main className="relative">
-      {/* HERO — thin band */}
-      <section className="border-b border-white/[0.06]">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-4 pb-5 pt-7 sm:px-6 lg:px-10">
-          <div className="flex items-baseline gap-3">
-            <span aria-hidden className="hidden h-px w-6 self-center bg-primary/50 sm:block" />
-            <h1 className="text-[22px] font-black leading-none tracking-[-0.03em] text-foreground sm:text-[26px]">
-              Playbooks <span className="font-medium italic text-primary">&amp;</span> Resources
-            </h1>
-          </div>
-          <p className="text-[10.5px] font-black uppercase tracking-[0.22em] text-foreground/45">
-            {counts.total} total · {counts.playbooks} playbooks · {counts.guides} guides
-          </p>
-        </div>
-      </section>
-
-      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:px-10">
         {visibleItems.length === 0 ? (
           <EmptyState />
         ) : (

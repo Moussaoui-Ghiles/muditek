@@ -238,10 +238,6 @@ function HtmlAssetFrame({
             background: #0a0a0a;
             contain: content;
           }
-          .muditek-doc-surface {
-            display: block;
-            min-height: 100%;
-          }
           :host *, :host *::before, :host *::after {
             box-sizing: border-box;
           }
@@ -288,35 +284,10 @@ function HtmlAssetFrame({
             }
           }
         </style>
-        <div class="muditek-doc-surface">${body}</div>
+        ${body}
       `;
 
-      // Light-themed docs declare their page background/text on <body>, which is
-      // dropped when we inject only the body's innerHTML. Read those values
-      // (read-only) and paint the surface so the doc isn't stranded on the dark
-      // reader. Dark docs simply get their own dark background here — no change.
-      const surface = shadow.querySelector(".muditek-doc-surface");
-      if (surface instanceof HTMLElement) {
-        const styleText = Array.from(documentHtml.querySelectorAll("style"))
-          .map((node) => node.textContent || "")
-          .join("\n");
-        const bodyRule = styleText.match(/(?:^|[^-\w])body\s*\{([^}]*)\}/i)?.[1] ?? "";
-        const bg = bodyRule.match(/background(?:-color)?\s*:\s*([^;]+)/i)?.[1]?.trim();
-        const fg = bodyRule.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i)?.[1]?.trim();
-        if (bg) surface.style.background = bg;
-        if (fg) surface.style.color = fg;
-      }
-
-      const pages = Array.from(shadow.querySelectorAll(".page")).filter((page) => {
-        if (!(page instanceof HTMLElement)) return false;
-        const rect = page.getBoundingClientRect();
-        const w = rect.width || page.offsetWidth;
-        const h = rect.height || page.offsetHeight;
-        // Only scale genuine fixed-size deck pages (portrait-ish aspect). A long
-        // continuous document that happens to use .page must render at full flow,
-        // not be shrunk to fit width.
-        return w > 0 && h > 0 && h / w < 2.2;
-      });
+      const pages = Array.from(shadow.querySelectorAll(".page"));
       if (pages.length > 0) {
         const wrapper = document.createElement("div");
         wrapper.className = "muditek-fixed-pages";

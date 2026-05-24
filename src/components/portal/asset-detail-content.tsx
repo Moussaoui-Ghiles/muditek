@@ -185,102 +185,168 @@ function HtmlAssetFrame({
   slug: string;
   title: string;
 }) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<HTMLIFrameElement | null>(null);
-  const [doc, setDoc] = useState<string | null>(null);
+  const hostRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const src = `/api/portal/resources/${encodeURIComponent(slug)}/html`;
 
-  // Fetch the full HTML document for this resource.
   useEffect(() => {
+    const maybeHost = hostRef.current;
+    if (!maybeHost) return;
+    const currentHost: HTMLDivElement = maybeHost;
+
+    const shadow = currentHost.shadowRoot ?? currentHost.attachShadow({ mode: "open" });
     let cancelled = false;
+    const cleanup: Array<() => void> = [];
     setError(null);
-    setDoc(null);
-    fetch(src, { credentials: "same-origin" })
-      .then((response) => {
-        if (!response.ok) throw new Error("Unable to load this resource.");
-        return response.text();
-      })
-      .then((html) => {
-        if (!cancelled) setDoc(html);
-      })
-      .catch(() => {
-        if (!cancelled) setError("This resource could not be loaded.");
-      });
+    shadow.innerHTML = `
+      <style>
+        :host { display: block; min-height: 70vh; background: #0a0a0a; }
+        .muditek-html-loading {
+          min-height: 70vh;
+          display: grid;
+          place-items: center;
+          color: rgba(255,255,255,.55);
+          font: 700 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+          letter-spacing: .22em;
+          text-transform: uppercase;
+        }
+      </style>
+      <div class="muditek-html-loading">Loading ${title}</div>
+    `;
+
+    async function loadHtml() {
+      const response = await fetch(src, { credentials: "same-origin" });
+      if (!response.ok) throw new Error("Unable to load this resource.");
+      const html = await response.text();
+      if (cancelled) return;
+
+      const documentHtml = new DOMParser().parseFromString(html, "text/html");
+      const headNodes = Array.from(documentHtml.head.children)
+        .filter((node) => !["SCRIPT", "BASE"].includes(node.tagName))
+        .map((node) => {
+          if (node.tagName !== "STYLE") return node.outerHTML;
+          return `<style>${node.textContent?.replace(/:root/g, ":host") ?? ""}</style>`;
+        })
+        .join("");
+      const body = documentHtml.body.innerHTML;
+
+      shadow.innerHTML = `
+        ${headNodes}
+        <style id="muditek-shadow-reader">
+          :host {
+            display: block;
+            background: #0a0a0a;
+            contain: content;
+          }
+          :host *, :host *::before, :host *::after {
+            box-sizing: border-box;
+          }
+          img, svg, video, canvas {
+            max-width: 100%;
+            height: auto;
+          }
+          pre, table {
+            max-width: 100%;
+            overflow-x: auto;
+          }
+          .muditek-fixed-pages {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(14px, 2vw, 28px);
+            padding: clamp(12px, 2vw, 28px) 0 56px;
+            background: #0a0a0a;
+          }
+          .muditek-page-shell {
+            position: relative;
+            flex: none;
+            max-width: calc(100vw - 24px);
+            overflow: visible;
+          }
+          .muditek-page-shell > .page {
+            margin: 0 !important;
+            transform-origin: top left !important;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+          }
+          @media (max-width: 640px) {
+            :where(.toc ol) {
+              columns: 1 !important;
+            }
+            :where(.g2, .g3, .cmp, .stats, .layers-grid, .toc-grid) {
+              grid-template-columns: 1fr !important;
+            }
+            :where(.stats) {
+              flex-direction: column !important;
+            }
+            :where(pre, code) {
+              white-space: pre-wrap !important;
+              overflow-wrap: anywhere;
+            }
+          }
+        </style>
+        ${body}
+      `;
+
+      const pages = Array.from(shadow.querySelectorAll(".page"));
+      if (pages.length > 0) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "muditek-fixed-pages";
+        const firstPage = pages[0];
+        firstPage.parentNode?.insertBefore(wrapper, firstPage);
+        for (const page of pages) {
+          if (page.parentElement?.classList.contains("muditek-page-shell")) continue;
+          const shell = document.createElement("div");
+          shell.className = "muditek-page-shell";
+          page.parentNode?.insertBefore(shell, page);
+          shell.appendChild(page);
+          wrapper.appendChild(shell);
+        }
+
+        const scalePages = () => {
+          for (const shell of Array.from(shadow.querySelectorAll(".muditek-page-shell"))) {
+            const page = shell.firstElementChild;
+            if (!(page instanceof HTMLElement) || !(shell instanceof HTMLElement)) continue;
+            page.style.transform = "";
+            shell.style.width = "";
+            shell.style.height = "";
+            const rect = page.getBoundingClientRect();
+            const naturalWidth = rect.width || page.offsetWidth || 794;
+            const naturalHeight = rect.height || page.offsetHeight || 1123;
+            const available = Math.max(280, currentHost.clientWidth - 24);
+            const scale = Math.min(1, available / naturalWidth);
+            shell.style.width = `${naturalWidth * scale}px`;
+            shell.style.height = `${naturalHeight * scale}px`;
+            page.style.transform = `scale(${scale})`;
+          }
+        };
+
+        scalePages();
+        const resizeObserver = new ResizeObserver(scalePages);
+        resizeObserver.observe(currentHost);
+        window.addEventListener("resize", scalePages);
+        cleanup.push(() => resizeObserver.disconnect());
+        cleanup.push(() => window.removeEventListener("resize", scalePages));
+        setTimeout(scalePages, 250);
+        setTimeout(scalePages, 1000);
+      }
+    }
+
+    loadHtml().catch(() => {
+      if (!cancelled) {
+        setError("This resource could not be loaded.");
+        shadow.innerHTML = "";
+      }
+    });
+
     return () => {
       cancelled = true;
+      cleanup.forEach((fn) => fn());
     };
-  }, [src]);
-
-  // Render the document inside an iframe so it keeps its own <html>/<head>/<body>
-  // and renders exactly as authored — any theme (light or dark), any design.
-  // Fixed-width designs are scaled down to fit; responsive ones render 1:1.
-  useEffect(() => {
-    const frame = frameRef.current;
-    const wrap = wrapRef.current;
-    if (!frame || !wrap || !doc) return;
-
-    const fit = () => {
-      const cdoc = frame.contentDocument;
-      if (!cdoc || !cdoc.body) return;
-      const container = wrap.clientWidth;
-      frame.style.transform = "";
-      frame.style.width = `${container}px`;
-      const naturalWidth = Math.max(cdoc.documentElement.scrollWidth, cdoc.body.scrollWidth);
-      if (naturalWidth - container > 1) {
-        // Fixed-width layout: render at its natural width, scale to fit.
-        const scale = container / naturalWidth;
-        frame.style.width = `${naturalWidth}px`;
-        const naturalHeight = Math.max(cdoc.documentElement.scrollHeight, cdoc.body.scrollHeight);
-        frame.style.height = `${naturalHeight}px`;
-        frame.style.transformOrigin = "top left";
-        frame.style.transform = `scale(${scale})`;
-        wrap.style.height = `${naturalHeight * scale}px`;
-      } else {
-        // Responsive layout: render at container width, fit to content height.
-        const naturalHeight = Math.max(cdoc.documentElement.scrollHeight, cdoc.body.scrollHeight);
-        frame.style.height = `${naturalHeight}px`;
-        wrap.style.height = `${naturalHeight}px`;
-      }
-    };
-
-    const onLoad = () => {
-      fit();
-      // Re-fit after webfonts and images settle.
-      setTimeout(fit, 250);
-      setTimeout(fit, 1000);
-    };
-
-    frame.addEventListener("load", onLoad);
-    frame.srcdoc = doc;
-    window.addEventListener("resize", fit);
-    const ro = new ResizeObserver(fit);
-    ro.observe(wrap);
-
-    return () => {
-      frame.removeEventListener("load", onLoad);
-      window.removeEventListener("resize", fit);
-      ro.disconnect();
-    };
-  }, [doc]);
+  }, [src, title]);
 
   return (
     <>
-      <div ref={wrapRef} className="relative block w-full overflow-hidden bg-[#0a0a0a]">
-        {!doc && !error && (
-          <div className="grid min-h-[70vh] place-items-center text-[11px] font-black uppercase tracking-[0.22em] text-white/55">
-            Loading {title}
-          </div>
-        )}
-        <iframe
-          ref={frameRef}
-          title={title}
-          sandbox="allow-same-origin"
-          scrolling="no"
-          className="absolute left-0 top-0 block w-full border-0"
-          style={{ background: "#0a0a0a" }}
-        />
-      </div>
+      <div ref={hostRef} aria-label={title} className="block w-full bg-[#0a0a0a]" />
       {error && (
         <div className="mx-auto max-w-3xl rounded-[2px] border border-dashed border-white/[0.12] bg-white/[0.02] p-8 text-[13.5px] leading-7 text-foreground/65">
           {error}

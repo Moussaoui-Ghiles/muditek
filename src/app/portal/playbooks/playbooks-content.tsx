@@ -455,43 +455,22 @@ export default function PlaybooksContent({
 
   return (
     <main className="relative">
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b border-white/[0.04]">
-        <div className="mesh-subtle pointer-events-none absolute inset-0 opacity-60" />
-        <div aria-hidden className="hero-aurora pointer-events-none absolute inset-0" />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-16 md:pb-20 md:pt-20 lg:px-10">
-          <div className="reveal">
-            <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
-              <span aria-hidden className="h-px w-8 bg-primary/50" />
-              The resource shelf
-            </p>
-            <h1 className="mt-6 text-[44px] font-black leading-[0.92] tracking-[-0.04em] text-foreground sm:text-[60px] md:text-[78px]">
-              Playbooks <span className="text-primary italic font-medium">&amp;</span> Resources.
+      {/* HERO — thin band */}
+      <section className="border-b border-white/[0.06]">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-4 pb-5 pt-7 sm:px-6 lg:px-10">
+          <div className="flex items-baseline gap-3">
+            <span aria-hidden className="hidden h-px w-6 self-center bg-primary/50 sm:block" />
+            <h1 className="text-[22px] font-black leading-none tracking-[-0.03em] text-foreground sm:text-[26px]">
+              Playbooks <span className="font-medium italic text-primary">&amp;</span> Resources
             </h1>
-            <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-foreground/65">
-              Deeper docs, scorecards, templates, and implementation assets. Read HTML in the portal, open PDFs cleanly, and keep useful resources tied to one account.
-            </p>
           </div>
-          <dl className="reveal reveal-delay-1 grid grid-cols-3 gap-x-6 gap-y-6 self-end border-l border-white/[0.07] pl-6 md:pl-10">
-            <Stat label="Total" value={counts.total} />
-            <Stat label="Playbooks" value={counts.playbooks} />
-            <Stat label="Guides" value={counts.guides} />
-            <Stat label="Resources" value={counts.resources} />
-            {counts.paid > 0 && <Stat label="MudiKit" value={counts.paid} />}
-          </dl>
+          <p className="text-[10.5px] font-black uppercase tracking-[0.22em] text-foreground/45">
+            {counts.total} total · {counts.playbooks} playbooks · {counts.guides} guides
+          </p>
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-12 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 sm:px-6 lg:px-10">
         {visibleItems.length === 0 ? (
           <EmptyState />
         ) : (

@@ -12,11 +12,16 @@ const ROOT = "/Users/ghilesmoussaoui/Desktop/BizOps/muditek/website/muditek-web"
 const HTML_DIR = join(ROOT, "content/playbooks");
 const OUT_DIR = join(ROOT, "public/playbooks");
 
-// Selector priority: outer slide first, then cover block, then doc hero.
+// Selector priority: outer deck slide first, then cover block. For continuous
+// docs, prefer the inner content column (.wrap/.container) over the full-width
+// .hero so left-aligned heroes frame on their content instead of leaving a big
+// empty gutter. Decks always match .page first and never reach these.
 const COVER_SELECTORS = [
   ".page",
   ".page-wrapper > .cover",
   ".cover",
+  ".wrap",
+  ".container",
   ".hero",
   "main > section",
   "section",

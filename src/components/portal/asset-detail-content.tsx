@@ -373,7 +373,7 @@ function HtmlAssetFrame({
 
   return (
     <>
-      <div ref={hostRef} aria-label={title} className="block w-full bg-[#0a0a0a]" />
+      <div ref={hostRef} aria-label={title} className="block w-full min-w-0 [overflow-x:clip] bg-[#0a0a0a]" />
       {error && (
         <div className="mx-auto max-w-3xl rounded-[2px] border border-dashed border-white/[0.12] bg-white/[0.02] p-8 text-[13.5px] leading-7 text-foreground/65">
           {error}

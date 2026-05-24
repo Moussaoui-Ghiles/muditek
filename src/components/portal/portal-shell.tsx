@@ -136,7 +136,7 @@ export function PortalShell({
     <div className="mudikit-dark min-h-[100dvh] bg-[#0a0a0c] text-foreground antialiased">
       <SidebarProvider>
         <PortalSidebar access={access} displayName={displayName} />
-        <SidebarInset className="min-h-svh bg-[#0a0a0c]">
+        <SidebarInset className="min-h-svh min-w-0 [overflow-x:clip] bg-[#0a0a0c]">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-[#0a0a0c]/85 px-4 backdrop-blur-xl md:px-6">
             <SidebarTrigger aria-label="Toggle sidebar">
               <Menu className="size-4" />

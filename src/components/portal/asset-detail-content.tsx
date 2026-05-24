@@ -13,7 +13,6 @@ import {
   Lock,
   Terminal,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { categoryLabel, resourceShareHref, type ContentItem } from "@/lib/content-item";
 import type { PortalAccess } from "@/lib/portal-access";
@@ -171,10 +170,14 @@ function ShareResourceButton({ item }: { item: ContentItem }) {
   }
 
   return (
-    <Button type="button" variant="outline" size="sm" onClick={copyShareLink}>
-      {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+    <button
+      type="button"
+      onClick={copyShareLink}
+      className="inline-flex items-center gap-2 rounded-[3px] border border-white/15 bg-white/[0.06] px-4 py-2.5 text-[13px] font-bold uppercase tracking-[0.04em] text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
       {copied ? "Copied" : "Copy share link"}
-    </Button>
+    </button>
   );
 }
 
@@ -428,32 +431,38 @@ export default function AssetDetailContent({
         {/* Minimal reader header — type, format, share, download. Title/description
             live in the embedded content below, so they are not repeated here. */}
         <section className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#0a0a0c]/90 backdrop-blur-xl">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <BackLink href={labels.backHref} label="Back" />
-              <span aria-hidden className="h-3.5 w-px bg-white/15" />
-              <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6 lg:px-10">
+            <div className="flex min-w-0 items-center gap-3">
+              <Link
+                href={labels.backHref}
+                className="inline-flex items-center gap-2 text-[14px] font-bold tracking-[-0.01em] text-foreground transition-colors hover:text-primary"
+              >
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+              <span aria-hidden className="h-4 w-px bg-white/20" />
+              <span className="inline-flex items-center rounded-[3px] border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[13px] font-bold uppercase tracking-[0.04em] text-foreground">
                 {categoryLabel(item.category)}
               </span>
               {item.file_type && (
-                <span className="inline-flex items-center rounded-[2px] border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/55">
+                <span className="inline-flex items-center rounded-[3px] border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[13px] font-bold uppercase tracking-[0.04em] text-foreground">
                   {fileTypeLabel(item.file_type)}
                 </span>
               )}
               {accessText && (
-                <span className="inline-flex items-center rounded-[2px] border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                <span className="inline-flex items-center rounded-[3px] border border-primary/40 bg-primary/15 px-3 py-1.5 text-[13px] font-bold uppercase tracking-[0.04em] text-primary">
                   {accessText}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {item.is_free && <ShareResourceButton item={item} />}
               <a
                 href={`/api/portal/resources/${encodeURIComponent(item.slug)}/download`}
                 download={`${item.slug}.html`}
-                className="inline-flex items-center gap-2 rounded-[2px] border border-white/[0.12] bg-white/[0.03] px-3.5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80 transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex items-center gap-2 rounded-[3px] border border-white/15 bg-white/[0.06] px-4 py-2.5 text-[13px] font-bold uppercase tracking-[0.04em] text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <Download className="size-3.5" />
+                <Download className="size-4" />
                 Download
               </a>
             </div>

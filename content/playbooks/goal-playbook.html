@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The /goal Playbook — Muditek</title>
+<meta name="description" content="Run an autonomous AI coding team from a single message. A source-grounded playbook on the /goal primitive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --paper:      #F2ECDF;   /* page */
+    --paper-2:    #F8F3E8;   /* raised panel */
+    --paper-3:    #EAE2D0;   /* recessed / inline code */
+    --ink:        #1B1813;   /* headings / primary */
+    --ink-2:      #29221A;   /* body — dark warm brown, NOT gray */
+    --ink-3:      #3A2F22;   /* fine print — still dark brown, NOT gray */
+    --rule:       rgba(27, 24, 19, 0.18);
+    --rule-soft:  rgba(27, 24, 19, 0.11);
+    --accent:     #D63E26;   /* vermillion */
+    --accent-ink: #B33019;   /* deeper vermillion for small text */
+    --accent-2:   #F07050;   /* on dark surfaces */
+    --term:       #211D17;   /* code surface */
+    --term-2:     #2B261E;
+    --term-ink:   #F4EEE1;
+    --term-warm:  #D9C39F;   /* code labels/comments — warm tan, NOT gray */
+    --term-rule:  rgba(244, 238, 225, 0.14);
+    --font-head:  'Bricolage Grotesque', system-ui, sans-serif;
+    --font-body:  'Bricolage Grotesque', system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    font-family: var(--font-body);
+    color: var(--ink-2);
+    line-height: 1.7;
+    font-weight: 400;
+    font-size: 21px;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0; opacity: 0.04; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px 220px; pointer-events: none; z-index: 9999;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; padding: 0 56px 120px; position: relative; }
+
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  /* ---------- Brand bar ---------- */
+  .brandbar { display: flex; align-items: center; padding: 32px 0 26px; border-bottom: 2px solid var(--ink); position: sticky; top: 0; background: var(--paper); z-index: 50; }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .brand svg { width: 34px; height: 34px; display: block; }
+  .brand .name { font-family: var(--font-head); font-size: 23px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+
+  /* ---------- Cover ---------- */
+  .cover { padding: 78px 0 0; }
+  .eyebrow { font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink); display: inline-flex; align-items: center; gap: 13px; margin-bottom: 30px; }
+  .eyebrow::before { content: ''; width: 36px; height: 2px; background: var(--accent); }
+  .cover h1 { font-family: var(--font-head); font-size: clamp(52px, 9vw, 88px); font-weight: 700; line-height: 0.98; letter-spacing: -0.035em; color: var(--ink); margin-bottom: 28px; }
+  .cover h1 .tok { color: var(--accent); font-family: var(--font-mono); font-weight: 700; letter-spacing: -0.02em; }
+  .cover .subtitle { font-family: var(--font-head); font-size: clamp(25px, 3.2vw, 32px); line-height: 1.32; font-weight: 500; color: var(--ink); max-width: 640px; letter-spacing: -0.015em; }
+
+  /* ---------- Hook ---------- */
+  .hook { margin-top: 64px; }
+  .hook-statement { font-family: var(--font-head); font-size: clamp(28px, 4vw, 36px); line-height: 1.2; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 28px; }
+  .hook-statement .hl { color: var(--accent); }
+  .lede { font-size: 23px; line-height: 1.55; color: var(--ink-2); margin-bottom: 40px; max-width: 60ch; }
+  .lede .tok { font-family: var(--font-mono); color: var(--accent-ink); font-weight: 700; font-size: 0.88em; }
+
+  .outcomes-title { font-family: var(--font-head); font-size: 21px; font-weight: 700; color: var(--ink); margin-bottom: 20px; letter-spacing: -0.01em; }
+  ul.outcomes { list-style: none; margin-bottom: 0; counter-reset: oc; }
+  ul.outcomes li { position: relative; padding-left: 42px; font-size: 22px; line-height: 1.45; color: var(--ink); margin-bottom: 18px; font-weight: 500; }
+  ul.outcomes li::before { content: counter(oc, decimal-leading-zero); counter-increment: oc; position: absolute; left: 0; top: 6px; font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent); }
+
+  /* ---------- Contents ---------- */
+  .contents { margin-top: 76px; padding-top: 42px; border-top: 2px solid var(--ink); }
+  .contents h2 { font-family: var(--font-head); font-size: 17px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); margin-bottom: 24px; }
+  ol.toc { list-style: none; counter-reset: toc; columns: 2; column-gap: 52px; }
+  ol.toc li { counter-increment: toc; break-inside: avoid; display: flex; align-items: baseline; gap: 15px; padding: 13px 0; border-top: 1px solid var(--rule-soft); font-size: 19px; color: var(--ink-2); font-weight: 500; }
+  ol.toc li::before { content: counter(toc, decimal-leading-zero); font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent-ink); flex: 0 0 auto; }
+  ol.toc a { color: inherit; text-decoration: none; transition: color 0.16s ease; }
+  ol.toc a:hover { color: var(--accent); }
+
+  /* ---------- Sections ---------- */
+  section.sec { margin-top: 84px; padding-top: 40px; border-top: 1px solid var(--rule); }
+  h2 { font-family: var(--font-head); font-size: clamp(32px, 4.4vw, 42px); font-weight: 700; line-height: 1.08; letter-spacing: -0.028em; color: var(--ink); margin-bottom: 26px; }
+  h3 { font-family: var(--font-head); font-size: 25px; font-weight: 600; letter-spacing: -0.015em; color: var(--ink); margin: 44px 0 18px; }
+  p { font-size: 21px; line-height: 1.7; color: var(--ink-2); margin-bottom: 22px; max-width: 62ch; }
+  p.lead-line { font-family: var(--font-head); color: var(--ink); font-weight: 700; font-size: 23px; letter-spacing: -0.015em; }
+  strong { color: var(--ink); font-weight: 700; }
+  em { color: var(--ink); font-style: italic; }
+
+  code.inline { font-family: var(--font-mono); font-size: 0.8em; background: var(--paper-3); color: var(--accent-ink); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--rule); white-space: nowrap; font-weight: 600; }
+
+  ul.body-list, ol.body-list { margin: 0 0 26px; padding: 0; list-style: none; max-width: 62ch; }
+  ul.body-list li, ol.body-list li { position: relative; padding-left: 30px; font-size: 21px; line-height: 1.55; color: var(--ink-2); margin-bottom: 16px; }
+  ul.body-list li::before { content: ''; position: absolute; left: 2px; top: 15px; width: 11px; height: 2px; background: var(--accent); }
+  ol.body-list { counter-reset: step; }
+  ol.body-list li { padding-left: 48px; margin-bottom: 20px; }
+  ol.body-list li::before { counter-increment: step; content: counter(step, decimal-leading-zero); position: absolute; left: 0; top: 3px; font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent); }
+  ol.body-list li .nested { display: block; margin-top: 8px; font-size: 19px; color: var(--ink-3); }
+
+  /* ---------- Code block (dark, framed, copyable) ---------- */
+  .codeblock { margin: 0 0 28px; border: 1px solid var(--ink); background: var(--term); overflow: hidden; }
+  .cb-head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; background: var(--term-2); border-bottom: 1px solid var(--term-rule); }
+  .cb-dot { width: 10px; height: 10px; background: var(--accent); flex: 0 0 auto; }
+  .cb-label { font-family: var(--font-mono); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; color: var(--term-warm); }
+  .cb-copy {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--term-ink); background: transparent; border: 1px solid var(--term-rule);
+    padding: 7px 13px; border-radius: 0; cursor: pointer;
+    transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
+  }
+  .cb-copy svg { width: 15px; height: 15px; }
+  .cb-copy:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .cb-copy:active { transform: translateY(1px); }
+  .cb-copy.copied { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .codeblock pre { border: 0; margin: 0; background: transparent; }
+
+  pre {
+    background: var(--term); padding: 22px 24px; margin: 0 0 28px; overflow-x: auto;
+    font-family: var(--font-mono); font-size: 17px; line-height: 1.7; color: var(--term-ink);
+    white-space: pre-wrap; word-break: break-word; font-weight: 400;
+  }
+  pre .cmd { color: var(--accent-2); font-weight: 700; }
+  pre .comment { color: var(--term-warm); }
+
+  /* ---------- Tables (ruled, no card) ---------- */
+  .table-wrap { overflow-x: auto; margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; font-size: 18.5px; }
+  th { text-align: left; font-family: var(--font-mono); font-weight: 700; color: var(--accent-ink); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 0 16px 12px; border-bottom: 2px solid var(--ink); vertical-align: bottom; }
+  th:first-child { padding-left: 0; }
+  td { padding: 16px 16px; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); vertical-align: top; line-height: 1.45; font-size: 18.5px; }
+  td:first-child { padding-left: 0; color: var(--ink); font-family: var(--font-head); font-weight: 600; }
+  td code, th code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent-ink); white-space: nowrap; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .label-avoid, .label-use { font-family: var(--font-mono); color: var(--accent-ink); font-weight: 700; font-size: 0.82em; }
+
+  /* ---------- Quote ---------- */
+  blockquote { margin: 0 0 28px; padding: 6px 0 6px 28px; border-left: 3px solid var(--accent); font-family: var(--font-head); font-size: 26px; line-height: 1.32; font-weight: 500; color: var(--ink); max-width: 56ch; letter-spacing: -0.015em; }
+
+  /* ---------- Callout (verification) ---------- */
+  .callout { background: var(--paper-2); border: 1px solid var(--ink); border-left: 5px solid var(--accent); padding: 34px 36px; margin: 8px 0 28px; }
+  .callout .callout-label { font-family: var(--font-mono); font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 18px; }
+  .callout blockquote { border-left-color: var(--accent); }
+  .callout .codeblock { margin-bottom: 22px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 46px; }
+  .two-col h3 { margin-top: 0; }
+
+  /* ---------- Visual: prompting vs assigning ---------- */
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 8px 0 30px; border: 1px solid var(--ink); }
+  .vs-panel { padding: 28px 28px 30px; }
+  .vs-panel + .vs-panel { border-left: 1px solid var(--rule); }
+  .vs-panel.win { background: var(--paper-2); border-left: 4px solid var(--accent); }
+  .vs-tag { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 20px; }
+  .vs-panel.win .vs-tag { color: var(--accent-ink); }
+  .vs-flow { display: flex; flex-direction: column; gap: 12px; }
+  .vs-step { font-family: var(--font-mono); font-size: 16px; color: var(--ink-2); display: flex; align-items: center; gap: 12px; }
+  .vs-step .tick { width: 9px; height: 9px; background: var(--ink-2); flex: 0 0 auto; }
+  .vs-panel.win .vs-step { color: var(--ink); }
+  .vs-panel.win .vs-step .tick { background: var(--accent); }
+  .vs-foot { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); font-family: var(--font-head); font-size: 17px; color: var(--ink-2); line-height: 1.35; font-weight: 600; }
+  .vs-panel.win .vs-foot { color: var(--ink); font-weight: 700; }
+
+  /* ---------- Visual: role hierarchy ---------- */
+  .triad { margin: 8px 0 30px; }
+  .triad-top { border: 1px solid var(--ink); border-top: 4px solid var(--accent); background: var(--paper-2); padding: 24px 28px; }
+  .triad-link { display: flex; justify-content: center; color: var(--accent); margin: 0; height: 32px; align-items: center; }
+  .triad-link svg { width: 24px; height: 24px; }
+  .triad-children { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--ink); }
+  .role-box { padding: 24px 26px; transition: background 0.16s ease; }
+  .role-box + .role-box { border-left: 1px solid var(--rule); }
+  .role-box:hover { background: var(--paper-2); }
+  .role-name { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 5px; letter-spacing: -0.015em; }
+  .role-tool { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--accent-ink); margin-bottom: 13px; }
+  .role-desc { font-size: 18px; line-height: 1.45; color: var(--ink-2); }
+
+  /* ---------- Visual: pipeline strip ---------- */
+  .pipeline { display: flex; align-items: stretch; gap: 0; margin: 8px 0 8px; overflow-x: auto; padding-bottom: 8px; }
+  .p-node { flex: 1 1 0; min-width: 138px; border: 1px solid var(--ink); background: var(--paper-2); padding: 17px 15px; text-align: left; }
+  .p-node.worker { border-top: 4px solid var(--accent); }
+  .p-node .p-k { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px; }
+  .p-node .p-t { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.12; margin-bottom: 6px; letter-spacing: -0.015em; }
+  .p-node .p-s { font-size: 14px; color: var(--ink-3); line-height: 1.3; }
+  .p-arrow { flex: 0 0 auto; align-self: center; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0 7px; }
+  .p-arrow .p-lbl { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; color: var(--paper); background: var(--accent); padding: 3px 7px; text-transform: uppercase; }
+  .p-arrow svg { width: 19px; height: 19px; color: var(--accent); }
+
+  /* ---------- Visual: kanban board ---------- */
+  .board { border: 1px solid var(--ink); background: var(--paper-2); margin: 8px 0 16px; }
+  .board-bar { display: flex; align-items: center; gap: 10px; padding: 15px 18px; background: var(--ink); }
+  .board-bar .sq3 { display: flex; gap: 6px; }
+  .board-bar .sq3 span { width: 10px; height: 10px; background: var(--paper); opacity: 0.55; }
+  .board-bar .sq3 span:first-child { background: var(--accent); opacity: 1; }
+  .board-bar .board-title { font-family: var(--font-mono); font-size: 14px; color: var(--paper); margin-left: 6px; }
+  .board-bar .board-meta { margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: var(--accent-2); letter-spacing: 0.03em; }
+  .board-body { padding: 15px; display: grid; gap: 11px; }
+  .kcard { position: relative; border: 1px solid var(--rule); border-left: 4px solid var(--accent); background: var(--paper); padding: 16px 18px 16px 20px; display: grid; grid-template-columns: 34px 1fr auto; gap: 16px; align-items: center; }
+  .kcard.skipped { border-left-color: var(--rule); }
+  .kn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--paper); background: var(--accent); }
+  .kcard.skipped .kn { color: var(--ink-3); background: transparent; border: 1px solid var(--rule); }
+  .kt { font-family: var(--font-head); font-size: 18px; font-weight: 600; color: var(--ink); line-height: 1.2; letter-spacing: -0.015em; }
+  .kr { font-family: var(--font-mono); font-size: 13px; color: var(--ink-3); margin-top: 5px; }
+  .kr .chip { color: var(--accent-ink); font-weight: 700; }
+  .kpill { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 12px; white-space: nowrap; color: var(--paper); background: var(--accent); }
+  .kpill.pass { color: var(--accent-ink); background: transparent; border: 1px solid var(--accent); }
+  .kpill.skip { color: var(--ink-3); background: transparent; border: 1px solid var(--rule); }
+  .caption { font-size: 17px; color: var(--ink-3); margin: 0 0 28px; line-height: 1.45; max-width: 62ch; }
+
+  /* ---------- Checklist ---------- */
+  ul.checklist { list-style: none; margin-bottom: 10px; max-width: 62ch; }
+  ul.checklist li { position: relative; padding-left: 42px; font-size: 21px; line-height: 1.45; color: var(--ink-2); margin-bottom: 18px; }
+  ul.checklist li::before { content: ''; position: absolute; left: 0; top: 4px; width: 24px; height: 24px; border: 2px solid var(--accent); background: transparent; }
+  ul.checklist li::after { content: ''; position: absolute; left: 7px; top: 9px; width: 10px; height: 6px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+
+  /* ---------- CTA (deliberate dark climax block) ---------- */
+  .cta { margin-top: 92px; background: var(--ink); color: var(--term-ink); padding: 58px 52px; }
+  .cta .eyebrow { color: var(--accent-2); margin-bottom: 24px; }
+  .cta .eyebrow::before { background: var(--accent-2); }
+  .cta h2 { font-size: clamp(34px, 5vw, 44px); color: var(--paper); margin-bottom: 26px; }
+  .cta p { color: #ECE4D2; max-width: 58ch; }
+  .cta p.cta-strong { font-family: var(--font-head); font-size: 23px; font-weight: 700; color: var(--paper); margin: 16px 0 28px; letter-spacing: -0.015em; }
+  .email-button { display: inline-flex; align-items: center; gap: 13px; font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--paper); background: var(--accent); text-decoration: none; padding: 19px 30px; letter-spacing: -0.01em; transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), background 0.18s ease; }
+  .email-button svg { width: 20px; height: 20px; }
+  .email-button:hover { background: var(--accent-2); transform: translateY(-2px); }
+  .cta .fineprint { font-size: 17px; color: #DCCFB4; margin-top: 26px; margin-bottom: 0; }
+
+  /* ---------- Footer ---------- */
+  .footer { margin-top: 76px; padding-top: 38px; border-top: 1px solid var(--rule); }
+  .footer h3 { font-family: var(--font-head); font-size: 19px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); margin-top: 0; margin-bottom: 18px; }
+  .footer p, .footer li { font-size: 18px; color: var(--ink-3); }
+  .footer .sign { margin-top: 30px; font-size: 17px; color: var(--ink-3); font-style: italic; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    body { font-size: 20px; }
+    .page { padding: 0 22px 80px; }
+    .brandbar { padding: 24px 0 18px; }
+    .cover { padding: 56px 0 0; }
+    .lede { font-size: 21px; }
+    .two-col, .vs, .triad-children { grid-template-columns: 1fr; }
+    .vs-panel + .vs-panel { border-left: none; border-top: 1px solid var(--rule); }
+    .role-box + .role-box { border-left: none; border-top: 1px solid var(--rule); }
+    ol.toc { columns: 1; }
+    .cta { padding: 42px 26px; }
+    .email-button { font-size: 17px; padding: 16px 20px; }
+    .pipeline { flex-direction: column; }
+    .p-arrow { transform: rotate(90deg); padding: 8px 0; }
+    .kcard { grid-template-columns: 32px 1fr; }
+    .kcard .kpill { grid-column: 2; justify-self: start; margin-top: 6px; }
+  }
+
+  /* ---------- Print / PDF ---------- */
+  @media print {
+    body { background: var(--paper) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body::after { display: none; }
+    .brandbar { position: static; }
+    .page { max-width: 100%; padding: 0 34px 30px; }
+    section, .cta, .callout, .footer, .board, .pipeline, .triad, .vs, .codeblock { break-inside: avoid; }
+    pre, table, blockquote, .kcard { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    .cb-copy { display: none; }
+    .cta { background: var(--ink) !important; }
+    .email-button { color: var(--paper) !important; background: var(--accent) !important; }
+    a { color: var(--accent-ink); }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- Brand -->
+  <div class="brandbar">
+    <div class="brand">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <mask id="mc"><rect x="0" y="0" width="300" height="300" fill="white"/><path d="M 142 40 V 135 L 80 170.7957 V 260 H 110 V 176.906 L 150 200 L 190 176.906 V 260 H 220 V 170.7957 L 158 135 V 40 Z" fill="black"/></mask>
+        </defs>
+        <g mask="url(#mc)">
+          <path d="M 150 150 L 63.3975 100 L 150 50 L 236.6025 100 Z" fill="#2A2520"/>
+          <path d="M 150 150 L 63.3975 100 L 63.3975 200 L 150 250 Z" fill="#1B1813"/>
+          <path d="M 150 150 L 236.6025 100 L 236.6025 200 L 150 250 Z" fill="#3B342B"/>
+        </g>
+      </svg>
+      <span class="name">Muditek</span>
+    </div>
+  </div>
+
+  <!-- Cover -->
+  <header class="cover">
+    <div class="eyebrow">The /goal primitive</div>
+    <h1>The <span class="tok">/goal</span> Playbook</h1>
+    <p class="subtitle">Run an autonomous AI coding team from a single message.</p>
+  </header>
+
+  <!-- Hook -->
+  <section class="hook">
+    <p class="hook-statement">You're still typing prompts one at a time. The people moving fastest stopped. <span class="hl">They assign a goal, walk away, and come back to finished work.</span></p>
+    <p class="lede"><span class="tok">/goal</span> is the command that makes that possible. You define what "done" looks like, submit it once, and the agent builds toward that target on its own. For minutes. For hours. Overnight if you let it. While you do something else.</p>
+
+    <p class="outcomes-title">By the end of this playbook you will be able to</p>
+    <ul class="outcomes">
+      <li>Write goals that actually finish instead of drifting</li>
+      <li>Run Codex, Claude Code, and an orchestrator as one pipeline from a single message</li>
+      <li>Apply the one verification rule that turns a goal from a promise into a contract</li>
+      <li>Run several agents in parallel without them overwriting each other's work</li>
+    </ul>
+  </section>
+
+  <!-- Contents -->
+  <section class="contents">
+    <h2>What's inside</h2>
+    <ol class="toc">
+      <li><a href="#s1">The core shift: prompting vs assigning</a></li>
+      <li><a href="#s2">The lifecycle of a goal</a></li>
+      <li><a href="#s3">The command set</a></li>
+      <li><a href="#s4">How to write a goal that finishes</a></li>
+      <li><a href="#s5">Ready-to-use goal templates</a></li>
+      <li><a href="#s6">The recommended workflow</a></li>
+      <li><a href="#s7">The three roles in an agent team</a></li>
+      <li><a href="#s8">The end-to-end pipeline</a></li>
+      <li><a href="#s9">The verification rule</a></li>
+      <li><a href="#s10">Setup: treat installation as a goal</a></li>
+      <li><a href="#s11">Running multiple goals in parallel</a></li>
+      <li><a href="#s12">Best practices and common mistakes</a></li>
+      <li><a href="#s13">When to use /goal, and when not to</a></li>
+      <li><a href="#s14">Quick-start checklist</a></li>
+    </ol>
+  </section>
+
+  <!-- 1 -->
+  <section class="sec" id="s1">
+    <h2>The core shift: prompting vs assigning</h2>
+    <p>A regular prompt asks an agent for the next response. You read what comes back, decide if it's right, and push the agent to the next step. You are steering every turn.</p>
+    <p class="lead-line"><code class="inline">/goal</code> flips that. You define the finished result, submit it once, and the agent drives toward it.</p>
+
+    <div class="vs">
+      <div class="vs-panel">
+        <div class="vs-tag">Prompting — you drive</div>
+        <div class="vs-flow">
+          <div class="vs-step"><span class="tick"></span>you write a prompt</div>
+          <div class="vs-step"><span class="tick"></span>agent answers</div>
+          <div class="vs-step"><span class="tick"></span>you read and judge</div>
+          <div class="vs-step"><span class="tick"></span>you push the next step</div>
+          <div class="vs-step"><span class="tick"></span>repeat, every turn</div>
+        </div>
+        <div class="vs-foot">You are the loop. Nothing moves without you.</div>
+      </div>
+      <div class="vs-panel win">
+        <div class="vs-tag">Assigning — the agent drives</div>
+        <div class="vs-flow">
+          <div class="vs-step"><span class="tick"></span>you define "done"</div>
+          <div class="vs-step"><span class="tick"></span>you submit /goal once</div>
+          <div class="vs-step"><span class="tick"></span>agent plans the steps</div>
+          <div class="vs-step"><span class="tick"></span>agent works toward the target</div>
+          <div class="vs-step"><span class="tick"></span>you walk away</div>
+        </div>
+        <div class="vs-foot">You set the target. The agent runs the loop.</div>
+      </div>
+    </div>
+
+    <blockquote>"The shift is from prompting (you driving) to assigning (the agent driving toward a target you defined)."</blockquote>
+    <p>In practice this turns the agent from a reactive chatbot into a background worker that can break a task into smaller steps, use tools, write and run code, iterate, self-correct, and keep going with minimal supervision until the work is done.</p>
+    <p class="lead-line">One thing to get right early</p>
+    <p>The real primitive lives inside an interactive worker session. You launch the tool, you submit <code class="inline">/goal</code>, and you walk away. Putting the word "goal" inside a normal one-shot command (for example <code class="inline">codex exec 'goal: build the app'</code>) is still just a prompt with a label, not an assigned goal.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="sec" id="s2">
+    <h2>The lifecycle of a goal</h2>
+    <p>Once you assign a goal, it stays active until one of these happens:</p>
+    <ul class="body-list">
+      <li><strong>Achieved</strong> — the success criteria are met.</li>
+      <li><strong>Paused</strong> — you pause it manually.</li>
+      <li><strong>Blocked</strong> — it hits something it can't resolve.</li>
+      <li><strong>Cleared</strong> — you clear it to start fresh.</li>
+      <li><strong>Out of budget</strong> — it runs out of allowed turns.</li>
+    </ul>
+    <p>This is why a goal can run for minutes, for hours, or overnight. It is not waiting on your next message. It is working against the definition of done you gave it.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="sec" id="s3">
+    <h2>The command set</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>What it does</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><code>/goal &lt;description&gt;</code></td><td>Starts work on a long-term goal</td><td>The main command. Begins everything.</td></tr>
+          <tr><td><code>/goal status</code></td><td>Shows current progress</td><td>Check how the task is going without interrupting it.</td></tr>
+          <tr><td><code>/goal pause</code></td><td>Pauses the current goal</td><td>Temporarily stop execution.</td></tr>
+          <tr><td><code>/goal resume</code></td><td>Resumes a paused goal</td><td>Continue after a pause.</td></tr>
+          <tr><td><code>/goal clear</code></td><td>Clears the current goal</td><td>Start fresh.</td></tr>
+          <tr><td><code>/subgoal &lt;text&gt;</code></td><td>Adds extra conditions or sub-objectives</td><td>Refine or steer requirements while it runs.</td></tr>
+          <tr><td><code>/handoff &lt;platform&gt;</code></td><td>Transfers the session to another app (Telegram, Discord, etc.)</td><td>Continue managing the work from somewhere else.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead-line">Steer without micromanaging</p>
+    <p>Use <code class="inline">/goal status</code> to check in and <code class="inline">/subgoal</code> to adjust direction mid-run. You do not need to stop the agent to redirect it.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="sec" id="s4">
+    <h2>How to write a goal that finishes</h2>
+    <p>The quality of the result depends heavily on how well you define the goal. This is the highest-leverage skill in the whole system.</p>
+    <p class="lead-line">A strong goal is:</p>
+    <ul class="body-list">
+      <li><strong>Specific and measurable</strong> — there is no ambiguity about what to build.</li>
+      <li><strong>Backed by clear success criteria</strong> — the agent can tell when it is done.</li>
+      <li><strong>Well-scoped</strong> — not so broad that "done" is impossible to define.</li>
+    </ul>
+    <blockquote>"The more clearly you can describe the final outcome and how to verify it, the better the agent will perform."</blockquote>
+
+    <h3>The "done means" pattern</h3>
+    <p>The strongest goals state the finish line as checkable conditions:</p>
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · build from spec</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Build the app described in SPEC.md. Done means tests pass,
+build passes, README is accurate, and git status only shows
+relevant project files.</pre>
+    </div>
+    <p>Notice every condition is verifiable: tests pass, build passes, README accurate, clean git status. That is what makes the goal completable instead of open-ended.</p>
+
+    <h3>Strong vs weak goals</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Weak — <span class="label-avoid">avoid</span></th><th>Why it fails</th></tr></thead>
+        <tbody>
+          <tr><td>"Make something cool"</td><td>No outcome, no success criteria.</td></tr>
+          <tr><td>"Improve my code"</td><td>Unmeasurable. "Improved" by what standard?</td></tr>
+          <tr><td>"Work on the project"</td><td>No scope, no finish line.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Strong — <span class="label-use">use</span></th><th>Why it works</th></tr></thead>
+        <tbody>
+          <tr><td>"Create a fully functional Flappy Bird clone in HTML5 with physics, keyboard and mouse controls, scoring system, and collision detection. The game must run on localhost and all core mechanics must work."</td><td>Specific features plus a verifiable run state.</td></tr>
+          <tr><td>"Build a clean multi-page website with a homepage, features, and pricing. Make it responsive and pass basic Lighthouse checks."</td><td>Named pages plus a measurable quality bar.</td></tr>
+          <tr><td>"Refactor the main processing module, improve performance by 30%, add proper error handling, and ensure all tests pass."</td><td>A numeric target plus checkable conditions.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="sec" id="s5">
+    <h2>Ready-to-use goal templates</h2>
+    <p>Copy one, fill in the specifics, and assign it.</p>
+
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · game / interactive app</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Create a fully functional Flappy Bird clone in HTML5. Include
+physics, keyboard and mouse controls, scoring system, and collision
+detection. The game must run on localhost and all core mechanics must
+work without bugs.</pre>
+    </div>
+
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · web project</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Build a clean multi-page website for a productivity tool. Include
+homepage, features page, and pricing section. Use modern design,
+responsive layout, and smooth animations. All pages must pass basic
+Lighthouse checks.</pre>
+    </div>
+
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · code refactor</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Refactor the main processing module in my repository. Improve
+performance by at least 30%, add proper error handling, write unit tests
+for all functions, and ensure all existing tests still pass.</pre>
+    </div>
+
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · research</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Research 5 competitors in the AI productivity space. Create a
+structured comparison table with pricing, key features, strengths and
+weaknesses. Save the final report as a markdown file.</pre>
+    </div>
+
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · build from spec (strongest pattern)</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Build the app described in SPEC.md. Done means tests pass, build
+passes, README is accurate, and git status only shows relevant project
+files.</pre>
+    </div>
+
+    <blockquote>Tip: start with a clear end result plus verifiable criteria. You can always add more detail later with <code class="inline" style="white-space:normal;">/subgoal</code>.</blockquote>
+  </section>
+
+  <!-- 6 -->
+  <section class="sec" id="s6">
+    <h2>The recommended workflow</h2>
+    <p>A repeatable five-step loop for any goal:</p>
+    <ol class="body-list">
+      <li><strong>Provide context first.</strong> Give the agent information about your project, tech stack, folder structure, and previous decisions before you assign anything. Context is what makes the output match your actual project.</li>
+      <li><strong>(Optional) Generate strong goals.</strong> Paste this meta-prompt to have the agent propose goals worth running:</li>
+    </ol>
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">prompt · generate strong goals</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre>Based on what you know about me and my projects, suggest 3 strong /goal
+ideas that would run for a long time and create the most value.</pre>
+    </div>
+    <ol class="body-list" start="3">
+      <li><strong>Launch the goal.</strong> Write <code class="inline">/goal</code> followed by a detailed description.</li>
+      <li><strong>Manage the process.</strong> Use <code class="inline">/goal status</code> to check progress, <code class="inline">/subgoal</code> to adjust direction, and pause or resume as needed.</li>
+      <li><strong>Review the result.</strong> The agent returns completed work, a summary, or an explanation if the goal could not be fully achieved.</li>
+    </ol>
+  </section>
+
+  <!-- 7 -->
+  <section class="sec" id="s7">
+    <h2>The three roles in an agent team</h2>
+    <p><code class="inline">/goal</code> becomes far more powerful when more than one tool speaks it. The tools can change, but the roles stay the same.</p>
+
+    <div class="triad">
+      <div class="triad-top">
+        <div class="role-name">Orchestrator</div>
+        <div class="role-tool">e.g. Hermes</div>
+        <div class="role-desc">Owns the control loop. Decomposes the task, picks the right worker for each job, runs background processes, tracks dependencies, verifies the final result, and writes the summary you actually read.</div>
+      </div>
+      <div class="triad-link" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v14M6 13l6 6 6-6"/></svg></div>
+      <div class="triad-children">
+        <div class="role-box"><div class="role-name">Builder</div><div class="role-tool">Codex</div><div class="role-desc">Takes a spec and produces working code. Implementation is the bottleneck this role solves.</div></div>
+        <div class="role-box"><div class="role-name">Reviewer</div><div class="role-tool">Claude Code</div><div class="role-desc">Reads what the builder produced and finds what is wrong: spec compliance, safety, error states, security holes. Correctness is the bottleneck this role solves.</div></div>
+      </div>
+    </div>
+
+    <h3>Which tool for which role</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Role</th><th>Strength</th></tr></thead>
+        <tbody>
+          <tr><td>Codex <span style="color:var(--ink-3);font-weight:400;">(OpenAI's coding CLI)</span></td><td>Builder</td><td>Implementation, especially from a clear spec. <code>/goal</code> is how you hand it that spec.</td></tr>
+          <tr><td>Claude Code <span style="color:var(--ink-3);font-weight:400;">(Anthropic's coding CLI)</span></td><td>Reviewer</td><td>The inverse of building: finding what is wrong with code that looks right — spec compliance, safety issues, error states, security holes. <code>/goal</code> is how you point it at code and ask for a review.</td></tr>
+          <tr><td>Orchestrator <span style="color:var(--ink-3);font-weight:400;">(e.g. Hermes)</span></td><td>Orchestrator</td><td>Coordinates work between the coding workers above. <code>/goal</code> is how it hands off tasks to the right tool, and how you tell it what you want.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead-line">Why this matters</p>
+    <p>Three different teams converged on the same <code class="inline">/goal</code> instruction format even though the tools share nothing else. That convergence is what makes it possible to compose them. If each tool had invented its own job-handoff format, no orchestrator could route between them.</p>
+  </section>
+
+  <!-- 8 -->
+  <section class="sec" id="s8">
+    <h2>The end-to-end pipeline</h2>
+    <p>This is the operational sequence an orchestrator runs when you assign a single goal. The pattern below is the generalized version of a real run that started from one message:</p>
+    <div class="codeblock">
+      <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">goal · one message, whole pipeline</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+      <pre><span class="cmd">/goal</span> Build a CLI tool that finds X mentions of me and pings me when
+something blows up.</pre>
+    </div>
+
+    <p>One message becomes a routed pipeline across the tools that speak <code class="inline">/goal</code>:</p>
+
+    <div class="pipeline">
+      <div class="p-node"><div class="p-k">Input</div><div class="p-t">One message</div><div class="p-s">your goal, stated once</div></div>
+      <div class="p-arrow"><span class="p-lbl">/goal</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="p-node worker"><div class="p-k">Orchestrator</div><div class="p-t">Hermes</div><div class="p-s">writes spec, makes cards</div></div>
+      <div class="p-arrow"><span class="p-lbl">/goal</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="p-node worker"><div class="p-k">Builder</div><div class="p-t">Codex</div><div class="p-s">builds from the spec</div></div>
+      <div class="p-arrow"><span class="p-lbl">/goal</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="p-node worker"><div class="p-k">Reviewer</div><div class="p-t">Claude Code</div><div class="p-s">finds what's wrong</div></div>
+      <div class="p-arrow"><span class="p-lbl">verify</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="p-node"><div class="p-k">Output</div><div class="p-t">Working app</div><div class="p-s">verified, then summarized</div></div>
+    </div>
+
+    <p>The orchestrator breaks the request into tracked cards on a board. Each card carries its own state and handoff trail, so instead of hunting through terminals you watch the work move across columns.</p>
+
+    <div class="board">
+      <div class="board-bar"><span class="sq3"><span></span><span></span><span></span></span><span class="board-title">goal board — find X mentions of me</span><span class="board-meta">1 message · 6 cards</span></div>
+      <div class="board-body">
+        <div class="kcard"><div class="kn">1</div><div><div class="kt">Write SPEC.md</div><div class="kr"><span class="chip">PM</span> · stack, repo, constraints, verify commands</div></div><span class="kpill">Done</span></div>
+        <div class="kcard"><div class="kn">2</div><div><div class="kt">Build the app</div><div class="kr"><span class="chip">Codex</span> · files, UI, backend, tests, passing state</div></div><span class="kpill">Done</span></div>
+        <div class="kcard"><div class="kn">3</div><div><div class="kt">Review the build</div><div class="kr"><span class="chip">Claude Code</span> · spec, safety, secrets, errors, security</div></div><span class="kpill pass">Pass</span></div>
+        <div class="kcard skipped"><div class="kn">4</div><div><div class="kt">Fix loop</div><div class="kr"><span class="chip">Codex</span> · only runs if the review blocks</div></div><span class="kpill skip">Skipped</span></div>
+        <div class="kcard skipped"><div class="kn">5</div><div><div class="kt">Final verification</div><div class="kr"><span class="chip">Claude Code</span> · only runs if fixes were needed</div></div><span class="kpill skip">Skipped</span></div>
+        <div class="kcard"><div class="kn">6</div><div><div class="kt">Final summary</div><div class="kr"><span class="chip">Hermes</span> · working app, what was verified, where it lives</div></div><span class="kpill">Done</span></div>
+      </div>
+    </div>
+    <p class="caption">Cards 4 and 5 are skipped because the review passed. They still exist — that is how the board models conditional work: if the review had blocked, the findings would have gone back to Codex as a new <code class="inline" style="white-space:normal;">/goal</code>.</p>
+
+    <p class="lead-line">The whole point</p>
+    <p>One message turns into a pipeline across multiple tools, and you watch the whole thing move across one board. You stop sitting in a terminal waiting for one agent to finish and start managing a queue of work with visible state.</p>
+    <blockquote>"The board is what /goal becomes when there's an orchestrator on top of it. Every goal has a card, every card has a status, every handoff leaves a trail."</blockquote>
+  </section>
+
+  <!-- 9 -->
+  <section class="sec" id="s9">
+    <h2>The verification rule</h2>
+    <p>This is the single most important rule in the entire system.</p>
+    <div class="callout">
+      <div class="callout-label">The rule that makes it a contract</div>
+      <blockquote>"Don't trust the worker's self-report as final. Trust the verifier."</blockquote>
+      <p>An orchestrator should never accept the worker's word that the job is done. After a builder marks a build complete, the orchestrator runs the checks itself:</p>
+      <div class="codeblock">
+        <div class="cb-head"><span class="cb-dot"></span><span class="cb-label">verify · run it yourself</span><button class="cb-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cb-txt">Copy</span></button></div>
+        <pre><span class="cmd">npm test</span>      <span class="comment"># actually run the tests</span>
+<span class="cmd">npm run build</span>  <span class="comment"># actually run the build</span></pre>
+      </div>
+      <p>Why this is non-negotiable:</p>
+      <blockquote>"Coding agents are confident. They'll tell you the build passes when the build was never run. They'll tell you tests pass when they wrote tests that never executed. The verifier closes that gap."</blockquote>
+      <p>The takeaway:</p>
+      <blockquote>"Without verification, /goal is just a fancier prompt. With verification, it becomes a contract."</blockquote>
+    </div>
+    <p><strong>Action:</strong> always bake the verification commands into your <code class="inline">SPEC.md</code> and done-criteria, and make sure something other than the builder actually runs them.</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="sec" id="s10">
+    <h2>Setup: treat installation as a goal</h2>
+    <p>Once you have an orchestrator running, you should not set up new tools by hand.</p>
+    <p>The first time you need an additional coding worker on the machine that runs your orchestrator, do not install it manually. Send the orchestrator a message asking it to install the tool and log you in. It handles the rest.</p>
+    <blockquote>"You don't type install commands. Setup is just another goal."</blockquote>
+    <p>If you do not have an orchestrator yet, follow the official install pages for the individual coding tools to get started. But the point of having an orchestrator is that mechanical work stops being yours.</p>
+    <p class="lead-line">Combine tools deliberately</p>
+    <p>Running an orchestrator together with a dedicated builder and a dedicated reviewer produces better results than any single tool working alone.</p>
+  </section>
+
+  <!-- 11 -->
+  <section class="sec" id="s11">
+    <h2>Running multiple goals in parallel</h2>
+    <p>You can run multiple goals at once, but you cannot point multiple coding workers at the same files without thinking about it first.</p>
+    <p class="lead-line">The default: one main builder per repo</p>
+    <p>Add parallelism only across clear boundaries where two workers cannot step on each other:</p>
+    <ul class="body-list">
+      <li>Different repos</li>
+      <li>Different branches</li>
+      <li>Git worktrees</li>
+      <li>Separate packages</li>
+      <li>Docs vs. code</li>
+      <li>Tests vs. implementation</li>
+    </ul>
+    <p class="lead-line">The bad pattern</p>
+    <p>Three workers all editing the same file in the same repo. You get conflicts, partial overwrites, and one worker silently undoing another's work.</p>
+    <p class="lead-line">The better patterns</p>
+    <ul class="body-list">
+      <li>One writer at a time on any given file. The builder writes, the reviewer only reads, and fix goals stay scoped to the fix.</li>
+      <li>Or run several builders in several worktrees on competing approaches to the same problem, and let the orchestrator pick the best result.</li>
+    </ul>
+    <blockquote>"Without the board, parallel background workers become terminal chaos."</blockquote>
+  </section>
+
+  <!-- 12 -->
+  <section class="sec" id="s12">
+    <h2>Best practices and common mistakes</h2>
+    <div class="two-col">
+      <div>
+        <h3>Best practices</h3>
+        <ul class="body-list">
+          <li>Always make goals measurable with clear success criteria.</li>
+          <li>Use <code class="inline">/subgoal</code> actively to steer the agent while it runs.</li>
+          <li>Increase the turn budget for long-running tasks (for example: <code class="inline" style="white-space:normal;">hermes config set goals.max_turns 500</code>).</li>
+          <li>Combine your orchestrator with dedicated builder and reviewer tools.</li>
+          <li>Run complex goals overnight.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Common mistakes</h3>
+        <ul class="body-list">
+          <li>Using vague goals with no success criteria.</li>
+          <li>Intervening too often instead of letting the agent work.</li>
+          <li>Starting without enough project context.</li>
+          <li>Making goals too broad or open-ended.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="sec" id="s13">
+    <h2>When to use /goal, and when not to</h2>
+    <div class="two-col">
+      <div>
+        <h3>Use it for</h3>
+        <ul class="body-list">
+          <li>Complex, multi-step tasks (building apps, refactoring, research).</li>
+          <li>Work that benefits from iteration and self-correction.</li>
+          <li>Tasks you can leave running for hours.</li>
+          <li>Situations where you want to delegate rather than micromanage.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Skip it for</h3>
+        <ul class="body-list">
+          <li>Simple or quick tasks.</li>
+          <li>Situations where you need full control over every single step.</li>
+          <li>Work where you have not yet clearly defined the desired outcome.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="sec" id="s14">
+    <h2>Quick-start checklist</h2>
+    <ul class="checklist">
+      <li>Give the agent your project context (stack, structure, decisions).</li>
+      <li>Write a goal with a clear, verifiable "done means …" definition.</li>
+      <li>Put the verification commands inside the goal or <code class="inline">SPEC.md</code>.</li>
+      <li>Assign it with <code class="inline">/goal</code>, then walk away.</li>
+      <li>Check in with <code class="inline">/goal status</code>; steer with <code class="inline">/subgoal</code>. Do not micromanage.</li>
+      <li>Make sure something other than the builder actually runs the tests and build.</li>
+      <li>For parallel work, isolate workers by repo, branch, or worktree — never two writers on one file.</li>
+      <li>Review the final summary against your original success criteria.</li>
+    </ul>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="eyebrow">From playbook to done-for-you</div>
+    <h2>From one goal to your whole business on autopilot</h2>
+    <p>This playbook shows you how to run one autonomous agent against one task.</p>
+    <p>That is the small version of a much bigger shift: stop doing the work, start assigning it.</p>
+    <p>Muditek applies that shift to an entire business. We audit your workflows, package the knowledge trapped in your team's heads into formats AI can actually read and run, and build the systems that execute the work. Not tools your team logs into. Systems that run on their own.</p>
+    <p>The same move you just learned, applied to your operations, your pipeline, and your back office.</p>
+    <p class="cta-strong">If you want this built and run for you, not by you:</p>
+    <a class="email-button" href="mailto:ghiles@muditek.com?subject=Building%20this%20for%20my%20business"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14"/><path d="m3 7 9 6 9-6"/></svg>ghiles@muditek.com</a>
+    <p class="fineprint">Send one line about the first workflow you'd hand off. No form. No funnel. A direct reply from the person who builds these systems.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <h3>What this playbook deliberately does not invent</h3>
+    <p>To keep every instruction trustworthy, this playbook only includes commands, settings, and claims that appear in the source material. It does not include:</p>
+    <ul class="body-list">
+      <li>Exact install commands for individual coding tools (the source points to each tool's official install page instead).</li>
+      <li>Orchestrator setup commands beyond the turn-budget config and the verification commands shown.</li>
+      <li>Pricing, performance benchmarks, or model-version details.</li>
+    </ul>
+    <p>If you need those, get them from each tool's official documentation.</p>
+    <p class="sign">Compiled from two public deep-dives on the /goal primitive. Source-grounded, no fabricated commands or claims. © Muditek.</p>
+  </footer>
+
+</main>
+
+<script>
+  document.querySelectorAll('.cb-copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.closest('.codeblock').querySelector('pre');
+      var text = pre.innerText;
+      var label = btn.querySelector('.cb-txt');
+      var done = function () {
+        btn.classList.add('copied');
+        label.textContent = 'Copied';
+        setTimeout(function () { btn.classList.remove('copied'); label.textContent = 'Copy'; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallback(); });
+      } else { fallback(); }
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); } catch (e) {}
+        s.removeAllRanges(); done();
+      }
+    });
+  });
+</script>
+</body>
+</html>

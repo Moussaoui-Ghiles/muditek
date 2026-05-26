@@ -20,7 +20,7 @@ export default function AdminUsagePage() {
           </div>
           <div className="flex w-fit items-center gap-2 rounded-full border border-border/70 bg-secondary/35 px-3 py-1.5 text-[12px] text-muted-foreground">
             <span className="size-2 rounded-full bg-[var(--color-live)] shadow-[0_0_12px_var(--color-live)]" />
-            Live portal data
+            Real database data
           </div>
         </header>
         <UsageContent />

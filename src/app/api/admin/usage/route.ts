@@ -65,11 +65,11 @@ export async function GET(request: Request) {
       SELECT *
       FROM (
         VALUES
-          ('Newsletter audience', 'People on the email list right now', (SELECT COUNT(*)::int FROM newsletter_subscribers WHERE status = 'active'), 1),
+          ('Newsletter list', 'People on the email list right now', (SELECT COUNT(*)::int FROM newsletter_subscribers WHERE status = 'active'), 1),
           ('Portal accounts', 'People who can log into the portal', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_memberships WHERE status = 'active'), 2),
-          ('Opened portal', 'Unique people with any portal activity in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND created_at >= NOW() - INTERVAL '30 days'), 3),
-          ('Consumed content', 'Opened a resource, skill, or article in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND event IN ('resource_viewed', 'skill_viewed', 'newsletter_article_opened') AND created_at >= NOW() - INTERVAL '30 days'), 4),
-          ('High intent', 'Downloaded something or used a tool in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND event IN ('resource_downloaded', 'skill_downloaded', 'tool_used') AND created_at >= NOW() - INTERVAL '30 days'), 5)
+          ('Used portal', 'People who did anything inside the portal in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND created_at >= NOW() - INTERVAL '30 days'), 3),
+          ('Opened content', 'People who opened a resource, skill, or article in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND event IN ('resource_viewed', 'skill_viewed', 'newsletter_article_opened') AND created_at >= NOW() - INTERVAL '30 days'), 4),
+          ('Ready for follow-up', 'People who downloaded something or used a tool in 30d', (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND event IN ('resource_downloaded', 'skill_downloaded', 'tool_used') AND created_at >= NOW() - INTERVAL '30 days'), 5)
       ) AS f(label, description, value, sort_order)
       ORDER BY sort_order
     `,

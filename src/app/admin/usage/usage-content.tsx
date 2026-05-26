@@ -5,8 +5,8 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
-  BookOpen,
   Flame,
+  Link2,
   Mail,
   Search,
   UserRoundCheck,
@@ -153,10 +153,6 @@ function shortLabel(value: string | null | undefined): string {
     .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
-function eventLabel(value: string): string {
-  return value.replace(/_/g, " ");
-}
-
 function intentScore(user: UsageData["users"][number]): number {
   return (
     user.actions +
@@ -169,10 +165,10 @@ function intentScore(user: UsageData["users"][number]): number {
 }
 
 function intentLabel(score: number): string {
-  if (score >= 25) return "Hot";
-  if (score >= 10) return "Warm";
-  if (score > 0) return "Active";
-  return "Dormant";
+  if (score >= 25) return "Strong follow-up";
+  if (score >= 10) return "Worth watching";
+  if (score > 0) return "Some activity";
+  return "No portal use";
 }
 
 export default function UsageContent() {
@@ -224,7 +220,6 @@ export default function UsageContent() {
   }, [data, search]);
 
   const visibleUsers = useMemo(() => filteredUsers.slice(0, 40), [filteredUsers]);
-  const visibleEvents = useMemo(() => data?.recentEvents.slice(0, 12) ?? [], [data]);
 
   if (loading) return <LoadingState />;
   if (!data) {
@@ -238,10 +233,29 @@ export default function UsageContent() {
   const { business } = data;
   return (
     <div className="mt-6 space-y-6">
+      <section className="grid gap-3 lg:grid-cols-4">
+        <Definition
+          title="Newsletter list"
+          text="Everyone on the email list. Most of them do not have portal accounts yet."
+        />
+        <Definition
+          title="Portal accounts"
+          text="People who can log in. This is the pool we can watch inside the product."
+        />
+        <Definition
+          title="Lead magnet signups"
+          text="People who came in through a specific resource link."
+        />
+        <Definition
+          title="Follow-up candidates"
+          text="People who downloaded something or used a tool."
+        />
+      </section>
+
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         <BusinessMetric
           icon={Mail}
-          label="Newsletter audience"
+          label="Newsletter list"
           value={business.newsletter_active}
           note={`${formatNumber(business.newsletter_new_30d)} new in 30d`}
         />
@@ -252,32 +266,32 @@ export default function UsageContent() {
           note={`${percent(business.portal_accounts, business.newsletter_active)} of newsletter`}
         />
         <BusinessMetric
+          icon={Link2}
+          label="Lead magnet signups"
+          value={business.lead_magnet_signups_30d}
+          note="From resource links in 30d"
+        />
+        <BusinessMetric
           icon={Users}
-          label="Used portal in 7d"
+          label="Portal users this week"
           value={business.people_active_7d}
-          note="Unique people, not clicks"
+          note="Unique signed-in people"
           accent
         />
         <BusinessMetric
-          icon={BookOpen}
-          label="Read resources in 30d"
-          value={business.content_consumers_30d}
-          note={`${percent(business.content_consumers_30d, business.people_active_30d)} of active users`}
-        />
-        <BusinessMetric
           icon={Flame}
-          label="High intent in 30d"
+          label="Follow-up candidates"
           value={business.high_intent_30d}
-          note="Downloaded or used a tool"
+          note="Downloaded or used a tool in 30d"
           accent
         />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <Panel
-          eyebrow="Business funnel"
-          title="Where the audience is converting"
-          action={<span className="text-[12px] text-muted-foreground">Paid active: {formatNumber(business.paid_active)} · MRR {formatMoney(business.mrr)}</span>}
+          eyebrow="Main funnel"
+          title="From email list to portal usage"
+          action={<span className="text-[12px] text-muted-foreground">Paid customers: {formatNumber(business.paid_active)} · MRR {formatMoney(business.mrr)}</span>}
         >
           <div className="space-y-3">
             {data.funnel.map((step, index) => {
@@ -304,7 +318,7 @@ export default function UsageContent() {
           </div>
         </Panel>
 
-        <Panel eyebrow="Last 14 days" title="Daily portal usage">
+        <Panel eyebrow="Last 14 days" title="Daily signed-in users">
           <div className="flex h-56 items-end gap-2 border-b border-border/50 pb-4">
             {data.daily.map((day) => (
               <div key={day.date} className="group flex min-w-0 flex-1 flex-col items-center gap-2">
@@ -322,15 +336,15 @@ export default function UsageContent() {
             ))}
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-[12px]">
-            <MiniStat label="Active today" value={business.people_active_today} />
-            <MiniStat label="Tool users 30d" value={business.tool_users_30d} />
-            <MiniStat label="Downloads 30d" value={business.downloaders_30d} />
+            <MiniStat label="Today" value={business.people_active_today} />
+            <MiniStat label="Used tools" value={business.tool_users_30d} />
+            <MiniStat label="Downloaded" value={business.downloaders_30d} />
           </div>
         </Panel>
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <Panel eyebrow="Segments" title="Newsletter audience quality">
+        <Panel eyebrow="Email list" title="Newsletter segments">
           <div className="space-y-2">
             {data.segments.map((segment) => (
               <div key={segment.segment} className="grid grid-cols-[minmax(0,1fr)_72px_72px] items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-secondary/30">
@@ -347,7 +361,7 @@ export default function UsageContent() {
           </div>
         </Panel>
 
-        <Panel eyebrow="Lead magnets" title="What creates portal signups">
+        <Panel eyebrow="Resource links" title="What creates portal accounts">
           <div className="space-y-2">
             {data.leadMagnets.length === 0 ? (
               <Empty text="No lead magnet signups recorded yet." />
@@ -368,7 +382,7 @@ export default function UsageContent() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <Panel eyebrow="Content demand" title="Resources people actually open">
+        <Panel eyebrow="Portal content" title="What people open after login">
           <div className="space-y-2">
             {data.contentDemand.length === 0 ? (
               <Empty text="No content usage recorded yet." />
@@ -387,7 +401,7 @@ export default function UsageContent() {
           </div>
         </Panel>
 
-        <Panel eyebrow="Tool adoption" title="Tools people use, not just view">
+        <Panel eyebrow="Portal tools" title="Tools people actually run">
           <div className="space-y-2">
             {data.toolAdoption.length === 0 ? (
               <Empty text="No tool usage recorded yet." />
@@ -408,8 +422,8 @@ export default function UsageContent() {
       </section>
 
       <Panel
-        eyebrow="Users"
-        title="People to understand or follow up with"
+        eyebrow="People"
+        title="Users and follow-up priority"
         action={
           <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <span className="text-[12px] text-muted-foreground">
@@ -435,7 +449,7 @@ export default function UsageContent() {
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">Source</th>
                 <th className="px-3 py-2 font-medium">Usage</th>
-                <th className="px-3 py-2 font-medium">Intent</th>
+                <th className="px-3 py-2 font-medium">Follow-up</th>
                 <th className="px-3 py-2 font-medium">Last activity</th>
               </tr>
             </thead>
@@ -461,7 +475,7 @@ export default function UsageContent() {
                       <p className="truncate">{user.first_resource_slug ? shortLabel(user.first_resource_slug) : user.source ?? "-"}</p>
                     </td>
                     <td className="px-3 py-3 text-muted-foreground">
-                      {formatNumber(user.content_views)} reads · {formatNumber(user.downloads)} downloads · {formatNumber(user.tool_runs)} tools
+                      {formatNumber(user.content_views)} reads · {formatNumber(user.downloads)} downloads · {formatNumber(user.tool_runs)} tool runs
                     </td>
                     <td className="px-3 py-3">
                       <IntentPill score={score} />
@@ -502,20 +516,15 @@ export default function UsageContent() {
         </div>
       </Panel>
 
-      <Panel eyebrow="Raw log" title="Latest events">
-        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-          {visibleEvents.map((event, index) => (
-            <div key={`${event.created_at}-${index}`} className="rounded-lg border border-border/50 bg-background/25 p-3">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-medium text-foreground">{eventLabel(event.event)}</p>
-                <span className="shrink-0 text-[11px] text-muted-foreground">{formatDateTime(event.created_at)}</span>
-              </div>
-              <p className="mt-1 truncate text-[12px] text-muted-foreground">{event.email ?? "Unknown"}</p>
-              <p className="mt-2 truncate text-[12px] text-muted-foreground">{event.resource_slug || event.path || "-"}</p>
-            </div>
-          ))}
-        </div>
-      </Panel>
+    </div>
+  );
+}
+
+function Definition({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-xl border border-border/50 bg-card/30 p-4">
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="mt-1 text-[12.5px] leading-5 text-muted-foreground">{text}</p>
     </div>
   );
 }
@@ -617,8 +626,8 @@ function RankedRow({
 
 function IntentPill({ score }: { score: number }) {
   const label = intentLabel(score);
-  const hot = label === "Hot";
-  const warm = label === "Warm";
+  const hot = label === "Strong follow-up";
+  const warm = label === "Worth watching";
   return (
     <span
       className={[
@@ -630,7 +639,7 @@ function IntentPill({ score }: { score: number }) {
             : "border-border/60 bg-secondary/40 text-muted-foreground",
       ].join(" ")}
     >
-      {label} · {score}
+      {label}
     </span>
   );
 }

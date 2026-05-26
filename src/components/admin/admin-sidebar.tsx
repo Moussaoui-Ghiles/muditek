@@ -7,7 +7,6 @@ import { Logo } from "@/components/logo/logo";
 import {
   LayoutDashboard,
   Users,
-  Megaphone,
   MailOpen,
   Package,
   CreditCard,
@@ -17,6 +16,7 @@ import {
   MoreVertical,
   Newspaper,
   Activity,
+  Archive,
 } from "lucide-react";
 
 import {
@@ -49,6 +49,7 @@ const NAV = [
     label: "Audience",
     items: [
       { href: "/admin/newsletter", title: "Newsletter", icon: Newspaper },
+      { href: "/admin/users", title: "Users", icon: Users },
       { href: "/admin/usage", title: "Usage", icon: Activity },
       { href: "/admin/subscribers", title: "Paying customers", icon: CreditCard },
       { href: "/admin/leads", title: "Leads", icon: Users },
@@ -57,9 +58,14 @@ const NAV = [
   {
     label: "Acquisition",
     items: [
-      { href: "/admin/campaigns", title: "Campaigns", icon: Megaphone },
       { href: "/admin/nurture", title: "Nurture", icon: MailOpen },
       { href: "/admin/content", title: "Lead magnets", icon: Package },
+    ],
+  },
+  {
+    label: "Archive",
+    items: [
+      { href: "/admin/campaigns", title: "Legacy campaigns", icon: Archive },
     ],
   },
   {

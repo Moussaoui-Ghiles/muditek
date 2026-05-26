@@ -51,40 +51,13 @@ export async function PATCH(
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
-  const { id } = await params;
-  const body = await request.json();
-  const sql = getDb();
+  await params;
 
-  if (typeof body.isActive === "boolean") {
-    await sql`
-      UPDATE campaigns SET is_active = ${body.isActive} WHERE id = ${id}
-    `;
-  }
-
-  if (typeof body.postUrl === "string") {
-    await sql`
-      UPDATE campaigns SET post_url = ${body.postUrl} WHERE id = ${id}
-    `;
-  }
-
-  if (typeof body.keyword === "string") {
-    await sql`
-      UPDATE campaigns SET keyword = ${body.keyword.trim()} WHERE id = ${id}
-    `;
-  }
-
-  if (typeof body.title === "string") {
-    await sql`
-      UPDATE campaigns SET title = ${body.title.trim()} WHERE id = ${id}
-    `;
-  }
-
-  if (typeof body.resourceUrl === "string") {
-    await sql`
-      UPDATE campaigns SET resource_url = ${body.resourceUrl.trim()} WHERE id = ${id}
-    `;
-  }
-
-  const result = await sql`SELECT * FROM campaigns WHERE id = ${id}`;
-  return NextResponse.json(result[0]);
+  return NextResponse.json(
+    {
+      error:
+        "Legacy campaigns are archived and read-only. Share portal resource links instead.",
+    },
+    { status: 410 }
+  );
 }

@@ -2,21 +2,12 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Archive, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface Campaign {
   id: string;
@@ -39,17 +30,6 @@ export default function CampaignsPage() {
   const [search, setSearch] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(false);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [postUrl, setPostUrl] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [title, setTitle] = useState("");
-  const [resourceUrl, setResourceUrl] = useState("");
-  const [ttlDays, setTtlDays] = useState(7);
-  const [creating, setCreating] = useState(false);
-
-  const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
     try {
@@ -65,39 +45,6 @@ export default function CampaignsPage() {
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
-
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    setCreating(true);
-    try {
-      const res = await fetch("/api/admin/campaigns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postUrl, keyword, title, resourceUrl, ttlDays }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setPostUrl("");
-        setKeyword("");
-        setTitle("");
-        setResourceUrl("");
-        setTtlDays(7);
-        setJustCreatedId(data.id);
-        setCopied(false);
-        setDialogOpen(false);
-        fetchCampaigns();
-      }
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  function copyLink(id: string) {
-    const url = `${window.location.origin}/${id}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   function daysLeft(expiresAt: string) {
     const diff = new Date(expiresAt).getTime() - Date.now();
@@ -122,51 +69,27 @@ export default function CampaignsPage() {
     <div className="mx-auto w-full max-w-5xl px-6 py-8 space-y-6">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Campaigns</h1>
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Archive
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight">Legacy campaigns</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            LinkedIn lead-magnet capture pages. Each campaign has its own shareable URL.
+            Old LinkedIn keyword/comment capture pages. The current funnel is resource links into the portal.
           </p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="size-4" />
-          New campaign
-        </Button>
       </header>
 
-      {/* Post-creation banner */}
-      {justCreatedId && (
-        <Card className="p-5 border-primary/20 bg-primary/5">
-          <p className="text-sm font-medium mb-3">
-            Campaign created — add this link to your LinkedIn post:
-          </p>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex-1 px-4 py-2.5 bg-background border border-border rounded-md font-mono text-sm truncate">
-              {typeof window !== "undefined"
-                ? `${window.location.origin}/${justCreatedId}`
-                : `/${justCreatedId}`}
-            </div>
-            <Button onClick={() => copyLink(justCreatedId)} size="sm">
-              {copied ? "Copied!" : "Copy"}
-            </Button>
+      <Card className="border-border/60 bg-secondary/25 p-4">
+        <div className="flex items-start gap-3">
+          <Archive className="mt-0.5 size-4 text-muted-foreground" />
+          <div>
+            <p className="text-sm font-medium text-foreground">Archived workflow</p>
+            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+              Do not create new campaigns here. Share `/portal/playbooks/...`, `/portal/skills/...`, or `/r/...` resource links instead.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/admin/${justCreatedId}`}
-              className="text-sm font-medium underline hover:no-underline"
-            >
-              Open campaign →
-            </Link>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setJustCreatedId(null)}
-              className="ml-auto text-xs text-muted-foreground"
-            >
-              Dismiss
-            </Button>
-          </div>
-        </Card>
-      )}
+        </div>
+      </Card>
 
       {/* Filters */}
       <div className="flex gap-3 flex-wrap items-center">
@@ -184,7 +107,7 @@ export default function CampaignsPage() {
           size="sm"
           onClick={() => setShowActiveOnly((v) => !v)}
         >
-          Active only
+          Still marked active
         </Button>
         <span className="text-xs text-muted-foreground ml-auto font-mono">
           {filtered.length} of {campaigns.length}
@@ -199,12 +122,12 @@ export default function CampaignsPage() {
       ) : filtered.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-muted-foreground text-sm">
-            {campaigns.length === 0 ? "No campaigns yet" : "No matches"}
+            {campaigns.length === 0 ? "No legacy campaigns in the archive" : "No matches"}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             {campaigns.length === 0
-              ? "Click + New campaign to get started"
-              : "Try a different search or toggle off Active only"}
+              ? "New resource links now belong in the portal, not this workflow."
+              : "Try a different search or show all archived records."}
           </p>
         </Card>
       ) : (
@@ -219,8 +142,8 @@ export default function CampaignsPage() {
                 <Card className="p-5 hover:bg-accent/30 transition-colors">
                   <div className="flex items-center gap-2.5 mb-2 flex-wrap">
                     <span className="font-medium text-[15px]">{c.title}</span>
-                    <Badge variant={c.is_active ? "default" : "secondary"}>
-                      {c.is_active ? "Active" : "Paused"}
+                    <Badge variant={c.is_active ? "outline" : "secondary"}>
+                      {c.is_active ? "Still marked active" : "Archived"}
                     </Badge>
                     <Badge variant="outline" className="font-mono">
                       {c.keyword}
@@ -261,92 +184,6 @@ export default function CampaignsPage() {
           })}
         </div>
       )}
-
-      {/* New campaign dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>New campaign</DialogTitle>
-            <DialogDescription>
-              Creates a capture URL for a specific LinkedIn post + keyword.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleCreate} className="grid gap-3">
-            <div className="grid gap-1.5">
-              <Label htmlFor="postUrl">LinkedIn post URL</Label>
-              <Input
-                id="postUrl"
-                required
-                placeholder="https://www.linkedin.com/posts/..."
-                value={postUrl}
-                onChange={(e) => setPostUrl(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-1.5">
-                <Label htmlFor="keyword">Keyword</Label>
-                <Input
-                  id="keyword"
-                  required
-                  placeholder="e.g. SDR"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="title">Resource title</Label>
-                <Input
-                  id="title"
-                  required
-                  placeholder="Cold Outreach Playbook"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="resourceUrl">Resource URL</Label>
-              <Input
-                id="resourceUrl"
-                required
-                placeholder="Google Drive / Notion / Dropbox link"
-                value={resourceUrl}
-                onChange={(e) => setResourceUrl(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-3 pt-1">
-              <Label
-                htmlFor="ttl"
-                className="text-muted-foreground whitespace-nowrap"
-              >
-                Duration
-              </Label>
-              <Input
-                id="ttl"
-                type="number"
-                min={1}
-                max={90}
-                value={ttlDays}
-                onChange={(e) => setTtlDays(Number(e.target.value))}
-                className="w-24 font-mono"
-              />
-              <span className="text-sm text-muted-foreground">days</span>
-            </div>
-            <DialogFooter className="pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={creating}>
-                {creating ? "Creating..." : "Create campaign"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { extractActivityId } from "@/lib/linkedin";
 import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET(request: Request) {
@@ -35,25 +34,11 @@ export async function POST(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
-  const body = await request.json();
-  const { postUrl, keyword, title, resourceUrl, ttlDays = 7 } = body;
-
-  if (!postUrl || !keyword || !title || !resourceUrl) {
-    return NextResponse.json(
-      { error: "postUrl, keyword, title, and resourceUrl are required" },
-      { status: 400 }
-    );
-  }
-
-  const postActivityId = extractActivityId(postUrl);
-
-  const sql = getDb();
-
-  const result = await sql`
-    INSERT INTO campaigns (title, post_url, resource_url, keyword, post_activity_id, ttl_days, expires_at)
-    VALUES (${title}, ${postUrl}, ${resourceUrl}, ${keyword.trim()}, ${postActivityId}, ${ttlDays}, NOW() + INTERVAL '1 day' * ${ttlDays})
-    RETURNING *
-  `;
-
-  return NextResponse.json(result[0], { status: 201 });
+  return NextResponse.json(
+    {
+      error:
+        "Legacy campaigns are archived. Share portal resource links instead.",
+    },
+    { status: 410 }
+  );
 }

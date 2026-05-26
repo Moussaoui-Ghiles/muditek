@@ -14,10 +14,11 @@ interface Props {
 const TITLES: Record<string, string> = {
   "/admin": "Home",
   "/admin/newsletter": "Newsletter",
+  "/admin/users": "Users",
   "/admin/subscribers": "Paying customers",
   "/admin/usage": "Usage",
   "/admin/leads": "Leads",
-  "/admin/campaigns": "Campaigns",
+  "/admin/campaigns": "Legacy campaigns",
   "/admin/nurture": "Nurture",
   "/admin/content": "Lead magnets",
   "/admin/emails": "Email log",
@@ -27,6 +28,13 @@ const TITLES: Record<string, string> = {
 function resolveTitle(pathname: string): string {
   if (TITLES[pathname]) return TITLES[pathname];
   const segments = pathname.split("/").filter(Boolean);
+  if (
+    segments[0] === "admin" &&
+    segments.length === 2 &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segments[1])
+  ) {
+    return "Legacy campaigns";
+  }
   if (segments[0] === "admin" && segments.length >= 2) {
     const parent = `/${segments[0]}/${segments[1]}`;
     if (TITLES[parent]) return TITLES[parent];

@@ -21,9 +21,6 @@ export async function GET(request: Request) {
     sql`
       WITH raw_leads AS (
         SELECT lower(email) AS email, name, created_at AS enrolled_at
-        FROM submissions
-        UNION ALL
-        SELECT lower(email) AS email, name, created_at AS enrolled_at
         FROM resource_leads
         UNION ALL
         SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
@@ -55,8 +52,6 @@ export async function GET(request: Request) {
     sql`
       SELECT COUNT(DISTINCT email)::int AS total
       FROM (
-        SELECT lower(email) AS email FROM submissions
-        UNION
         SELECT lower(email) AS email FROM resource_leads
         UNION
         SELECT lower(email) AS email
@@ -97,6 +92,7 @@ export async function GET(request: Request) {
   });
 
   return NextResponse.json({
+    enabled: process.env.NURTURE_SEQUENCE_ENABLED === "true",
     enrolled,
     stepInfo,
     upcoming: withDue.slice(0, 30),

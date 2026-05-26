@@ -95,13 +95,13 @@ export default function SubscribersPage() {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div className="flex flex-col gap-1.5">
           <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground font-medium">
-            Stripe · $47/mo
+            Stripe
           </p>
           <h1 className="text-[26px] font-semibold tracking-[-0.02em] leading-tight">
-            Paying customers
+            Stripe records
           </h1>
           <p className="text-[13px] text-muted-foreground max-w-prose">
-            People who checked out through <span className="font-mono text-foreground/80">/mudikit</span>. Not to be confused with newsletter subscribers — see <a href="/admin/newsletter" className="underline underline-offset-2 text-foreground">Newsletter</a>.
+            Historical Stripe-linked records. The active portal does not show a paid offer right now.
           </p>
         </div>
         <Button variant="outline" onClick={() => setTestOpen(true)}>
@@ -117,7 +117,7 @@ export default function SubscribersPage() {
           <Stat label="Total" value={stats.total} />
           <Stat label="Active" value={stats.active} accent />
           <Stat label="Cancelled" value={stats.cancelled} />
-          <Stat label="MRR" value={`$${stats.mrr.toLocaleString()}`} />
+          <Stat label="Monthly total" value={`$${stats.mrr.toLocaleString()}`} />
         </div>
       )}
 
@@ -160,23 +160,14 @@ export default function SubscribersPage() {
             </div>
             <div>
               <p className="text-[14px] font-medium">
-                {subscribers.length === 0 ? "No paying customers yet." : "No matches for that filter."}
+                {subscribers.length === 0 ? "No Stripe records yet." : "No matches for that filter."}
               </p>
               <p className="mt-1 text-[12px] text-muted-foreground max-w-md">
                 {subscribers.length === 0
-                  ? "When someone checks out through /mudikit, the Stripe webhook inserts them here."
+                  ? "When Stripe sends a customer webhook, the record appears here."
                   : "Clear search or switch status filter to see all rows."}
               </p>
             </div>
-            {subscribers.length === 0 && (
-              <a
-                href="/mudikit"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-card px-3 py-1.5 text-[11px] font-medium hover:bg-secondary/60"
-              >
-                Open MudiKit page
-                <ExternalLink className="size-3" />
-              </a>
-            )}
           </div>
         </Card>
       ) : (

@@ -1,206 +1,177 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
-import { NURTURE_SEQUENCE } from "@/lib/sequences";
+import { ensureContentItemsSchema } from "@/lib/content-items-schema";
 import { ensureResourceLeadSchema } from "@/lib/resource-leads";
+import { ensureUsageAnalyticsSchema } from "@/lib/usage-analytics";
+
+export const dynamic = "force-dynamic";
+
+type IssueStats = {
+  sent?: number;
+  failed?: number;
+  remaining?: number;
+  last_batch_sent?: number;
+  last_batch_failed?: number;
+  portal_article?: boolean;
+  portalArticle?: boolean;
+  source?: string;
+};
+
+function numberFrom(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function sendState(status: string, stats: IssueStats | null): "draft" | "sending" | "sent" | "imported_article" {
+  if (stats?.source === "beehiiv_import") return "imported_article";
+  const sent = numberFrom(stats?.sent);
+  const remaining = numberFrom(stats?.remaining);
+  if (status === "sent" || (sent > 0 && remaining === 0)) return "sent";
+  if (sent > 0 || remaining > 0) return "sending";
+  return "draft";
+}
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
   const sql = getDb();
+  await ensureContentItemsSchema(sql);
   await ensureResourceLeadSchema(sql);
+  await ensureUsageAnalyticsSchema(sql);
 
   const [
-    [subs],
-    [leads],
-    [leadsWeek],
-    [commenters],
-    [verified],
-    [delivered],
-    [subscribed],
-    [emailsDeliveries],
-    [emailsSequence],
-    [verifiedUndelivered],
-    [expiringSoon],
-    nurtureLeads,
-    topCampaigns,
-    newsletterSegments,
-    [newsletterThisWeek],
-    [lastIssue],
+    [newsletter],
+    [portal],
+    [resources],
+    recentResources,
+    recentActivity,
+    issueRows,
+    issueEvents,
   ] = await Promise.all([
-    sql`SELECT
-      COUNT(*) FILTER (WHERE status = 'active')::int AS active,
-      COUNT(*)::int AS total
-      FROM subscribers`,
     sql`
-      SELECT COUNT(DISTINCT email)::int AS total
-      FROM (
-        SELECT lower(email) AS email FROM submissions
-        UNION ALL
-        SELECT lower(email) AS email FROM resource_leads
-        UNION ALL
-        SELECT lower(email) AS email
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ) lead
-    `,
-    sql`
-      SELECT COUNT(DISTINCT email)::int AS total
-      FROM (
-        SELECT lower(email) AS email, created_at FROM submissions
-        UNION ALL
-        SELECT lower(email) AS email, created_at FROM resource_leads
-        UNION ALL
-        SELECT lower(email) AS email, subscribed_at AS created_at
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ) lead
-      WHERE created_at >= NOW() - INTERVAL '7 days'
-    `,
-    sql`SELECT COUNT(*)::int AS total FROM commenters`,
-    sql`SELECT COUNT(*)::int AS total FROM submissions WHERE verified = true`,
-    sql`SELECT COUNT(*)::int AS total FROM submissions WHERE delivered = true`,
-    sql`SELECT COUNT(DISTINCT email)::int AS total
-      FROM (
-        SELECT lower(email) AS email FROM submissions
-        UNION
-        SELECT lower(email) AS email FROM resource_leads
-        UNION
-        SELECT lower(email) AS email
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ) lead
-      WHERE EXISTS (SELECT 1 FROM subscribers WHERE email = lead.email AND status = 'active')`,
-    sql`SELECT COUNT(*)::int AS total FROM deliveries WHERE sent_at >= NOW() - INTERVAL '7 days'`,
-    sql`SELECT COUNT(*)::int AS total FROM sequence_sends WHERE sent_at >= NOW() - INTERVAL '7 days'`,
-    sql`SELECT COUNT(*)::int AS total FROM submissions
-      WHERE verified = true AND delivered = false`,
-    sql`SELECT COUNT(*)::int AS total FROM campaigns
-      WHERE is_active = true
-      AND expires_at BETWEEN NOW() AND NOW() + INTERVAL '3 days'`,
-    sql`
-      WITH raw_leads AS (
-        SELECT lower(email) AS email, created_at AS enrolled_at
-        FROM submissions
-        UNION ALL
-        SELECT lower(email) AS email, created_at AS enrolled_at
-        FROM resource_leads
-        UNION ALL
-        SELECT lower(email) AS email, subscribed_at AS enrolled_at
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ),
-      lead_progress AS (
-        SELECT DISTINCT ON (lead.email)
-          lead.email,
-          lead.enrolled_at,
-          COALESCE((SELECT MAX(step) FROM sequence_sends WHERE email = lead.email), 1) AS last_step
-        FROM raw_leads lead
-        WHERE NOT EXISTS (
-          SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active'
-        )
-        ORDER BY lead.email, lead.enrolled_at ASC
-      )
-      SELECT email, enrolled_at, last_step
-      FROM lead_progress
-      WHERE last_step < 5
+      SELECT
+        COUNT(*) FILTER (WHERE status = 'active')::int AS active,
+        COUNT(*) FILTER (WHERE status = 'active' AND subscribed_at >= NOW() - INTERVAL '7 days')::int AS new_7d,
+        COUNT(*) FILTER (WHERE status = 'active' AND segment = 'HOT')::int AS hot,
+        COUNT(*) FILTER (WHERE status = 'active' AND segment = 'WARM')::int AS warm,
+        COUNT(*) FILTER (WHERE status = 'active' AND segment = 'COLD')::int AS cold
+      FROM newsletter_subscribers
     `,
     sql`
       SELECT
-        c.id,
-        c.title,
-        c.keyword,
-        c.is_active,
-        COUNT(s.id)::int AS submissions,
-        COUNT(*) FILTER (WHERE s.verified)::int AS verified,
-        COUNT(*) FILTER (WHERE s.delivered)::int AS delivered
-      FROM campaigns c
-      LEFT JOIN submissions s ON s.campaign_id = c.id
-      GROUP BY c.id, c.title, c.keyword, c.is_active
-      HAVING COUNT(s.id) > 0
-      ORDER BY submissions DESC, delivered DESC
+        COUNT(DISTINCT lower(email)) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::int AS active_users_7d,
+        COUNT(DISTINCT lower(email)) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days')::int AS active_users_30d,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days' AND event IN ('resource_viewed', 'skill_viewed', 'newsletter_article_opened'))::int AS content_opens_7d,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days' AND event IN ('resource_downloaded', 'skill_downloaded'))::int AS downloads_7d,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days' AND event = 'tool_used')::int AS tool_runs_7d
+      FROM portal_usage_events
+      WHERE email IS NOT NULL
+    `,
+    sql`
+      SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE COALESCE(thumbnail_url, '') = '')::int AS missing_thumbnail,
+        COUNT(*) FILTER (WHERE COALESCE(download_url, '') = '')::int AS missing_asset,
+        COUNT(*) FILTER (WHERE file_type = 'html')::int AS html,
+        COUNT(*) FILTER (WHERE file_type = 'pdf')::int AS pdf,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::int AS added_7d
+      FROM content_items
+      WHERE category IN ('skill', 'playbook', 'guide', 'tool')
+    `,
+    sql`
+      SELECT title, slug, category, file_type, thumbnail_url, created_at
+      FROM content_items
+      WHERE category IN ('skill', 'playbook', 'guide', 'tool')
+      ORDER BY created_at DESC
       LIMIT 5
     `,
     sql`
-      SELECT
-        COALESCE(segment, 'UNSEGMENTED') AS segment,
-        COUNT(*)::int AS total
-      FROM newsletter_subscribers
-      WHERE status = 'active'
-      GROUP BY segment
+      SELECT email, event, path, resource_slug, created_at
+      FROM portal_usage_events
+      ORDER BY created_at DESC
+      LIMIT 8
     `,
     sql`
-      SELECT COUNT(*)::int AS total
-      FROM newsletter_subscribers
-      WHERE status = 'active' AND subscribed_at >= NOW() - INTERVAL '7 days'
-    `,
-    sql`
-      SELECT id, subject, slug, status, sent_at, scheduled_at, stats
+      SELECT id, subject, slug, status, audience_filter, sent_at, stats, updated_at, created_at
       FROM newsletter_issues
-      ORDER BY COALESCE(sent_at, scheduled_at, updated_at) DESC NULLS LAST
+      ORDER BY
+        CASE
+          WHEN (COALESCE((stats->>'sent')::int, 0) > 0 AND COALESCE((stats->>'remaining')::int, 0) > 0) THEN 0
+          WHEN status = 'draft' THEN 1
+          ELSE 2
+        END,
+        updated_at DESC NULLS LAST,
+        created_at DESC
       LIMIT 1
+    `,
+    sql`
+      SELECT
+        issue_id,
+        COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
+        COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
+        COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
+        COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+      FROM newsletter_events
+      WHERE issue_id IN (
+        SELECT id FROM newsletter_issues
+        ORDER BY updated_at DESC NULLS LAST, created_at DESC
+        LIMIT 20
+      )
+      GROUP BY issue_id
     `,
   ]);
 
-  const now = Date.now();
-  let overdueNurture = 0;
-  for (const lead of nurtureLeads) {
-    const nextStep = NURTURE_SEQUENCE.find((s) => s.step > (lead.last_step || 1));
-    if (!nextStep) continue;
-    const due = new Date(lead.enrolled_at).getTime() + nextStep.delayDays * 86_400_000;
-    if (due < now) overdueNurture++;
-  }
-
-  const segments: Record<string, number> = { HOT: 0, WARM: 0, COLD: 0, UNSEGMENTED: 0 };
-  for (const row of newsletterSegments) {
-    segments[row.segment] = row.total;
-  }
-  const newsletterTotal = Object.values(segments).reduce((a, b) => a + b, 0);
+  const eventByIssue = new Map<string, any>();
+  for (const row of issueEvents) eventByIssue.set(String(row.issue_id), row);
+  const issue = issueRows[0];
+  const stats = (issue?.stats ?? null) as IssueStats | null;
+  const eventStats = issue ? eventByIssue.get(String(issue.id)) : null;
 
   return NextResponse.json({
-    kpis: {
-      activeSubscribers: subs.active ?? 0,
-      mrr: (subs.active ?? 0) * 47,
-      totalLeads: leads.total ?? 0,
-      leadsThisWeek: leadsWeek.total ?? 0,
-      emailsThisWeek: (emailsDeliveries.total ?? 0) + (emailsSequence.total ?? 0),
-    },
-    funnel: {
-      commenters: commenters.total ?? 0,
-      submissions: leads.total ?? 0,
-      verified: verified.total ?? 0,
-      delivered: delivered.total ?? 0,
-      subscribed: subscribed.total ?? 0,
-    },
-    alerts: {
-      verifiedUndelivered: verifiedUndelivered.total ?? 0,
-      overdueNurture,
-      expiringSoon: expiringSoon.total ?? 0,
-    },
-    topCampaigns,
     newsletter: {
-      total: newsletterTotal,
-      hot: segments.HOT,
-      warm: segments.WARM,
-      cold: segments.COLD,
-      unsegmented: segments.UNSEGMENTED,
-      newThisWeek: newsletterThisWeek?.total ?? 0,
-      lastIssue: lastIssue
+      active: Number(newsletter?.active ?? 0),
+      new_7d: Number(newsletter?.new_7d ?? 0),
+      hot: Number(newsletter?.hot ?? 0),
+      warm: Number(newsletter?.warm ?? 0),
+      cold: Number(newsletter?.cold ?? 0),
+      currentEmail: issue
         ? {
-            id: lastIssue.id,
-            subject: lastIssue.subject,
-            slug: lastIssue.slug,
-            status: lastIssue.status,
-            sentAt: lastIssue.sent_at,
-            scheduledAt: lastIssue.scheduled_at,
-            stats: lastIssue.stats,
+            id: issue.id,
+            subject: issue.subject,
+            slug: issue.slug,
+            audience: issue.audience_filter ?? "All active",
+            status: issue.status,
+            sendState: sendState(String(issue.status), stats),
+            sent: numberFrom(stats?.sent) || Number(eventStats?.sent_events ?? 0),
+            remaining: numberFrom(stats?.remaining),
+            failed: numberFrom(stats?.failed),
+            lastBatchSent: numberFrom(stats?.last_batch_sent),
+            lastBatchFailed: numberFrom(stats?.last_batch_failed),
+            delivered: Number(eventStats?.delivered ?? 0),
+            bounced: Number(eventStats?.bounced ?? 0),
+            complained: Number(eventStats?.complained ?? 0),
+            updatedAt: issue.updated_at,
+            sentAt: issue.sent_at,
           }
         : null,
+    },
+    portal: {
+      activeUsers7d: Number(portal?.active_users_7d ?? 0),
+      activeUsers30d: Number(portal?.active_users_30d ?? 0),
+      contentOpens7d: Number(portal?.content_opens_7d ?? 0),
+      downloads7d: Number(portal?.downloads_7d ?? 0),
+      toolRuns7d: Number(portal?.tool_runs_7d ?? 0),
+      recentActivity,
+    },
+    resources: {
+      total: Number(resources?.total ?? 0),
+      missingThumbnail: Number(resources?.missing_thumbnail ?? 0),
+      missingAsset: Number(resources?.missing_asset ?? 0),
+      html: Number(resources?.html ?? 0),
+      pdf: Number(resources?.pdf ?? 0),
+      added7d: Number(resources?.added_7d ?? 0),
+      recent: recentResources,
     },
   });
 }

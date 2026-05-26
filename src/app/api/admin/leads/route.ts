@@ -13,55 +13,27 @@ export async function GET(request: Request) {
   await ensureContentItemsSchema(sql);
 
   const leads = await sql`
-    WITH campaign_leads AS (
-      SELECT
-        s.id,
-        'campaign'::text AS source_type,
-        s.name,
-        lower(s.email) AS email,
-        s.comment,
-        s.verified,
-        s.delivered,
-        s.created_at,
-        s.campaign_id,
-        c.title AS campaign_title,
-        c.keyword AS campaign_keyword,
-        c.is_active AS campaign_active,
-        NULL::text AS resource_slug,
-        NULL::text AS resource_title,
-        COALESCE(c.title, 'Campaign') AS source_label,
-        (SELECT MAX(step) FROM sequence_sends ss WHERE lower(ss.email) = lower(s.email)) AS nurture_step,
-        EXISTS (
-          SELECT 1 FROM subscribers sub
-          WHERE lower(sub.email) = lower(s.email) AND sub.status = 'active'
-        ) AS is_subscriber
-      FROM submissions s
-      LEFT JOIN campaigns c ON c.id = s.campaign_id
-    ),
-    resource_unlocks AS (
+    WITH resource_unlocks AS (
       SELECT
         rl.id,
         'resource'::text AS source_type,
         COALESCE(rl.name, split_part(rl.email, '@', 1)) AS name,
         lower(rl.email) AS email,
-        NULL::text AS comment,
-        true AS verified,
-        true AS delivered,
         rl.created_at,
-        NULL::uuid AS campaign_id,
-        NULL::text AS campaign_title,
-        NULL::text AS campaign_keyword,
-        NULL::boolean AS campaign_active,
+        rl.last_seen_at,
         rl.resource_slug,
         ci.title AS resource_title,
+        ci.category AS resource_category,
         COALESCE(ci.title, rl.resource_slug) AS source_label,
-        (SELECT MAX(step) FROM sequence_sends ss WHERE lower(ss.email) = lower(rl.email)) AS nurture_step,
+        ns.status AS newsletter_status,
+        ns.segment AS newsletter_segment,
         EXISTS (
-          SELECT 1 FROM subscribers sub
-          WHERE lower(sub.email) = lower(rl.email) AND sub.status = 'active'
-        ) AS is_subscriber
+          SELECT 1 FROM portal_memberships pm
+          WHERE lower(pm.email) = lower(rl.email) AND pm.status = 'active'
+        ) AS has_portal_account
       FROM resource_leads rl
       LEFT JOIN content_items ci ON ci.slug = rl.resource_slug
+      LEFT JOIN newsletter_subscribers ns ON lower(ns.email) = lower(rl.email)
     ),
     portal_signups AS (
       SELECT
@@ -69,28 +41,22 @@ export async function GET(request: Request) {
         'portal'::text AS source_type,
         split_part(ns.email, '@', 1) AS name,
         lower(ns.email) AS email,
-        NULL::text AS comment,
-        true AS verified,
-        true AS delivered,
         ns.subscribed_at AS created_at,
-        NULL::uuid AS campaign_id,
-        NULL::text AS campaign_title,
-        NULL::text AS campaign_keyword,
-        NULL::boolean AS campaign_active,
+        NULL::timestamp AS last_seen_at,
         NULL::text AS resource_slug,
         NULL::text AS resource_title,
+        NULL::text AS resource_category,
         'Portal signup'::text AS source_label,
-        (SELECT MAX(step) FROM sequence_sends ss WHERE lower(ss.email) = lower(ns.email)) AS nurture_step,
+        ns.status AS newsletter_status,
+        ns.segment AS newsletter_segment,
         EXISTS (
-          SELECT 1 FROM subscribers sub
-          WHERE lower(sub.email) = lower(ns.email) AND sub.status = 'active'
-        ) AS is_subscriber
+          SELECT 1 FROM portal_memberships pm
+          WHERE lower(pm.email) = lower(ns.email) AND pm.status = 'active'
+        ) AS has_portal_account
       FROM newsletter_subscribers ns
       WHERE ns.status = 'active'
         AND ns.source IN ('portal', 'portal-signup', 'sign-up')
     )
-    SELECT * FROM campaign_leads
-    UNION ALL
     SELECT * FROM resource_unlocks
     UNION ALL
     SELECT * FROM portal_signups
@@ -98,9 +64,5 @@ export async function GET(request: Request) {
     LIMIT 500
   `;
 
-  const campaigns = await sql`
-    SELECT id, title FROM campaigns ORDER BY created_at DESC
-  `;
-
-  return NextResponse.json({ leads, campaigns });
+  return NextResponse.json({ leads });
 }

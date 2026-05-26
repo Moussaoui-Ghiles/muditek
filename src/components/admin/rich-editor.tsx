@@ -65,7 +65,7 @@ export function RichEditor({ initialHtml, onChange, readOnly = false, focusMode 
         HTMLAttributes: { rel: "noopener noreferrer" },
       }),
       Placeholder.configure({
-        placeholder: "Start writing the issue. Lead with the one thing that matters most.",
+        placeholder: "Start writing the email. Lead with the one thing that matters most.",
       }),
       Typography,
       Image.configure({

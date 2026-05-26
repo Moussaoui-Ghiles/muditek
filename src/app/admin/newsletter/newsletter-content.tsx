@@ -1,9 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronRight, Eye, EyeOff, Loader2, Plus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowUpRight, Eye, EyeOff, Loader2, MailPlus, Search } from "lucide-react";
 import IssueEditor from "./issue-editor";
 import { isPortalNewsletterArticle } from "@/lib/newsletter-portal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+type SendState = "draft" | "sending" | "sent" | "imported_article";
 
 interface Issue {
   id: string;
@@ -15,13 +29,21 @@ interface Issue {
   stats: (Record<string, unknown> & {
     sent?: number;
     failed?: number;
-    opens?: number;
-    clicks?: number;
+    remaining?: number;
+    last_batch_sent?: number;
+    last_batch_failed?: number;
     portal_article?: boolean;
     portalArticle?: boolean;
     source?: string;
   }) | null;
+  event_stats?: {
+    sent_events?: number;
+    delivered?: number;
+    bounced?: number;
+    complained?: number;
+  };
   created_at: string;
+  updated_at?: string | null;
 }
 
 interface AudienceBreakdown {
@@ -30,11 +52,40 @@ interface AudienceBreakdown {
   count: number;
 }
 
-const SEG_DOT: Record<string, string> = {
-  HOT: "bg-[var(--color-warn,#f5a524)]",
-  WARM: "bg-[var(--color-live,#32d583)]",
-  COLD: "bg-[var(--color-cool,#70b7ff)]",
-};
+function formatNumber(value: number | null | undefined): string {
+  return Number(value ?? 0).toLocaleString();
+}
+
+function formatDateTime(value: string | null | undefined): string {
+  if (!value) return "-";
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function stat(issue: Issue, key: keyof NonNullable<Issue["stats"]>): number {
+  const value = issue.stats?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function sendState(issue: Issue): SendState {
+  if (issue.stats?.source === "beehiiv_import") return "imported_article";
+  const sent = stat(issue, "sent") || Number(issue.event_stats?.sent_events ?? 0);
+  const remaining = stat(issue, "remaining");
+  if (issue.status === "sent" || (sent > 0 && remaining === 0)) return "sent";
+  if (sent > 0 || remaining > 0) return "sending";
+  return "draft";
+}
+
+function statusBadge(state: SendState) {
+  if (state === "sending") return <Badge>Sending</Badge>;
+  if (state === "sent") return <Badge variant="secondary">Sent</Badge>;
+  if (state === "imported_article") return <Badge variant="outline">Imported article</Badge>;
+  return <Badge variant="outline">Draft</Badge>;
+}
 
 export default function NewsletterContent() {
   const [issues, setIssues] = useState<Issue[] | null>(null);
@@ -44,9 +95,7 @@ export default function NewsletterContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [savingPortalId, setSavingPortalId] = useState<string | null>(null);
-
-  const newBtnRef = useRef<HTMLButtonElement>(null);
-  const newInnerRef = useRef<HTMLSpanElement>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -59,36 +108,10 @@ export default function NewsletterContent() {
       setBreakdown(audRes.breakdown ?? []);
       setTotals(audRes.totals ?? []);
     });
-    return () => { cancelled = true; };
-  }, [reloadKey]);
-
-  // Magnetic "New issue"
-  useEffect(() => {
-    const btn = newBtnRef.current;
-    const inner = newInnerRef.current;
-    if (!btn || !inner) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-    function onMove(e: PointerEvent) {
-      if (!btn || !inner) return;
-      const r = btn.getBoundingClientRect();
-      const x = e.clientX - (r.left + r.width / 2);
-      const y = e.clientY - (r.top + r.height / 2);
-      btn.style.transform = `translate3d(${x * 0.18}px, ${y * 0.18}px, 0)`;
-      inner.style.transform = `translate3d(${x * 0.28}px, ${y * 0.28}px, 0)`;
-    }
-    function onLeave() {
-      if (!btn || !inner) return;
-      btn.style.transform = "";
-      inner.style.transform = "";
-    }
-    btn.addEventListener("pointermove", onMove);
-    btn.addEventListener("pointerleave", onLeave);
     return () => {
-      btn.removeEventListener("pointermove", onMove);
-      btn.removeEventListener("pointerleave", onLeave);
+      cancelled = true;
     };
-  }, [editingId]);
+  }, [reloadKey]);
 
   async function createIssue() {
     setCreatingLoading(true);
@@ -124,13 +147,7 @@ export default function NewsletterContent() {
       setIssues((current) =>
         current?.map((item) =>
           item.id === issue.id
-            ? {
-                ...item,
-                stats: {
-                  ...(item.stats ?? {}),
-                  portal_article: next,
-                },
-              }
+            ? { ...item, stats: { ...(item.stats ?? {}), portal_article: next } }
             : item,
         ) ?? null,
       );
@@ -146,83 +163,116 @@ export default function NewsletterContent() {
   const segmentCounts = (breakdown ?? [])
     .filter((b) => b.status === "active")
     .reduce<Record<string, number>>((acc, b) => {
-      const k = b.segment ?? "unsegmented";
-      acc[k] = (acc[k] ?? 0) + b.count;
+      const key = b.segment ?? "UNSEGMENTED";
+      acc[key] = (acc[key] ?? 0) + b.count;
       return acc;
     }, {});
+
+  const visibleIssues = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = issues ?? [];
+    if (!q) return list;
+    return list.filter((issue) =>
+      [issue.subject, issue.audience_filter, issue.slug, sendState(issue)]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [issues, query]);
 
   if (editingId) {
     return (
       <IssueEditor
         issueId={editingId}
-        onClose={() => { setEditingId(null); setReloadKey((k) => k + 1); }}
+        onClose={() => {
+          setEditingId(null);
+          setReloadKey((k) => k + 1);
+        }}
       />
     );
   }
 
   return (
-    <div className="space-y-12 pb-24">
-      {/* Header */}
-      <header className="flex items-end justify-between gap-6 flex-wrap">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 leading-[1.05]">
-          Newsletter
-        </h1>
-
-        <button
-          ref={newBtnRef}
-          onClick={createIssue}
-          disabled={creatingLoading}
-          className="magnetic-cta group h-11 pl-5 pr-1.5 inline-flex items-center gap-2.5 rounded-full bg-zinc-100 text-zinc-950 text-sm font-semibold tracking-tight hover:bg-white shadow-[0_10px_30px_-10px_rgba(255,255,255,0.2)] disabled:opacity-50"
-        >
-          {creatingLoading ? "Creating…" : "New issue"}
-          <span
-            ref={newInnerRef}
-            className="size-8 inline-flex items-center justify-center rounded-full bg-zinc-950/90 text-zinc-100 group-hover:translate-x-[1px] group-hover:-translate-y-[1px] spring"
-          >
-            <Plus className="size-4" strokeWidth={2} />
-          </span>
-        </button>
+    <div className="space-y-6 pb-24">
+      <header className="flex flex-col gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Newsletter
+          </p>
+          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.03em]">Emails</h1>
+        </div>
+        <Button onClick={createIssue} disabled={creatingLoading}>
+          {creatingLoading ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
+          {creatingLoading ? "Creating..." : "New email"}
+        </Button>
       </header>
 
-      {/* Audience strip — divide-x, no card */}
-      <section>
-        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-white/[0.06] divide-x divide-white/[0.06]">
-          <Stat label="Active" value={activeByStatus.active ?? 0} />
-          <Stat label="HOT" value={segmentCounts.HOT ?? 0} dotClass={SEG_DOT.HOT} />
-          <Stat label="WARM" value={segmentCounts.WARM ?? 0} dotClass={SEG_DOT.WARM} />
-          <Stat label="COLD" value={segmentCounts.COLD ?? 0} dotClass={SEG_DOT.COLD} />
-          <Stat label="Unsubscribed" value={activeByStatus.unsub ?? 0} muted />
-        </div>
+      <section className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-5">
+        <AudienceCell label="Active list" value={activeByStatus.active ?? 0} />
+        <AudienceCell label="HOT" value={segmentCounts.HOT ?? 0} />
+        <AudienceCell label="WARM" value={segmentCounts.WARM ?? 0} />
+        <AudienceCell label="COLD" value={segmentCounts.COLD ?? 0} />
+        <AudienceCell label="Unsubscribed" value={activeByStatus.unsub ?? 0} />
       </section>
 
-      {/* Issues list */}
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-zinc-300">Issues</h2>
+      <section className="rounded-xl border border-border/60 bg-card/45">
+        <div className="flex flex-col gap-3 border-b border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold">Email history</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Drafts, partial sends, completed sends, and imported portal articles.
+            </p>
+          </div>
+          <div className="relative sm:w-72">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="pl-9"
+              placeholder="Search emails"
+            />
+          </div>
+        </div>
 
         {issues === null ? (
-          <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
-            {[1, 2, 3].map((i) => (
-              <li key={i} className="py-5 flex items-center gap-4">
-                <div className="h-5 w-2/3 rounded bg-white/[0.04] animate-pulse" />
-                <div className="ml-auto h-4 w-12 rounded bg-white/[0.04] animate-pulse" />
-              </li>
+          <div className="space-y-2 p-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 rounded-lg" />
             ))}
-          </ul>
-        ) : issues.length === 0 ? (
-          <EmptyState onCreate={createIssue} />
+          </div>
+        ) : visibleIssues.length === 0 ? (
+          <div className="p-12 text-center text-sm text-muted-foreground">
+            No emails match.
+          </div>
         ) : (
-          <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
-            {issues.map((i) => (
-              <li key={i.id}>
-                <IssueRow
-                  issue={i}
-                  saving={savingPortalId === i.id}
-                  onEdit={() => setEditingId(i.id)}
-                  onTogglePortalArticle={(next) => void setPortalArticle(i, next)}
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[260px]">Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Audience</TableHead>
+                  <TableHead className="text-right">Sent</TableHead>
+                  <TableHead className="text-right">Remaining</TableHead>
+                  <TableHead className="text-right">Delivered</TableHead>
+                  <TableHead>Portal</TableHead>
+                  <TableHead className="text-right">Updated</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visibleIssues.map((issue) => (
+                  <IssueRow
+                    key={issue.id}
+                    issue={issue}
+                    saving={savingPortalId === issue.id}
+                    onEdit={() => setEditingId(issue.id)}
+                    onTogglePortalArticle={(next) => void setPortalArticle(issue, next)}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </section>
     </div>
@@ -240,128 +290,67 @@ function IssueRow({
   onEdit: () => void;
   onTogglePortalArticle: (next: boolean) => void;
 }) {
+  const state = sendState(issue);
   const portalArticle = isPortalNewsletterArticle(issue.stats);
-  const date = (issue.sent_at
-    ? new Date(issue.sent_at)
-    : new Date(issue.created_at)
-  ).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const sent = stat(issue, "sent") || Number(issue.event_stats?.sent_events ?? 0);
+  const remaining = stat(issue, "remaining");
+  const delivered = Number(issue.event_stats?.delivered ?? 0);
+  const failed = stat(issue, "failed");
 
   return (
-    <div className="group -mx-2 flex items-center gap-3 rounded-md px-2 py-5 transition-colors hover:bg-white/[0.015]">
-      <button
-        type="button"
-        onClick={onEdit}
-        className="flex min-w-0 flex-1 items-center gap-4 text-left"
-      >
-        <span
-          aria-hidden
-          className={`shrink-0 size-1.5 rounded-full ${
-            issue.status === "sent"
-              ? "bg-zinc-500"
-              : issue.status === "scheduled"
-                ? "bg-[var(--color-warn,#f5a524)]"
-                : "bg-[var(--color-live,#32d583)]"
-          }`}
-        />
-
-        <span className="min-w-0 flex-1 truncate text-base font-medium text-zinc-100 group-hover:text-white">
-          {issue.subject || <span className="text-zinc-500 italic">Untitled draft</span>}
-        </span>
-
-        <span className="hidden md:inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
-          {issue.audience_filter ? (
-            <>
-              <span className={`size-1.5 rounded-full ${SEG_DOT[issue.audience_filter] ?? "bg-zinc-500"}`} />
-              {issue.audience_filter}
-            </>
-          ) : (
-            "All active"
-          )}
-        </span>
-
-        <span className="hidden sm:inline-block w-16 shrink-0 text-right text-xs text-zinc-400 tabular-nums">
-          {issue.stats?.sent ?? "—"}
-        </span>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => onTogglePortalArticle(!portalArticle)}
-        disabled={saving}
-        className={`hidden h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[11px] font-medium transition-colors lg:inline-flex ${
-          portalArticle
-            ? "bg-white/[0.08] text-zinc-100 hover:bg-white/[0.12]"
-            : "bg-white/[0.03] text-zinc-500 hover:bg-white/[0.07] hover:text-zinc-300"
-        } ${saving ? "opacity-60" : ""}`}
-        title={portalArticle ? "Hide from portal archive" : "Show in portal archive"}
-      >
-        {saving ? (
-          <Loader2 className="size-3 animate-spin" />
-        ) : portalArticle ? (
-          <Eye className="size-3" />
-        ) : (
-          <EyeOff className="size-3" />
-        )}
-        {portalArticle ? "Portal article" : "Email only"}
-      </button>
-
-      <button
-        type="button"
-        onClick={onEdit}
-        className="flex shrink-0 items-center gap-3"
-        aria-label={`Open ${issue.subject || "issue"}`}
-      >
-        <span className="w-16 text-right text-xs text-zinc-500 sm:w-24">{date}</span>
-        <ChevronRight
-          className="size-4 shrink-0 text-zinc-700 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-300"
-          strokeWidth={1.8}
-        />
-      </button>
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  dotClass,
-  muted = false,
-}: {
-  label: string;
-  value: number;
-  dotClass?: string;
-  muted?: boolean;
-}) {
-  return (
-    <div className="px-5 py-6 first:pl-0 last:pr-0">
-      <div className="flex items-center gap-2 text-xs text-zinc-500">
-        {dotClass && <span className={`size-1.5 rounded-full ${dotClass}`} />}
-        {label}
-      </div>
-      <div
-        className={`mt-2 text-3xl font-bold tracking-[-0.02em] tabular-nums ${
-          muted ? "text-zinc-500" : "text-zinc-50"
-        }`}
-      >
-        {value.toLocaleString()}
-      </div>
-    </div>
-  );
-}
-
-function EmptyState({ onCreate }: { onCreate: () => void }) {
-  return (
-    <div className="border-y border-white/[0.06] py-20 text-center">
-      <div className="mx-auto max-w-md space-y-4">
-        <h3 className="text-xl font-semibold text-zinc-200">No issues yet.</h3>
+    <TableRow className="cursor-pointer" onClick={onEdit}>
+      <TableCell>
+        <div className="max-w-[420px]">
+          <p className="truncate font-medium">
+            {issue.subject || <span className="text-muted-foreground italic">Untitled email</span>}
+          </p>
+          <p className="mt-1 truncate font-mono text-xs text-muted-foreground">
+            {issue.slug}
+            {failed > 0 ? ` · ${formatNumber(failed)} failed` : ""}
+          </p>
+        </div>
+      </TableCell>
+      <TableCell>{statusBadge(state)}</TableCell>
+      <TableCell>{issue.audience_filter ?? "All active"}</TableCell>
+      <TableCell className="text-right font-mono">{formatNumber(sent)}</TableCell>
+      <TableCell className="text-right font-mono">
+        {state === "sending" ? formatNumber(remaining) : "-"}
+      </TableCell>
+      <TableCell className="text-right font-mono">{formatNumber(delivered)}</TableCell>
+      <TableCell onClick={(event) => event.stopPropagation()}>
         <button
-          onClick={onCreate}
-          className="mt-2 inline-flex items-center gap-2 h-10 px-5 rounded-full bg-zinc-100 text-zinc-950 text-sm font-semibold spring hover:bg-white"
+          type="button"
+          onClick={() => onTogglePortalArticle(!portalArticle)}
+          disabled={saving}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-secondary/35 px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          Start drafting
-          <ArrowUpRight className="size-4" strokeWidth={2} />
+          {saving ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : portalArticle ? (
+            <Eye className="size-3" />
+          ) : (
+            <EyeOff className="size-3" />
+          )}
+          {portalArticle ? "Published" : "Off"}
         </button>
-      </div>
+      </TableCell>
+      <TableCell className="whitespace-nowrap text-right text-xs text-muted-foreground">
+        <button type="button" className="inline-flex items-center gap-1 hover:text-foreground">
+          {formatDateTime(issue.updated_at ?? issue.sent_at ?? issue.created_at)}
+          <ArrowUpRight className="size-3" />
+        </button>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function AudienceCell({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-background/70 p-4">
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-[-0.04em] tabular-nums">
+        {formatNumber(value)}
+      </p>
     </div>
   );
 }

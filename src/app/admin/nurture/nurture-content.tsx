@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,9 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TestSendDialog from "@/components/admin/test-send-dialog";
 
 interface NurtureData {
+  enabled: boolean;
   enrolled: number;
   stepInfo: Array<{
     step: number;
@@ -40,66 +38,27 @@ interface NurtureData {
   }>;
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string | null): string {
+  if (!iso) return "-";
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export default function NurtureContent() {
   const [data, setData] = useState<NurtureData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sendingFor, setSendingFor] = useState<string | null>(null);
-  const [sendResult, setSendResult] = useState<string>("");
-
-  const [testOpen, setTestOpen] = useState(false);
-  const [testStep, setTestStep] = useState<number>(2);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/admin/nurture");
-      setData(await res.json());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  async function sendNextStep(email: string) {
-    setSendingFor(email);
-    setSendResult("");
-    try {
-      const res = await fetch("/api/admin/nurture/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setSendResult(`${email} · ${json.error || "failed"}`);
-      } else {
-        setSendResult(`Sent step ${json.step} to ${email}`);
-        refresh();
-      }
-    } catch (err) {
-      setSendResult(String(err));
-    } finally {
-      setSendingFor(null);
-    }
-  }
-
-  function previewStep(step: number) {
-    setTestStep(step);
-    setTestOpen(true);
-  }
+    fetch("/api/admin/nurture")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, []);
 
   if (loading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-60 w-full" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-xl" />
       </div>
     );
   }
@@ -110,135 +69,131 @@ export default function NurtureContent() {
 
   return (
     <div className="space-y-6">
-      {/* Per-step funnel */}
-      <Card className="p-6">
-        <div className="flex items-end justify-between mb-4">
+      <section className="rounded-xl border border-border/60 bg-card/45 p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-sm font-medium">Sequence performance</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              <span className="font-mono font-medium text-foreground">{data.enrolled}</span>{" "}
-              leads enrolled (non-subscribers). Conversion is % of enrolled that reached
-              each step.
+            <h2 className="text-base font-semibold">Automation status</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Read-only view of sequence history. Manual sends are intentionally disabled.
             </p>
           </div>
+          <Badge variant={data.enabled ? "default" : "secondary"}>
+            {data.enabled ? "Enabled" : "Paused"}
+          </Badge>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {data.stepInfo.map((s) => (
-            <div key={s.step} className="border border-border rounded-lg p-4">
-              <div className="flex items-baseline justify-between mb-1">
-                <span className="text-xs text-muted-foreground">Step {s.step}</span>
-                <span className="text-xs text-muted-foreground font-mono">
-                  +{s.delayDays}d
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <p className="text-xl font-semibold font-mono">{s.sent}</p>
-                <p className="text-xs text-muted-foreground font-mono">
-                  {s.pctOfEnrolled}%
-                </p>
-              </div>
-              <p className="text-xs text-muted-foreground truncate mt-0.5 mb-3" title={s.subject}>
-                {s.subject}
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => previewStep(s.step)}
-                className="w-full"
-              >
-                Preview
-              </Button>
-            </div>
+        <div className="mt-5 grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-5">
+          <Cell label="Enrolled" value={data.enrolled} />
+          {data.stepInfo.slice(0, 4).map((step) => (
+            <Cell key={step.step} label={`Step ${step.step} sent`} value={step.sent} />
           ))}
         </div>
-      </Card>
+      </section>
 
-      {/* Upcoming sends */}
-      <Card className="p-0 overflow-hidden">
-        <div className="p-6 pb-4 flex items-end justify-between gap-3 flex-wrap">
-          <div>
-            <h2 className="text-sm font-medium">Upcoming sends</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Next step scheduled per lead. Overdue entries can be sent immediately.
-            </p>
-          </div>
-          {sendResult && (
-            <p className="text-xs text-muted-foreground font-mono">{sendResult}</p>
+      <section className="grid gap-6 xl:grid-cols-2">
+        <Panel title="Sequence steps">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Step</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead className="text-right">Delay</TableHead>
+                <TableHead className="text-right">Sent</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.stepInfo.map((step) => (
+                <TableRow key={step.step}>
+                  <TableCell className="font-mono">{step.step}</TableCell>
+                  <TableCell>{step.subject}</TableCell>
+                  <TableCell className="text-right font-mono">+{step.delayDays}d</TableCell>
+                  <TableCell className="text-right font-mono">{step.sent}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Panel>
+
+        <Panel title="Recent sends">
+          {data.recent.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+              No sequence sends recorded.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="text-right">Step</TableHead>
+                  <TableHead className="text-right">Sent</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.recent.map((send) => (
+                  <TableRow key={`${send.email}-${send.step}-${send.sent_at}`}>
+                    <TableCell className="font-mono text-xs">{send.email}</TableCell>
+                    <TableCell className="text-right font-mono">{send.step}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatDate(send.sent_at)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-        </div>
+        </Panel>
+      </section>
+
+      <Panel title="Scheduled by data">
         {data.upcoming.length === 0 ? (
-          <div className="p-6 pt-0 text-sm text-muted-foreground">
-            No pending nurture sends.
+          <div className="rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+            No pending sequence recipients.
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Lead</TableHead>
+                <TableHead>Person</TableHead>
                 <TableHead>Enrolled</TableHead>
-                <TableHead className="w-20">Last</TableHead>
-                <TableHead className="w-20">Next</TableHead>
-                <TableHead className="w-28">Due</TableHead>
-                <TableHead className="w-24">Status</TableHead>
-                <TableHead className="w-32 text-right">Action</TableHead>
+                <TableHead className="text-right">Last step</TableHead>
+                <TableHead className="text-right">Next step</TableHead>
+                <TableHead className="text-right">Due</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.upcoming.map((lead) => (
                 <TableRow key={lead.email}>
                   <TableCell>
-                    <div className="font-medium text-sm">{lead.name}</div>
-                    <div className="text-xs text-muted-foreground font-mono truncate">
-                      {lead.email}
-                    </div>
+                    <p className="font-medium">{lead.name}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{lead.email}</p>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground font-mono">
+                  <TableCell className="font-mono text-xs text-muted-foreground">
                     {formatDate(lead.enrolled_at)}
                   </TableCell>
-                  <TableCell className="font-mono">{lead.last_step ?? "—"}</TableCell>
-                  <TableCell className="font-mono">{lead.nextStep ?? "done"}</TableCell>
-                  <TableCell className="text-xs font-mono">
-                    {lead.nextDue ? formatDate(lead.nextDue) : "—"}
-                  </TableCell>
-                  <TableCell>
-                    {lead.overdue ? (
-                      <Badge>Due now</Badge>
-                    ) : lead.nextDue ? (
-                      <Badge variant="secondary">Scheduled</Badge>
-                    ) : (
-                      <Badge variant="secondary">Complete</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {lead.nextStep ? (
-                      <Button
-                        variant={lead.overdue ? "default" : "outline"}
-                        size="sm"
-                        disabled={sendingFor === lead.email}
-                        onClick={() => sendNextStep(lead.email)}
-                      >
-                        {sendingFor === lead.email
-                          ? "Sending..."
-                          : `Send step ${lead.nextStep}`}
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
+                  <TableCell className="text-right font-mono">{lead.last_step ?? "-"}</TableCell>
+                  <TableCell className="text-right font-mono">{lead.nextStep ?? "done"}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">{formatDate(lead.nextDue)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
-      </Card>
-
-      <TestSendDialog
-        open={testOpen}
-        onOpenChange={setTestOpen}
-        mode="nurture-step"
-        step={testStep}
-        title={`Preview nurture step ${testStep}`}
-      />
+      </Panel>
     </div>
+  );
+}
+
+function Cell({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-background/70 p-4">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tabular-nums">{value.toLocaleString()}</p>
+    </div>
+  );
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="overflow-hidden rounded-xl border border-border/60 bg-card/45 p-5">
+      <h2 className="mb-4 text-base font-semibold">{title}</h2>
+      {children}
+    </section>
   );
 }

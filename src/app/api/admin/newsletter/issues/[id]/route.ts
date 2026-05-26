@@ -4,6 +4,12 @@ import { getDb } from "@/lib/db";
 import { renderIssueHtml } from "@/lib/newsletter";
 import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
 
+function sentCount(stats: unknown): number {
+  if (!stats || typeof stats !== "object") return 0;
+  const value = (stats as Record<string, unknown>).sent;
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -18,7 +24,16 @@ export async function GET(
     FROM newsletter_issues WHERE id = ${id} LIMIT 1
   `;
   if (rows.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(rows[0]);
+  const events = await sql`
+    SELECT
+      COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
+      COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
+      COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
+      COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+    FROM newsletter_events
+    WHERE issue_id = ${id}
+  `;
+  return NextResponse.json({ ...rows[0], event_stats: events[0] });
 }
 
 export async function PATCH(
@@ -59,8 +74,9 @@ export async function PATCH(
   const sql = getDb();
   const cur = await sql`SELECT status, stats FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
   if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (cur[0].status === "sent" && bodyEditProvided) {
-    return NextResponse.json({ error: "Cannot edit sent issue body" }, { status: 409 });
+  const alreadySent = cur[0].status === "sent" || sentCount(cur[0].stats) > 0;
+  if (alreadySent && bodyEditProvided) {
+    return NextResponse.json({ error: "Cannot edit an email after sending has started." }, { status: 409 });
   }
 
   if (portalArticleProvided && portalArticle !== null) {
@@ -123,9 +139,11 @@ export async function DELETE(
 
   const { id } = await params;
   const sql = getDb();
-  const cur = await sql`SELECT status FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
+  const cur = await sql`SELECT status, stats FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
   if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (cur[0].status === "sent") return NextResponse.json({ error: "Cannot delete sent issue" }, { status: 409 });
+  if (cur[0].status === "sent" || sentCount(cur[0].stats) > 0) {
+    return NextResponse.json({ error: "Cannot delete an email after sending has started." }, { status: 409 });
+  }
   await sql`DELETE FROM newsletter_issues WHERE id = ${id}`;
   return NextResponse.json({ ok: true });
 }

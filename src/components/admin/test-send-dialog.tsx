@@ -16,9 +16,7 @@ import { Label } from "@/components/ui/label";
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mode: "lead-magnet" | "nurture-step" | "drop" | "welcome";
-  campaignId?: string;
-  step?: number;
+  mode: "drop" | "welcome";
   contentTitle?: string;
   title?: string;
   defaultEmail?: string;
@@ -28,8 +26,6 @@ export default function TestSendDialog({
   open,
   onOpenChange,
   mode,
-  campaignId,
-  step,
   contentTitle,
   title,
   defaultEmail,
@@ -49,8 +45,6 @@ export default function TestSendDialog({
         body: JSON.stringify({
           type: mode,
           to: email,
-          campaignId,
-          step,
           contentTitle,
         }),
       });
@@ -67,11 +61,7 @@ export default function TestSendDialog({
     }
   }
 
-  const defaultTitle =
-    mode === "lead-magnet" ? "Send test lead-magnet email"
-    : mode === "nurture-step" ? `Preview nurture step ${step}`
-    : mode === "drop" ? "Preview drop notification"
-    : "Preview welcome email";
+  const defaultTitle = mode === "drop" ? "Preview drop notification" : "Preview welcome email";
 
   return (
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setResult(null); }}>

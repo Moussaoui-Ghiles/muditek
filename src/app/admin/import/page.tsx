@@ -132,7 +132,7 @@ export default function ImportPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Import Email List</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Upload a CSV. Needs an <code className="font-mono text-foreground">email</code> column;{" "}
-          <code className="font-mono text-foreground">name</code> optional. Imported addresses auto-enroll in the nurture sequence.
+          <code className="font-mono text-foreground">name</code> optional. New addresses are added to the newsletter list.
         </p>
       </div>
 
@@ -203,7 +203,7 @@ export default function ImportPage() {
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            Imported emails start receiving nurture emails on the next cron run (daily at 10 AM UTC).
+            Existing emails are skipped. Imports do not trigger nurture emails.
           </p>
         </Card>
       )}

@@ -24,7 +24,7 @@ interface EmailEntry {
 
 const TABS = [
   { value: "all", label: "All" },
-  { value: "deliveries", label: "Lead magnet" },
+  { value: "deliveries", label: "Archived delivery" },
   { value: "nurture", label: "Nurture" },
   { value: "welcome", label: "Welcome" },
   { value: "drop", label: "Drops" },
@@ -40,7 +40,7 @@ function formatDateTime(iso: string): string {
 }
 
 function typeBadge(type: string) {
-  if (type === "lead-magnet") return <Badge variant="default">Lead magnet</Badge>;
+  if (type === "lead-magnet") return <Badge variant="secondary">Archived delivery</Badge>;
   if (type.startsWith("nurture")) return <Badge variant="secondary">{type}</Badge>;
   if (type === "welcome") return <Badge>Welcome</Badge>;
   if (type === "drop") return <Badge variant="secondary">Drop</Badge>;

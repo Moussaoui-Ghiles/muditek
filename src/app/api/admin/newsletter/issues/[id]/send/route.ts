@@ -13,14 +13,14 @@ export async function POST(
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin;
 
   try {
-    let limit: number | undefined;
+    let limit = 100;
     try {
       const body = await request.json();
       if (body?.limit !== undefined) {
         limit = Number(body.limit);
       }
     } catch {}
-    if (limit !== undefined && (!Number.isFinite(limit) || limit < 1 || limit > 100)) {
+    if (!Number.isFinite(limit) || limit < 1 || limit > 100) {
       return NextResponse.json({ error: "limit must be between 1 and 100" }, { status: 400 });
     }
 

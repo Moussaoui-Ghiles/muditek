@@ -28,12 +28,21 @@ interface Issue {
   stats: (Record<string, unknown> & {
     sent?: number;
     failed?: number;
+    remaining?: number;
     opens?: number;
     clicks?: number;
+    last_batch_sent?: number;
+    last_batch_failed?: number;
     portal_article?: boolean;
     portalArticle?: boolean;
     source?: string;
   }) | null;
+  event_stats?: {
+    sent_events?: number;
+    delivered?: number;
+    bounced?: number;
+    complained?: number;
+  };
 }
 
 interface Props {
@@ -47,6 +56,16 @@ const AUDIENCE_OPTIONS: Array<{ value: string; label: string; dotClass: string }
   { value: "WARM", label: "WARM", dotClass: "bg-[var(--color-live,#32d583)]" },
   { value: "COLD", label: "COLD", dotClass: "bg-[var(--color-cool,#70b7ff)]" },
 ];
+
+function sentCount(issue: Issue): number {
+  const fromStats = typeof issue.stats?.sent === "number" ? issue.stats.sent : 0;
+  const fromEvents = Number(issue.event_stats?.sent_events ?? 0);
+  return Math.max(fromStats, fromEvents);
+}
+
+function remainingCount(issue: Issue): number {
+  return typeof issue.stats?.remaining === "number" ? issue.stats.remaining : 0;
+}
 
 export default function IssueEditor({ issueId, onClose }: Props) {
   const [issue, setIssue] = useState<Issue | null>(null);
@@ -87,7 +106,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
 
   const save = useCallback(async () => {
     if (!issue) return;
-    if (issue.status === "sent") return;
+    if (sentCount(issue) > 0 || issue.status === "sent") return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/newsletter/issues/${issueId}`, {
@@ -247,8 +266,11 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     );
   }
 
-  const isSent = issue.status === "sent";
-  const readOnly = isSent;
+  const totalSent = sentCount(issue);
+  const remaining = remainingCount(issue);
+  const isSent = issue.status === "sent" || (totalSent > 0 && remaining === 0);
+  const isSending = totalSent > 0 && remaining > 0;
+  const readOnly = totalSent > 0 || issue.status === "sent";
   const audienceOpt = AUDIENCE_OPTIONS.find((o) => o.value === audience) ?? AUDIENCE_OPTIONS[0];
   const finalPreviewHtml = html.trim()
     ? wrapIssueHtml(html, { prefsUrl: "#preferences", unsubUrl: "#unsubscribe" })
@@ -265,7 +287,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
               className="h-8 px-2 inline-flex items-center gap-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.05] spring -ml-2 text-sm"
             >
               <ArrowLeft className="size-4" strokeWidth={1.8} />
-              Issues
+              Emails
             </button>
             <span className="h-4 w-px bg-white/[0.08]" />
             <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -273,6 +295,11 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                 <>
                   <span className="inline-block size-1.5 rounded-full bg-zinc-500" />
                   Sent
+                </>
+              ) : isSending ? (
+                <>
+                  <span className="inline-block size-1.5 rounded-full bg-[var(--color-warn,#f5a524)]" />
+                  Sending · {totalSent.toLocaleString()} sent · {remaining.toLocaleString()} remaining
                 </>
               ) : saving ? (
                 <>
@@ -307,7 +334,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
               title={
                 portalArticle
                   ? "Visible in the portal newsletter archive"
-                  : "Email only, hidden from the portal newsletter archive"
+                  : "Not published in the portal newsletter archive"
               }
             >
               {portalArticle ? (
@@ -316,7 +343,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                 <EyeOff className="size-3.5" strokeWidth={1.8} />
               )}
               <span className="hidden sm:inline">
-                {portalArticle ? "Portal article" : "Email only"}
+                {portalArticle ? "Portal on" : "Portal off"}
               </span>
             </button>
             <span className="mx-1 h-4 w-px bg-white/[0.08]" />
@@ -369,7 +396,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                   onClick={() => setConfirmSend(true)}
                   className="magnetic-cta group h-9 pl-4 pr-1.5 inline-flex items-center gap-2 rounded-full bg-zinc-100 text-zinc-950 text-xs font-semibold tracking-wide hover:bg-white shadow-[0_8px_24px_-8px_rgba(255,255,255,0.18)]"
                 >
-                  Send to audience
+                  Send 100
                   <span
                     ref={sendInnerRef}
                     className="size-6 inline-flex items-center justify-center rounded-full bg-zinc-950/90 text-zinc-100 group-hover:translate-x-[1px] group-hover:-translate-y-[1px] spring"
@@ -453,11 +480,12 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         </div>
 
         {/* Sent stats */}
-        {issue.stats && isSent && (
-          <div className="mt-10 pt-6 border-t border-white/[0.06] flex items-center gap-6 text-sm text-zinc-500">
-            <span>Sent <span className="text-zinc-200 font-medium">{issue.stats.sent ?? "—"}</span></span>
-            <span>Failed <span className="text-zinc-200 font-medium">{issue.stats.failed ?? "—"}</span></span>
-            {issue.sent_at && <span>{new Date(issue.sent_at).toLocaleString()}</span>}
+        {totalSent > 0 && (
+          <div className="mt-10 grid gap-3 border-t border-white/[0.06] pt-6 text-sm text-zinc-500 sm:grid-cols-4">
+            <SendMetric label="Sent" value={totalSent} />
+            <SendMetric label="Remaining" value={remaining} />
+            <SendMetric label="Failed" value={issue.stats?.failed ?? 0} />
+            <SendMetric label="Delivered" value={issue.event_stats?.delivered ?? 0} />
           </div>
         )}
       </div>
@@ -496,9 +524,9 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       <Dialog open={confirmSend} onOpenChange={setConfirmSend}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Send to {audienceOpt.label}?</DialogTitle>
+            <DialogTitle>Send 100 to {audienceOpt.label}?</DialogTitle>
             <DialogDescription>
-              This goes out now. Cannot be undone.
+              This sends the next batch of up to 100 people who have not received this email yet.
             </DialogDescription>
           </DialogHeader>
           {sendResult && <p className="text-sm py-2 text-zinc-300">{sendResult}</p>}
@@ -510,11 +538,8 @@ export default function IssueEditor({ issueId, onClose }: Props) {
             >
               Cancel
             </Button>
-            <Button variant="secondary" onClick={() => doSend(100)} disabled={sending}>
+            <Button onClick={() => doSend(100)} disabled={sending}>
               {sending ? "Sending…" : "Send 100"}
-            </Button>
-            <Button onClick={() => doSend()} disabled={sending}>
-              {sending ? "Sending…" : "Send all"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -545,6 +570,17 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function SendMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
+      <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-zinc-200 tabular-nums">
+        {Number(value ?? 0).toLocaleString()}
+      </p>
     </div>
   );
 }

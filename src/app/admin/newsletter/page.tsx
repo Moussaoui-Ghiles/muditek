@@ -6,7 +6,7 @@ export default function NewsletterPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Newsletter</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Compose, preview, and send newsletter issues via Resend. Track opens, clicks, and unsubs.
+          Write emails, send the next 100-person batch, and see what already went out.
         </p>
       </div>
       <NewsletterContent />

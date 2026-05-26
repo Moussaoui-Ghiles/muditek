@@ -9,18 +9,14 @@ export default function AdminUsagePage() {
         <header className="flex flex-col gap-3 border-b border-border/60 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              Business usage
+              Portal usage
             </p>
             <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.03em] sm:text-[34px]">
-              Portal growth dashboard.
+              What people do inside the portal.
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Audience, activation, lead magnets, content demand, tool adoption, and the people worth following up with.
+              Signed-in activity, resource demand, downloads, tool runs, and recent events.
             </p>
-          </div>
-          <div className="flex w-fit items-center gap-2 rounded-full border border-border/70 bg-secondary/35 px-3 py-1.5 text-[12px] text-muted-foreground">
-            <span className="size-2 rounded-full bg-[var(--color-live)] shadow-[0_0_12px_var(--color-live)]" />
-            Real database data
           </div>
         </header>
         <UsageContent />

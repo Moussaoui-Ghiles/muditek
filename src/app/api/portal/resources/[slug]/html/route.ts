@@ -262,6 +262,29 @@ function normalizeStandalonePlaybook(html: string, frameId: string): string {
   return injectIntoBodyEnd(normalized, rendererRuntime(shape, frameId));
 }
 
+function remoteHtmlUrl(value: string | null | undefined): string | null {
+  const url = String(value ?? "").trim();
+  if (!/^https?:\/\//i.test(url)) return null;
+  return url;
+}
+
+async function loadRawHtml(item: { slug: string; download_url?: string | null; file_type?: string | null }) {
+  const remoteUrl = item.file_type?.toLowerCase() === "html" ? remoteHtmlUrl(item.download_url) : null;
+  if (remoteUrl) {
+    const response = await fetch(remoteUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("Remote HTML not found.");
+    const rawHtml = await response.text();
+    const baseHref = new URL(".", remoteUrl).href;
+    return { rawHtml, baseHref };
+  }
+
+  const htmlPath = join(process.cwd(), "content/playbooks", `${basename(item.slug)}.html`);
+  return {
+    rawHtml: await readFile(htmlPath, "utf-8"),
+    baseHref: null,
+  };
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
@@ -291,12 +314,11 @@ export async function GET(
     return NextResponse.json({ error: "MudiKit required." }, { status: 403 });
   }
 
-  const htmlPath = join(process.cwd(), "content/playbooks", `${basename(item.slug)}.html`);
   try {
-    const rawHtml = await readFile(htmlPath, "utf-8");
+    const { rawHtml, baseHref } = await loadRawHtml(item);
     const frameId = new URL(req.url).searchParams.get("frame") ?? "";
     const html = normalizeStandalonePlaybook(
-      ensureHtmlBaseHref(rawHtml, new URL(req.url).origin),
+      ensureHtmlBaseHref(rawHtml, baseHref ?? new URL(req.url).origin),
       frameId
     );
 

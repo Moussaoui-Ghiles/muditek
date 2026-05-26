@@ -16,25 +16,7 @@ export async function GET(
   await ensureResourceLeadSchema(sql);
   await ensureContentItemsSchema(sql);
 
-  const submissions = await sql`
-    SELECT
-      'campaign'::text AS source_type,
-      s.*,
-      c.title AS campaign_title,
-      c.keyword AS campaign_keyword,
-      c.post_url AS campaign_post_url,
-      c.resource_url AS campaign_resource_url,
-      NULL::text AS resource_slug,
-      NULL::text AS resource_title,
-      NULL::text AS resource_category,
-      NULL::text AS resource_source,
-      NULL::timestamp AS last_seen_at
-    FROM submissions s
-    LEFT JOIN campaigns c ON c.id = s.campaign_id
-    WHERE s.id = ${id}
-  `;
-
-  let lead = submissions[0];
+  let lead;
 
   if (!lead) {
     const resourceLeads = await sql`
@@ -102,9 +84,7 @@ export async function GET(
   }
 
   const [deliveries, sends, subscriber] = await Promise.all([
-    lead.source_type === "campaign"
-      ? sql`SELECT id, sent_at, resend_email_id FROM deliveries WHERE submission_id = ${id} ORDER BY sent_at DESC`
-      : Promise.resolve([]),
+    Promise.resolve([]),
     sql`SELECT step, sent_at FROM sequence_sends WHERE lower(email) = ${String(lead.email).toLowerCase()} ORDER BY step ASC`,
     sql`SELECT id, status, stripe_customer_id, created_at FROM subscribers WHERE lower(email) = ${String(lead.email).toLowerCase()}`,
   ]);

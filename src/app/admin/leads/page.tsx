@@ -8,8 +8,7 @@ export default function LeadsPage() {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Leads</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Resource unlocks and legacy campaign submissions in one place. Campaign rows
-          still open the delivery detail sheet.
+          Resource signups and portal signups only. Legacy campaign data lives in the archive.
         </p>
       </header>
       <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl" />}>

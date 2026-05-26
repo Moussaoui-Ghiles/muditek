@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
-import { listShippedPortalSkills } from "@/lib/portal-skills";
 
 export const dynamic = "force-dynamic";
 
@@ -57,16 +56,14 @@ export async function GET(request: Request) {
   const clerkPublishableMode = keyMode(env("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"));
   const clerkSecretMode = keyMode(env("CLERK_SECRET_KEY"));
   let resourceCount = 0;
-  let paidResourceCount = 0;
   let portalArticleCount = 0;
   let databaseReadable = Boolean(env("DATABASE_URL"));
 
   if (databaseReadable) {
     try {
       const sql = getDb();
-      const [resourceRows, paidResourceRows, articleRows] = await Promise.all([
+      const [resourceRows, articleRows] = await Promise.all([
         sql`SELECT COUNT(*)::int AS count FROM content_items`,
-        sql`SELECT COUNT(*)::int AS count FROM content_items WHERE is_free = false`,
         sql`
           SELECT COUNT(*)::int AS count
           FROM newsletter_issues
@@ -81,14 +78,11 @@ export async function GET(request: Request) {
         `,
       ]);
       resourceCount = Number(resourceRows[0]?.count ?? 0);
-      paidResourceCount = Number(paidResourceRows[0]?.count ?? 0);
       portalArticleCount = Number(articleRows[0]?.count ?? 0);
     } catch {
       databaseReadable = false;
     }
   }
-  const paidSkillCount = listShippedPortalSkills().filter((item) => !item.is_free).length;
-
   const checks = [
     check({
       key: "clerk-publishable",
@@ -99,7 +93,7 @@ export async function GET(request: Request) {
         clerkPublishableMode === "live"
           ? "Live key configured."
           : clerkPublishableMode === "test"
-            ? "Production is still using a test key."
+            ? "This environment is using a test key."
             : "Missing or unrecognized key.",
     }),
     check({
@@ -111,7 +105,7 @@ export async function GET(request: Request) {
         clerkSecretMode === "live"
           ? "Live secret configured."
           : clerkSecretMode === "test"
-            ? "Production is still using a test secret."
+            ? "This environment is using a test secret."
             : "Missing or unrecognized secret.",
     }),
     check({
@@ -122,22 +116,22 @@ export async function GET(request: Request) {
       detail: env("APIFY_TOKEN") ? "APIFY_TOKEN is configured." : "APIFY_TOKEN is missing.",
     }),
     check({
-      key: "serper",
+      key: "serpapi",
       label: "LinkedIn lead finder",
-      ok: Boolean(env("SERPER_API_KEY")),
+      ok: Boolean(env("SERPAPI_API_KEY")),
       required: true,
-      detail: env("SERPER_API_KEY")
-        ? "Serper is connected."
-        : "SERPER_API_KEY is missing. The LinkedIn workbench cannot run live searches yet.",
+      detail: env("SERPAPI_API_KEY")
+        ? "SERPAPI_API_KEY is configured."
+        : "SERPAPI_API_KEY is missing. The LinkedIn workbench cannot run live searches yet.",
     }),
     check({
       key: "blob",
-      label: "Image uploads",
+      label: "File uploads",
       ok: Boolean(env("BLOB_READ_WRITE_TOKEN")),
       required: true,
       detail: env("BLOB_READ_WRITE_TOKEN")
         ? "Vercel Blob uploads are configured."
-        : "BLOB_READ_WRITE_TOKEN is missing. Small images can save inline, but production image hosting is not ready.",
+        : "BLOB_READ_WRITE_TOKEN is missing. PDF and HTML resource uploads need it.",
     }),
     check({
       key: "resend",
@@ -145,16 +139,6 @@ export async function GET(request: Request) {
       ok: Boolean(env("RESEND_API_KEY")),
       required: true,
       detail: env("RESEND_API_KEY") ? "RESEND_API_KEY is configured." : "RESEND_API_KEY is missing.",
-    }),
-    check({
-      key: "stripe",
-      label: "MudiKit checkout",
-      ok: Boolean(env("STRIPE_SECRET_KEY") && env("STRIPE_PRICE_ID")),
-      required: true,
-      detail:
-        env("STRIPE_SECRET_KEY") && env("STRIPE_PRICE_ID")
-          ? "Stripe secret and price are configured."
-          : "Stripe secret or price is missing.",
     }),
     check({
       key: "database",
@@ -181,17 +165,7 @@ export async function GET(request: Request) {
       detail:
         portalArticleCount > 0
           ? `${portalArticleCount} newsletter articles are visible in the portal.`
-          : "No sent issues are marked Portal article yet. The archive will stay empty until you mark articles in admin.",
-    }),
-    check({
-      key: "mudikit-inventory",
-      label: "MudiKit inventory",
-      ok: paidResourceCount + paidSkillCount > 0,
-      required: true,
-      detail:
-        paidResourceCount + paidSkillCount > 0
-          ? `${paidResourceCount} paid CMS resources and ${paidSkillCount} paid shipped skills are available.`
-          : "No paid resources or paid shipped skills are available.",
+          : "No sent emails are marked as portal articles yet. The archive stays empty until you mark articles in admin.",
     }),
   ];
 

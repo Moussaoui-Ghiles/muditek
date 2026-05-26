@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -17,40 +20,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import LeadDetailSheet from "@/components/admin/lead-detail-sheet";
 
-type LeadSource = "campaign" | "resource" | "portal";
+type LeadSource = "resource" | "portal";
 
 interface Lead {
   id: string;
   source_type: LeadSource;
   name: string | null;
   email: string;
-  comment: string | null;
-  verified: boolean;
-  delivered: boolean;
   created_at: string;
-  campaign_id: string | null;
-  campaign_title: string | null;
-  campaign_keyword: string | null;
-  campaign_active: boolean | null;
+  last_seen_at: string | null;
   resource_slug: string | null;
   resource_title: string | null;
+  resource_category: string | null;
   source_label: string | null;
-  nurture_step: number | null;
-  is_subscriber: boolean;
+  newsletter_status: string | null;
+  newsletter_segment: string | null;
+  has_portal_account: boolean;
 }
 
-interface Campaign {
-  id: string;
-  title: string;
-}
-
-function formatDate(iso: string): string {
+function formatDate(iso: string | null): string {
+  if (!iso) return "-";
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
@@ -59,37 +50,15 @@ function displayName(lead: Lead): string {
 }
 
 function sourceTitle(lead: Lead): string {
-  if (lead.source_type === "portal") {
-    return lead.source_label || "Portal signup";
-  }
-  if (lead.source_type === "resource") {
-    return lead.resource_title || lead.resource_slug || "Resource unlock";
-  }
-  return lead.campaign_title || "Campaign";
-}
-
-function sourceMeta(lead: Lead): string {
-  if (lead.source_type === "portal") {
-    return "Direct portal account";
-  }
-  if (lead.source_type === "resource") {
-    return lead.resource_slug ? `/r/${lead.resource_slug}` : "Portal resource";
-  }
-  return lead.campaign_keyword || "Lead magnet campaign";
+  if (lead.source_type === "portal") return "Portal signup";
+  return lead.resource_title || lead.resource_slug || "Resource";
 }
 
 export default function LeadsTable() {
-  const searchParams = useSearchParams();
-  const initialStatus = searchParams.get("status") || "all";
-
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
-
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   async function fetchLeads() {
@@ -98,14 +67,13 @@ export default function LeadsTable() {
       const res = await fetch("/api/admin/leads");
       const data = await res.json();
       setLeads(Array.isArray(data.leads) ? data.leads : []);
-      setCampaigns(Array.isArray(data.campaigns) ? data.campaigns : []);
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchLeads();
+    void fetchLeads();
   }, []);
 
   const counts = useMemo(
@@ -113,11 +81,9 @@ export default function LeadsTable() {
       total: leads.length,
       resources: leads.filter((lead) => lead.source_type === "resource").length,
       portal: leads.filter((lead) => lead.source_type === "portal").length,
-      campaigns: leads.filter((lead) => lead.source_type === "campaign").length,
-      paying: leads.filter((lead) => lead.is_subscriber).length,
-      nurture: leads.filter((lead) => !lead.is_subscriber && (lead.nurture_step ?? 1) < 5).length,
+      accounts: leads.filter((lead) => lead.has_portal_account).length,
     }),
-    [leads]
+    [leads],
   );
 
   const filtered = useMemo(() => {
@@ -125,80 +91,52 @@ export default function LeadsTable() {
     return leads.filter((lead) => {
       if (sourceFilter === "resource" && lead.source_type !== "resource") return false;
       if (sourceFilter === "portal" && lead.source_type !== "portal") return false;
-      if (sourceFilter === "campaigns" && lead.source_type !== "campaign") return false;
-      if (sourceFilter.startsWith("campaign:")) {
-        const id = sourceFilter.replace("campaign:", "");
-        if (lead.campaign_id !== id) return false;
-      }
-
-      if (statusFilter === "unverified" && lead.verified) return false;
-      if (statusFilter === "verified" && !lead.verified) return false;
-      if (statusFilter === "delivered" && !lead.delivered) return false;
-      if (statusFilter === "undelivered" && (!lead.verified || lead.delivered)) return false;
-      if (statusFilter === "subscriber" && !lead.is_subscriber) return false;
-      if (statusFilter === "nurture" && (lead.is_subscriber || (lead.nurture_step ?? 1) >= 5)) return false;
+      if (sourceFilter === "account" && !lead.has_portal_account) return false;
 
       if (!q) return true;
       const haystack = [
         lead.email,
         lead.name,
-        lead.campaign_title,
-        lead.campaign_keyword,
         lead.resource_title,
         lead.resource_slug,
         lead.source_label,
+        lead.newsletter_segment,
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [leads, search, sourceFilter, statusFilter]);
+  }, [leads, search, sourceFilter]);
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] sm:grid-cols-4">
-        <Stat label="Total leads" value={counts.total} />
+      <div className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-4">
+        <Stat label="Active leads" value={counts.total} />
+        <Stat label="Resource signups" value={counts.resources} />
         <Stat label="Portal signups" value={counts.portal} />
-        <Stat label="Resource unlocks" value={counts.resources} />
-        <Stat label="Needs nurture" value={counts.nurture} />
+        <Stat label="Have portal account" value={counts.accounts} />
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Input
-          placeholder="Search email, resource, campaign..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select value={sourceFilter} onValueChange={(v) => setSourceFilter(v ?? "all")}>
-          <SelectTrigger className="w-56">
+        <div className="relative min-w-0 flex-1 sm:max-w-sm">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search email, resource, segment..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={sourceFilter} onValueChange={(value) => setSourceFilter(value ?? "all")}>
+          <SelectTrigger className="w-52">
             <SelectValue placeholder="All sources" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All sources</SelectItem>
+            <SelectItem value="resource">Resource signups</SelectItem>
             <SelectItem value="portal">Portal signups</SelectItem>
-            <SelectItem value="resource">Resource unlocks</SelectItem>
-            <SelectItem value="campaigns">All campaigns</SelectItem>
-            {campaigns.map((campaign) => (
-              <SelectItem key={campaign.id} value={`campaign:${campaign.id}`}>
-                {campaign.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="nurture">Needs nurture</SelectItem>
-            <SelectItem value="unverified">Unverified</SelectItem>
-            <SelectItem value="verified">Verified</SelectItem>
-            <SelectItem value="delivered">Delivered</SelectItem>
-            <SelectItem value="undelivered">Verified · undelivered</SelectItem>
-            <SelectItem value="subscriber">Paying</SelectItem>
+            <SelectItem value="account">Have portal account</SelectItem>
           </SelectContent>
         </Select>
         <span className="ml-auto font-mono text-xs text-muted-foreground">
@@ -206,16 +144,16 @@ export default function LeadsTable() {
         </span>
       </div>
 
-      <Card className="overflow-hidden p-0">
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card/45">
         {loading ? (
           <div className="space-y-2 p-4">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-10 w-full" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center text-sm text-muted-foreground">
-            No leads match.
+            No active leads match.
           </div>
         ) : (
           <Table>
@@ -223,80 +161,66 @@ export default function LeadsTable() {
               <TableRow>
                 <TableHead>Lead</TableHead>
                 <TableHead>Source</TableHead>
-                <TableHead>Resource / campaign</TableHead>
-                <TableHead className="w-32">Status</TableHead>
-                <TableHead className="w-20">Step</TableHead>
-                <TableHead className="w-20">Paid</TableHead>
-                <TableHead className="w-24 text-right">Date</TableHead>
+                <TableHead>Resource</TableHead>
+                <TableHead>Newsletter</TableHead>
+                <TableHead>Portal</TableHead>
+                <TableHead className="text-right">First seen</TableHead>
+                <TableHead className="text-right">Last seen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((lead) => {
-                return (
-                  <TableRow
-                    key={`${lead.source_type}-${lead.id}`}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedId(lead.id)}
-                  >
-                    <TableCell>
-                      <div className="font-medium">{displayName(lead)}</div>
-                      <div className="font-mono text-xs text-muted-foreground">{lead.email}</div>
-                    </TableCell>
-                    <TableCell>
-                      {lead.source_type === "portal" ? (
-                        <Badge className="bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
-                          Portal
-                        </Badge>
-                      ) : lead.source_type === "resource" ? (
-                        <Badge className="bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
-                          Resource
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary">Campaign</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="max-w-[340px] truncate text-sm">{sourceTitle(lead)}</div>
-                      <div className="max-w-[340px] truncate font-mono text-xs text-muted-foreground">
-                        {sourceMeta(lead)}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {lead.source_type === "portal" ? (
-                        <Badge variant="outline">Account created</Badge>
-                      ) : lead.source_type === "resource" ? (
-                        <Badge variant="outline">Portal signup</Badge>
-                      ) : lead.delivered ? (
-                        <Badge>Delivered</Badge>
-                      ) : lead.verified ? (
-                        <Badge variant="secondary">Verified</Badge>
-                      ) : (
-                        <Badge variant="secondary">Unverified</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-mono">{lead.nurture_step ?? "—"}</TableCell>
-                    <TableCell>
-                      {lead.is_subscriber ? (
-                        <Badge>Yes</Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs text-muted-foreground">
-                      {formatDate(lead.created_at)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {filtered.map((lead) => (
+                <TableRow
+                  key={`${lead.source_type}-${lead.id}`}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedId(lead.id)}
+                >
+                  <TableCell>
+                    <div className="font-medium">{displayName(lead)}</div>
+                    <div className="font-mono text-xs text-muted-foreground">{lead.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    {lead.source_type === "portal" ? (
+                      <Badge className="bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
+                        Portal
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
+                        Resource
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-[340px] truncate text-sm">{sourceTitle(lead)}</div>
+                    <div className="max-w-[340px] truncate font-mono text-xs text-muted-foreground">
+                      {lead.resource_slug ? `/r/${lead.resource_slug}` : "-"}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {lead.newsletter_status ?? "no newsletter row"}
+                      {lead.newsletter_segment ? ` · ${lead.newsletter_segment}` : ""}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {lead.has_portal_account ? <Badge>Account</Badge> : <Badge variant="secondary">No account</Badge>}
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-xs text-muted-foreground">
+                    {formatDate(lead.created_at)}
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-xs text-muted-foreground">
+                    {formatDate(lead.last_seen_at)}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         )}
-      </Card>
+      </div>
 
       <LeadDetailSheet
         selectedId={selectedId}
         onOpenChange={(open) => !open && setSelectedId(null)}
-        onRefresh={fetchLeads}
       />
     </div>
   );
@@ -304,7 +228,7 @@ export default function LeadsTable() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-background px-4 py-4">
+    <div className="bg-background/70 px-4 py-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
     </div>

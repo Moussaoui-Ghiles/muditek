@@ -15,7 +15,29 @@ export async function GET(request: Request) {
     ORDER BY created_at DESC
     LIMIT 100
   `;
-  return NextResponse.json({ issues: rows });
+  const events = await sql`
+    SELECT
+      issue_id,
+      COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
+      COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
+      COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
+      COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+    FROM newsletter_events
+    WHERE issue_id IS NOT NULL
+    GROUP BY issue_id
+  `;
+  const eventByIssue = new Map(events.map((row) => [String(row.issue_id), row]));
+  return NextResponse.json({
+    issues: rows.map((issue) => ({
+      ...issue,
+      event_stats: eventByIssue.get(String(issue.id)) ?? {
+        sent_events: 0,
+        delivered: 0,
+        bounced: 0,
+        complained: 0,
+      },
+    })),
+  });
 }
 
 export async function POST(request: Request) {

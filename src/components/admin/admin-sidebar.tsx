@@ -9,7 +9,6 @@ import {
   Users,
   MailOpen,
   Package,
-  CreditCard,
   Send,
   Upload,
   LogOut,
@@ -51,7 +50,6 @@ const NAV = [
       { href: "/admin/newsletter", title: "Newsletter", icon: Newspaper },
       { href: "/admin/users", title: "Users", icon: Users },
       { href: "/admin/usage", title: "Usage", icon: Activity },
-      { href: "/admin/subscribers", title: "Paying customers", icon: CreditCard },
       { href: "/admin/leads", title: "Leads", icon: Users },
     ],
   },
@@ -59,7 +57,7 @@ const NAV = [
     label: "Acquisition",
     items: [
       { href: "/admin/nurture", title: "Nurture", icon: MailOpen },
-      { href: "/admin/content", title: "Lead magnets", icon: Package },
+      { href: "/admin/content", title: "Resources", icon: Package },
     ],
   },
   {

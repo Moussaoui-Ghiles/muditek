@@ -15,24 +15,6 @@ export async function POST(request: Request) {
 
   const sql = getDb();
 
-  // Create a migration campaign if it doesn't exist
-  const campaigns = await sql`
-    SELECT id FROM campaigns WHERE title = 'csv-import'
-  `;
-
-  let campaignId: string;
-
-  if (campaigns.length > 0) {
-    campaignId = campaigns[0].id;
-  } else {
-    const result = await sql`
-      INSERT INTO campaigns (title, post_url, resource_url, keyword, is_active, ttl_days)
-      VALUES ('csv-import', 'https://import', 'https://import', 'import', false, 9999)
-      RETURNING id
-    `;
-    campaignId = result[0].id;
-  }
-
   let imported = 0;
   let skipped = 0;
   const seenEmails = new Set<string>();
@@ -50,9 +32,9 @@ export async function POST(request: Request) {
 
     try {
       const result = await sql`
-        INSERT INTO submissions (campaign_id, name, email, verified, delivered)
-        VALUES (${campaignId}, ${name || "Subscriber"}, ${email}, true, true)
-        ON CONFLICT (campaign_id, email) DO NOTHING
+        INSERT INTO newsletter_subscribers (email, source, status)
+        VALUES (${email}, 'csv-import', 'active')
+        ON CONFLICT (email) DO NOTHING
         RETURNING id
       `;
 

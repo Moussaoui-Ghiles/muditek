@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface LeadDetail {
   submission: {
-    source_type: "campaign" | "resource" | "portal";
+    source_type: "resource" | "portal";
     id: string;
     name: string;
     email: string;
@@ -46,7 +46,6 @@ interface LeadDetail {
 interface Props {
   selectedId: string | null;
   onOpenChange: (open: boolean) => void;
-  onRefresh?: () => void;
 }
 
 function formatDateTime(iso: string): string {
@@ -60,8 +59,7 @@ function formatDateTime(iso: string): string {
 
 function sourceBadge(sourceType: LeadDetail["submission"]["source_type"]): string {
   if (sourceType === "portal") return "Portal signup";
-  if (sourceType === "resource") return "Resource unlock";
-  return "Campaign lead";
+  return "Resource unlock";
 }
 
 function portalResourceHref(category: string | null, slug: string): string {
@@ -70,10 +68,9 @@ function portalResourceHref(category: string | null, slug: string): string {
   return `/portal/playbooks/${encodeURIComponent(slug)}`;
 }
 
-export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }: Props) {
+export default function LeadDetailSheet({ selectedId, onOpenChange }: Props) {
   const [detail, setDetail] = useState<LeadDetail | null>(null);
   const [loading, setLoading] = useState(false);
-  const [delivering, setDelivering] = useState(false);
 
   useEffect(() => {
     if (!selectedId) {
@@ -86,39 +83,6 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
       .then(setDetail)
       .finally(() => setLoading(false));
   }, [selectedId]);
-
-  async function refreshDetail() {
-    if (!selectedId) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin/leads/${selectedId}`);
-      setDetail(await res.json());
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function forceDeliver() {
-    if (!detail) return;
-    if (detail.submission.source_type !== "campaign") return;
-    if (!confirm("Force-send the lead magnet to this submission?")) return;
-    setDelivering(true);
-    try {
-      const res = await fetch(
-        `/api/admin/submissions/${detail.submission.id}/force-deliver`,
-        { method: "POST" },
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "Failed");
-        return;
-      }
-      await refreshDetail();
-      onRefresh?.();
-    } finally {
-      setDelivering(false);
-    }
-  }
 
   return (
     <Sheet open={!!selectedId} onOpenChange={onOpenChange}>
@@ -157,7 +121,7 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
                 <Row label="Source" value={detail.submission.resource_source || "portal"} mono />
                 <Row label="Signed up" value={formatDateTime(detail.submission.created_at)} />
               </Section>
-            ) : detail.submission.source_type === "resource" ? (
+            ) : (
               <Section title="Resource">
                 <Row label="Title" value={detail.submission.resource_title || detail.submission.resource_slug || "-"} />
                 <Row label="Slug" value={detail.submission.resource_slug || "-"} mono />
@@ -195,44 +159,17 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
                   </div>
                 )}
               </Section>
-            ) : (
-              <Section title="Campaign">
-                <Row label="Title" value={detail.submission.campaign_title || "-"} />
-                <Row
-                  label="Keyword"
-                  value={detail.submission.campaign_keyword || "-"}
-                  mono
-                />
-                <Row
-                  label="Submitted"
-                  value={formatDateTime(detail.submission.created_at)}
-                />
-                {detail.submission.comment && (
-                  <Row label="Comment" value={detail.submission.comment} />
-                )}
-              </Section>
             )}
 
             <Section title={`Deliveries (${detail.deliveries.length})`}>
               {detail.submission.source_type === "portal" ? (
                 <p className="text-sm text-muted-foreground">
-                  Direct portal signups do not need a lead magnet delivery email.
+                  Direct portal signups do not need a separate delivery email.
                 </p>
-              ) : detail.submission.source_type === "resource" ? (
+              ) : (
                 <p className="text-sm text-muted-foreground">
                   Resource unlocks open directly in the portal. No separate delivery email is required.
                 </p>
-              ) : detail.deliveries.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No deliveries yet.</p>
-              ) : (
-                detail.deliveries.map((d) => (
-                  <Row
-                    key={d.id}
-                    label={formatDateTime(d.sent_at)}
-                    value={d.resend_email_id || "—"}
-                    mono
-                  />
-                ))
               )}
             </Section>
 
@@ -263,22 +200,6 @@ export default function LeadDetailSheet({ selectedId, onOpenChange, onRefresh }:
                   {detail.subscriber.stripe_customer_id}
                 </a>
               </Section>
-            )}
-
-            {detail.submission.source_type === "campaign" && (
-              <div className="flex gap-2 pt-2 border-t">
-                <Button
-                  onClick={forceDeliver}
-                  disabled={delivering || detail.submission.delivered}
-                  className="flex-1"
-                >
-                  {delivering
-                    ? "Sending..."
-                    : detail.submission.delivered
-                      ? "Already delivered"
-                      : "Force deliver"}
-                </Button>
-              </div>
             )}
           </div>
         )}

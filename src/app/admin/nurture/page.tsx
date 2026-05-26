@@ -6,7 +6,7 @@ export default function NurturePage() {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Nurture</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Status of every lead in the 5-step nurture sequence. Preview any step to verify the email.
+          Read-only status for the automated sequence. Manual sends are disabled.
         </p>
       </header>
       <NurtureContent />

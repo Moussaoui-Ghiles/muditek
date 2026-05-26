@@ -7,6 +7,7 @@ import {
   Check,
   Copy,
   ExternalLink,
+  FileUp,
   ImageIcon,
   Pencil,
   Plus,
@@ -15,7 +16,6 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import TestSendDialog from "@/components/admin/test-send-dialog";
 import { resourceDetailHref } from "@/lib/content-item";
 import { CONTENT_TOPIC_LABEL, CONTENT_TOPICS, type ContentTopic } from "@/lib/content-item";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +80,7 @@ const EMPTY_DRAFT: Draft = {
   category: "playbook",
   topic: "",
   downloadUrl: "",
-  fileType: "url",
+  fileType: "pdf",
   thumbnailUrl: "",
   isFree: true,
   isNew: true,
@@ -133,14 +133,10 @@ function categoryLabel(value: string) {
 function VisibilityBadge({ item }: { item: ContentItem }) {
   return (
     <Badge
-      variant={item.is_free ? "secondary" : "default"}
-      className={
-        item.is_free
-          ? "rounded-md bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/15"
-          : "rounded-md bg-sky-500/15 text-sky-200 ring-1 ring-sky-500/30 hover:bg-sky-500/20"
-      }
+      variant="secondary"
+      className="rounded-md bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/15"
     >
-      {item.is_free ? "Portal" : "MudiKit"}
+      Portal
     </Badge>
   );
 }
@@ -209,11 +205,8 @@ export default function ContentPage() {
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [visibility, setVisibility] = useState<"all" | "free" | "paid">("all");
+  const [visibility, setVisibility] = useState<"all" | "html" | "pdf" | "missing-thumb">("all");
   const [message, setMessage] = useState("");
-  const [notifying, setNotifying] = useState(false);
-  const [notifyResult, setNotifyResult] = useState("");
-  const [testOpen, setTestOpen] = useState(false);
   const [deleteArmedId, setDeleteArmedId] = useState<string | null>(null);
 
   const editingItem = editingId ? items.find((item) => item.id === editingId) ?? null : null;
@@ -239,8 +232,9 @@ export default function ContentPage() {
     return items.filter((item) => {
       const matchesVisibility =
         visibility === "all" ||
-        (visibility === "free" && item.is_free) ||
-        (visibility === "paid" && !item.is_free);
+        (visibility === "html" && item.file_type === "html") ||
+        (visibility === "pdf" && item.file_type === "pdf") ||
+        (visibility === "missing-thumb" && !item.thumbnail_url);
       const haystack = [item.title, item.slug, item.description, item.category, item.file_type]
         .filter(Boolean)
         .join(" ")
@@ -249,10 +243,9 @@ export default function ContentPage() {
     });
   }, [items, query, visibility]);
 
-  const paidCount = items.filter((item) => !item.is_free).length;
-  const freeCount = items.filter((item) => item.is_free).length;
   const missingThumbCount = items.filter((item) => !item.thumbnail_url).length;
-  const newPaidCount = items.filter((item) => !item.is_free && item.is_new).length;
+  const htmlCount = items.filter((item) => item.file_type === "html").length;
+  const pdfCount = items.filter((item) => item.file_type === "pdf").length;
 
   function updateDraft<K extends keyof Draft>(key: K, value: Draft[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -332,6 +325,31 @@ export default function ContentPage() {
     }
   }
 
+  async function handleAssetUpload(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    setMessage("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("purpose", "content-asset");
+      const res = await fetch("/api/admin/upload", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      const name = file.name.toLowerCase();
+      updateDraft("downloadUrl", data.url);
+      if (file.type === "text/html" || name.endsWith(".html") || name.endsWith(".htm")) {
+        updateDraft("fileType", "html");
+      } else if (file.type === "application/pdf" || name.endsWith(".pdf")) {
+        updateDraft("fileType", "pdf");
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function handleDelete(item: ContentItem) {
     if (deleteArmedId !== item.id) {
       setDeleteArmedId(item.id);
@@ -346,25 +364,6 @@ export default function ContentPage() {
     await fetchData();
   }
 
-  async function handleNotify() {
-    setNotifying(true);
-    setNotifyResult("");
-    try {
-      const res = await fetch("/api/admin/content/notify", { method: "POST" });
-      const data = await res.json();
-      setNotifyResult(
-        data.sent > 0
-          ? `Notified ${data.sent} subscribers about ${data.newItems} new items`
-          : data.message || "No new paid items to notify about"
-      );
-      fetchData();
-    } catch {
-      setNotifyResult("Failed to send notification.");
-    } finally {
-      setNotifying(false);
-    }
-  }
-
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_420px] lg:px-8">
       <section className="min-w-0">
@@ -373,37 +372,29 @@ export default function ContentPage() {
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Portal CMS
             </p>
-            <h1 className="text-2xl font-semibold tracking-tight">Content library</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Resources library</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Manage the resources that appear in the portal, MudiKit, and tracked unlock links.
+              Manage the resources people open inside the portal and through tracked share links.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={() => setTestOpen(true)}>
-              Preview notification
-            </Button>
-            <Button type="button" onClick={handleNotify} disabled={notifying}>
-              {notifying ? "Sending..." : "Notify paid"}
-            </Button>
           </div>
         </div>
 
         <div className="mb-6 grid border-y border-white/[0.07] md:grid-cols-4 md:divide-x md:divide-white/[0.07]">
-          <ShelfStat label="Portal" value={freeCount} />
-          <ShelfStat label="MudiKit" value={paidCount} />
-          <ShelfStat label="New paid" value={newPaidCount} />
+          <ShelfStat label="Resources" value={items.length} />
+          <ShelfStat label="HTML" value={htmlCount} />
+          <ShelfStat label="PDF" value={pdfCount} />
           <ShelfStat label="No thumbnail" value={missingThumbCount} />
         </div>
 
-        {(message || notifyResult) && (
+        {message && (
           <div className="mb-5 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-3 text-sm text-muted-foreground">
-            {message || notifyResult}
+            {message}
           </div>
         )}
 
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
-            {(["all", "free", "paid"] as const).map((value) => (
+            {(["all", "html", "pdf", "missing-thumb"] as const).map((value) => (
               <Button
                 key={value}
                 type="button"
@@ -411,7 +402,11 @@ export default function ContentPage() {
                 variant={visibility === value ? "default" : "outline"}
                 onClick={() => setVisibility(value)}
               >
-                {value === "all" ? "All" : value === "free" ? "Portal" : "MudiKit"}
+                {value === "all"
+                  ? "All"
+                  : value === "missing-thumb"
+                    ? "No thumbnail"
+                    : value.toUpperCase()}
               </Button>
             ))}
           </div>
@@ -422,14 +417,6 @@ export default function ContentPage() {
             className="h-9 sm:max-w-xs"
           />
         </div>
-
-        <TestSendDialog
-          open={testOpen}
-          onOpenChange={setTestOpen}
-          mode="drop"
-          contentTitle={editingItem?.title || "MudiKit drop preview"}
-        />
-
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((item) => (
@@ -446,11 +433,9 @@ export default function ContentPage() {
             {filteredItems.map((item) => (
               <Card
                 key={item.id}
-                className={`overflow-hidden border-l-4 bg-white/[0.025] p-0 ${
-                  item.is_free
-                    ? "border-l-emerald-500/60 border-y-white/[0.08] border-r-white/[0.08]"
-                    : "border-l-sky-500/60 border-y-white/[0.08] border-r-white/[0.08]"
-                } ${editingId === item.id ? "ring-1 ring-white/[0.18]" : ""}`}
+                className={`overflow-hidden border-l-4 border-l-emerald-500/60 border-y-white/[0.08] border-r-white/[0.08] bg-white/[0.025] p-0 ${
+                  editingId === item.id ? "ring-1 ring-white/[0.18]" : ""
+                }`}
               >
                 <div className="grid gap-4 p-4 md:grid-cols-[64px_1fr_auto] md:items-start">
                   <Thumbnail item={item} />
@@ -527,7 +512,7 @@ export default function ContentPage() {
             <div>
               <h2 className="text-base font-semibold">{editingId ? "Edit resource" : "Add resource"}</h2>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                This feeds the signed-in portal and tracked unlock links.
+                Upload a PDF or HTML file, add a thumbnail, then copy the portal/share link.
               </p>
             </div>
             {editingId ? (
@@ -583,22 +568,6 @@ export default function ContentPage() {
                 value={draft.description}
                 onChange={(event) => updateDraft("description", event.target.value)}
               />
-            </div>
-
-            <div className="grid gap-1.5">
-              <Label htmlFor="downloadUrl">Asset URL</Label>
-              <Input
-                id="downloadUrl"
-                required={draft.fileType !== "html"}
-                value={draft.downloadUrl}
-                onChange={(event) => updateDraft("downloadUrl", event.target.value)}
-                placeholder={draft.fileType === "html" ? "Optional for HTML reader" : "https://... or /playbooks/file.pdf"}
-              />
-              {draft.fileType === "html" && (
-                <p className="text-xs leading-5 text-muted-foreground">
-                  HTML resources open in the portal. Leave this blank when the HTML file lives in <span className="font-mono">content/playbooks/{draft.slug || "slug"}.html</span>.
-                </p>
-              )}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
@@ -658,6 +627,35 @@ export default function ContentPage() {
 
             <div className="grid gap-3">
               <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="downloadUrl">Asset</Label>
+                <label className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-white/[0.08] px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+                  <FileUp className="size-3.5" />
+                  {uploading ? "Uploading..." : "Upload PDF/HTML"}
+                  <input
+                    type="file"
+                    accept=".pdf,.html,.htm,application/pdf,text/html"
+                    className="sr-only"
+                    disabled={uploading}
+                    onChange={(event) => handleAssetUpload(event.target.files?.[0] ?? null)}
+                  />
+                </label>
+              </div>
+              <Input
+                id="downloadUrl"
+                required={draft.fileType !== "html"}
+                value={draft.downloadUrl}
+                onChange={(event) => updateDraft("downloadUrl", event.target.value)}
+                placeholder="Upload a PDF/HTML file, or paste an advanced fallback URL"
+              />
+              {draft.fileType === "html" && !draft.downloadUrl.trim() && (
+                <p className="text-xs leading-5 text-muted-foreground">
+                  Existing committed HTML still works when it lives at <span className="font-mono">content/playbooks/{draft.slug || "slug"}.html</span>.
+                </p>
+              )}
+            </div>
+
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <Label htmlFor="thumbnailUrl">Thumbnail</Label>
                 <label className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-white/[0.08] px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
                   <Upload className="size-3.5" />
@@ -681,33 +679,6 @@ export default function ContentPage() {
                 onChange={(event) => updateDraft("thumbnailUrl", event.target.value)}
                 placeholder="https://image-url"
               />
-            </div>
-
-            <div className="grid gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] p-3">
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>
-                  <span className="block font-medium">Portal item</span>
-                  <span className="block text-xs text-muted-foreground">Portal items get tracked `/r/slug` unlock links.</span>
-                </span>
-                <input
-                  type="checkbox"
-                  checked={draft.isFree}
-                  onChange={(event) => updateDraft("isFree", event.target.checked)}
-                  className="size-4 accent-foreground"
-                />
-              </label>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>
-                  <span className="block font-medium">New drop</span>
-                  <span className="block text-xs text-muted-foreground">Used by paid notification emails.</span>
-                </span>
-                <input
-                  type="checkbox"
-                  checked={draft.isNew}
-                  onChange={(event) => updateDraft("isNew", event.target.checked)}
-                  className="size-4 accent-foreground"
-                />
-              </label>
             </div>
 
             <div className="flex gap-2">

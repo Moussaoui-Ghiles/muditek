@@ -36,7 +36,7 @@ export async function GET(
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="mudikit-export-${id}.csv"`,
+      "Content-Disposition": `attachment; filename="legacy-campaign-export-${id}.csv"`,
     },
   });
 }

@@ -19,6 +19,7 @@ const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
   { value: "marketing", label: CONTENT_TOPIC_LABEL.marketing },
   { value: "gtm", label: CONTENT_TOPIC_LABEL.gtm },
   { value: "agentic-engineering", label: CONTENT_TOPIC_LABEL["agentic-engineering"] },
+  { value: "seo", label: CONTENT_TOPIC_LABEL.seo },
 ];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {

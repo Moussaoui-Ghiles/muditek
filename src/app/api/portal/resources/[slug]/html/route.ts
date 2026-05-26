@@ -47,9 +47,6 @@ function rendererStyles(shape: PlaybookHtmlShape): string {
     max-width: 100vw !important;
     background: #0a0a0a;
   }
-  body.muditek-portal-article :where(.wrap, .wide, .container, .page-wrapper, main, article, section) {
-    max-width: 100vw !important;
-  }
   body.muditek-portal-article :where(pre, table, code) {
     max-width: 100%;
   }
@@ -57,6 +54,9 @@ function rendererStyles(shape: PlaybookHtmlShape): string {
     overflow-x: auto;
   }
   @media (max-width: 640px) {
+    body.muditek-portal-article :where(.wrap, .wide, .container, .page-wrapper, main, article, section) {
+      max-width: 100vw !important;
+    }
     body.muditek-portal-article :where(.toc ol) {
       columns: 1 !important;
     }
@@ -115,14 +115,14 @@ function rendererStyles(shape: PlaybookHtmlShape): string {
     max-width: 100vw;
     overflow-x: hidden;
   }
-  .playbook-scaler :where(.wrap, .wide, .container, .page-wrapper, main, article, section) {
-    max-width: 100vw !important;
-  }
   .playbook-scaler :where(pre, table) {
     max-width: 100%;
     overflow-x: auto;
   }
   @media (max-width: 640px) {
+    .playbook-scaler :where(.wrap, .wide, .container, .page-wrapper, main, article, section) {
+      max-width: 100vw !important;
+    }
     .playbook-scaler :where(.toc ol) {
       columns: 1 !important;
     }

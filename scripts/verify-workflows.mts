@@ -1,0 +1,11 @@
+import { loadEnv } from "./_load-env.mts";
+loadEnv();
+const { neon } = await import("@neondatabase/serverless");
+const sql = neon(process.env.DATABASE_URL!);
+const c = await sql`SELECT COUNT(*)::int AS n FROM workflows`;
+const c2 = await sql`SELECT COUNT(*)::int AS n FROM content_items WHERE category='workflow'`;
+const sample = await sql`SELECT w.slug, w.format, w.node_count, array_length(w.apps,1) AS app_count, c.title FROM workflows w JOIN content_items c ON c.id=w.content_item_id ORDER BY w.created_at DESC LIMIT 5`;
+console.log("workflows count:", c[0]);
+console.log("content_items count (cat=workflow):", c2[0]);
+console.log("sample:");
+for (const s of sample) console.log(" ", s);

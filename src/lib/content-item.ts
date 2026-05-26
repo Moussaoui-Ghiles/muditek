@@ -34,6 +34,7 @@ export function categoryLabel(category: string): string {
   if (value === "tool") return "Scorecard";
   if (value === "automation") return "Automation";
   if (value === "template") return "Template";
+  if (value === "workflow") return "Workflow";
 
   return category
     .split(/[-_\s]+/)
@@ -51,7 +52,7 @@ export function formatContentDate(date: Date | string | null): string {
   });
 }
 
-export type PortalAssetKind = "skills" | "playbooks" | "tools";
+export type PortalAssetKind = "skills" | "playbooks" | "tools" | "workflows";
 
 export const PLAYBOOK_RESOURCE_CATEGORIES = [
   "playbook",
@@ -71,6 +72,7 @@ export function isPlaybookResourceCategory(category: string): boolean {
 export function categoryPortalPath(category: string): PortalAssetKind {
   const value = (category ?? "").trim().toLowerCase();
   if (value === "skill") return "skills";
+  if (value === "workflow") return "workflows";
   return "playbooks";
 }
 

@@ -42,3 +42,9 @@ CLAUDE.md
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# workflow import raw data (large, not for repo)
+/.workflows-import/
+
+# scripts: local preview output
+/scripts/preview/

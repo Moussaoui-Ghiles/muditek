@@ -11,6 +11,7 @@ import {
   Package,
   Settings,
   Wand2,
+  Workflow,
   Wrench,
 } from "lucide-react";
 import { Logo } from "@/components/logo/logo";
@@ -65,6 +66,7 @@ export function PortalSidebar({
   const libraryItems: NavItem[] = [
     { href: "/portal/skills", title: "Skills", icon: Wand2, matchPrefix: "/portal/skills" },
     { href: "/portal/playbooks", title: "Resources", icon: BookText, matchPrefix: "/portal/playbooks" },
+    { href: "/portal/workflows", title: "Workflows", icon: Workflow, matchPrefix: "/portal/workflows" },
     { href: "/portal/tools", title: "Tools", icon: Wrench, matchPrefix: "/portal/tools" },
     ...(SHOW_MUDIKIT_IN_PORTAL
       ? [

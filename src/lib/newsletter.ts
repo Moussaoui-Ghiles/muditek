@@ -8,7 +8,7 @@ export { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/news
 export const NEWSLETTER_FROM =
   process.env.NEWSLETTER_FROM || "Ghiles <resources@mail.ghiless.com>";
 export const NEWSLETTER_REPLY_TO =
-  process.env.NEWSLETTER_REPLY_TO || "ghiles@ghiless.com";
+  process.env.NEWSLETTER_REPLY_TO || "biz@ghiless.com";
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);

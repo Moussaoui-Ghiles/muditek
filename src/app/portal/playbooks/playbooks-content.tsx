@@ -426,6 +426,7 @@ export default function PlaybooksContent({
       marketing: 0,
       gtm: 0,
       "agentic-engineering": 0,
+      seo: 0,
     };
     for (const item of visibleItems) map[topicForItem(item)] += 1;
     return map;

@@ -415,7 +415,7 @@
   <p>That's the opportunity. Most competitors cannot keep up manually. The few who can use AI to do real, evidence-based SEO at scale will dominate.</p>
 
   <figure>
-    <img src="media/coding-agent-seo/standard-optimization-workflow4.webp" alt="Example of an SEO optimization workflow run by a coding agent">
+    <img src="/media/coding-agent-seo/standard-optimization-workflow4.webp" alt="Example of an SEO optimization workflow run by a coding agent">
     <figcaption>Example of an SEO optimization workflow run by a coding agent.</figcaption>
   </figure>
 
@@ -457,7 +457,7 @@
   </div>
 
   <figure>
-    <img src="media/coding-agent-seo/1-seo-data.webp" alt="Live SERP data, competitor benchmarks, entity gaps, scoring">
+    <img src="/media/coding-agent-seo/1-seo-data.webp" alt="Live SERP data, competitor benchmarks, entity gaps, scoring">
   </figure>
 
   <p>This playbook uses the <code class="inline">on-page-seo</code> MCP. The recipes call that tool by name. You can substitute another live-SERP MCP if you have one, but you'll have to rename <code class="inline">on-page-seo</code> to your tool's name inside every prompt.</p>
@@ -471,7 +471,7 @@
   </div>
 
   <figure>
-    <img src="media/coding-agent-seo/2-seo-context.webp" alt="SEO interpretation context bundled with the MCP">
+    <img src="/media/coding-agent-seo/2-seo-context.webp" alt="SEO interpretation context bundled with the MCP">
   </figure>
 
   <p>The <code class="inline">on-page-seo</code> MCP ships with that interpretation context bundled inside it: 17+ years of working SEO heuristics encoded as resources the agent reads automatically. You don't have to teach the model how to think about SEO. The MCP teaches it for you.</p>
@@ -485,13 +485,13 @@
   </div>
 
   <figure>
-    <img src="media/coding-agent-seo/seo-recipes.webp" alt="The 17 SEO recipes, the third layer">
+    <img src="/media/coding-agent-seo/seo-recipes.webp" alt="The 17 SEO recipes, the third layer">
   </figure>
 
   <p class="lead-line">Live data + interpretation + recipes = real SEO work, run by an agent, with a paper trail.</p>
 
   <figure>
-    <img src="media/coding-agent-seo/on-page-seo-process.webp" alt="How all three layers connect end to end">
+    <img src="/media/coding-agent-seo/on-page-seo-process.webp" alt="How all three layers connect end to end">
     <figcaption>How all three layers connect end to end.</figcaption>
   </figure>
 </section>
@@ -530,15 +530,15 @@
   <ol class="setup-steps">
     <li><strong>Log into your account</strong> at <a href="https://api.on-page.ai">https://api.on-page.ai</a>. The recipes in this playbook make extensive use of it. Takes a few seconds to create a new account if you don't already have one.</li>
     <li><strong>Click on "Show My Key."</strong>
-      <figure><img src="media/coding-agent-seo/on-page-mcp-connect.webp" alt="On-Page MCP, Show My Key"></figure>
+      <figure><img src="/media/coding-agent-seo/on-page-mcp-connect.webp" alt="On-Page MCP, Show My Key"></figure>
     </li>
     <li><strong>If you use Codex, temporarily set your environment to "full access"</strong> so it has permission to install itself. Otherwise it won't be able to install anything. Claude Code can skip this step. It will just ask you.
-      <figure><img src="media/coding-agent-seo/access.webp" alt="Set Codex to full access so the MCP can install itself"></figure>
+      <figure><img src="/media/coding-agent-seo/access.webp" alt="Set Codex to full access so the MCP can install itself"></figure>
     </li>
     <li><strong>Copy / paste the install text</strong> for your agent (Codex and / or Claude Code).
-      <figure><img src="media/coding-agent-seo/copy-paste-on-page-installation.webp" alt="Copy / paste the on-page install command"></figure>
+      <figure><img src="/media/coding-agent-seo/copy-paste-on-page-installation.webp" alt="Copy / paste the on-page install command"></figure>
       <p style="font-size:19px;margin-top:8px;">It should look like this after pasting the command into your terminal:</p>
-      <figure><img src="media/coding-agent-seo/confirmation-on-page-install.webp" alt="MCP installation confirmation in the terminal"></figure>
+      <figure><img src="/media/coding-agent-seo/confirmation-on-page-install.webp" alt="MCP installation confirmation in the terminal"></figure>
     </li>
     <li><strong>Restart Codex or Claude Code.</strong> That's it.</li>
   </ol>
@@ -550,13 +550,13 @@
 
   <ol class="setup-steps">
     <li><strong>Go to your <code class="inline">/wp-admin</code> dashboard</strong>, click on <strong>Users → Profile</strong>.
-      <figure><img src="media/coding-agent-seo/wordpress-profile-REST.webp" alt="WordPress REST, Users to Profile"></figure>
+      <figure><img src="/media/coding-agent-seo/wordpress-profile-REST.webp" alt="WordPress REST, Users to Profile"></figure>
     </li>
     <li><strong>Scroll down to the Application Passwords section</strong> and create a new application name: <code class="inline">AI</code>.
-      <figure><img src="media/coding-agent-seo/wordpress-rest-step-2-application.webp" alt="Create an Application Password named AI"></figure>
+      <figure><img src="/media/coding-agent-seo/wordpress-rest-step-2-application.webp" alt="Create an Application Password named AI"></figure>
     </li>
     <li><strong>You'll get a unique password</strong> for your website. Copy and save the password, then scroll back up to confirm the username on your profile (for example, <code class="inline">admin</code>).
-      <figure><img src="media/coding-agent-seo/wordpress-REST-step3.webp" alt="Copy the generated application password"></figure>
+      <figure><img src="/media/coding-agent-seo/wordpress-REST-step3.webp" alt="Copy the generated application password"></figure>
     </li>
   </ol>
 
@@ -577,7 +577,7 @@ Confirm when you have access.</pre>
 
   <p>You give the credentials to the AI which then tests and stores the access for you. Convenient. But the password technically passes through AI logs / transcripts, so this isn't the safest option.</p>
 
-  <figure><img src="media/coding-agent-seo/wordpress-connection-tellAI.webp" alt="Hand the credentials to the agent and have it verify"></figure>
+  <figure><img src="/media/coding-agent-seo/wordpress-connection-tellAI.webp" alt="Hand the credentials to the agent and have it verify"></figure>
 
   <h4>Step 4. Safer method</h4>
   <p>Create a <code class="inline">.env</code> file inside your project directory and paste the username and password there. The agent can then read the file without you ever repeating the password in chat. Never commit or share that file.</p>
@@ -608,7 +608,7 @@ Confirm when you have access.</pre>
 
   <p>Either way, make sure you don't accidentally upload or share that <code class="inline">.env</code> file anywhere.</p>
 
-  <figure><img src="media/coding-agent-seo/wordpress-connection-tellAI.webp" alt="Verify the agent can reach the site"></figure>
+  <figure><img src="/media/coding-agent-seo/wordpress-connection-tellAI.webp" alt="Verify the agent can reach the site"></figure>
 
   <p>And that's it. You should have everything connected and ready for any SEO work that comes your way.</p>
 </section>
@@ -667,7 +667,7 @@ Confirm when you have access.</pre>
 
   <h3>Pre-Qualifications</h3>
   <figure>
-    <img src="media/coding-agent-seo/connect.webp" alt="Connecting the on-page-seo MCP, target site, and your agent">
+    <img src="/media/coding-agent-seo/connect.webp" alt="Connecting the on-page-seo MCP, target site, and your agent">
     <figcaption>Connect the on-page-seo MCP, target site, and your agent.</figcaption>
   </figure>
 
@@ -723,14 +723,14 @@ You will be successful when all the tasks are accomplished and you have produced
   <p>This is a typical response after the recovery process. In a real run it worked for nearly 25 minutes, updating the page multiple times and producing a comprehensive report:</p>
 
   <figure>
-    <img src="media/coding-agent-seo/deep-recovery-scan-1.webp" alt="A typical deep recovery scan response, around 25 minutes of agent work">
+    <img src="/media/coding-agent-seo/deep-recovery-scan-1.webp" alt="A typical deep recovery scan response, around 25 minutes of agent work">
     <figcaption>A typical deep recovery scan response. Around 25 minutes of agent work.</figcaption>
   </figure>
 
   <p>And here is the kind of movement to watch for after a controlled run. Measurable ranking change tied to real, evidence-based SEO work, not "AI content for the sake of AI content":</p>
 
   <figure>
-    <img src="media/coding-agent-seo/stuck-to-unstuck.webp" alt="Before / after: stuck page to unstuck page">
+    <img src="/media/coding-agent-seo/stuck-to-unstuck.webp" alt="Before / after: stuck page to unstuck page">
     <figcaption>Before / after: stuck page to unstuck page.</figcaption>
   </figure>
 
@@ -1035,7 +1035,7 @@ When complete, save the manifest and update the HTML report.</pre>
   <p>In other words, the agent didn't blindly stuff links (which would have lowered the quality of the site). It intelligently added links only where they belonged:</p>
 
   <figure>
-    <img src="media/coding-agent-seo/internal-link-response.webp" alt="Typical internal-linking response, around 28 minutes, intelligent skips">
+    <img src="/media/coding-agent-seo/internal-link-response.webp" alt="Typical internal-linking response, around 28 minutes, intelligent skips">
     <figcaption>Typical internal-linking response. Around 28 minutes, intelligent skips.</figcaption>
   </figure>
 
@@ -1462,7 +1462,7 @@ When complete, save the manifest and update the simple HTML report.</pre>
   <p>Here's a typical example of the response after the initial site content refresh:</p>
 
   <figure>
-    <img src="media/coding-agent-seo/content-refresh.webp" alt="Typical light-refresh response, only the pages that needed it">
+    <img src="/media/coding-agent-seo/content-refresh.webp" alt="Typical light-refresh response, only the pages that needed it">
     <figcaption>Typical light-refresh response. Only the pages that needed it.</figcaption>
   </figure>
 
@@ -1471,7 +1471,7 @@ When complete, save the manifest and update the simple HTML report.</pre>
   <p>Even with light optimization, you still benefit from improving many ranking factors:</p>
 
   <figure>
-    <img src="media/coding-agent-seo/quick-test-2.webp" alt="Ranking movement after a quick internal-linking + light-refresh pass on a neglected test site">
+    <img src="/media/coding-agent-seo/quick-test-2.webp" alt="Ranking movement after a quick internal-linking + light-refresh pass on a neglected test site">
     <figcaption>Ranking movement after a quick internal-linking + light-refresh pass on a neglected test site.</figcaption>
   </figure>
 
@@ -1729,7 +1729,7 @@ You will be successful when the target page has been processed, the biggest issu
   <p>The reason it took so long is the balance: optimize well, don't overdo it. Instead of forcing the AI to add every entity, the prompt presents a goal and limits. You could push it harder and force every entity in, but you'll end up with text added for the sake of having entities. That's exactly what this prompt is designed to avoid.</p>
 
   <figure>
-    <img src="media/coding-agent-seo/standard-optimization-report.webp" alt="Recipe 7 in action: related-entity score raised, accuracy improved, structure preserved">
+    <img src="/media/coding-agent-seo/standard-optimization-report.webp" alt="Recipe 7 in action: related-entity score raised, accuracy improved, structure preserved">
     <figcaption>Recipe 7 in action: related-entity score raised, accuracy improved, structure preserved.</figcaption>
   </figure>
 

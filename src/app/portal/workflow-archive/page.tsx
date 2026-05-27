@@ -10,7 +10,7 @@ export const metadata = {
   description: "Searchable archive of n8n and Make.com workflows. Download single JSONs or folder bundles.",
 };
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 60;
 
 export default async function WorkflowArchivePage() {
   const { isAuthenticated } = await auth();

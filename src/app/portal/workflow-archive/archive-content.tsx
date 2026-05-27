@@ -2,7 +2,8 @@
 
 import { Make, N8n } from "@lobehub/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Download, FolderArchive, Loader2, Search, X } from "lucide-react";
+import { ArrowDownToLine, Filter, FolderArchive, Loader2, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import type { ArchiveFacets, ArchiveFormat, ArchiveItem, UseCaseId } from "@/lib/workflow-archive";
 import {
   AppBrandIcon,
@@ -43,53 +44,15 @@ function cleanApps(apps: string[]): string[] {
   return out;
 }
 
-function FormatPill({ format }: { format: ArchiveFormat }) {
-  const Icon = format === "n8n" ? N8n.Avatar : Make.Avatar;
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <Icon size={18} />
-      <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/70">
-        {format === "n8n" ? "n8n" : "Make"}
-      </span>
-    </span>
-  );
+function prettyFolder(folder: string): string {
+  return folder
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function AppChip({ app, dense = false }: { app: string; dense?: boolean }) {
-  const hasBrand = appHasBrandIcon(app);
-  const name = prettyAppName(app);
-  const c = stableAppColors(app.toLowerCase());
-  return (
-    <span
-      className={
-        "inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.025] " +
-        (dense ? "px-1.5 py-[2px] text-[10.5px]" : "px-2 py-[3px] text-[11px]") +
-        " text-white/75"
-      }
-      title={name}
-    >
-      {hasBrand ? (
-        <AppBrandIcon app={app} size={dense ? 12 : 14} />
-      ) : (
-        <span
-          className={
-            "inline-flex items-center justify-center rounded-sm font-semibold " +
-            c.bg +
-            " " +
-            c.fg +
-            " " +
-            (dense ? "h-[12px] w-[12px] text-[8px]" : "h-[14px] w-[14px] text-[9px]")
-          }
-        >
-          {letterFor(app)}
-        </span>
-      )}
-      <span className="leading-none">{name}</span>
-    </span>
-  );
-}
-
-function FilterChip({
+function FilterPill({
   active,
   onClick,
   children,
@@ -105,20 +68,15 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 " +
+        "inline-flex items-center gap-2 rounded-[2px] border px-3.5 py-2 text-[12.5px] font-black uppercase tracking-[0.16em] transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 " +
         (active
-          ? "border-white/40 bg-white text-black"
-          : "border-white/[0.1] bg-white/[0.02] text-white/65 hover:bg-white/[0.06] hover:text-white")
+          ? "border-primary/40 bg-primary/10 text-foreground"
+          : "border-white/[0.1] bg-white/[0.025] text-foreground hover:border-white/[0.2] hover:bg-white/[0.05]")
       }
     >
       {children}
       {typeof count === "number" && count > 0 && (
-        <span
-          className={
-            "ml-0.5 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] tabular-nums " +
-            (active ? "bg-black/10 text-black/65" : "bg-white/[0.06] text-white/50")
-          }
-        >
+        <span className={active ? "text-primary" : "text-foreground/70"}>
           {count.toLocaleString()}
         </span>
       )}
@@ -126,61 +84,120 @@ function FilterChip({
   );
 }
 
-function ArchiveRow({ item }: { item: ArchiveItem }) {
-  const apps = cleanApps(item.apps);
-  const visible = apps.slice(0, 5);
-  const extra = apps.length - visible.length;
+function AppIconChip({ app }: { app: string }) {
+  if (appHasBrandIcon(app)) {
+    return (
+      <span
+        title={prettyAppName(app)}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.04]"
+      >
+        <AppBrandIcon app={app} size={16} />
+      </span>
+    );
+  }
+  const c = stableAppColors(app.toLowerCase());
   return (
-    <tr className="group border-b border-white/[0.04] last:border-b-0 transition-colors hover:bg-white/[0.025]">
-      <td className="py-2.5 pl-4 pr-3 align-middle">
-        <FormatPill format={item.format} />
-      </td>
-      <td className="py-2.5 pr-3 align-middle">
-        <div className="line-clamp-1 text-[13.5px] font-medium leading-tight text-white">
-          {item.title}
-        </div>
-        {(item.folder || item.node_count > 0) && (
-          <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/40">
-            {item.folder && <span className="line-clamp-1 max-w-[280px]">{item.folder}</span>}
-            {item.folder && item.node_count > 0 && <span className="text-white/20">·</span>}
-            {item.node_count > 0 && <span className="tabular-nums">{item.node_count} nodes</span>}
-          </div>
-        )}
-      </td>
-      <td className="py-2.5 pr-3 align-middle">
-        {visible.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-1">
-            {visible.map((app) => (
-              <AppChip key={app} app={app} dense />
-            ))}
-            {extra > 0 && (
-              <span className="text-[11px] tabular-nums text-white/40">+{extra}</span>
-            )}
-          </div>
-        ) : (
-          <span className="text-[11px] text-white/30">—</span>
-        )}
-      </td>
-      <td className="py-2.5 pr-4 pl-2 align-middle text-right">
-        <a
-          href={`/api/portal/workflow-archive/${encodeURIComponent(item.slug)}/download`}
-          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/[0.1] bg-white/[0.04] px-2.5 text-[11.5px] font-medium text-white/85 transition-colors hover:border-white/[0.2] hover:bg-white/[0.1] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-          title="Download JSON"
-        >
-          <Download className="size-3.5" />
-          JSON
-        </a>
-      </td>
-    </tr>
+    <span
+      title={prettyAppName(app)}
+      className={
+        "inline-flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] text-[11px] font-black " +
+        c.bg +
+        " " +
+        c.fg
+      }
+    >
+      {letterFor(app)}
+    </span>
   );
 }
 
-function prettyFolder(folder: string): string {
-  return folder
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function WorkflowCard({ item }: { item: ArchiveItem }) {
+  const apps = cleanApps(item.apps);
+  const visibleApps = apps.slice(0, 5);
+  const extra = apps.length - visibleApps.length;
+  const downloadHref = `/api/portal/workflow-archive/${encodeURIComponent(item.slug)}/download`;
+  const FormatIcon = item.format === "n8n" ? N8n.Avatar : Make.Avatar;
+  const formatLabel = item.format === "n8n" ? "n8n" : "Make.com";
+
+  return (
+    <a
+      href={downloadHref}
+      download
+      className="group card-lift relative flex h-full flex-col overflow-hidden rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-5 backdrop-blur-md transition-all duration-500 hover:border-primary/30 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      <div className="pointer-events-none absolute top-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-[1.2s] group-hover:via-primary/70" />
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <FormatIcon size={28} />
+          <span className="text-[12.5px] font-black uppercase tracking-[0.2em] text-foreground">
+            {formatLabel}
+          </span>
+        </div>
+        {item.node_count > 0 && (
+          <span className="inline-flex items-center gap-1 text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground tnum">
+            {item.node_count} nodes
+          </span>
+        )}
+      </div>
+
+      <h3 className="mt-5 line-clamp-2 text-[18.5px] font-black leading-[1.15] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+        {item.title}
+      </h3>
+
+      {item.folder && (
+        <p className="mt-2 line-clamp-1 text-[13.5px] font-medium text-foreground/85">
+          {prettyFolder(item.folder)}
+        </p>
+      )}
+
+      {visibleApps.length > 0 && (
+        <div className="mt-5 flex flex-wrap items-center gap-1.5">
+          {visibleApps.map((app) => (
+            <AppIconChip key={app} app={app} />
+          ))}
+          {extra > 0 && (
+            <span className="inline-flex h-7 items-center rounded-[3px] border border-white/[0.08] bg-white/[0.04] px-2 text-[12px] font-black text-foreground">
+              +{extra}
+            </span>
+          )}
+        </div>
+      )}
+
+      <div className="mt-auto flex items-center justify-between pt-6 text-[13px] font-black uppercase tracking-[0.18em] text-foreground">
+        <span className="text-foreground/85">JSON</span>
+        <span className="inline-flex items-center gap-2 text-foreground transition-colors group-hover:text-primary">
+          Download
+          <ArrowDownToLine className="size-4 transition-transform group-hover:translate-y-0.5" />
+        </span>
+      </div>
+    </a>
+  );
+}
+
+function FolderBundleCard({ folder, count }: { folder: string; count: number }) {
+  return (
+    <a
+      href={`/api/portal/workflow-archive/folder/${encodeURIComponent(folder)}`}
+      download
+      className="group card-lift relative flex items-center justify-between gap-4 rounded-[2px] border border-white/[0.08] bg-card/[0.4] p-5 backdrop-blur-md transition-all duration-500 hover:border-primary/30 hover:bg-card/[0.6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+    >
+      <div className="flex min-w-0 items-center gap-3.5">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.04] text-foreground group-hover:border-primary/30 group-hover:text-primary">
+          <FolderArchive className="size-5" />
+        </div>
+        <div className="min-w-0">
+          <div className="line-clamp-1 text-[15px] font-black leading-tight text-foreground">
+            {prettyFolder(folder)}
+          </div>
+          <div className="mt-1 text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground/85 tnum">
+            {count} workflows · ZIP
+          </div>
+        </div>
+      </div>
+      <ArrowDownToLine className="size-4 shrink-0 text-foreground transition-colors group-hover:text-primary" />
+    </a>
+  );
 }
 
 export default function ArchiveContent({
@@ -197,6 +214,7 @@ export default function ArchiveContent({
   const [items, setItems] = useState<ArchiveItem[]>(initialItems);
   const [loading, setLoading] = useState(false);
   const [exhausted, setExhausted] = useState(initialItems.length < pageSize);
+  const [totalForQuery, setTotalForQuery] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [formats, setFormats] = useState<Set<ArchiveFormat>>(new Set());
@@ -227,6 +245,9 @@ export default function ArchiveContent({
         const next: ArchiveItem[] = Array.isArray(data?.items) ? data.items : [];
         setItems((prev) => (replace ? next : prev.concat(next)));
         setExhausted(next.length < pageSize);
+        if (replace) {
+          setTotalForQuery(typeof data?.total === "number" ? data.total : null);
+        }
       } finally {
         if (reqId === reqIdRef.current) setLoading(false);
       }
@@ -263,201 +284,189 @@ export default function ArchiveContent({
   };
 
   const hasFilters = debouncedQuery.length > 0 || formats.size > 0 || selectedUseCases.size > 0;
-  const folderBundles = useMemo(() => facets.top_folders.slice(0, 9), [facets.top_folders]);
+  const folderBundles = useMemo(() => facets.top_folders.slice(0, 6), [facets.top_folders]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-[26px] font-semibold tracking-tight text-white">
-          n8n & Make.com Workflows
-        </h1>
-        {facets.total > 0 ? (
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-white/55">
-            <span className="tabular-nums">{facets.total.toLocaleString()} workflows</span>
-            <span className="text-white/25">·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <N8n.Avatar size={14} />
-              <span className="tabular-nums">{facets.n8n_count.toLocaleString()}</span>
-              <span>n8n</span>
+    <main className="relative">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:px-10">
+        {/* Hero */}
+        <section className="mb-10 reveal">
+          <p className="flex items-center gap-3 text-[12.5px] font-black uppercase tracking-[0.22em] text-foreground">
+            <span aria-hidden className="h-px w-7 bg-primary/60" />
+            The Archive
+          </p>
+          <h1 className="mt-4 text-[40px] font-black leading-[0.95] tracking-[-0.03em] text-foreground md:text-[52px]">
+            n8n & Make.com workflows
+          </h1>
+          <p className="mt-5 max-w-2xl text-[15.5px] leading-[1.7] text-foreground">
+            <span className="font-black tnum">{facets.total.toLocaleString()}</span> ready-to-import automations from my archive. Search by name, app, or use case. Click any card to download the raw JSON.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-2.5 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground">
+            <span className="inline-flex items-center gap-2">
+              <N8n.Avatar size={18} />
+              <span className="tnum">{facets.n8n_count.toLocaleString()}</span> n8n
             </span>
-            <span className="text-white/25">·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Make.Avatar size={14} />
-              <span className="tabular-nums">{facets.make_count.toLocaleString()}</span>
-              <span>Make.com</span>
+            <span aria-hidden className="inline-block h-3 w-px bg-white/15" />
+            <span className="inline-flex items-center gap-2">
+              <Make.Avatar size={18} />
+              <span className="tnum">{facets.make_count.toLocaleString()}</span> Make.com
             </span>
-          </div>
-        ) : (
-          <p className="text-[13px] text-white/55">No workflows yet</p>
-        )}
-      </header>
-
-      <div className="mt-6 flex flex-col gap-3.5">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title, app, folder…"
-            aria-label="Search workflows"
-            className="h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] pl-9 pr-9 text-[14px] text-white placeholder:text-white/35 focus:border-white/[0.2] focus:outline-none focus:ring-2 focus:ring-white/10"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-white/45 transition-colors hover:bg-white/[0.05] hover:text-white"
-              aria-label="Clear search"
-            >
-              <X className="size-3.5" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 inline-flex h-6 items-center text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-            Format
-          </span>
-          {FORMAT_OPTIONS.map((o) => (
-            <FilterChip
-              key={o.value}
-              active={formats.has(o.value)}
-              onClick={() => toggleFormat(o.value)}
-              count={o.value === "n8n" ? facets.n8n_count : facets.make_count}
-            >
-              <span className="inline-flex items-center gap-1.5">
-                {o.value === "n8n" ? <N8n.Avatar size={14} /> : <Make.Avatar size={14} />}
-                {o.label}
-              </span>
-            </FilterChip>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 inline-flex h-6 items-center text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-            Use case
-          </span>
-          {useCases.map((uc) => (
-            <FilterChip
-              key={uc.id}
-              active={selectedUseCases.has(uc.id)}
-              onClick={() => toggleUseCase(uc.id)}
-              count={facets.use_case_counts[uc.id] ?? 0}
-            >
-              {uc.label}
-            </FilterChip>
-          ))}
-        </div>
-
-        {hasFilters && (
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={clearAll}
-              className="inline-flex items-center gap-1 text-[11px] text-white/55 underline-offset-4 hover:text-white hover:underline"
-            >
-              <X className="size-3" /> Clear filters
-            </button>
-            <span className="text-[11px] tabular-nums text-white/35">
-              {items.length.toLocaleString()} shown
-            </span>
-          </div>
-        )}
-      </div>
-
-      {folderBundles.length > 0 && !hasFilters && (
-        <section className="mt-8">
-          <div className="mb-2.5 flex items-end justify-between">
-            <div>
-              <h2 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/55">
-                Folder bundles
-              </h2>
-              <p className="mt-0.5 text-[11px] text-white/40">
-                Download all workflows in a folder at once
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {folderBundles.map((f) => (
-              <a
-                key={f.folder}
-                href={`/api/portal/workflow-archive/folder/${encodeURIComponent(f.folder)}`}
-                className="group flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3.5 py-3 transition-all duration-150 hover:-translate-y-[1px] hover:border-white/[0.18] hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-              >
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.04] text-white/65 group-hover:border-white/[0.18] group-hover:text-white">
-                    <FolderArchive className="size-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="line-clamp-1 text-[13px] font-medium text-white">
-                      {prettyFolder(f.folder)}
-                    </div>
-                    <div className="text-[11px] tabular-nums text-white/45">
-                      {f.count} workflows · ZIP
-                    </div>
-                  </div>
-                </div>
-                <Download className="size-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-              </a>
-            ))}
           </div>
         </section>
-      )}
 
-      <section className="mt-8">
-        <div className="overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.015]">
-          <table className="w-full table-fixed text-[13px]">
-            <colgroup>
-              <col style={{ width: "92px" }} />
-              <col />
-              <col style={{ width: "46%" }} />
-              <col style={{ width: "102px" }} />
-            </colgroup>
-            <thead>
-              <tr className="border-b border-white/[0.06] text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40">
-                <th className="py-2.5 pl-4 pr-3">Type</th>
-                <th className="py-2.5 pr-3">Workflow</th>
-                <th className="py-2.5 pr-3">Apps</th>
-                <th className="py-2.5 pr-4 pl-2 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((it) => (
-                <ArchiveRow key={it.slug} item={it} />
+        {/* Folder bundles strip */}
+        {folderBundles.length > 0 && !hasFilters && (
+          <section className="reveal mb-12">
+            <div className="mb-5 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
+              <h2 className="flex items-center gap-3 text-[13px] font-black uppercase tracking-[0.22em] text-foreground">
+                <span aria-hidden className="h-px w-7 bg-primary/60" />
+                Folder bundles
+              </h2>
+              <span className="text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground/85">
+                Download all as ZIP
+              </span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {folderBundles.map((f) => (
+                <FolderBundleCard key={f.folder} folder={f.folder} count={f.count} />
               ))}
-            </tbody>
-          </table>
-        </div>
-
-        {items.length === 0 && !loading && (
-          <div className="mt-6 rounded-lg border border-white/[0.06] bg-white/[0.02] p-8 text-center">
-            <p className="text-[14px] text-white/60">No workflows match your filters.</p>
-            <button
-              type="button"
-              onClick={clearAll}
-              className="mt-3 text-[12px] text-white/80 underline-offset-4 hover:underline"
-            >
-              Clear filters
-            </button>
-          </div>
+            </div>
+          </section>
         )}
 
-        <div className="mt-6 flex items-center justify-center">
-          {!exhausted ? (
-            <button
-              type="button"
-              onClick={() => fetchPage(items.length, false)}
-              disabled={loading}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-white/[0.1] bg-white/[0.03] px-4 text-[13px] font-medium text-white transition-colors hover:bg-white/[0.06] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-            >
-              {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-              {loading ? "Loading…" : `Load ${pageSize} more`}
-            </button>
-          ) : items.length > 0 ? (
-            <span className="text-[11px] text-white/35">End of results</span>
-          ) : null}
-        </div>
-      </section>
-    </div>
+        {/* Sticky search + filters */}
+        <section className="sticky top-14 z-20 -mx-4 mb-10 border-y border-white/[0.06] bg-[#0a0a0c]/85 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+          <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-4 transition-colors focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/30">
+            <Search aria-hidden className="size-5 shrink-0 text-foreground" />
+            <Input
+              type="search"
+              aria-label="Search the workflow archive"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search by name, app, folder…"
+              className="h-12 w-full border-0 bg-transparent px-0 text-[15px] font-medium text-foreground placeholder:text-foreground/60 focus-visible:ring-0"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground hover:text-primary"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground">
+              <Filter className="size-3.5" />
+              Format
+            </span>
+            {FORMAT_OPTIONS.map((o) => (
+              <FilterPill
+                key={o.value}
+                active={formats.has(o.value)}
+                onClick={() => toggleFormat(o.value)}
+                count={o.value === "n8n" ? facets.n8n_count : facets.make_count}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  {o.value === "n8n" ? <N8n.Avatar size={14} /> : <Make.Avatar size={14} />}
+                  {o.label}
+                </span>
+              </FilterPill>
+            ))}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground">
+              Use case
+            </span>
+            {useCases.map((uc) => (
+              <FilterPill
+                key={uc.id}
+                active={selectedUseCases.has(uc.id)}
+                onClick={() => toggleUseCase(uc.id)}
+                count={facets.use_case_counts[uc.id] ?? 0}
+              >
+                {uc.label}
+              </FilterPill>
+            ))}
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="ml-1 inline-flex items-center gap-1 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground hover:text-primary"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* Results header */}
+        <section>
+          <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
+            <h2 className="flex items-center gap-3 text-[13px] font-black uppercase tracking-[0.22em] text-foreground">
+              <span aria-hidden className="h-px w-7 bg-primary/60" />
+              {hasFilters
+                ? `Results · ${(totalForQuery ?? items.length).toLocaleString()}`
+                : "Every workflow on file"}
+            </h2>
+            {!hasFilters && (
+              <span className="text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground">
+                Click card → download JSON
+              </span>
+            )}
+          </div>
+
+          {items.length === 0 && !loading ? (
+            <div className="rounded-[2px] border border-dashed border-white/[0.1] bg-white/[0.015] p-10">
+              <p className="text-[15px] leading-[1.7] text-foreground">
+                Nothing matches the current search and filters. Try removing one or two.
+              </p>
+              <button
+                type="button"
+                onClick={clearAll}
+                className="mt-4 inline-flex items-center gap-2 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground hover:text-primary"
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((it, i) => (
+                <div
+                  key={it.slug}
+                  className="reveal h-full"
+                  style={{ animationDelay: `${Math.min(i * 25, 320)}ms` }}
+                >
+                  <WorkflowCard item={it} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-10 flex items-center justify-center">
+            {loading && items.length === 0 ? (
+              <Loader2 className="size-5 animate-spin text-foreground" />
+            ) : !exhausted ? (
+              <button
+                type="button"
+                onClick={() => fetchPage(items.length, false)}
+                disabled={loading}
+                className="inline-flex items-center gap-3 rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-6 py-3.5 text-[13px] font-black uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+              >
+                {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                {loading ? "Loading" : `Load ${pageSize} more`}
+              </button>
+            ) : items.length > 0 ? (
+              <span className="text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground/85">
+                End of archive
+              </span>
+            ) : null}
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

@@ -143,6 +143,30 @@ function isGeneric(title: string): boolean {
   return COMMON_NAME_FALLBACK.test(title.trim());
 }
 
+export async function countArchive(query: ArchiveQuery = {}): Promise<number> {
+  const sql = getDb();
+  await ensureWorkflowsSchema(sql);
+
+  const formats = query.formats?.length ? query.formats : query.format && query.format !== "all" ? [query.format] : null;
+  const useCases = query.use_cases?.length ? query.use_cases : query.use_case ? [query.use_case] : null;
+  const search = query.search?.trim() ? `%${query.search.trim()}%` : null;
+  const useCaseApps: string[] | null = useCases
+    ? Array.from(new Set(useCases.flatMap((uc) => USE_CASE_APPS[uc] || []).map((s) => s.toLowerCase())))
+    : null;
+
+  const rows = (await sql`
+    SELECT COUNT(*)::int AS c
+    FROM workflows w
+    LEFT JOIN content_items c ON c.id = w.content_item_id
+    WHERE (${formats}::text[] IS NULL OR w.format = ANY(${formats}))
+      AND (${useCaseApps}::text[] IS NULL OR EXISTS (
+        SELECT 1 FROM unnest(w.apps) a WHERE lower(a) = ANY(${useCaseApps})
+      ))
+      AND (${search}::text IS NULL OR c.title ILIKE ${search} OR c.description ILIKE ${search} OR w.source_path ILIKE ${search})
+  `) as Array<{ c: number }>;
+  return rows[0]?.c ?? 0;
+}
+
 export async function listArchive(query: ArchiveQuery = {}): Promise<ArchiveItem[]> {
   const sql = getDb();
   await ensureWorkflowsSchema(sql);

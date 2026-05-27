@@ -210,7 +210,10 @@ const PRETTY_OVERRIDE: Record<string, string> = {
 
 function basePretty(slug: string): string {
   return slug
+    .replace(/^langchain\./i, "")
+    .replace(/Tool$/i, "")
     .replace(/[._-]/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\b\w/g, (c) => c.toUpperCase());
@@ -218,18 +221,35 @@ function basePretty(slug: string): string {
 
 export function prettyAppName(rawApp: string): string {
   if (!rawApp) return "";
-  const lower = rawApp.toLowerCase().trim();
+  const trimmed = rawApp.trim();
+  const lower = trimmed.toLowerCase();
   if (PRETTY_OVERRIDE[lower]) return PRETTY_OVERRIDE[lower];
-  return basePretty(lower);
+  // try without "Tool" suffix
+  if (lower.endsWith("tool")) {
+    const stripped = lower.slice(0, -4);
+    if (PRETTY_OVERRIDE[stripped]) return PRETTY_OVERRIDE[stripped];
+  }
+  return basePretty(trimmed);
+}
+
+function iconKey(rawApp: string): string {
+  const lower = (rawApp || "").toLowerCase().trim();
+  if (LOBE_ICON_MAP[lower]) return lower;
+  if (lower.endsWith("tool")) {
+    const s = lower.slice(0, -4);
+    if (LOBE_ICON_MAP[s]) return s;
+  }
+  return "";
 }
 
 export function appHasBrandIcon(rawApp: string): boolean {
-  return !!LOBE_ICON_MAP[(rawApp || "").toLowerCase().trim()];
+  return !!iconKey(rawApp);
 }
 
 export function AppBrandIcon({ app, size = 16 }: { app: string; size?: number }) {
-  const Icon = LOBE_ICON_MAP[(app || "").toLowerCase().trim()];
-  if (!Icon) return null;
+  const k = iconKey(app);
+  if (!k) return null;
+  const Icon = LOBE_ICON_MAP[k];
   return <Icon size={size} />;
 }
 

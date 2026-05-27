@@ -17,7 +17,6 @@ export const USE_CASES = [
 
 export type UseCaseId = (typeof USE_CASES)[number]["id"];
 
-// raw app-slug (lowercased) → use case buckets
 export const USE_CASE_APPS: Record<UseCaseId, string[]> = {
   ai: [
     "openai", "openaiapi", "anthropic", "perplexity", "gemini", "googlegemini", "cohere", "mistral",
@@ -97,6 +96,8 @@ export function deriveUseCases(apps: string[]): UseCaseId[] {
 export type ArchiveItem = {
   slug: string;
   title: string;
+  description: string | null;
+  trigger: string | null;
   format: ArchiveFormat;
   apps: string[];
   use_cases: UseCaseId[];
@@ -112,9 +113,9 @@ export type ArchiveFolder = {
 
 export type ArchiveQuery = {
   format?: ArchiveFormat | "all";
-  formats?: ArchiveFormat[]; // multi-select; takes precedence over `format`
+  formats?: ArchiveFormat[];
   use_case?: UseCaseId | null;
-  use_cases?: UseCaseId[]; // multi-select
+  use_cases?: UseCaseId[];
   search?: string | null;
   limit?: number;
   offset?: number;
@@ -127,21 +128,6 @@ export type ArchiveFacets = {
   use_case_counts: Record<UseCaseId, number>;
   top_folders: ArchiveFolder[];
 };
-
-function folderFromSourcePath(path: string | null): string | null {
-  if (!path) return null;
-  const norm = path.replace(/\\/g, "/");
-  const parts = norm.split("/").filter(Boolean);
-  if (parts.length <= 1) return null; // root file, no folder
-  return parts[0];
-}
-
-const COMMON_NAME_FALLBACK = /^([0-9a-f]{8}-[0-9a-f]{4}-|my workflow|workflow\s*\d*$|unnamed)/i;
-
-function isGeneric(title: string): boolean {
-  if (!title) return true;
-  return COMMON_NAME_FALLBACK.test(title.trim());
-}
 
 export async function countArchive(query: ArchiveQuery = {}): Promise<number> {
   const sql = getDb();
@@ -158,11 +144,12 @@ export async function countArchive(query: ArchiveQuery = {}): Promise<number> {
     SELECT COUNT(*)::int AS c
     FROM workflows w
     LEFT JOIN content_items c ON c.id = w.content_item_id
-    WHERE (${formats}::text[] IS NULL OR w.format = ANY(${formats}))
+    WHERE w.is_canonical = TRUE
+      AND (${formats}::text[] IS NULL OR w.format = ANY(${formats}))
       AND (${useCaseApps}::text[] IS NULL OR EXISTS (
         SELECT 1 FROM unnest(w.apps) a WHERE lower(a) = ANY(${useCaseApps})
       ))
-      AND (${search}::text IS NULL OR c.title ILIKE ${search} OR c.description ILIKE ${search} OR w.source_path ILIKE ${search})
+      AND (${search}::text IS NULL OR coalesce(w.display_title, c.title) ILIKE ${search} OR w.auto_description ILIKE ${search} OR w.folder_path ILIKE ${search} OR w.source_path ILIKE ${search})
   `) as Array<{ c: number }>;
   return rows[0]?.c ?? 0;
 }
@@ -177,36 +164,40 @@ export async function listArchive(query: ArchiveQuery = {}): Promise<ArchiveItem
   const useCases = query.use_cases?.length ? query.use_cases : query.use_case ? [query.use_case] : null;
   const search = query.search?.trim() ? `%${query.search.trim()}%` : null;
 
-  // expand use cases → apps array for SQL overlap
   const useCaseApps: string[] | null = useCases
     ? Array.from(new Set(useCases.flatMap((uc) => USE_CASE_APPS[uc] || []).map((s) => s.toLowerCase())))
     : null;
 
   const rows = (await sql`
-    SELECT w.slug, w.format, w.apps, w.node_count, w.source_path, c.title
+    SELECT w.slug, w.format, w.apps, w.node_count, w.source_path, w.folder_path,
+           coalesce(w.display_title, c.title) AS title,
+           w.auto_description AS description,
+           w.trigger_type AS trigger
     FROM workflows w
     LEFT JOIN content_items c ON c.id = w.content_item_id
-    WHERE (${formats}::text[] IS NULL OR w.format = ANY(${formats}))
+    WHERE w.is_canonical = TRUE
+      AND (${formats}::text[] IS NULL OR w.format = ANY(${formats}))
       AND (${useCaseApps}::text[] IS NULL OR EXISTS (
         SELECT 1 FROM unnest(w.apps) a WHERE lower(a) = ANY(${useCaseApps})
       ))
-      AND (${search}::text IS NULL OR c.title ILIKE ${search} OR c.description ILIKE ${search} OR w.source_path ILIKE ${search})
+      AND (${search}::text IS NULL OR coalesce(w.display_title, c.title) ILIKE ${search} OR w.auto_description ILIKE ${search} OR w.folder_path ILIKE ${search} OR w.source_path ILIKE ${search})
     ORDER BY c.created_at DESC NULLS LAST, w.created_at DESC
     LIMIT ${limit} OFFSET ${offset}
   `) as Array<Record<string, unknown>>;
 
   return rows.map((r) => {
     const apps = (r.apps as string[]) ?? [];
-    const sourcePath = (r.source_path as string) ?? null;
     return {
       slug: r.slug as string,
       title: (r.title as string) || (r.slug as string),
+      description: (r.description as string | null) ?? null,
+      trigger: (r.trigger as string | null) ?? null,
       format: r.format as ArchiveFormat,
       apps,
       use_cases: deriveUseCases(apps),
       node_count: Number(r.node_count ?? 0),
-      folder: folderFromSourcePath(sourcePath),
-      source_path: sourcePath,
+      folder: (r.folder_path as string | null) ?? null,
+      source_path: (r.source_path as string) ?? null,
     };
   });
 }
@@ -224,7 +215,8 @@ export async function getArchiveFacets(query: ArchiveQuery = {}): Promise<Archiv
       SUM(CASE WHEN w.format='make' THEN 1 ELSE 0 END)::int AS make_count
     FROM workflows w
     LEFT JOIN content_items c ON c.id = w.content_item_id
-    WHERE (${search}::text IS NULL OR c.title ILIKE ${search} OR c.description ILIKE ${search} OR w.source_path ILIKE ${search})
+    WHERE w.is_canonical = TRUE
+      AND (${search}::text IS NULL OR coalesce(w.display_title, c.title) ILIKE ${search} OR w.auto_description ILIKE ${search} OR w.folder_path ILIKE ${search} OR w.source_path ILIKE ${search})
   `) as Array<{ total: number; n8n_count: number; make_count: number }>;
 
   const ucCounts = {} as Record<UseCaseId, number>;
@@ -235,19 +227,19 @@ export async function getArchiveFacets(query: ArchiveQuery = {}): Promise<Archiv
       SELECT COUNT(*)::int AS c
       FROM workflows w
       LEFT JOIN content_items c ON c.id = w.content_item_id
-      WHERE EXISTS (SELECT 1 FROM unnest(w.apps) a WHERE lower(a) = ANY(${apps}))
-        AND (${search}::text IS NULL OR c.title ILIKE ${search} OR c.description ILIKE ${search} OR w.source_path ILIKE ${search})
+      WHERE w.is_canonical = TRUE
+        AND EXISTS (SELECT 1 FROM unnest(w.apps) a WHERE lower(a) = ANY(${apps}))
+        AND (${search}::text IS NULL OR coalesce(w.display_title, c.title) ILIKE ${search} OR w.auto_description ILIKE ${search} OR w.folder_path ILIKE ${search} OR w.source_path ILIKE ${search})
     `) as Array<{ c: number }>;
     ucCounts[uc.id] = r[0]?.c ?? 0;
   }
 
   const folderRows = (await sql`
-    SELECT split_part(replace(w.source_path, '\\', '/'), '/', 1) AS folder, COUNT(*)::int AS count
+    SELECT w.folder_path AS folder, COUNT(*)::int AS count
     FROM workflows w
-    WHERE w.source_path IS NOT NULL AND w.source_path <> ''
-      AND position('/' IN replace(w.source_path, '\\', '/')) > 0
+    WHERE w.is_canonical = TRUE AND w.folder_path IS NOT NULL AND w.folder_path <> ''
     GROUP BY 1
-    HAVING COUNT(*) >= 2
+    HAVING COUNT(*) >= 3
     ORDER BY count DESC
     LIMIT 40
   `) as Array<{ folder: string; count: number }>;
@@ -264,14 +256,12 @@ export async function getArchiveFacets(query: ArchiveQuery = {}): Promise<Archiv
 export async function getWorkflowsInFolder(folder: string): Promise<Array<{ slug: string; title: string; raw_json: unknown }>> {
   const sql = getDb();
   await ensureWorkflowsSchema(sql);
-  const prefix = `${folder}/%`;
-  const altPrefix = `${folder}\\%`;
   const rows = (await sql`
-    SELECT w.slug, w.raw_json, c.title
+    SELECT w.slug, w.raw_json, coalesce(w.display_title, c.title) AS title
     FROM workflows w
     LEFT JOIN content_items c ON c.id = w.content_item_id
-    WHERE w.source_path LIKE ${prefix} OR w.source_path LIKE ${altPrefix} OR w.source_path = ${folder}
-    ORDER BY c.title NULLS LAST, w.slug
+    WHERE w.is_canonical = TRUE AND w.folder_path = ${folder}
+    ORDER BY coalesce(w.display_title, c.title) NULLS LAST, w.slug
   `) as Array<{ slug: string; raw_json: unknown; title: string | null }>;
   return rows.map((r) => ({ slug: r.slug, title: r.title || r.slug, raw_json: r.raw_json }));
 }

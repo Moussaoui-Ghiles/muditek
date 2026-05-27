@@ -2,16 +2,10 @@
 
 import { Make, N8n } from "@lobehub/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownToLine, Filter, FolderArchive, Loader2, Search } from "lucide-react";
+import { ArrowDownToLine, Filter, FolderArchive, Loader2, Search, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { ArchiveFacets, ArchiveFormat, ArchiveItem, UseCaseId } from "@/lib/workflow-archive";
-import {
-  AppBrandIcon,
-  appHasBrandIcon,
-  letterFor,
-  prettyAppName,
-  stableAppColors,
-} from "@/lib/workflow-app-icons";
+import { AppBrandIcon, appHasBrandIcon, prettyAppName } from "@/lib/workflow-app-icons";
 
 type UseCaseDef = { id: UseCaseId; label: string };
 
@@ -21,35 +15,39 @@ const FORMAT_OPTIONS: Array<{ value: ArchiveFormat; label: string }> = [
 ];
 
 const NOISE_APPS = new Set([
-  "set", "code", "if", "merge", "switch", "wait", "manualtrigger", "splitinbatches",
-  "function", "noop", "stickynote", "executeworkflow", "executiondata", "scheduletrigger",
+  "set", "code", "if", "merge", "switch", "wait", "splitinbatches",
+  "function", "functionitem", "noop", "stickynote", "executeworkflow", "executiondata",
   "filter", "itemlists", "splitout", "summarize", "aggregate", "limit", "comparedatasets",
   "renamekeys", "editimage", "sort", "removeduplicates", "respondtowebhook",
-  "webhook", "stopanderror", "executecommand", "errortrigger", "interval",
-  "httprequest", "builtin", "gateway", "executeworkflowtrigger",
+  "stopanderror", "executecommand", "errortrigger", "interval", "extractfromfile",
+  "builtin", "gateway", "executeworkflowtrigger", "placeholder", "webhook",
   "langchain.outputparserstructured", "langchain.outputparseritemlist",
+  "readbinaryfile", "writebinaryfile", "movebinarydata", "spreadsheetfile",
+  "converttofile", "compression", "readwritefile", "cron", "html", "xml", "markdown",
+  "datetime", "crypto",
 ]);
+
+function normaliseAppKey(slug: string): string {
+  return slug.toLowerCase().replace(/trigger$/, "");
+}
 
 function cleanApps(apps: string[]): string[] {
   const seen = new Set<string>();
+  const seenLabels = new Set<string>();
   const out: string[] = [];
   for (const a of apps) {
     const key = a.toLowerCase();
     if (NOISE_APPS.has(key)) continue;
+    const norm = normaliseAppKey(a);
+    if (NOISE_APPS.has(norm)) continue;
+    if (seen.has(norm)) continue;
+    seen.add(norm);
     const label = prettyAppName(a);
-    if (seen.has(label)) continue;
-    seen.add(label);
+    if (seenLabels.has(label)) continue;
+    seenLabels.add(label);
     out.push(a);
   }
   return out;
-}
-
-function prettyFolder(folder: string): string {
-  return folder
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function FilterPill({
@@ -76,7 +74,7 @@ function FilterPill({
     >
       {children}
       {typeof count === "number" && count > 0 && (
-        <span className={active ? "text-primary" : "text-foreground/70"}>
+        <span className={active ? "text-primary" : "text-foreground/80"}>
           {count.toLocaleString()}
         </span>
       )}
@@ -84,37 +82,47 @@ function FilterPill({
   );
 }
 
-function AppIconChip({ app }: { app: string }) {
-  if (appHasBrandIcon(app)) {
-    return (
-      <span
-        title={prettyAppName(app)}
-        className="inline-flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.04]"
-      >
-        <AppBrandIcon app={app} size={16} />
-      </span>
-    );
-  }
-  const c = stableAppColors(app.toLowerCase());
+function AppRow({ apps }: { apps: string[] }) {
+  const clean = cleanApps(apps);
+  const iconed = clean.filter(appHasBrandIcon);
+  const labeled = clean.filter((a) => !appHasBrandIcon(a));
+  const showIcons = iconed.slice(0, 4);
+  const remaining = Math.max(0, 5 - showIcons.length);
+  const showLabels = labeled.slice(0, remaining);
+  const shown = showIcons.length + showLabels.length;
+  const extra = clean.length - shown;
+
+  if (clean.length === 0) return null;
+
   return (
-    <span
-      title={prettyAppName(app)}
-      className={
-        "inline-flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] text-[11px] font-black " +
-        c.bg +
-        " " +
-        c.fg
-      }
-    >
-      {letterFor(app)}
-    </span>
+    <div className="mt-4 flex flex-wrap items-center gap-1.5">
+      {showIcons.map((a) => (
+        <span
+          key={`i-${a}`}
+          title={prettyAppName(a)}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.04]"
+        >
+          <AppBrandIcon app={a} size={16} />
+        </span>
+      ))}
+      {showLabels.map((a) => (
+        <span
+          key={`l-${a}`}
+          className="inline-flex h-7 items-center rounded-[3px] border border-white/[0.08] bg-white/[0.04] px-2.5 text-[12px] font-black text-foreground"
+        >
+          {prettyAppName(a)}
+        </span>
+      ))}
+      {extra > 0 && (
+        <span className="inline-flex h-7 items-center rounded-[3px] border border-white/[0.08] bg-white/[0.04] px-2 text-[12px] font-black text-foreground">
+          +{extra}
+        </span>
+      )}
+    </div>
   );
 }
 
 function WorkflowCard({ item }: { item: ArchiveItem }) {
-  const apps = cleanApps(item.apps);
-  const visibleApps = apps.slice(0, 5);
-  const extra = apps.length - visibleApps.length;
   const downloadHref = `/api/portal/workflow-archive/${encodeURIComponent(item.slug)}/download`;
   const FormatIcon = item.format === "n8n" ? N8n.Avatar : Make.Avatar;
   const formatLabel = item.format === "n8n" ? "n8n" : "Make.com";
@@ -129,44 +137,44 @@ function WorkflowCard({ item }: { item: ArchiveItem }) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <FormatIcon size={28} />
-          <span className="text-[12.5px] font-black uppercase tracking-[0.2em] text-foreground">
+          <FormatIcon size={26} />
+          <span className="text-[12px] font-black uppercase tracking-[0.22em] text-foreground">
             {formatLabel}
           </span>
         </div>
         {item.node_count > 0 && (
-          <span className="inline-flex items-center gap-1 text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground tnum">
+          <span className="text-[12px] font-black uppercase tracking-[0.18em] text-foreground/85 tnum">
             {item.node_count} nodes
           </span>
         )}
       </div>
 
-      <h3 className="mt-5 line-clamp-2 text-[18.5px] font-black leading-[1.15] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
+      <h3 className="mt-5 line-clamp-2 text-[19px] font-black leading-[1.2] tracking-[-0.02em] text-foreground transition-colors group-hover:text-primary">
         {item.title}
       </h3>
 
-      {item.folder && (
-        <p className="mt-2 line-clamp-1 text-[13.5px] font-medium text-foreground/85">
-          {prettyFolder(item.folder)}
+      {item.description && (
+        <p className="mt-3 line-clamp-3 text-[14px] leading-[1.55] text-foreground/95">
+          {item.description}
         </p>
       )}
 
-      {visibleApps.length > 0 && (
-        <div className="mt-5 flex flex-wrap items-center gap-1.5">
-          {visibleApps.map((app) => (
-            <AppIconChip key={app} app={app} />
-          ))}
-          {extra > 0 && (
-            <span className="inline-flex h-7 items-center rounded-[3px] border border-white/[0.08] bg-white/[0.04] px-2 text-[12px] font-black text-foreground">
-              +{extra}
-            </span>
-          )}
-        </div>
+      {item.folder && (
+        <p className="mt-3 line-clamp-1 text-[11.5px] font-black uppercase tracking-[0.18em] text-primary/85">
+          {item.folder}
+        </p>
       )}
 
-      <div className="mt-auto flex items-center justify-between pt-6 text-[13px] font-black uppercase tracking-[0.18em] text-foreground">
-        <span className="text-foreground/85">JSON</span>
-        <span className="inline-flex items-center gap-2 text-foreground transition-colors group-hover:text-primary">
+      <AppRow apps={item.apps} />
+
+      <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/[0.06] pt-5 text-[12px] font-black uppercase tracking-[0.18em] text-foreground">
+        {item.trigger ? (
+          <span className="inline-flex min-w-0 items-center gap-1.5 truncate text-foreground/85">
+            <Zap className="size-3 shrink-0" />
+            <span className="truncate">{item.trigger}</span>
+          </span>
+        ) : <span />}
+        <span className="inline-flex shrink-0 items-center gap-2 text-foreground transition-colors group-hover:text-primary">
           Download
           <ArrowDownToLine className="size-4 transition-transform group-hover:translate-y-0.5" />
         </span>
@@ -187,11 +195,11 @@ function FolderBundleCard({ folder, count }: { folder: string; count: number }) 
           <FolderArchive className="size-5" />
         </div>
         <div className="min-w-0">
-          <div className="line-clamp-1 text-[15px] font-black leading-tight text-foreground">
-            {prettyFolder(folder)}
+          <div className="line-clamp-2 text-[14px] font-black leading-[1.25] text-foreground">
+            {folder}
           </div>
-          <div className="mt-1 text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground/85 tnum">
-            {count} workflows · ZIP
+          <div className="mt-1 text-[11.5px] font-black uppercase tracking-[0.18em] text-foreground/85 tnum">
+            {count} workflows · ZIP bundle
           </div>
         </div>
       </div>
@@ -299,7 +307,7 @@ export default function ArchiveContent({
             n8n & Make.com workflows
           </h1>
           <p className="mt-5 max-w-2xl text-[15.5px] leading-[1.7] text-foreground">
-            <span className="font-black tnum">{facets.total.toLocaleString()}</span> ready-to-import automations from my archive. Search by name, app, or use case. Click any card to download the raw JSON.
+            <span className="font-black tnum">{facets.total.toLocaleString()}</span> ready-to-import automations. Each card shows the apps and trigger so you know what it does before you download.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-2.5 text-[12.5px] font-black uppercase tracking-[0.18em] text-foreground">
             <span className="inline-flex items-center gap-2">
@@ -414,7 +422,7 @@ export default function ArchiveContent({
             </h2>
             {!hasFilters && (
               <span className="text-[12.5px] font-black uppercase tracking-[0.16em] text-foreground">
-                Click card → download JSON
+                Click card → download
               </span>
             )}
           </div>

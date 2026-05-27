@@ -24,6 +24,14 @@ export async function ensureWorkflowsSchema(sql: SqlClient) {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_workflows_format ON workflows(format)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_workflows_slug ON workflows(slug)`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS auto_description TEXT`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS trigger_type TEXT`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS content_hash TEXT`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS is_canonical BOOLEAN NOT NULL DEFAULT TRUE`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS folder_path TEXT`;
+  await sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS display_title TEXT`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_workflows_content_hash ON workflows(content_hash)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_workflows_canonical ON workflows(is_canonical) WHERE is_canonical = TRUE`;
 
   schemaReady = true;
 }

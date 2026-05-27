@@ -16,7 +16,7 @@ type Crumb = { href: string; label: string };
 const LEAF_LABEL: Record<string, string> = {
   skills: "Skills",
   playbooks: "Resources",
-  workflows: "Workflows",
+  "workflow-archive": "Workflow Archive",
   tools: "Tools",
   ...(SHOW_MUDIKIT_IN_PORTAL ? { mudikit: "MudiKit" } : {}),
   newsletter: "Newsletter",

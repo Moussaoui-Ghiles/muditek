@@ -1,8 +1,16 @@
 "use client";
 
+import { Make, N8n } from "@lobehub/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, FolderArchive, Loader2, Search, X } from "lucide-react";
 import type { ArchiveFacets, ArchiveFormat, ArchiveItem, UseCaseId } from "@/lib/workflow-archive";
+import {
+  AppBrandIcon,
+  appHasBrandIcon,
+  letterFor,
+  prettyAppName,
+  stableAppColors,
+} from "@/lib/workflow-app-icons";
 
 type UseCaseDef = { id: UseCaseId; label: string };
 
@@ -11,54 +19,72 @@ const FORMAT_OPTIONS: Array<{ value: ArchiveFormat; label: string }> = [
   { value: "make", label: "Make.com" },
 ];
 
-function prettyApp(app: string): string {
-  if (!app) return "";
-  const lower = app.toLowerCase();
-  if (lower.startsWith("langchain.")) {
-    const stem = lower.slice("langchain.".length);
-    if (stem.startsWith("lmchat")) return stem.slice("lmchat".length).replace(/^./, (c) => c.toUpperCase());
-    if (stem === "agent") return "AI Agent";
-    if (stem === "memorybufferwindow") return "Memory";
-    if (stem === "chainllm") return "Chain";
-    return stem.replace(/^./, (c) => c.toUpperCase());
-  }
-  return app
-    .replace(/[._-]/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
+const NOISE_APPS = new Set([
+  "set", "code", "if", "merge", "switch", "wait", "manualtrigger", "splitinbatches",
+  "function", "noop", "stickynote", "executeworkflow", "executiondata", "scheduletrigger",
+  "filter", "itemlists", "splitout", "summarize", "aggregate", "limit", "comparedatasets",
+  "renamekeys", "editimage", "sort", "removeduplicates", "respondtowebhook",
+  "webhook", "stopanderror", "executecommand", "errortrigger", "interval",
+  "httprequest", "builtin", "gateway", "executeworkflowtrigger",
+  "langchain.outputparserstructured", "langchain.outputparseritemlist",
+]);
 
 function cleanApps(apps: string[]): string[] {
-  const NOISE = new Set([
-    "set", "code", "if", "merge", "switch", "wait", "manualtrigger", "splitinbatches",
-    "function", "noop", "stickynote", "executeworkflow", "executiondata", "scheduletrigger",
-    "filter", "itemlists", "splitout", "summarize", "aggregate", "limit", "comparedatasets",
-    "renamekeys", "editimage", "sort", "removeduplicates", "respondtowebhook",
-    "webhook", "stopanderror", "executecommand", "errortrigger", "interval",
-    "httprequest", "builtin", "gateway", "executeworkflowtrigger",
-  ]);
   const seen = new Set<string>();
   const out: string[] = [];
   for (const a of apps) {
     const key = a.toLowerCase();
-    if (NOISE.has(key)) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (NOISE_APPS.has(key)) continue;
+    const label = prettyAppName(a);
+    if (seen.has(label)) continue;
+    seen.add(label);
     out.push(a);
   }
   return out;
 }
 
 function FormatPill({ format }: { format: ArchiveFormat }) {
+  const Icon = format === "n8n" ? N8n.Avatar : Make.Avatar;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <Icon size={18} />
+      <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/70">
+        {format === "n8n" ? "n8n" : "Make"}
+      </span>
+    </span>
+  );
+}
+
+function AppChip({ app, dense = false }: { app: string; dense?: boolean }) {
+  const hasBrand = appHasBrandIcon(app);
+  const name = prettyAppName(app);
+  const c = stableAppColors(app.toLowerCase());
   return (
     <span
       className={
-        "inline-flex h-5 items-center rounded px-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] " +
-        (format === "n8n"
-          ? "bg-orange-300/10 text-orange-200"
-          : "bg-violet-300/10 text-violet-200")
+        "inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.025] " +
+        (dense ? "px-1.5 py-[2px] text-[10.5px]" : "px-2 py-[3px] text-[11px]") +
+        " text-white/75"
       }
+      title={name}
     >
-      {format === "n8n" ? "n8n" : "Make"}
+      {hasBrand ? (
+        <AppBrandIcon app={app} size={dense ? 12 : 14} />
+      ) : (
+        <span
+          className={
+            "inline-flex items-center justify-center rounded-sm font-semibold " +
+            c.bg +
+            " " +
+            c.fg +
+            " " +
+            (dense ? "h-[12px] w-[12px] text-[8px]" : "h-[14px] w-[14px] text-[9px]")
+          }
+        >
+          {letterFor(app)}
+        </span>
+      )}
+      <span className="leading-none">{name}</span>
     </span>
   );
 }
@@ -79,7 +105,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors " +
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 " +
         (active
           ? "border-white/40 bg-white text-black"
           : "border-white/[0.1] bg-white/[0.02] text-white/65 hover:bg-white/[0.06] hover:text-white")
@@ -87,58 +113,74 @@ function FilterChip({
     >
       {children}
       {typeof count === "number" && count > 0 && (
-        <span className={active ? "text-black/60" : "text-white/35"}>{count.toLocaleString()}</span>
+        <span
+          className={
+            "ml-0.5 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] tabular-nums " +
+            (active ? "bg-black/10 text-black/65" : "bg-white/[0.06] text-white/50")
+          }
+        >
+          {count.toLocaleString()}
+        </span>
       )}
     </button>
   );
 }
 
 function ArchiveRow({ item }: { item: ArchiveItem }) {
-  const apps = cleanApps(item.apps).slice(0, 6);
-  const extra = cleanApps(item.apps).length - apps.length;
+  const apps = cleanApps(item.apps);
+  const visible = apps.slice(0, 5);
+  const extra = apps.length - visible.length;
   return (
     <tr className="group border-b border-white/[0.04] last:border-b-0 transition-colors hover:bg-white/[0.025]">
-      <td className="py-2 pl-4 pr-3 align-top">
+      <td className="py-2.5 pl-4 pr-3 align-middle">
         <FormatPill format={item.format} />
       </td>
-      <td className="py-2 pr-3 align-top">
-        <div className="line-clamp-1 text-[13.5px] font-medium text-white">{item.title}</div>
-        {item.folder && (
-          <div className="mt-0.5 line-clamp-1 text-[11px] text-white/40">
-            <span className="text-white/30">{item.folder}</span>
-            {item.node_count > 0 && <span className="ml-1.5 text-white/30">· {item.node_count} nodes</span>}
+      <td className="py-2.5 pr-3 align-middle">
+        <div className="line-clamp-1 text-[13.5px] font-medium leading-tight text-white">
+          {item.title}
+        </div>
+        {(item.folder || item.node_count > 0) && (
+          <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/40">
+            {item.folder && <span className="line-clamp-1 max-w-[280px]">{item.folder}</span>}
+            {item.folder && item.node_count > 0 && <span className="text-white/20">·</span>}
+            {item.node_count > 0 && <span className="tabular-nums">{item.node_count} nodes</span>}
           </div>
         )}
       </td>
-      <td className="py-2 pr-3 align-top">
-        {apps.length > 0 ? (
+      <td className="py-2.5 pr-3 align-middle">
+        {visible.length > 0 ? (
           <div className="flex flex-wrap items-center gap-1">
-            {apps.map((app) => (
-              <span
-                key={app}
-                className="inline-flex items-center rounded border border-white/[0.06] bg-white/[0.02] px-1.5 py-[2px] text-[10.5px] text-white/65"
-              >
-                {prettyApp(app)}
-              </span>
+            {visible.map((app) => (
+              <AppChip key={app} app={app} dense />
             ))}
-            {extra > 0 && <span className="text-[10.5px] text-white/40">+{extra}</span>}
+            {extra > 0 && (
+              <span className="text-[11px] tabular-nums text-white/40">+{extra}</span>
+            )}
           </div>
         ) : (
           <span className="text-[11px] text-white/30">—</span>
         )}
       </td>
-      <td className="py-2 pr-4 pl-2 align-top text-right">
+      <td className="py-2.5 pr-4 pl-2 align-middle text-right">
         <a
           href={`/api/portal/workflow-archive/${encodeURIComponent(item.slug)}/download`}
-          className="inline-flex h-7 items-center gap-1.5 rounded-md border border-white/[0.1] bg-white/[0.03] px-2 text-[11px] font-medium text-white/85 transition-colors hover:bg-white/[0.08] hover:text-white"
+          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/[0.1] bg-white/[0.04] px-2.5 text-[11.5px] font-medium text-white/85 transition-colors hover:border-white/[0.2] hover:bg-white/[0.1] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           title="Download JSON"
         >
-          <Download className="size-3" />
+          <Download className="size-3.5" />
           JSON
         </a>
       </td>
     </tr>
   );
+}
+
+function prettyFolder(folder: string): string {
+  return folder
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function ArchiveContent({
@@ -177,7 +219,9 @@ export default function ArchiveContent({
       for (const uc of selectedUseCases) params.append("use_case", uc);
       if (debouncedQuery) params.set("q", debouncedQuery);
       try {
-        const res = await fetch(`/api/portal/workflow-archive/list?${params.toString()}`, { credentials: "include" });
+        const res = await fetch(`/api/portal/workflow-archive/list?${params.toString()}`, {
+          credentials: "include",
+        });
         const data = await res.json();
         if (reqId !== reqIdRef.current) return;
         const next: ArchiveItem[] = Array.isArray(data?.items) ? data.items : [];
@@ -197,7 +241,8 @@ export default function ArchiveContent({
   const toggleFormat = (f: ArchiveFormat) => {
     setFormats((prev) => {
       const next = new Set(prev);
-      next.has(f) ? next.delete(f) : next.add(f);
+      if (next.has(f)) next.delete(f);
+      else next.add(f);
       return next;
     });
   };
@@ -205,7 +250,8 @@ export default function ArchiveContent({
   const toggleUseCase = (uc: UseCaseId) => {
     setSelectedUseCases((prev) => {
       const next = new Set(prev);
-      next.has(uc) ? next.delete(uc) : next.add(uc);
+      if (next.has(uc)) next.delete(uc);
+      else next.add(uc);
       return next;
     });
   };
@@ -216,37 +262,52 @@ export default function ArchiveContent({
     setSelectedUseCases(new Set());
   };
 
-  const totalLabel =
-    facets.total > 0
-      ? `${facets.total.toLocaleString()} workflows · ${facets.n8n_count.toLocaleString()} n8n · ${facets.make_count.toLocaleString()} Make.com`
-      : "No workflows yet";
-
-  const folderBundles = useMemo(() => facets.top_folders.slice(0, 12), [facets.top_folders]);
-  const hasFilters =
-    debouncedQuery.length > 0 || formats.size > 0 || selectedUseCases.size > 0;
+  const hasFilters = debouncedQuery.length > 0 || formats.size > 0 || selectedUseCases.size > 0;
+  const folderBundles = useMemo(() => facets.top_folders.slice(0, 9), [facets.top_folders]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-[26px] font-semibold tracking-tight text-white">n8n & Make.com Workflows</h1>
-        <p className="text-[13px] text-white/55">{totalLabel}</p>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-[26px] font-semibold tracking-tight text-white">
+          n8n & Make.com Workflows
+        </h1>
+        {facets.total > 0 ? (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-white/55">
+            <span className="tabular-nums">{facets.total.toLocaleString()} workflows</span>
+            <span className="text-white/25">·</span>
+            <span className="inline-flex items-center gap-1.5">
+              <N8n.Avatar size={14} />
+              <span className="tabular-nums">{facets.n8n_count.toLocaleString()}</span>
+              <span>n8n</span>
+            </span>
+            <span className="text-white/25">·</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Make.Avatar size={14} />
+              <span className="tabular-nums">{facets.make_count.toLocaleString()}</span>
+              <span>Make.com</span>
+            </span>
+          </div>
+        ) : (
+          <p className="text-[13px] text-white/55">No workflows yet</p>
+        )}
       </header>
 
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3.5">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by title, app, folder…"
-            className="h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] pl-9 pr-9 text-[14px] text-white placeholder:text-white/35 focus:border-white/[0.2] focus:outline-none"
+            aria-label="Search workflows"
+            className="h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] pl-9 pr-9 text-[14px] text-white placeholder:text-white/35 focus:border-white/[0.2] focus:outline-none focus:ring-2 focus:ring-white/10"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-white/45 hover:bg-white/[0.05] hover:text-white"
-              aria-label="Clear"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-white/45 transition-colors hover:bg-white/[0.05] hover:text-white"
+              aria-label="Clear search"
             >
               <X className="size-3.5" />
             </button>
@@ -254,7 +315,9 @@ export default function ArchiveContent({
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">Format</span>
+          <span className="mr-1 inline-flex h-6 items-center text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+            Format
+          </span>
           {FORMAT_OPTIONS.map((o) => (
             <FilterChip
               key={o.value}
@@ -262,13 +325,18 @@ export default function ArchiveContent({
               onClick={() => toggleFormat(o.value)}
               count={o.value === "n8n" ? facets.n8n_count : facets.make_count}
             >
-              {o.label}
+              <span className="inline-flex items-center gap-1.5">
+                {o.value === "n8n" ? <N8n.Avatar size={14} /> : <Make.Avatar size={14} />}
+                {o.label}
+              </span>
             </FilterChip>
           ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">Use case</span>
+          <span className="mr-1 inline-flex h-6 items-center text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+            Use case
+          </span>
           {useCases.map((uc) => (
             <FilterChip
               key={uc.id}
@@ -290,46 +358,60 @@ export default function ArchiveContent({
             >
               <X className="size-3" /> Clear filters
             </button>
-            <span className="text-[11px] text-white/35">{items.length.toLocaleString()} shown</span>
+            <span className="text-[11px] tabular-nums text-white/35">
+              {items.length.toLocaleString()} shown
+            </span>
           </div>
         )}
       </div>
 
       {folderBundles.length > 0 && !hasFilters && (
-        <section className="mt-7">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/50">Folder bundles</h2>
-            <span className="text-[11px] text-white/35">Download all workflows in a folder at once</span>
+        <section className="mt-8">
+          <div className="mb-2.5 flex items-end justify-between">
+            <div>
+              <h2 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/55">
+                Folder bundles
+              </h2>
+              <p className="mt-0.5 text-[11px] text-white/40">
+                Download all workflows in a folder at once
+              </p>
+            </div>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {folderBundles.map((f) => (
               <a
                 key={f.folder}
                 href={`/api/portal/workflow-archive/folder/${encodeURIComponent(f.folder)}`}
-                className="group flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 transition-colors hover:border-white/[0.18] hover:bg-white/[0.05]"
+                className="group flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3.5 py-3 transition-all duration-150 hover:-translate-y-[1px] hover:border-white/[0.18] hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
               >
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <FolderArchive className="size-4 shrink-0 text-white/55 group-hover:text-white" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.04] text-white/65 group-hover:border-white/[0.18] group-hover:text-white">
+                    <FolderArchive className="size-4" />
+                  </div>
                   <div className="min-w-0">
-                    <div className="line-clamp-1 text-[13px] font-medium text-white">{f.folder.replace(/_/g, " ")}</div>
-                    <div className="text-[11px] text-white/45">{f.count} workflows</div>
+                    <div className="line-clamp-1 text-[13px] font-medium text-white">
+                      {prettyFolder(f.folder)}
+                    </div>
+                    <div className="text-[11px] tabular-nums text-white/45">
+                      {f.count} workflows · ZIP
+                    </div>
                   </div>
                 </div>
-                <Download className="size-3.5 shrink-0 text-white/45 group-hover:text-white" />
+                <Download className="size-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
               </a>
             ))}
           </div>
         </section>
       )}
 
-      <section className="mt-7">
+      <section className="mt-8">
         <div className="overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.015]">
           <table className="w-full table-fixed text-[13px]">
             <colgroup>
-              <col style={{ width: "62px" }} />
-              <col />
-              <col style={{ width: "44%" }} />
               <col style={{ width: "92px" }} />
+              <col />
+              <col style={{ width: "46%" }} />
+              <col style={{ width: "102px" }} />
             </colgroup>
             <thead>
               <tr className="border-b border-white/[0.06] text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40">
@@ -366,10 +448,10 @@ export default function ArchiveContent({
               type="button"
               onClick={() => fetchPage(items.length, false)}
               disabled={loading}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-white/[0.1] bg-white/[0.03] px-4 text-[13px] font-medium text-white hover:bg-white/[0.06] disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-2 rounded-md border border-white/[0.1] bg-white/[0.03] px-4 text-[13px] font-medium text-white transition-colors hover:bg-white/[0.06] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             >
               {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-              {loading ? "Loading…" : "Load 100 more"}
+              {loading ? "Loading…" : `Load ${pageSize} more`}
             </button>
           ) : items.length > 0 ? (
             <span className="text-[11px] text-white/35">End of results</span>

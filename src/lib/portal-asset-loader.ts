@@ -24,6 +24,7 @@ const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
   "judgment-moat",
   "mudiagent-operator-guide",
   "skill-creator-blueprint",
+  "slack-outbound-agent-playbook",
 ]);
 
 export function itemHasHtmlAsset(item: Pick<ContentItem, "slug" | "file_type">): boolean {

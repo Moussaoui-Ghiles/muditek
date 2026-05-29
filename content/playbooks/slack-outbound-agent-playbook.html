@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run Your Entire Outbound From One Slack Channel · Muditek</title>
+<meta name="description" content="The install path for a persistent-memory agent that runs your outbound, marketing, sales intel, and content from one Slack channel. 45 verified leads from free data. By Muditek.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --paper:      #F2ECDF;
+    --paper-2:    #F8F3E8;
+    --paper-3:    #EAE2D0;
+    --ink:        #1B1813;
+    --ink-2:      #29221A;
+    --ink-3:      #3A2F22;
+    --rule:       rgba(27, 24, 19, 0.20);
+    --rule-soft:  rgba(27, 24, 19, 0.12);
+    --accent:     #D63E26;
+    --accent-ink: #B33019;
+    --accent-2:   #F07050;
+    --term:       #1A1612;
+    --term-2:     #221E18;
+    --term-ink:   #F4EEE1;
+    --term-warm:  #E8CFA5;
+    --term-rule:  rgba(244, 238, 225, 0.16);
+    --font-head:  'Bricolage Grotesque', system-ui, sans-serif;
+    --font-body:  'Bricolage Grotesque', system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    font-family: var(--font-body);
+    color: var(--ink-2);
+    line-height: 1.62;
+    font-weight: 400;
+    font-size: 22px;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0; opacity: 0.04; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px 220px; pointer-events: none; z-index: 9999;
+  }
+
+  .page { max-width: 880px; margin: 0 auto; padding: 0 56px 120px; position: relative; }
+
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  a { color: var(--accent-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; font-weight: 600; }
+  a:hover { color: var(--accent); }
+
+  /* Brand bar */
+  .brandbar { display: flex; align-items: center; padding: 30px 0 24px; border-bottom: 2px solid var(--ink); position: sticky; top: 0; background: var(--paper); z-index: 50; }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .brand svg { width: 36px; height: 36px; display: block; }
+  .brand .name { font-family: var(--font-head); font-size: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+  .brand .meta { margin-left: auto; font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink); }
+
+  /* Cover */
+  .cover { padding: 76px 0 0; }
+  .eyebrow { font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink); display: inline-flex; align-items: center; gap: 13px; margin-bottom: 30px; }
+  .eyebrow::before { content: ''; width: 36px; height: 2px; background: var(--accent); }
+  .cover h1 { font-family: var(--font-head); font-size: clamp(48px, 8vw, 80px); font-weight: 700; line-height: 0.98; letter-spacing: -0.035em; color: var(--ink); margin-bottom: 24px; }
+  .cover h1 .hl { color: var(--accent); }
+  .cover .subtitle { font-family: var(--font-head); font-size: clamp(24px, 3vw, 30px); line-height: 1.28; font-weight: 500; color: var(--ink); max-width: 680px; letter-spacing: -0.015em; }
+
+  /* Hook */
+  .hook { margin-top: 60px; }
+  .hook-statement { font-family: var(--font-head); font-size: clamp(28px, 4vw, 36px); line-height: 1.2; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 28px; }
+  .hook-statement .hl { color: var(--accent); }
+  .lede { font-size: 23px; line-height: 1.55; color: var(--ink-2); margin-bottom: 30px; max-width: 64ch; }
+  .lede strong { color: var(--ink); font-weight: 700; }
+
+  .outcomes-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 18px; letter-spacing: -0.01em; margin-top: 36px; }
+  ul.outcomes { list-style: none; margin-bottom: 0; counter-reset: oc; }
+  ul.outcomes li { position: relative; padding-left: 44px; font-size: 22px; line-height: 1.45; color: var(--ink); margin-bottom: 14px; font-weight: 500; }
+  ul.outcomes li::before { content: counter(oc, decimal-leading-zero); counter-increment: oc; position: absolute; left: 0; top: 4px; font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent); }
+
+  /* Who / How quick blocks */
+  .quick-block { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule-soft); }
+  .quick-block h3 { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 14px; letter-spacing: -0.01em; }
+
+  /* Contents */
+  .contents { margin-top: 70px; padding-top: 40px; border-top: 2px solid var(--ink); }
+  .contents h2 { font-family: var(--font-head); font-size: 17px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); margin-bottom: 22px; }
+  ol.toc { list-style: none; counter-reset: toc; columns: 2; column-gap: 48px; }
+  ol.toc li { counter-increment: toc; break-inside: avoid; display: flex; align-items: baseline; gap: 15px; padding: 11px 0; border-top: 1px solid var(--rule-soft); font-size: 18px; color: var(--ink-2); font-weight: 500; line-height: 1.35; }
+  ol.toc li::before { content: counter(toc, decimal-leading-zero); font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent-ink); flex: 0 0 auto; }
+  ol.toc a { color: inherit; text-decoration: none; transition: color 0.16s ease; }
+  ol.toc a:hover { color: var(--accent); }
+
+  /* Sections */
+  section.sec { margin-top: 80px; padding-top: 38px; border-top: 1px solid var(--rule); }
+  h2 { font-family: var(--font-head); font-size: clamp(32px, 4.4vw, 44px); font-weight: 700; line-height: 1.06; letter-spacing: -0.028em; color: var(--ink); margin-bottom: 22px; }
+  h3 { font-family: var(--font-head); font-size: 26px; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); margin: 38px 0 16px; }
+  h4 { font-family: var(--font-head); font-size: 21px; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); margin: 28px 0 12px; }
+  p { font-size: 22px; line-height: 1.62; color: var(--ink-2); margin-bottom: 20px; max-width: 64ch; }
+  p.lead-line { font-family: var(--font-head); color: var(--ink); font-weight: 700; font-size: 24px; letter-spacing: -0.015em; margin-top: 8px; }
+  strong { color: var(--ink); font-weight: 700; }
+  em { color: var(--ink); font-style: italic; }
+
+  .recipe-meta { font-family: var(--font-mono); font-size: 14px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 14px; display: inline-block; }
+
+  /* Image figures */
+  figure { margin: 22px 0 28px; }
+  figure img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); background: var(--paper-2); }
+  figure figcaption { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-3); margin-top: 10px; line-height: 1.4; }
+
+  /* Inline code */
+  code.inline { font-family: var(--font-mono); font-size: 0.82em; background: var(--paper-3); color: var(--accent-ink); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--rule-soft); white-space: nowrap; font-weight: 600; }
+
+  /* Lists */
+  ul.body-list, ol.body-list { margin: 0 0 24px; padding: 0; list-style: none; max-width: 64ch; }
+  ul.body-list li, ol.body-list li { position: relative; padding-left: 30px; font-size: 21px; line-height: 1.5; color: var(--ink-2); margin-bottom: 12px; }
+  ul.body-list li::before { content: ''; position: absolute; left: 2px; top: 14px; width: 12px; height: 2px; background: var(--accent); }
+  ol.body-list { counter-reset: step; }
+  ol.body-list li { padding-left: 46px; margin-bottom: 16px; }
+  ol.body-list li::before { counter-increment: step; content: counter(step, decimal-leading-zero); position: absolute; left: 0; top: 1px; font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent); }
+  ul.body-list li strong, ol.body-list li strong { color: var(--ink); }
+
+  /* Code block (dark, framed, copyable) */
+  .codeblock { margin: 18px 0 26px; border: 1px solid var(--ink); background: var(--term); overflow: hidden; }
+  .cb-head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; background: var(--term-2); border-bottom: 1px solid var(--term-rule); }
+  .cb-dot { width: 10px; height: 10px; background: var(--accent); flex: 0 0 auto; }
+  .cb-label { font-family: var(--font-mono); font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: var(--term-warm); }
+  .cb-copy {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--term-ink); background: transparent; border: 1px solid var(--term-rule);
+    padding: 7px 13px; border-radius: 0; cursor: pointer;
+    transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
+  }
+  .cb-copy svg { width: 15px; height: 15px; }
+  .cb-copy:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .cb-copy:active { transform: translateY(1px); }
+  .cb-copy.copied { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .codeblock pre { border: 0; margin: 0; background: transparent; }
+
+  pre {
+    background: var(--term); padding: 22px 24px; margin: 0 0 26px; overflow-x: auto;
+    font-family: var(--font-mono); font-size: 15px; line-height: 1.62; color: var(--term-ink);
+    white-space: pre-wrap; word-break: break-word; font-weight: 400;
+  }
+  pre .hdr { color: var(--accent-2); font-weight: 700; }
+  pre .cmt { color: var(--term-warm); }
+  pre .pre-hdr {
+    display: block; color: var(--accent-2); font-weight: 700; font-size: 16px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin: 22px 0 6px; padding: 10px 0 0; border-top: 1px solid var(--term-rule);
+  }
+  pre .pre-hdr.first { margin-top: 0; padding-top: 0; border-top: none; }
+
+  /* Variants mini-nav (multi-part recipes) */
+  .variants { display: flex; flex-wrap: wrap; align-items: stretch; margin: 14px 0 26px; border: 1px solid var(--ink); background: var(--paper-2); }
+  .variants .v-label { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); padding: 12px 18px; background: var(--paper-3); border-right: 1px solid var(--rule); display: flex; align-items: center; }
+  .variants a { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--ink); text-decoration: none; padding: 12px 18px; border-right: 1px solid var(--rule); transition: background 0.16s ease, color 0.16s ease; display: flex; align-items: center; }
+  .variants a:last-child { border-right: none; }
+  .variants a:hover { background: var(--accent); color: var(--paper); }
+
+  /* Blockquote */
+  blockquote { margin: 0 0 26px; padding: 6px 0 6px 28px; border-left: 3px solid var(--accent); font-family: var(--font-head); font-size: 24px; line-height: 1.32; font-weight: 500; color: var(--ink); max-width: 56ch; letter-spacing: -0.015em; }
+  blockquote.tight { font-size: 22px; font-weight: 600; }
+
+  /* Callout */
+  .callout { background: var(--paper-2); border: 1px solid var(--ink); border-left: 5px solid var(--accent); padding: 28px 32px; margin: 8px 0 26px; }
+  .callout .callout-label { font-family: var(--font-mono); font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 14px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* Three-layer diagram */
+  .layer-grid { display: grid; grid-template-columns: 80px 1fr; gap: 20px 24px; margin: 24px 0 32px; align-items: start; }
+  .layer-num { font-family: var(--font-mono); font-size: 60px; font-weight: 700; color: var(--accent); line-height: 0.85; letter-spacing: -0.04em; }
+  .layer-body h3 { margin: 0 0 8px; font-size: 24px; }
+  .layer-body p { font-size: 20px; margin-bottom: 0; }
+
+  /* Tag chips for ranking factors */
+  .factors { background: var(--paper-2); border: 1px solid var(--rule); padding: 20px 24px; margin: 10px 0 26px; }
+  .factors h4 { margin: 0 0 10px; font-size: 15px; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  .factors p { font-size: 18px; margin-bottom: 10px; line-height: 1.5; }
+  .factors p:last-child { margin-bottom: 0; }
+  .factors strong { color: var(--ink); font-family: var(--font-head); }
+  .factors code, .factors .term { font-family: var(--font-mono); font-size: 0.88em; color: var(--ink); background: var(--paper-3); padding: 2px 6px; border: 1px solid var(--rule-soft); font-weight: 600; white-space: nowrap; display: inline-block; margin: 2px 1px; }
+
+  /* Recipe header */
+  .recipe-anchor { padding-top: 12px; }
+  .recipe-anchor h2 { margin-bottom: 8px; }
+  .recipe-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .recipe-tag { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 10px; background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink); }
+  .recipe-tag.accent { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+  /* Use-when block */
+  .usewhen { background: var(--paper-2); border-left: 4px solid var(--accent); padding: 18px 22px; margin: 14px 0 22px; }
+  .usewhen .uw-label { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 6px; }
+  .usewhen p { font-size: 20px; line-height: 1.5; margin-bottom: 0; color: var(--ink-2); max-width: none; }
+  .usewhen p strong { color: var(--ink); }
+
+  /* Setup grid for steps */
+  ol.setup-steps { list-style: none; counter-reset: stp; margin: 0 0 26px; max-width: 66ch; }
+  ol.setup-steps li { counter-increment: stp; position: relative; padding-left: 56px; margin-bottom: 22px; font-size: 21px; line-height: 1.5; color: var(--ink-2); }
+  ol.setup-steps li::before { content: 'Step ' counter(stp); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); padding: 4px 0; }
+  ol.setup-steps li strong { color: var(--ink); }
+
+  /* Recipe TOC table */
+  .recipe-toc-wrap { overflow-x: auto; margin: 18px 0 30px; }
+  table.recipe-toc { width: 100%; border-collapse: collapse; font-size: 18px; }
+  table.recipe-toc th { text-align: left; font-family: var(--font-mono); font-weight: 700; color: var(--accent-ink); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 0 16px 12px; border-bottom: 2px solid var(--ink); vertical-align: bottom; }
+  table.recipe-toc th:first-child { padding-left: 0; }
+  table.recipe-toc td { padding: 14px 16px; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); vertical-align: top; line-height: 1.4; font-size: 18px; }
+  table.recipe-toc td:first-child { padding-left: 0; font-family: var(--font-mono); font-weight: 700; color: var(--accent-ink); width: 44px; }
+  table.recipe-toc td:nth-child(2) { font-family: var(--font-head); font-weight: 600; color: var(--ink); }
+  table.recipe-toc tr:last-child td { border-bottom: none; }
+  table.recipe-toc a { color: inherit; text-decoration: none; }
+  table.recipe-toc a:hover { color: var(--accent); }
+
+  /* Checklist */
+  ul.checklist { list-style: none; margin-bottom: 10px; max-width: 64ch; counter-reset: cl; }
+  ul.checklist li { counter-increment: cl; position: relative; padding-left: 56px; font-size: 21px; line-height: 1.45; color: var(--ink-2); margin-bottom: 16px; }
+  ul.checklist li::before { content: ''; position: absolute; left: 24px; top: 4px; width: 24px; height: 24px; border: 2px solid var(--accent); background: transparent; }
+  ul.checklist li::after { content: counter(cl, decimal-leading-zero); position: absolute; left: 0; top: 5px; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+
+  /* Disclaimer block */
+  .disclaim { border: 1px dashed var(--rule); padding: 22px 24px; margin: 18px 0 24px; background: rgba(214, 62, 38, 0.04); }
+  .disclaim .d-label { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px; }
+  .disclaim p { font-size: 19px; margin-bottom: 12px; max-width: none; color: var(--ink-2); line-height: 1.5; }
+  .disclaim p:last-child { margin-bottom: 0; }
+
+  /* CTA */
+  .cta { margin-top: 90px; background: var(--ink); color: var(--term-ink); padding: 56px 50px; }
+  .cta .eyebrow { color: var(--accent-2); margin-bottom: 22px; }
+  .cta .eyebrow::before { background: var(--accent-2); }
+  .cta h2 { font-size: clamp(34px, 5vw, 46px); color: var(--paper); margin-bottom: 24px; line-height: 1.05; }
+  .cta p { color: #ECE4D2; max-width: 60ch; font-size: 21px; line-height: 1.55; }
+  .cta p.cta-strong { font-family: var(--font-head); font-size: 23px; font-weight: 700; color: var(--paper); margin: 16px 0 26px; letter-spacing: -0.015em; }
+  .cta strong { color: var(--paper); }
+  .email-button { display: inline-flex; align-items: center; gap: 13px; font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--paper); background: var(--accent); text-decoration: none; padding: 19px 30px; letter-spacing: -0.01em; transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), background 0.18s ease; }
+  .email-button svg { width: 20px; height: 20px; }
+  .email-button:hover { background: var(--accent-2); transform: translateY(-2px); }
+  .cta .fineprint { font-size: 17px; color: #DCCFB4; margin-top: 22px; margin-bottom: 0; }
+
+  /* Footer */
+  .footer { margin-top: 70px; padding-top: 36px; border-top: 1px solid var(--rule); }
+  .footer h3 { font-family: var(--font-head); font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); margin-top: 0; margin-bottom: 16px; }
+  .footer p, .footer li { font-size: 18px; color: var(--ink-2); }
+  .footer .sign { margin-top: 28px; font-size: 17px; color: var(--ink-3); font-style: italic; }
+
+  /* Responsive */
+  @media (max-width: 760px) {
+    body { font-size: 19px; }
+    .page { padding: 0 22px 80px; }
+    .brandbar { padding: 22px 0 16px; }
+    .cover { padding: 50px 0 0; }
+    p { font-size: 19px; }
+    .lede { font-size: 20px; }
+    ul.body-list li, ol.body-list li { font-size: 19px; }
+    ul.outcomes li { font-size: 20px; }
+    ul.checklist li { font-size: 19px; padding-left: 50px; }
+    ul.checklist li::before { left: 20px; }
+    ol.toc { columns: 1; }
+    .cta { padding: 36px 24px; }
+    .email-button { font-size: 17px; padding: 16px 20px; }
+    .layer-grid { grid-template-columns: 1fr; gap: 6px; }
+    .layer-num { font-size: 44px; }
+    pre { font-size: 13px; padding: 18px; }
+  }
+
+  /* Print */
+  @media print {
+    body { background: var(--paper) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body::after { display: none; }
+    .brandbar { position: static; }
+    .page { max-width: 100%; padding: 0 30px 24px; }
+    section, .cta, .callout, .footer, .codeblock, figure, .recipe-anchor, .factors, .disclaim { break-inside: avoid; }
+    pre, blockquote, table { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    .cb-copy { display: none; }
+    .cta { background: var(--ink) !important; }
+    .email-button { color: var(--paper) !important; background: var(--accent) !important; }
+    a { color: var(--accent-ink); }
+    .recipe-anchor { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+<!-- Brand -->
+<div class="brandbar">
+  <div class="brand">
+    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <mask id="mc"><rect x="0" y="0" width="300" height="300" fill="white"/><path d="M 142 40 V 135 L 80 170.7957 V 260 H 110 V 176.906 L 150 200 L 190 176.906 V 260 H 220 V 170.7957 L 158 135 V 40 Z" fill="black"/></mask>
+      </defs>
+      <g mask="url(#mc)">
+        <path d="M 150 150 L 63.3975 100 L 150 50 L 236.6025 100 Z" fill="#2A2520"/>
+        <path d="M 150 150 L 63.3975 100 L 63.3975 200 L 150 250 Z" fill="#1B1813"/>
+        <path d="M 150 150 L 236.6025 100 L 236.6025 200 L 150 250 Z" fill="#3B342B"/>
+      </g>
+    </svg>
+    <span class="name">Muditek</span>
+    <span class="meta">Playbook · v1</span>
+  </div>
+</div>
+
+<!-- Cover -->
+<header class="cover">
+  <div class="eyebrow">Outbound · Agent Systems</div>
+  <h1>Run Your Entire Outbound From <span class="hl">One Slack Channel</span></h1>
+  <p class="subtitle">Replace ten subscriptions with one open-source agent that has persistent memory, picks the verticals, scrapes the data, validates the emails, and launches the campaigns while you sleep.</p>
+</header>
+
+<!-- Hook -->
+<section class="hook">
+  <p class="hook-statement">Open your outbound stack right now and count the subscriptions. <span class="hl">You pay for ten platforms to do one job. The teams moving fastest collapsed all of it into a single Slack channel.</span></p>
+
+  <p class="lede">A lead-list tool. An enrichment tool. A verification tool. A CRM. A sequencer. A deliverability monitor. A meeting scheduler. An analytics dashboard. A spreadsheet stitching half of them together. Probably ten platforms, to figure out who to talk to, find a way to reach them, and start a conversation.</p>
+
+  <p>The friction is not the tools. The friction is that a human is the integration layer between platforms that do not talk to each other natively. That human spends roughly eight hours a week stitching outputs together by hand. Whatever was run last week gets run again next week, with the same manual stitching in between.</p>
+
+  <p>That whole stack collapses into one place: <strong>one Slack channel.</strong> You DM the agent. It picks the verticals, scrapes the data, validates the emails, drafts the sequences, launches the campaigns, and pings you when it is done. It runs overnight while you sleep.</p>
+
+  <blockquote>The reference live build behind this playbook produced 45 verified leads from $0 of paid enrichment, using only public data, in four Slack messages, in roughly one hour.</blockquote>
+
+  <p>This document is the install path. Every command, file path, configuration choice, and self-correction rule below is reusable as-is.</p>
+
+  <p class="outcomes-title">By the end of this playbook you will be able to</p>
+  <ul class="outcomes">
+    <li>Replace ten outbound subscriptions with one Slack channel and one open-source agent harness.</li>
+    <li>Install the harness in an afternoon and wire it to Slack with three terminal commands.</li>
+    <li>Set up a 5-file persistent memory vault that walks across every session and survives context-window resets.</li>
+    <li>Seed that vault in a day so the agent knows your ICP, offers, and competitors as well as a senior hire would after a month.</li>
+    <li>Generate verified B2B lead lists from free public data without Clay, Apollo, Prospeo, or Lead Magic.</li>
+    <li>Use the one DNS check that cuts most of the waste out of free-data prospecting.</li>
+    <li>Mine real customer pain in customer language from G2 and Capterra and turn each complaint into an outbound trigger.</li>
+    <li>Launch a multi-step cold email campaign from inside Slack with a single message, using an open-source CLI instead of an MCP server.</li>
+    <li>Run a fleet of agents (outbound, marketing, sales intel, content) on one architecture instead of one app per role.</li>
+    <li>Harden the deployment with a 12-step security pass before any client data touches it.</li>
+    <li>Run a regulated-industry variant with full local inference and zero data leaving the device.</li>
+  </ul>
+
+  <div class="quick-block">
+    <h3>Who this is for</h3>
+    <ul class="body-list">
+      <li><strong>Founders and operators</strong> running outbound themselves and tired of the manual stitching.</li>
+      <li><strong>Agencies</strong> ready to pivot from "we run your outbound" to "agents as a service."</li>
+      <li><strong>In-house GTM teams</strong> that want overnight throughput without hiring three more SDRs.</li>
+    </ul>
+  </div>
+
+  <div class="quick-block">
+    <h3>How to use this playbook</h3>
+    <p>Read it once end-to-end. Then run the install path in order. Stand up the harness first. Seed the memory vault second. Install one CLI at a time. Run one workflow three times before adding the next. The 7-day plan at the end is the exact order.</p>
+  </div>
+</section>
+
+<!-- Contents -->
+<nav class="contents">
+  <h2>Contents</h2>
+  <ol class="toc">
+    <li><a href="#s1">The core shift</a></li>
+    <li><a href="#s2">The architecture: one harness, many roles</a></li>
+    <li><a href="#s3">Phase 1. Pick where the harness runs</a></li>
+    <li><a href="#s4">Phase 2. Install and wire to Slack</a></li>
+    <li><a href="#s5">Phase 3. Seed the memory vault</a></li>
+    <li><a href="#s6">Phase 4. Add skills, one at a time</a></li>
+    <li><a href="#s7">Phase 5. Run one workflow three times</a></li>
+    <li><a href="#s8">Phase 6. Harden before client data</a></li>
+    <li><a href="#s9">Phase 7. The free-data outbound recipe</a></li>
+    <li><a href="#s10">The self-correction loop</a></li>
+    <li><a href="#s11">CLI-first, MCP as a fallback</a></li>
+    <li><a href="#s12">The fleet pattern: four roles</a></li>
+    <li><a href="#s13">Two operating rules for the fleet</a></li>
+    <li><a href="#s14">Model selection inside the fleet</a></li>
+    <li><a href="#s15">The agency model inversion</a></li>
+    <li><a href="#s16">The reference stack</a></li>
+    <li><a href="#s17">The 7-day install path</a></li>
+    <li><a href="#s18">Things to memorize</a></li>
+    <li><a href="#s19">What this replaces</a></li>
+    <li><a href="#s20">When this is not the right answer</a></li>
+  </ol>
+</nav>
+
+<!-- 1 -->
+<section class="sec" id="s1">
+  <h2>1. The core shift</h2>
+  <p>The traditional outbound workflow:</p>
+  <blockquote class="tight">Open Clay. Build a table. Run enrichment columns. Export CSV. Re-upload into Smartlead or Instantly. Switch to a doc to write copy. Switch tabs to QA. Pull up a third tab to check deliverability. Something breaks. Fix it. Re-run.</blockquote>
+  <p>The tools are not the problem. The human being the integration layer is the problem.</p>
+  <p>The new workflow:</p>
+  <blockquote class="tight">Open Slack. DM the agent. Wait. The agent returns when the chain is done.</blockquote>
+  <p>Same outcome. Different operator. The operator now has persistent memory, a sandboxed runtime, and a toolbox. The human becomes the trainer and the reviewer, not the integrator.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2">
+  <h2>2. The architecture: one harness, one brain, many roles</h2>
+  <p>Every use case in this playbook runs on the same four pieces.</p>
+  <figure><img src="/media/slack-outbound/diagram-architecture.png" alt="Architecture: you talk to Slack, Slack routes to the OpenClaw harness, the harness runs four roles on a shared foundation of memory, tools, and data."><figcaption>One interface, one harness, four roles, one shared foundation.</figcaption></figure>
+  <ol class="body-list">
+    <li><strong>One harness.</strong> A sandboxed agent runtime with persistent memory on disk. The reference open-source harness is <strong>OpenClaw</strong>, MIT-licensed, run by an independent foundation that OpenAI helps fund. Any harness with persistent memory plus tool access works in principle. OpenClaw is the most mature option in production right now.</li>
+    <li><strong>One memory layer.</strong> Institutional knowledge of the business lives with the agent, on disk, indexed, walked at session start. Seeded once. Survives context resets.</li>
+    <li><strong>One interface.</strong> Slack is the default. WhatsApp, Telegram, Discord, Google Chat, Signal, iMessage, and Microsoft Teams are first-class alternatives in the harness. Pick where your team already lives.</li>
+    <li><strong>A skills toolbox per role.</strong> Each agent is the same brain with a different system prompt and a different set of tools attached. Outbound gets scrapers and an email-platform CLI. Marketing gets the website repo. Sales intel gets the call-transcript database. Content gets the CMS and the meeting-notes feed.</li>
+  </ol>
+  <p>That is the entire stack. Everything below is execution detail.</p>
+  <div class="callout">
+    <div class="callout-label">One important framing</div>
+    <p>Read this playbook as proof that the architecture works with substitutions, not as a buyer's guide. Swap the model for whichever is winning this month. Swap the email platform. Swap the chat interface. The pattern stays the same. The substitutions do not break the workflow.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3">
+  <h2>3. Phase 1. Pick where the harness runs</h2>
+  <p>Four host options, ordered from fastest to most controlled.</p>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>Host</th><th>Setup time</th><th>Cost</th><th>When to pick</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto">Managed cloud pod</td><td>Under 60 seconds</td><td>Monthly subscription</td><td>Skip ops entirely. Fastest path to live.</td></tr>
+        <tr><td style="width:auto">Mac mini at the office</td><td>~30 minutes</td><td>~$1 to $2 / month electricity</td><td>Full control, voice-wake support, lowest long-term TCO for a small team.</td></tr>
+        <tr><td style="width:auto">Self-managed VPS</td><td>~1 hour</td><td>$5 to $20 / month</td><td>Agency running multiple client agents. Isolation per tenant.</td></tr>
+        <tr><td style="width:auto">Local Docker container</td><td>Free</td><td>$0</td><td>Development only. Not production.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Minimum specs.</strong> 2 CPU cores, 4 GB RAM, 10 GB SSD, Node 22 or higher. Bump RAM to <strong>8 GB</strong> if browser automation will be enabled, because the underlying Playwright runtime roughly doubles the memory requirement.</p>
+  <p><strong>Sizing rules.</strong> One operator running outbound for a single business runs everything on a Mac mini comfortably. An agency that will stand up 5 to 10 client agents in parallel should jump straight to a dedicated VPS. Bare-metal or on-prem becomes interesting only when data-residency or compliance constraints rule out the cloud.</p>
+  <div class="callout">
+    <div class="callout-label">Hardware note, small team</div>
+    <p>A Mac mini at $799 with 512 GB is currently the entry tier after Apple discontinued the $599 SKU in May 2026, due to AI-driven memory chip shortages. The agent fleet still runs comfortably at that tier.</p>
+  </div>
+  <p class="lead-line">Stand the harness up first. Train it second. Do not try to do both at the same time.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4">
+  <h2>4. Phase 2. Install and wire to Slack</h2>
+  <p>Three terminal commands followed by an onboarding wizard.</p>
+  <div class="codeblock"><div class="cb-head"><span class="cb-dot"></span><span class="cb-label">install</span><button class="cb-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="cb-txt">Copy</span></button></div><pre>npm install -g openclaw@latest
+openclaw onboard --install-daemon
+openclaw gateway status</pre></div>
+  <p>The wizard walks through the gateway, the workspace, the channels, and the first skills. For Slack specifically, choose <strong>Socket Mode</strong>. It gives real-time messaging with no public webhook to expose, which keeps the surface area small and avoids most of the auth pain.</p>
+  <p>Once the daemon is up, confirm the loop is closed with a single test:</p>
+  <div class="codeblock"><div class="cb-head"><span class="cb-dot"></span><span class="cb-label">test</span><button class="cb-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="cb-txt">Copy</span></button></div><pre>openclaw agent --message "Say hi" --thinking high</pre></div>
+  <p>A reply in Slack means the install is operational.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5">
+  <h2>5. Phase 3. Seed the memory vault</h2>
+  <p class="lead-line">This is the part that determines whether the agent is useful or generic.</p>
+  <p>The biggest reason agent projects fail is the context window. A session starts. Business context gets loaded for an hour. The limit hits. State evaporates. Tomorrow the ICP gets re-explained again.</p>
+  <p>The harness flips that. Memory lives on disk, indexed, walked at session start. A 5-file layered system at <code class="inline">~/.openclaw/workspace/memory/</code>.</p>
+  <figure><img src="/media/slack-outbound/diagram-memory.png" alt="The five-file memory vault: MEMORY.md as the index, plus projects.md, infra.md, lessons.md, and a dated daily log, with Memory Protocol, Retrieval Protocol, and a pre-compaction flush."><figcaption>Five files on disk, plus three non-negotiable protocols on top of the defaults.</figcaption></figure>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto"><code class="inline">MEMORY.md</code></td><td>The index. Loaded into every session. Points the agent at the other files.</td></tr>
+        <tr><td style="width:auto"><code class="inline">memory/projects.md</code></td><td>The business. ICP, offers, segments, qualifying signals.</td></tr>
+        <tr><td style="width:auto"><code class="inline">memory/infra.md</code></td><td>Tool stack and canonical use per tool. Credentials referenced, never inlined.</td></tr>
+        <tr><td style="width:auto"><code class="inline">memory/lessons.md</code></td><td>Corrections the agent has learned over time. The compounding loop lives here.</td></tr>
+        <tr><td style="width:auto"><code class="inline">memory/YYYY-MM-DD.md</code></td><td>Daily activity log the agent reads back at session start.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Two non-negotiable additions on top of the defaults</h3>
+  <ul class="body-list">
+    <li><strong>Memory Protocol.</strong> A standing instruction telling the agent to check the <code class="inline">memory/</code> files before answering. Without this, the agent answers from whatever happens to be in the current context window and never consults its notes.</li>
+    <li><strong>Retrieval Protocol.</strong> A standing instruction telling the agent how to query the index. Specifies which file to check for which kind of question. Without this, the agent reads everything every time and burns tokens for no gain.</li>
+  </ul>
+  <p>Most setup pain that gets posted in the harness community traces back to missing one of these two.</p>
+  <div class="callout">
+    <div class="callout-label">Highest-leverage extra configuration</div>
+    <p>A <strong>pre-compaction memory flush.</strong> The agent senses its context window filling and writes a summary to <code class="inline">memory/</code> before losing state. Without this, the agent forgets the morning by the afternoon.</p>
+  </div>
+  <p><strong>Block one afternoon to write the actual content.</strong> Treat it like onboarding a senior hire. The minimum vault content:</p>
+  <ul class="body-list">
+    <li><strong>ICP definition.</strong> Segments. Sub-personas. Qualifying signals for each.</li>
+    <li><strong>Top three customer pains, in customer language.</strong> Pull verbatim from real call transcripts. Not marketing copy. Their words.</li>
+    <li><strong>Offers and pricing.</strong> Including which offer maps to which segment.</li>
+    <li><strong>Competitor positioning.</strong> Who is lost to, who is beaten, and the one-line reason for each match-up.</li>
+    <li><strong>Winning sales narratives.</strong> The three to five storylines that have closed real deals. Plus the objections that come with each.</li>
+    <li><strong>Post and email formats that already work.</strong> Specific subject-line patterns, hook formats, CTA structures, post structures.</li>
+    <li><strong>Historical wins.</strong> Past clients, deal sizes, segments. The agent uses this to rank future verticals.</li>
+  </ul>
+  <p>A few days of investment to seed it. The payoff compounds every week after that.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6">
+  <h2>6. Phase 4. Add skills, one at a time</h2>
+  <p>The harness ships skills in three layers.</p>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>Layer</th><th>Tools</th><th>Default</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto">Core</td><td>8 tools</td><td>On</td><td>File access, command execution, web access. Do not touch.</td></tr>
+        <tr><td style="width:auto">Advanced</td><td>18 tools</td><td>Off</td><td>Browser control, sub-agents, scheduled automation. Enable as needed. Never preemptively.</td></tr>
+        <tr><td style="width:auto">Knowledge</td><td>53+ skills</td><td>Off</td><td>Slack, Google, Obsidian, HubSpot, and so on. Install only what is actually used.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Each skill lives at <code class="inline">~/.openclaw/workspace/skills/&lt;skill&gt;/SKILL.md</code>. The <strong>description field</strong> in that markdown directly controls trigger probability. Be specific and list the actual phrases the team uses.</p>
+  <p>A specific description triggers reliably:</p>
+  <blockquote class="tight">"Launch an Instantly campaign from a list of verified leads."</blockquote>
+  <p>A vague description gets misfired or ignored:</p>
+  <blockquote class="tight">"Help with email."</blockquote>
+  <h3>The working CLI stack for outbound, as a reference set</h3>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>CLI</th><th>Purpose</th><th>Install</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto"><code class="inline">instantly-cli</code></td><td>Cold email campaigns. 156 commands across 31 API groups.</td><td><code class="inline">npm i -g instantly-cli</code></td></tr>
+        <tr><td style="width:auto"><code class="inline">clay-gtm-cli</code></td><td>Enrichment workflows that still benefit from Clay.</td><td>npm</td></tr>
+        <tr><td style="width:auto"><code class="inline">seamless-ai-cli</code></td><td>Prospecting.</td><td>npm</td></tr>
+        <tr><td style="width:auto"><code class="inline">heyreach-cli</code></td><td>LinkedIn outreach.</td><td>npm</td></tr>
+        <tr><td style="width:auto"><code class="inline">calendly-cli</code></td><td>Scheduling and meeting links.</td><td>npm</td></tr>
+        <tr><td style="width:auto"><code class="inline">clickup-cli</code></td><td>Project tracking, internal handoffs.</td><td>npm</td></tr>
+        <tr><td style="width:auto"><code class="inline">n8n</code></td><td>Visual automations for anything without a CLI yet.</td><td>npm or hosted</td></tr>
+        <tr><td style="width:auto">MCP servers</td><td>Fallback when no CLI or stable API exists.</td><td>Per server</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Install one CLI per real workflow that gets run. Do not install all of them in week one. The fastest path to a stuck agent is too many half-installed tools competing for trigger probability.</p>
+  <div class="callout">
+    <div class="callout-label">Nuance on the email-platform CLI</div>
+    <p>The reference <code class="inline">instantly-cli</code> ships as a dual-surface binary. The same install runs as a CLI for bash calls and as an MCP server for any MCP-compatible client. One install, both surfaces. The CLI is the default path because of context economics. The MCP server stays available for callers that need it.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7">
+  <h2>7. Phase 5. Run one workflow three times before adding the next</h2>
+  <p>This is where most teams self-sabotage. The temptation is to deploy a marketing agent, a sales agent, an outbound agent, and a content agent in week one. That guarantees a month of debugging instead of compounding.</p>
+  <p>The rule:</p>
+  <ol class="body-list">
+    <li>Pick the single workflow with the most repetitive manual work.</li>
+    <li>Have the agent own it end-to-end.</li>
+    <li>Watch it run once. Correct what it gets wrong, in plain English, in Slack. Confirm the correction lands in <code class="inline">memory/lessons.md</code>.</li>
+    <li>The second pass should need only a small nudge.</li>
+    <li>By the third run, the workflow should be hands-off.</li>
+  </ol>
+  <p>After the first agent is stable, the two highest-value next builds are usually sales-call coaching (high leverage, low visibility) and a marketing agent with GitHub PR access on the website (lower leverage, high visibility). A content-drafting agent is the slowest-burn option but compounds the most consistently over time.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s8">
+  <h2>8. Phase 6. Harden before client data touches it</h2>
+  <p>A standard install runs as a privileged process on the host. Before any client data or production credential is pointed at the agent, run the hardening pass.</p>
+  <h3>The 12-step hardening checklist</h3>
+  <ul class="checklist">
+    <li>Firewall rules on the gateway port. Only the bare minimum exposed.</li>
+    <li>Gateway-level authentication. No anonymous access to the agent endpoint.</li>
+    <li>Tailscale or equivalent for private networking between operator and host.</li>
+    <li>Execution-approval controls on shell commands. No destructive commands without explicit approval.</li>
+    <li>Credentials stored in a secrets manager. Not in <code class="inline">memory/infra.md</code>. Not in committed env files.</li>
+    <li>Audit logging on every agent action. Tool calls, file edits, network requests, all of it.</li>
+    <li>Explicit allowlist on the skills the agent is permitted to call. No "all skills always available."</li>
+    <li>Per-tenant memory isolation if the same harness serves multiple clients.</li>
+    <li>Network egress rules on the host. Block outbound traffic to anything not allowlisted.</li>
+    <li>Filesystem isolation between memory vaults of different agents in a fleet.</li>
+    <li>Versioned backups of the memory vault. Daily, off-host.</li>
+    <li>A documented rollback path for a misbehaving agent, including credential revocation in under a minute.</li>
+  </ul>
+  <p>For <strong>regulated industries</strong> (healthcare, financial services, anything HIPAA or SOC 2 adjacent), skip the standard install and start with a hardened distribution.</p>
+  <p><strong>NemoClaw</strong> is NVIDIA's hardened distribution of OpenClaw, released in early preview on March 16, 2026. It wraps the harness with:</p>
+  <ul class="body-list">
+    <li>Full local inference via Nemotron-class open models.</li>
+    <li>Process-level sandboxing through NVIDIA's OpenShell runtime.</li>
+    <li>Policy-based privacy and security guardrails.</li>
+    <li>Network and filesystem isolation by default.</li>
+  </ul>
+  <p>Zero data leaves the device. The performance ceiling is lower than cloud frontier models, but for regulated buyers that tradeoff is the point.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s9">
+  <h2>9. Phase 7. The free-data outbound recipe</h2>
+  <p>The reference live build that produced 45 verified leads from $0 in paid enrichment ran this exact sequence. Reuse the steps as-is.</p>
+  <figure><img src="/media/slack-outbound/diagram-pipeline.png" alt="Seven-step free-data pipeline: vertical selection, pivot around blockers, extract triggers, volume, the DNS MX gate, overnight run, launch. Outcome: 45 verified leads in about an hour."><figcaption>Seven steps, zero paid tools. The DNS MX gate (step 5) is what makes it viable.</figcaption></figure>
+  <h3>Step 1. Vertical selection</h3>
+  <p>Prompt the agent to find high-ticket verticals where the buyers likely do not have an engineering bench, using only public data. The output is a ranked tier list shaped by the historical wins in the memory vault:</p>
+  <ul class="body-list">
+    <li><strong>Tier 1, highest conviction.</strong> Verticals already closed before, with a clear automation gap.</li>
+    <li><strong>Tier 2, strong fit, more competitive.</strong> Same gap, bigger incumbents.</li>
+  </ul>
+  <p>If the ranking reads like a generic LLM guess, the memory vault is under-seeded. Add more historical wins and re-run.</p>
+  <h3>Step 2. Mine pain in customer language</h3>
+  <p>Prompt the agent to scrape public review sites for pain signals in the chosen verticals. The right sources are <strong>G2 and Capterra</strong>. Buyers explain in writing why they bought, why they switched, and what is broken. The output is verbatim user complaints, vertical by vertical, product by product.</p>
+  <p>Each complaint becomes an outbound trigger. A complaint about a specific incumbent ("expensive, buggy, missing core features") is a hook. The hook goes into the sequence verbatim, in the buyer's own words.</p>
+  <p>If a public source is blocked on the day of the run (Reddit's API walled off, for example), let the agent pivot on its own. Do not redirect. The agent should explain the pivot in the Slack thread in plain English. The operational lesson is one line:</p>
+  <blockquote class="tight">Let the agent solve. Do not micromanage.</blockquote>
+  <h3>Step 3. Pull volume from public directories</h3>
+  <p>Prompt the agent to retrieve company lists from public directories for the chosen verticals. Reference live-build numbers from a single overnight run:</p>
+  <ul class="body-list">
+    <li><strong>4,966 financial advisory firms.</strong></li>
+    <li><strong>15,000+ electrical contractor businesses.</strong></li>
+  </ul>
+  <p>Public sources to chain together: G2, Capterra, Google Maps, public business directories, company contact pages, sitemap-driven page-scraping for "About" and "Contact." Volume is not the limit on free-data prospecting. Quality control is.</p>
+  <h3>Step 4. The DNS MX check rule</h3>
+  <p>This is the rule worth memorizing. It is what makes free-data prospecting actually viable. Write it into the agent's memory once.</p>
+  <div class="callout">
+    <div class="callout-label">The rule</div>
+    <p>1. Pull the company domain. 2. Run a DNS MX check on the domain. 3. If there is no MX record, the domain cannot receive email, so drop the row. 4. Only after the MX check passes, scrape the contact page or guess the email format.</p>
+  </div>
+  <p>This rule cuts most of the wasted work out of free-data prospecting before any enrichment credit is spent. It is free. It runs in milliseconds. It is the difference between a usable list and a junk list.</p>
+  <h3>Step 5. Overnight run, async return</h3>
+  <p>Prompt the agent to grind overnight and notify in Slack when the batch finishes. Close the laptop. No polling. The reference live build cleared <strong>45 verified leads</strong> on the first pipeline. Real names, real phone numbers, placeholders filtered. The agent posted a Slack message when the batch was ready.</p>
+  <h3>Step 6. Launch the campaign from inside Slack</h3>
+  <p>Prompt the agent to draft the campaign and push it live. Reference parameters from the live build:</p>
+  <ul class="body-list">
+    <li><strong>Campaign naming.</strong> Today's date plus the segment label. Makes future reruns and audits trivial.</li>
+    <li><strong>Cadence.</strong> 3-step sequence at <strong>day 1 / day 4 / day 9</strong>.</li>
+    <li><strong>Volume.</strong> <strong>10 emails per day per inbox times 10 secondary domains equals 100 emails per day</strong> from cold start.</li>
+    <li><strong>Variables.</strong> Company name, first name, vertical-specific pain hook lifted from the G2 signal in Step 2.</li>
+    <li><strong>Delivery.</strong> The agent shells out to the email-platform CLI to create the campaign programmatically.</li>
+  </ul>
+  <p>Three messages on Slack and the operation is live. The operator did not open the email platform's dashboard once.</p>
+</section>
+
+<!-- 10 -->
+<section class="sec" id="s10">
+  <h2>10. The self-correction loop</h2>
+  <p>Every mistake the agent makes once becomes a rule in memory. The next run does not repeat it. The run after that runs even cleaner. Over weeks, the system audits itself into something close to consistent.</p>
+  <figure><img src="/media/slack-outbound/diagram-loop.png" alt="Self-correction loop: agent runs, makes a mistake, you flag it once, the rule is written to lessons.md, the next run is cleaner, compounding each cycle."><figcaption>Flag a mistake once. The rule is written to memory and never repeats.</figcaption></figure>
+  <h3>Rule A. API variable casing</h3>
+  <p>The agent created its first campaign with <code class="inline">company_name</code> (snake_case) where the platform API expects <code class="inline">companyName</code> (camelCase). The operator flagged it once in Slack. The agent wrote the rule into <code class="inline">memory/lessons.md</code> in the same response. From that point forward, every campaign uses the correct casing automatically.</p>
+  <p><strong>Generalize it.</strong> When an API returns a 400 because of a variable-shape mismatch, the agent writes the correct shape into memory, scoped to that integration, before retrying.</p>
+  <h3>Rule B. Spam-trap filtering</h3>
+  <p>The first lead pull surfaced some placeholder emails. The agent wrote a memory rule:</p>
+  <blockquote class="tight">"Spam-trap filter now baked into pipeline for all future batches."</blockquote>
+  <p>The next pull was cleaner. The one after that, cleaner again.</p>
+  <p><strong>Generalize it.</strong> Any data-quality regression caught on review becomes a permanent pre-output filter for the same pipeline stage. The agent does not re-introduce the regression.</p>
+  <p class="lead-line">Without this loop, every batch starts over. With it, every batch starts ahead of the previous one.</p>
+</section>
+
+<!-- 11 -->
+<section class="sec" id="s11">
+  <h2>11. CLI-first, MCP as a fallback</h2>
+  <p>The tooling layer is the under-discussed reason the install scales.</p>
+  <p>The protocol most teams default to is MCP. It is the protocol Anthropic shipped and that most agent frameworks adopted. It is still the right answer when a third party ships only an MCP server and there is no CLI alternative.</p>
+  <p>When there is a choice, build the tooling layer as <strong>CLIs first</strong> and reach for MCP second. The argument:</p>
+  <ol class="body-list">
+    <li><strong>Agents already run in a terminal.</strong> Every coding-agent session is making bash calls anyway. CLIs fit that environment natively with nothing to translate.</li>
+    <li><strong>CLIs are cheap to install.</strong> A single <code class="inline">npm install</code>. The agent can install them itself when needed.</li>
+    <li><strong>CLIs do not consume the agent's context window</strong> the way persistent MCP server connections do. Fewer tokens burned per task. Lower cost, higher throughput, longer effective sessions.</li>
+    <li><strong>CLIs have decades of history being chained, scripted, and composed.</strong> Logs, pipes, exit codes, redirects, cron. All of it just works.</li>
+  </ol>
+  <p>The reference <code class="inline">instantly-cli</code> covers 156 commands across 31 API groups, each command runs as a bash call, and each is paired with a skill file that describes commands, parameters, and common failure modes. The agent installs, reads the skill, executes. Accuracy stays high because the surface area each tool exposes is narrow and explicit.</p>
+  <p>The same binary doubles as an MCP server. One install. Two surfaces. The CLI is the default path. The MCP server stays available for clients that need it. Reuse the pattern for any tool: ship a CLI that also exposes an MCP surface.</p>
+</section>
+
+<!-- 12 -->
+<section class="sec" id="s12">
+  <h2>12. The fleet pattern: four roles, one architecture</h2>
+  <p>One outbound agent is the entry point. The same architecture runs the rest of the GTM stack. Four reference roles, all on one harness.</p>
+  <h3>A. Marketing agent</h3>
+  <ul class="body-list">
+    <li><strong>Access.</strong> The website repository, with commit rights on a feature branch only, never on <code class="inline">main</code>.</li>
+    <li><strong>Trigger.</strong> A Slack message ("ship a new pricing page," "add a holiday banner," "update the meta description," "write a case-study landing page").</li>
+    <li><strong>Flow.</strong> The agent generates the revision on a new branch, opens a pull request, creates a deploy preview, and posts the preview link back to Slack. The operator reviews in the browser and merges in the channel.</li>
+  </ul>
+  <p>Functionally a chief marketing officer who actually has the codebase. Most agencies hire two people to do less than this.</p>
+  <h3>B. Sales intelligence agent</h3>
+  <ul class="body-list">
+    <li><strong>Access.</strong> The call-recording database. Supabase is the reference. Any database that can ingest transcripts works.</li>
+    <li><strong>Pipe-in tools.</strong> Any call-recorder that writes to the database reliably. Fireflies and Granola both work. The recorder choice is replaceable.</li>
+    <li><strong>Trigger.</strong> Every call recording lands in the database, tagged by call type.</li>
+    <li><strong>Flow.</strong> The agent pulls the transcript, identifies the opportunity, scores it against the offer, posts a Slack summary, and then coaches the rep on what to change next call ("on minute 14 you missed the budget signal; on minute 22 the prospect referenced a competitor and you did not probe"). When the call closes well, the agent drafts the proposal. The operator approves. The agent sends.</li>
+  </ul>
+  <h3>C. Content agent</h3>
+  <ul class="body-list">
+    <li><strong>Access.</strong> The memory vault plus source material from real calls and internal Slack threads.</li>
+    <li><strong>Trigger.</strong> Something interesting (a customer outcome, a product update, a sharp insight from a meeting).</li>
+    <li><strong>Flow.</strong> The agent drafts the post in the operator's voice, grounded in the source material, and queues it for review. The drafts are concrete because the source material is concrete. Real outcomes, not generic best-practice content.</li>
+  </ul>
+  <h3>D. Outbound agent</h3>
+  <p>Everything in Section 9. Same brain. Different system prompt. Different toolbox. One Slack workspace.</p>
+</section>
+
+<!-- 13 -->
+<section class="sec" id="s13">
+  <h2>13. Two operating rules for working with the fleet</h2>
+  <p>These are non-obvious. Both come out of real operator practice.</p>
+  <h3>Rule 1. Talk to the agent. Do not type.</h3>
+  <p>Voice-to-text gives the agent more context per message than typed text. People ramble when they talk. The rambling is the context. Typing throttles the operator to bullet points and strips the reasoning the agent could have used. Use voice for any non-trivial instruction. Use typing for one-line nudges.</p>
+  <h3>Rule 2. Give every agent a name, a persona, and a backstory.</h3>
+  <p>When the team starts treating the agent as a teammate, the workflow changes. People delegate. People follow up. People hold the agent accountable the way they hold a junior hire accountable. The system prompt for each agent should include the name, the role in one line, a short backstory, and a tone. The output reads like a colleague.</p>
+</section>
+
+<!-- 14 -->
+<section class="sec" id="s14">
+  <h2>14. Model selection inside the fleet</h2>
+  <p>Different brains for different jobs. The pattern that works in practice:</p>
+  <ul class="body-list">
+    <li><strong>Sonnet-class models</strong> for the workhorse roles. Outbound research, lead pulls, campaign drafting, content drafting, marketing PR generation. Throughput beats marginal accuracy.</li>
+    <li><strong>Opus-class models</strong> for the harder reasoning. Sales-intel scoring, proposal generation, strategic call coaching, vertical ranking when the memory vault is rich. Accuracy beats throughput.</li>
+  </ul>
+  <p>The routing happens in the personalities and the channels, not in a config file. The Slack channel structure does the routing. Outbound DMs go to the Sonnet-class agent. Sales-intel summaries come from the Opus-class agent.</p>
+</section>
+
+<!-- 15 -->
+<section class="sec" id="s15">
+  <h2>15. The agency model inversion</h2>
+  <p>The work used to be <strong>generating the leads.</strong> Building lists. Enriching. Writing sequences. Monitoring inboxes. Reporting meetings booked at the end of the week. That work is heading to zero faster than most teams realize. Inside 12 months, most of it will be a single agent's job.</p>
+  <p>The work now is <strong>installing the system that does all of the above and keeping it smart as the models keep upgrading underneath it.</strong></p>
+  <p>Clients are dropping the request for "lead generation." What they actually want is <strong>an agent that generates leads on its own forever, with someone on call to keep it running.</strong></p>
+  <p>The SaaS layer that did one specific thing well (list-building, enrichment, sequencing, scoring) is becoming a commodity input the agent calls when it needs it. The value moves up the stack to whoever owns the agent and trains it. The next year of durable outbound offers will look like this:</p>
+  <ul class="body-list">
+    <li>One-time install of the harness, the memory vault, and the fleet.</li>
+    <li>Monthly retainer to keep the system trained as the data, tools, and models evolve.</li>
+    <li>Outcome reporting (meetings, pipeline, revenue) instead of activity reporting (emails sent, lists built).</li>
+  </ul>
+  <p class="lead-line">Sell the operator, not the labor.</p>
+</section>
+
+<!-- 16 -->
+<section class="sec" id="s16">
+  <h2>16. The reference stack</h2>
+  <p>A working end-to-end stack, role by role. The point is not to copy it tool-for-tool. The point is to show that the architecture works with substitutions. Swap any single layer and the workflow does not break.</p>
+  <figure><img src="/media/slack-outbound/diagram-stack.png" alt="The full stack as nine layers from Slack interface down to NemoClaw security, each with a reference choice and a note that the layer is substitutable."><figcaption>A starting topology, not a buyer's guide. Every layer is substitutable.</figcaption></figure>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>Layer</th><th>Reference choice</th><th>Substitutable with</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto">Harness</td><td>OpenClaw, self-hosted</td><td>Any persistent-memory agent harness</td></tr>
+        <tr><td style="width:auto">Hardened distribution</td><td>NemoClaw</td><td>Other hardened agent distributions as they ship</td></tr>
+        <tr><td style="width:auto">Models</td><td>Sonnet for workhorse, Opus for hard reasoning</td><td>Whatever frontier model is winning this month</td></tr>
+        <tr><td style="width:auto">Interface</td><td>Slack</td><td>MS Teams, WhatsApp, Discord, Google Chat, iMessage</td></tr>
+        <tr><td style="width:auto">Memory</td><td>On-disk persistent vault, walked at session start</td><td>Any persistent-memory backend with retrieval</td></tr>
+        <tr><td style="width:auto">Tools</td><td>CLI-first, skill-file per CLI</td><td>MCP servers when no CLI exists</td></tr>
+        <tr><td style="width:auto">Outreach</td><td>Instantly via <code class="inline">instantly-cli</code></td><td>Smartlead, Lemlist, EmailBison</td></tr>
+        <tr><td style="width:auto">Enrichment</td><td><code class="inline">clay-gtm-cli</code> plus free-data MX check</td><td>Any enrichment vendor when paid enrichment is warranted</td></tr>
+        <tr><td style="width:auto">Free-data sources</td><td>Reddit (when accessible), G2, Capterra, Google Maps, directories, contact pages</td><td>Any public source that survives scraping policy</td></tr>
+        <tr><td style="width:auto">Database</td><td>Supabase</td><td>Any Postgres-compatible store</td></tr>
+        <tr><td style="width:auto">Call recording</td><td>Fireflies or Granola</td><td>Any recorder that writes to the database</td></tr>
+        <tr><td style="width:auto">Hardware (small)</td><td>Mac mini, $799 entry SKU</td><td>Any 8 GB+ RAM box on Node 22</td></tr>
+        <tr><td style="width:auto">Hardware (scaled)</td><td>VPS (DigitalOcean, Hetzner, Hostinger)</td><td>Any 4 GB+ cloud instance</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Treat the table as a starting topology. Run the install once with the references. Substitute where there is already a contract in place or a preference inside the team.</p>
+</section>
+
+<!-- 17 -->
+<section class="sec" id="s17">
+  <h2>17. The 7-day install path</h2>
+  <p>A realistic week-one plan, end-to-end.</p>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>Day</th><th>Action</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Pick the host. Stand up the harness with the three install commands. Wire to Slack via Socket Mode.</td><td>Agent reachable from Slack. Test message replies cleanly.</td></tr>
+        <tr><td>2</td><td>Seed <code class="inline">projects.md</code>, <code class="inline">infra.md</code>, the Memory and Retrieval Protocols. Enable pre-compaction flush.</td><td>Agent answers "who do we sell to and what do we say" without prompting.</td></tr>
+        <tr><td>3</td><td>Install the first CLI. Pair it with a <code class="inline">SKILL.md</code> that lists the specific phrases the team uses.</td><td>Agent can run one real workflow end-to-end.</td></tr>
+        <tr><td>4</td><td>Run the first overnight lead pull on the Tier 1 vertical. DNS MX check rule in memory.</td><td>First 30 to 50 verified leads, cost roughly $0.</td></tr>
+        <tr><td>5</td><td>Launch the first campaign from inside Slack. 3-step cadence, day 1 / 4 / 9, 100 emails/day from cold start.</td><td>Live cold campaign from a single Slack message.</td></tr>
+        <tr><td>6</td><td>Add the second agent (sales-intel coaching is the highest-leverage pick; marketing PR loop is the most visible).</td><td>Second agent in the fleet.</td></tr>
+        <tr><td>7</td><td>Run the 12-step hardening pass. Document the corrections the fleet self-installed in <code class="inline">lessons.md</code>.</td><td>Production-grade install. Audit-ready.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="lead-line">Day 8 is when the system starts compounding without the operator.</p>
+</section>
+
+<!-- 18 -->
+<section class="sec" id="s18">
+  <h2>18. A short list of things to memorize</h2>
+  <ul class="body-list">
+    <li><strong>One channel. One brain. One toolbox per role.</strong> That is the entire architecture.</li>
+    <li><strong>The memory vault is the asset.</strong> Seeding it is the work. The harness is a weekend.</li>
+    <li><strong>DNS MX check before any enrichment.</strong> Free-data prospecting only works because of this.</li>
+    <li><strong>Pain mining lives on G2 and Capterra,</strong> not Reddit.</li>
+    <li><strong>Memory Protocol plus Retrieval Protocol</strong> are non-negotiable. Without both, the agent ignores its own notes.</li>
+    <li><strong>Pre-compaction memory flush</strong> is the single highest-leverage extra configuration.</li>
+    <li><strong>CLI greater than API greater than MCP greater than browser.</strong> Default to the cheapest surface that works.</li>
+    <li><strong><code class="inline">SKILL.md</code> description controls trigger probability.</strong> Write the actual phrases the team uses.</li>
+    <li><strong>Every mistake becomes a rule.</strong> The compounding loop lives in <code class="inline">memory/lessons.md</code>.</li>
+    <li><strong>Voice in. Agent out.</strong> Type only for one-line nudges.</li>
+    <li><strong>Name the agent. Give it a backstory.</strong> The team treats it like a hire.</li>
+    <li><strong>3-step cadence at day 1 / 4 / 9, 10 inboxes by 10 per day</strong> from cold start. A working default.</li>
+    <li><strong>Run one workflow three times before adding the next.</strong> Stability before fleet expansion.</li>
+    <li><strong>Harden before client data touches it.</strong> The 12-step pass is the gate.</li>
+    <li><strong>Sell the operator, not the labor.</strong> This is the new shape of the deal.</li>
+  </ul>
+</section>
+
+<!-- 19 -->
+<section class="sec" id="s19">
+  <h2>19. What this replaces</h2>
+  <div class="recipe-toc-wrap">
+    <table class="recipe-toc">
+      <thead><tr><th>Before</th><th>After</th></tr></thead>
+      <tbody>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">Clay, Apollo, Smartlead, ZeroBounce, a scheduler, dashboards, and a spreadsheet</td><td>One Slack channel, one persistent-memory agent, one open-source harness</td></tr>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">Eight hours a week of integration work by a human</td><td>Zero hours of integration work. Humans review and approve</td></tr>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">Re-explaining the ICP every Monday</td><td>A memory vault that walks across every session</td></tr>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">One-shot agent runs that forget the last mistake</td><td>A self-correcting agent that gets cleaner every batch</td></tr>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">"We run your outbound" agency offer</td><td>"Agents as a service" agency offer</td></tr>
+        <tr><td style="width:auto;font-family:var(--font-head);font-weight:600;color:var(--ink)">Activity reporting (emails sent, lists built)</td><td>Outcome reporting (meetings, pipeline, revenue)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="sec" id="s20">
+  <h2>20. When this is not the right answer</h2>
+  <p>This playbook assumes:</p>
+  <ul class="body-list">
+    <li>The ICP, the top three customer pains, and the winning narratives can be articulated. If they cannot, no agent fleet rescues the GTM. Fix the clarity first.</li>
+    <li>Cold email is legal in the target geography for the segment being approached. The agent does not fix a compliance problem.</li>
+    <li>One day of senior-operator time is available to seed the memory vault. The compounding does not start until that day is done.</li>
+    <li>The team is willing to review the first three runs of any new workflow. The "hands-off by run three" pattern depends on the first three corrections landing in memory cleanly.</li>
+  </ul>
+  <p>If those four are true, every step above is reusable as-is.</p>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <div class="eyebrow">Skip the week, get it running</div>
+  <h2>Want this installed for you, not by you?</h2>
+  <p>The install path in this playbook is reproducible by anyone who can spend a week on it. The commands are public. The architecture is public. The reference tools are open-source. Everything above is yours to keep and run, free.</p>
+  <p class="cta-strong">If skipping the week and having it stood up, trained, and handed back running is more useful, that is the work that lasts.</p>
+  <p><strong>Muditek installs the harness, seeds the memory, wires the tools, and keeps the fleet sharp as the models move.</strong> Outbound is the entry point. The same operating model wraps your marketing, your sales intelligence, and your content, anywhere you have repeatable expert work an agent with the right memory can run.</p>
+  <a class="email-button" href="mailto:ghiles@muditek.com?subject=Install%20the%20one-channel%20outbound%20system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14"/><path d="m3 7 9 6 9-6"/></svg>ghiles@muditek.com</a>
+  <p class="fineprint">One line about the segment you'd target first. Commercial intent only. A direct reply, not a deck.</p>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <h3>What this playbook deliberately does not invent</h3>
+  <p>To keep every instruction trustworthy, this playbook only includes commands, file paths, and configuration that exist in working agent deployments today. It does not include:</p>
+  <ul class="body-list">
+    <li>Guaranteed lead volumes or reply rates. Outcomes vary by segment, list quality, and offer. Results are not typical.</li>
+    <li>A guarantee that any specific public source stays scrapable. Source policies change. The MX rule and the pivot behavior are the durable parts.</li>
+    <li>A guarantee that prompts behave identically across model versions. Test small, then scale.</li>
+  </ul>
+  <p>If you choose to run these steps, you are responsible for vetting each stage and the legality of cold outreach in your target geography.</p>
+  <p class="sign">Built and operated by Muditek. We turn expert workflows into systems that run on their own. © Muditek.</p>
+</footer>
+
+</main>
+
+<script>
+  document.querySelectorAll('.codeblock pre').forEach(function (pre) {
+    var html = pre.innerHTML;
+    html = html.replace(/^(#[A-Z][A-Z0-9 _\/\-&amp;]{0,80})$/gm, '<span class="pre-hdr">$1</span>');
+    pre.innerHTML = html;
+    var first = pre.querySelector('.pre-hdr');
+    if (first) first.classList.add('first');
+  });
+  document.querySelectorAll('.cb-copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.closest('.codeblock').querySelector('pre');
+      var text = pre.innerText;
+      var label = btn.querySelector('.cb-txt');
+      var done = function () {
+        btn.classList.add('copied');
+        label.textContent = 'Copied';
+        setTimeout(function () { btn.classList.remove('copied'); label.textContent = 'Copy'; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallback(); });
+      } else { fallback(); }
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); } catch (e) {}
+        s.removeAllRanges(); done();
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -50,6 +50,24 @@ const HERO_COMPOSE_CSS = `
   .hero-meta{display:none!important}
 `;
 
+// Slugs whose cover lives in a `.cover` block sibling to a sticky `.brandbar`
+// and a long body. Standalone clipping of `.page` includes the brandbar and
+// truncates the subtitle mid-sentence. For these we render at a 1600x1000
+// viewport, isolate `.cover`, and compose its three lines to fill the frame.
+const COVER_COMPOSE_SLUGS = new Set(["slack-outbound-agent-playbook"]);
+
+const COVER_COMPOSE_CSS = `
+  html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6efe6)!important}
+  body::before,body::after{display:none!important}
+  .brandbar,.hook,section,.cta,.callout,.footer,.codeblock,figure,.recipe-anchor,.factors,.disclaim,nav,header.brandbar{display:none!important}
+  main.page{max-width:none!important;width:100%!important;height:1000px!important;margin:0!important;padding:96px 112px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;box-sizing:border-box!important}
+  header.cover{margin:0!important;padding:0!important;border:none!important}
+  .eyebrow{font-size:22px!important;margin-bottom:36px!important;letter-spacing:0.2em!important}
+  header.cover h1{max-width:18ch!important;font-size:108px!important;line-height:0.94!important;margin:0 0 40px 0!important;letter-spacing:-0.025em!important}
+  header.cover .subtitle,header.cover p.subtitle{font-size:32px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;
+    display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+`;
+
 const files = readdirSync(HTML_DIR)
   .filter((f) => f.endsWith(".html"))
   .filter((f) => (onlyArg ? basename(f, ".html") === onlyArg : true));
@@ -82,6 +100,22 @@ for (const file of files) {
       const outPath = join(OUT_DIR, slug, "cover.png");
       await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });
       console.log(`OK   ${slug}  via composed-hero  1600x1000`);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.close();
+      continue;
+    }
+
+    // Cover-compose slugs: isolate `.cover` block, hide brandbar+body, render
+    // at fixed 16:10 viewport so the frame fills with eyebrow+h1+subtitle.
+    if (COVER_COMPOSE_SLUGS.has(slug)) {
+      await page.setViewportSize({ width: 1600, height: 1000 });
+      await page.goto(`file://${join(HTML_DIR, file)}`, { waitUntil: "networkidle", timeout: 30000 });
+      await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+      await page.addStyleTag({ content: COVER_COMPOSE_CSS });
+      await page.waitForTimeout(400);
+      const outPath = join(OUT_DIR, slug, "cover.png");
+      await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });
+      console.log(`OK   ${slug}  via cover-compose  1600x1000`);
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.close();
       continue;

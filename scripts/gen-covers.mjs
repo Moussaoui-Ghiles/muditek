@@ -54,19 +54,35 @@ const HERO_COMPOSE_CSS = `
 // and a long body. Standalone clipping of `.page` includes the brandbar and
 // truncates the subtitle mid-sentence. For these we render at a 1600x1000
 // viewport, isolate `.cover`, and compose its three lines to fill the frame.
-const COVER_COMPOSE_SLUGS = new Set(["slack-outbound-agent-playbook"]);
-
-const COVER_COMPOSE_CSS = `
-  html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6efe6)!important}
-  body::before,body::after{display:none!important}
-  .brandbar,.hook,section,.cta,.callout,.footer,.codeblock,figure,.recipe-anchor,.factors,.disclaim,nav,header.brandbar{display:none!important}
-  main.page{max-width:none!important;width:100%!important;height:1000px!important;margin:0!important;padding:96px 112px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;box-sizing:border-box!important}
-  header.cover{margin:0!important;padding:0!important;border:none!important}
-  .eyebrow{font-size:22px!important;margin-bottom:36px!important;letter-spacing:0.2em!important}
-  header.cover h1{max-width:18ch!important;font-size:108px!important;line-height:0.94!important;margin:0 0 40px 0!important;letter-spacing:-0.025em!important}
-  header.cover .subtitle,header.cover p.subtitle{font-size:32px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;
-    display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
-`;
+const COVER_COMPOSE_CSS_BY_SLUG = {
+  "slack-outbound-agent-playbook": `
+    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6efe6)!important}
+    body::before,body::after{display:none!important}
+    .brandbar,.hook,section,.cta,.callout,.footer,.codeblock,figure,.recipe-anchor,.factors,.disclaim,nav,header.brandbar{display:none!important}
+    main.page{max-width:none!important;width:100%!important;height:1000px!important;margin:0!important;padding:96px 112px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;box-sizing:border-box!important}
+    header.cover{margin:0!important;padding:0!important;border:none!important}
+    .eyebrow{font-size:22px!important;margin-bottom:36px!important;letter-spacing:0.2em!important}
+    header.cover h1{max-width:18ch!important;font-size:108px!important;line-height:0.94!important;margin:0 0 40px 0!important;letter-spacing:-0.025em!important}
+    header.cover .subtitle,header.cover p.subtitle{font-size:32px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;
+      display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+  `,
+  "cold-email-claude-code-blueprint": `
+    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6f1e8)!important}
+    body::before,body::after{display:none!important}
+    main.wrap > *:not(.mast):not(.cover){display:none!important}
+    main.wrap{max-width:none!important;width:100%!important;height:1000px!important;margin:0!important;padding:96px 112px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;box-sizing:border-box!important}
+    .mast{display:flex!important;align-items:center!important;gap:14px!important;margin:0 0 40px 0!important;padding:0!important;border:none!important}
+    .mast svg{width:42px!important;height:42px!important}
+    .mast .m{font-size:22px!important;font-weight:700!important;letter-spacing:-0.01em!important}
+    .mast .tag{margin-left:auto!important;font-size:18px!important;font-weight:700!important;letter-spacing:0.18em!important;text-transform:uppercase!important}
+    header.cover{margin:0!important;padding:0!important;border:none!important}
+    header.cover h1{max-width:22ch!important;font-size:74px!important;line-height:0.98!important;margin:0 0 40px 0!important;letter-spacing:-0.025em!important;
+      display:-webkit-box!important;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+    header.cover .sub,header.cover p.sub{font-size:30px!important;max-width:50ch!important;line-height:1.32!important;margin:0!important;
+      display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+  `,
+};
+const COVER_COMPOSE_SLUGS = new Set(Object.keys(COVER_COMPOSE_CSS_BY_SLUG));
 
 const files = readdirSync(HTML_DIR)
   .filter((f) => f.endsWith(".html"))
@@ -111,7 +127,7 @@ for (const file of files) {
       await page.setViewportSize({ width: 1600, height: 1000 });
       await page.goto(`file://${join(HTML_DIR, file)}`, { waitUntil: "networkidle", timeout: 30000 });
       await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
-      await page.addStyleTag({ content: COVER_COMPOSE_CSS });
+      await page.addStyleTag({ content: COVER_COMPOSE_CSS_BY_SLUG[slug] });
       await page.waitForTimeout(400);
       const outPath = join(OUT_DIR, slug, "cover.png");
       await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });

@@ -14,7 +14,7 @@ export interface ContentItem {
   updated_at?: Date | string | null;
 }
 
-export const CONTENT_TOPICS = ["lead-gen", "sales", "marketing", "gtm", "agentic-engineering", "seo"] as const;
+export const CONTENT_TOPICS = ["lead-gen", "sales", "marketing", "gtm", "agentic-engineering", "seo", "cold-email"] as const;
 export type ContentTopic = (typeof CONTENT_TOPICS)[number];
 
 export const CONTENT_TOPIC_LABEL: Record<ContentTopic, string> = {
@@ -24,6 +24,7 @@ export const CONTENT_TOPIC_LABEL: Record<ContentTopic, string> = {
   gtm: "GTM",
   "agentic-engineering": "Agentic Engineering",
   seo: "SEO",
+  "cold-email": "Cold emails",
 };
 
 export function isContentTopic(value: string | null | undefined): value is ContentTopic {

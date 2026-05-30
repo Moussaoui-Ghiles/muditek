@@ -20,6 +20,7 @@ const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
   "claude-code-tips",
   "clawchief-blueprint",
   "coding-agent-seo-playbook",
+  "cold-email-claude-code-blueprint",
   "google-maps-outbound",
   "judgment-moat",
   "mudiagent-operator-guide",

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cold Email Execution Is Now $0.03 a Lead · Muditek</title>
+<meta name="description" content="The execution layer agencies billed for is automated end to end. The exact Claude Code stack, folder, and skills that ship a live campaign for the price of the data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --paper:   #FFFFFF;
+    --paper-2: #F4F6F8;
+    --ink:     #13161B;
+    --ink-2:   #262C35;
+    --navy:    #14315B;
+    --navy-2:  #234E88;
+    --line:    #D7DCE2;
+    --line-2:  #BEC5CF;
+    --f-head:  'IBM Plex Sans', system-ui, sans-serif;
+    --f-body:  'IBM Plex Sans', system-ui, sans-serif;
+    --f-mono:  'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink-2);
+    font-family: var(--f-body);
+    font-size: 22px;
+    line-height: 1.7;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 40px 120px; }
+
+  ::selection { background: var(--navy); color: #fff; }
+
+  a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; font-weight: 600; }
+  a:hover { color: var(--ink); }
+
+  /* masthead */
+  .mast { display: flex; align-items: center; gap: 13px; padding: 36px 0 22px; border-bottom: 2px solid var(--ink); }
+  .mast svg { width: 34px; height: 34px; display: block; flex: 0 0 auto; }
+  .mast .m { font-family: var(--f-head); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+  .mast .tag { margin-left: auto; font-family: var(--f-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); }
+
+  /* cover */
+  .cover { padding: 72px 0 0; }
+  .cover h1 {
+    font-family: var(--f-head); font-weight: 600;
+    font-size: clamp(38px, 6vw, 58px); line-height: 1.08; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 28px;
+  }
+  .cover .sub {
+    font-size: clamp(22px, 2.6vw, 26px); line-height: 1.5; font-weight: 500;
+    color: var(--ink-2); max-width: 54ch;
+  }
+
+  .lead-line {
+    font-family: var(--f-head); font-weight: 600;
+    font-size: clamp(25px, 3.2vw, 31px); line-height: 1.34; letter-spacing: -0.018em;
+    color: var(--ink); margin: 60px 0 38px; max-width: 34ch;
+  }
+
+  p { font-size: 22px; line-height: 1.7; color: var(--ink-2); margin-bottom: 24px; max-width: 60ch; }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* money table */
+  .ledger { margin: 6px 0 44px; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+  .ledger .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 30px; padding: 24px 0; border-top: 1px solid var(--line); }
+  .ledger .row:first-child { border-top: none; }
+  .ledger .row .lab { font-size: 20px; color: var(--ink-2); line-height: 1.4; font-weight: 500; }
+  .ledger .row .val { font-family: var(--f-mono); font-weight: 600; font-size: clamp(32px, 4.6vw, 44px); letter-spacing: -0.02em; color: var(--navy); white-space: nowrap; font-feature-settings: "tnum"; }
+  .ledger .row .val .u { color: var(--ink-2); font-weight: 500; }
+  .ledger .row.was .val { color: var(--ink-2); text-decoration: line-through; }
+
+  /* sections */
+  section { margin-top: 70px; }
+  h2 {
+    font-family: var(--f-head); font-weight: 600;
+    font-size: clamp(28px, 3.6vw, 38px); line-height: 1.12; letter-spacing: -0.02em;
+    color: var(--ink); margin-bottom: 26px; padding-top: 34px; border-top: 1px solid var(--line-2);
+  }
+  h2::before { content: ''; display: block; width: 44px; height: 4px; background: var(--navy); margin-bottom: 24px; }
+  h3 { font-family: var(--f-head); font-weight: 600; font-size: 24px; letter-spacing: -0.012em; color: var(--ink); margin: 38px 0 14px; }
+
+  /* definition rows */
+  .defs { margin: 14px 0 30px; border-top: 2px solid var(--ink); }
+  .defs .d { display: grid; grid-template-columns: 210px 1fr; gap: 30px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .defs .d .k { font-family: var(--f-head); font-weight: 700; color: var(--ink); font-size: 21px; line-height: 1.35; }
+  .defs.mono .d .k { font-family: var(--f-mono); font-size: 17px; font-weight: 600; color: var(--navy); }
+  .defs .d .v { font-size: 20px; line-height: 1.55; color: var(--ink-2); }
+  @media (max-width: 600px) { .defs .d { grid-template-columns: 1fr; gap: 8px; } }
+
+  /* rule list */
+  ul.rules { list-style: none; margin: 6px 0 26px; }
+  ul.rules li { position: relative; padding-left: 30px; font-size: 21px; line-height: 1.55; color: var(--ink-2); margin-bottom: 16px; max-width: 60ch; }
+  ul.rules li::before { content: ''; position: absolute; left: 0; top: 14px; width: 15px; height: 3px; background: var(--navy); }
+  ul.rules li strong { color: var(--ink); }
+
+  /* run list */
+  ol.run { list-style: none; counter-reset: r; margin: 8px 0 30px; }
+  ol.run li { counter-increment: r; position: relative; padding-left: 50px; font-size: 21px; line-height: 1.55; color: var(--ink-2); margin-bottom: 16px; max-width: 60ch; }
+  ol.run li::before { content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: 3px; font-family: var(--f-mono); font-weight: 600; font-size: 16px; color: var(--navy); }
+  ol.run li strong { color: var(--ink); }
+
+  /* funnel */
+  .funnel { display: grid; grid-template-columns: repeat(4, 1fr); margin: 10px 0 18px; border: 2px solid var(--ink); }
+  .funnel .s { padding: 26px 18px; border-right: 1px solid var(--line); }
+  .funnel .s:last-child { border-right: none; background: var(--paper-2); }
+  .funnel .s .n { font-family: var(--f-mono); font-weight: 600; font-size: clamp(30px, 4.4vw, 40px); letter-spacing: -0.02em; color: var(--ink); line-height: 1; font-feature-settings: "tnum"; }
+  .funnel .s:last-child .n { color: var(--navy); }
+  .funnel .s .l { font-family: var(--f-mono); font-size: 14px; line-height: 1.4; color: var(--ink-2); margin-top: 14px; font-weight: 500; }
+  @media (max-width: 600px) { .funnel { grid-template-columns: repeat(2, 1fr); } .funnel .s:nth-child(1), .funnel .s:nth-child(2) { border-bottom: 1px solid var(--line); } .funnel .s:nth-child(even) { border-right: none; } }
+
+  /* diagram (schematic, built here; the article is text-only) */
+  .diagram { margin: 14px 0 16px; }
+  .diagram svg { width: 100%; height: auto; display: block; }
+  .figcap { font-family: var(--f-mono); font-size: 14px; font-weight: 500; color: var(--ink-2); margin: 0 0 30px; line-height: 1.4; }
+
+  /* folder tree */
+  .tree { margin: 12px 0 18px; background: var(--paper-2); border: 1px solid var(--line); border-left: 4px solid var(--navy); padding: 24px 28px; font-family: var(--f-mono); font-size: 17px; line-height: 1.85; color: var(--ink); overflow-x: auto; }
+  .tree .b { color: var(--navy); }
+  .tree .c { color: var(--ink-2); }
+
+  /* pull quote */
+  blockquote {
+    font-family: var(--f-head); font-weight: 600;
+    font-size: clamp(24px, 3vw, 30px); line-height: 1.28; letter-spacing: -0.018em;
+    color: var(--ink); margin: 34px 0; padding-left: 26px; border-left: 4px solid var(--navy); max-width: 28ch;
+  }
+
+  /* prompt / quote block */
+  .prompt { margin: 8px 0 30px; background: var(--paper-2); border: 1px solid var(--line); border-left: 4px solid var(--navy); padding: 26px 30px; }
+  .prompt p { font-family: var(--f-mono); font-size: 18px; line-height: 1.7; color: var(--ink-2); margin: 0; max-width: none; }
+
+  /* close note */
+  .note { font-family: var(--f-head); font-weight: 600; font-size: 24px; line-height: 1.36; letter-spacing: -0.012em; color: var(--ink); margin: 30px 0; max-width: 34ch; }
+
+  /* CTA */
+  .cta { margin-top: 88px; padding: 48px 46px 52px; background: var(--ink); color: #EEF1F5; }
+  .cta h2 { border: none; padding: 0; margin-bottom: 22px; color: #fff; }
+  .cta h2::before { background: #7DA0D6; }
+  .cta p { color: #E4E8EF; font-size: 21px; max-width: 56ch; }
+  .cta p strong { color: #fff; }
+  .mail { display: inline-flex; align-items: center; gap: 12px; margin-top: 12px; font-family: var(--f-mono); font-weight: 600; font-size: 21px; color: #fff; background: var(--navy); border: none; padding: 18px 28px; letter-spacing: -0.01em; text-decoration: none; transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), background 0.18s ease; }
+  .mail svg { width: 19px; height: 19px; }
+  .mail:hover { background: var(--navy-2); transform: translateY(-1px); }
+  .cta .fine { margin-top: 24px; font-size: 18px; color: #C2CAD6; }
+
+  /* footer */
+  footer { margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--line); }
+  footer p { font-size: 17px; color: var(--ink-2); max-width: 68ch; margin-bottom: 14px; }
+  footer .sign { font-family: var(--f-mono); font-size: 15px; color: var(--ink-2); }
+
+  @media (max-width: 640px) {
+    body { font-size: 19px; }
+    .wrap { padding: 0 22px 80px; }
+    .cover { padding: 50px 0 0; }
+    p, ul.rules li, ol.run li, .ledger .row .lab, .defs .d .v { font-size: 18px; }
+    .tree { font-size: 14px; padding: 18px; }
+    .cta { padding: 34px 24px 38px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cta { background: var(--ink) !important; }
+    .mail { background: var(--navy) !important; color: #fff !important; }
+    section, .funnel, .ledger, blockquote, .prompt, .cta, .diagram, .tree { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <!-- masthead -->
+  <div class="mast">
+    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-label="Muditek">
+      <defs>
+        <mask id="mc"><rect x="0" y="0" width="300" height="300" fill="#fff"/><path d="M 142 40 V 135 L 80 170.7957 V 260 H 110 V 176.906 L 150 200 L 190 176.906 V 260 H 220 V 170.7957 L 158 135 V 40 Z" fill="#000"/></mask>
+      </defs>
+      <g mask="url(#mc)">
+        <path d="M 150 150 L 63.3975 100 L 150 50 L 236.6025 100 Z" fill="#2B3A52"/>
+        <path d="M 150 150 L 63.3975 100 L 63.3975 200 L 150 250 Z" fill="#14315B"/>
+        <path d="M 150 150 L 236.6025 100 L 236.6025 200 L 150 250 Z" fill="#3E5479"/>
+      </g>
+    </svg>
+    <span class="m">Muditek</span>
+    <span class="tag">Cold Email · Claude Code</span>
+  </div>
+
+  <!-- cover -->
+  <header class="cover">
+    <h1>Cold email execution used to be an agency invoice. Now it runs for $0.03 a verified lead.</h1>
+    <p class="sub">The work agencies billed for is automated end to end. Here is the exact stack, folder, and skills that ship a live campaign for the price of the data.</p>
+  </header>
+
+  <!-- the money shift -->
+  <p class="lead-line">The whole shift in one line: you stop paying for the execution. The only hard cost left is the data.</p>
+
+  <div class="ledger">
+    <div class="row">
+      <div class="lab">Per verified email</div>
+      <div class="val"><span class="u">$</span>0.03</div>
+    </div>
+    <div class="row">
+      <div class="lab">Data cost ceiling per run, set by a 2,000-credit cap</div>
+      <div class="val">~<span class="u">$</span>60</div>
+    </div>
+    <div class="row">
+      <div class="lab">Verified prospects out the other end, campaign live</div>
+      <div class="val">28</div>
+    </div>
+    <div class="row">
+      <div class="lab">Your time in the loop. The audit. That is it.</div>
+      <div class="val">~2<span class="u">min</span></div>
+    </div>
+    <div class="row was">
+      <div class="lab">What the same campaign took three years ago, by hand</div>
+      <div class="val">2 days</div>
+    </div>
+  </div>
+
+  <p>Three years ago this campaign was two full days of skilled work.</p>
+
+  <p>Map the TAM. Pull personas. Scrape titles. Enrich domains. Verify. Scrub the block list. Write fresh copy. Upload. Configure the sequence. QA every variable.</p>
+
+  <p>That is what the retainer paid for. It now costs the price of the data and a coffee's worth of review time.</p>
+
+  <p>What follows is the exact system that does it.</p>
+
+  <!-- why the price collapsed -->
+  <section>
+    <h2>Why the price collapsed</h2>
+    <p>Agencies sold execution. Shipping a great campaign took a year of skill to learn.</p>
+    <p>TAM construction. Deliverability mechanics. Copy that felt fresh. A dozen integrations wired together. Most operators never made it past deliverability.</p>
+    <p>That difficulty was the moat. The moat was the price.</p>
+    <p>Now a coding agent sits in front of every API in the stack and reads every file in the client folder. The campaign goes from one prompt to live in about 20 minutes.</p>
+    <blockquote>The execution layer collapsed. The judgment layer became everything.</blockquote>
+    <p>Two things still command money: the context you give the agent, and the offer the campaign is built around. The middle is automated.</p>
+  </section>
+
+  <!-- the stack -->
+  <section>
+    <h2>The six-piece stack</h2>
+    <p>None of it is exotic. Each piece does one job.</p>
+    <div class="defs">
+      <div class="d"><div class="k">Operator</div><div class="v">Claude Code, inside Antigravity IDE. The manager view runs several agents in parallel, one building a campaign while another reads reply data on a different account.</div></div>
+      <div class="d"><div class="k">Voice input</div><div class="v">Wispr Flow. Dictation into any window, roughly 3x faster than typing for anything over a sentence. Optional.</div></div>
+      <div class="d"><div class="k">Enrichment</div><div class="v">LeadMagic. Verified emails at $0.03 each, sixteen native tools the agent calls cleanly, and a direct integration with the sending platform.</div></div>
+      <div class="d"><div class="k">Sending</div><div class="v">Instantly, Lemlist, or Smartlead. The API lets the agent create, upload, sequence, and read replies without opening the app.</div></div>
+      <div class="d"><div class="k">Context</div><div class="v">The client folder. Turns a generic agent into one that knows the client. Most teams skip it, and it decides quality.</div></div>
+      <div class="d"><div class="k">Judgment</div><div class="v">You. The offer and the audit. The part that does not automate.</div></div>
+    </div>
+    <p>The first five are commodity. The sixth is the moat.</p>
+
+    <div class="diagram" role="img" aria-label="The run, end to end: client folder and brief, one voice prompt into Claude Code, the LeadMagic API returns verified emails, the sending platform builds the campaign, live in about 20 minutes for about 60 dollars of data.">
+      <svg viewBox="0 0 560 506" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ah" markerWidth="11" markerHeight="11" refX="7.5" refY="5" orient="auto"><path d="M0,0 L9,5 L0,10 Z" fill="#14315B"/></marker>
+        </defs>
+        <g font-family="'IBM Plex Sans', sans-serif">
+          <!-- 1 inputs -->
+          <rect x="70" y="6" width="420" height="58" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="280" y="40" text-anchor="middle" font-size="20" font-weight="600" fill="#13161B">Client folder &#43; campaign brief</text>
+          <line x1="280" y1="64" x2="280" y2="108" stroke="#14315B" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="296" y="92" font-size="14" font-weight="600" fill="#262C35" font-family="'IBM Plex Mono', monospace">one voice prompt</text>
+          <!-- 2 operator -->
+          <rect x="70" y="112" width="420" height="58" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="280" y="146" text-anchor="middle" font-size="20" font-weight="600" fill="#13161B">Claude Code &#183; the operator</text>
+          <line x1="280" y1="170" x2="280" y2="214" stroke="#14315B" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="296" y="198" font-size="14" font-weight="600" fill="#262C35" font-family="'IBM Plex Mono', monospace">calls the API</text>
+          <!-- 3 enrichment -->
+          <rect x="70" y="218" width="420" height="58" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="280" y="252" text-anchor="middle" font-size="20" font-weight="600" fill="#13161B">LeadMagic &#183; verified emails at $0.03</text>
+          <line x1="280" y1="276" x2="280" y2="320" stroke="#14315B" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="296" y="304" font-size="14" font-weight="600" fill="#262C35" font-family="'IBM Plex Mono', monospace">list built, copy written</text>
+          <!-- 4 sending -->
+          <rect x="70" y="324" width="420" height="58" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="280" y="358" text-anchor="middle" font-size="20" font-weight="600" fill="#13161B">Sending platform &#183; Instantly</text>
+          <line x1="280" y1="382" x2="280" y2="426" stroke="#14315B" stroke-width="2" marker-end="url(#ah)"/>
+          <!-- 5 output -->
+          <rect x="70" y="430" width="420" height="64" rx="6" fill="#14315B"/>
+          <text x="280" y="463" text-anchor="middle" font-size="21" font-weight="700" fill="#fff">Live campaign</text>
+          <text x="280" y="484" text-anchor="middle" font-size="14" font-weight="500" fill="#C7D3E6" font-family="'IBM Plex Mono', monospace">~20 min &#183; ~$60 of data &#183; ~2 min of your time</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">The run, end to end. One prompt in the top box, a live campaign in the bottom box.</p>
+  </section>
+
+  <!-- the folder -->
+  <section>
+    <h2>The folder that makes it work</h2>
+    <p>When a client signs, the first thing you build is the agent's folder.</p>
+    <p>It is identical for every account. That is what lets you reuse skills across the whole book of business.</p>
+
+    <div class="tree">
+<span class="b">client/</span>
+&#9500;&#9472; <span class="b">List Building/</span>     <span class="c"># ABM list, 10K&#8211;50K domains</span>
+&#9500;&#9472; <span class="b">ICP Context/</span>      <span class="c"># personas, titles, disqualifiers</span>
+&#9500;&#9472; <span class="b">Context/</span>          <span class="c"># positioning, voice, copy frameworks</span>
+&#9500;&#9472; <span class="b">Call Recordings/</span>  <span class="c"># discovery &#43; sales transcripts</span>
+&#9500;&#9472; <span class="b">Onboarding Notes/</span> <span class="c"># everything learned in week one</span>
+&#9492;&#9472; <span class="b">Campaign Briefs/</span>  <span class="c"># PDFs for upcoming sends</span>
+    </div>
+    <p class="figcap">The six folders. The same shape for every client.</p>
+
+    <p>This is the context window the agent reads before doing anything.</p>
+    <blockquote>The model isn't smart. The folder is.</blockquote>
+
+    <h3>Why the list sits at 10K to 50K domains</h3>
+    <p>The list size is a money decision.</p>
+    <ul class="rules">
+      <li><strong>Below 10K:</strong> not enough volume for intent, job-change, and funding triggers to compound into pipeline.</li>
+      <li><strong>Above 50K:</strong> you burn enrichment credits chasing accounts you will never reach this year.</li>
+    </ul>
+    <p>Inside that band you lock the personas, titles, segments, and brand voice once. That is why the prompt at the end is fast and cheap.</p>
+  </section>
+
+  <!-- the skills -->
+  <section>
+    <h2>The three skills that run it</h2>
+    <p>Skills are folders of instructions the agent loads when a task matches. Three do the heavy lifting.</p>
+
+    <h3>Copywriting</h3>
+    <p>The rules it enforces, pulled from thousands of campaigns:</p>
+    <ul class="rules">
+      <li>Every email is <strong>60 to 80 words</strong>.</li>
+      <li>Open <strong>give-first</strong>, never with credentials.</li>
+      <li><strong>No meeting ask</strong> in the first message. The CTA is curiosity, not calendar.</li>
+      <li>Mirror the <strong>prospect's</strong> language, not the client's.</li>
+      <li>Reference real signals only. When they don't exist, don't invent them.</li>
+    </ul>
+
+    <h3>List Building</h3>
+    <p>Queries the API for people matching the in-scope titles at the target accounts. Dedupes against live campaigns. Verifies. Scrubs the block list. Returns a clean list with every variable populated.</p>
+
+    <h3>Campaign Assembly</h3>
+    <p>Creates the campaign, uploads the leads, configures the sequence steps and delays, sets up the A/B test on the subject lines, and returns a draft URL for review.</p>
+
+    <p>You can build all three over a weekend. Anthropic ships starter templates. Steal a structure and add your judgment.</p>
+
+    <h3>The operator preamble</h3>
+    <p>Every skill opens with the same lines. This is the anchor:</p>
+    <div class="prompt">
+      <p>"I'm a senior GTM operator. I work in Instantly, Lemlist, Smartlead, Clay, Apollo, Prospeo, and LeadMagic. I write cold emails between 60 and 80 words. I lead with value, never credentials. I don't ask for calls in the first email."</p>
+    </div>
+    <p>It sharpens every quarter as you feed reply data back into it.</p>
+  </section>
+
+  <!-- the prompt -->
+  <section>
+    <h2>The one prompt that runs it</h2>
+    <p>The whole run is triggered by this, spoken in under 90 seconds:</p>
+    <div class="prompt">
+      <p>"Open up [client]'s folder. We're launching a campaign. There's a PDF in there with the event brief. Do this end to end. Take the ICP titles, cross-reference the ABM list, use the LeadMagic API to find verified emails, cap credits at 2,000, draft the copy, create the campaign in the sending platform, upload everything. Oneshot it without any intervention."</p>
+    </div>
+    <p>Six things in that prompt do the work:</p>
+    <div class="defs">
+      <div class="d"><div class="k">Folder reference</div><div class="v">Points the agent at the right context.</div></div>
+      <div class="d"><div class="k">PDF reference</div><div class="v">Delivers the campaign brief.</div></div>
+      <div class="d"><div class="k">ICP to ABM</div><div class="v">Defines the targeting.</div></div>
+      <div class="d"><div class="k">API spec</div><div class="v">Names the enrichment provider to call.</div></div>
+      <div class="d"><div class="k">Credit cap</div><div class="v">Keeps the run at $60, not $600.</div></div>
+      <div class="d"><div class="k">"Oneshot"</div><div class="v">Runs to completion without stopping to ask.</div></div>
+    </div>
+  </section>
+
+  <!-- the 20 minutes -->
+  <section>
+    <h2>What the 20 minutes does</h2>
+    <p>Most of it is the API answering, not the agent thinking:</p>
+    <ol class="run">
+      <li>Reads the PDF, pulls the event date, location, and audience.</li>
+      <li>Opens the ICP file and pulls the in-scope titles.</li>
+      <li>Opens the ABM list and finds the target accounts.</li>
+      <li>Calls the enrichment API, capping spend at 2,000 credits.</li>
+      <li>The API returns <strong>105 verified prospects</strong>.</li>
+      <li>Dedupes against live campaigns. Removes <strong>50</strong>.</li>
+      <li>Runs the block list. <strong>9 more</strong> drop.</li>
+      <li>Final list: <strong>28 prospects</strong>, every variable filled.</li>
+      <li>Drafts the email and <strong>two subject lines</strong> for the A/B test.</li>
+      <li>Builds the campaign and hands back a confirmation URL.</li>
+    </ol>
+    <div class="funnel">
+      <div class="s"><div class="n">105</div><div class="l">verified</div></div>
+      <div class="s"><div class="n">&minus;50</div><div class="l">deduped</div></div>
+      <div class="s"><div class="n">&minus;9</div><div class="l">blocked</div></div>
+      <div class="s"><div class="n">28</div><div class="l">live + A/B test</div></div>
+    </div>
+    <p class="figcap">The list narrows from 105 to 28. The agent does every step.</p>
+    <p>All live, for the price of the data, with zero labor until the audit.</p>
+  </section>
+
+  <!-- the audit -->
+  <section>
+    <h2>The two-minute audit</h2>
+    <p>The agent misses a few things, and the misses are always the same four:</p>
+    <ul class="rules">
+      <li><strong>Subject lines.</strong> Date-led lines win on time-sensitive sends. Push the date to the front.</li>
+      <li><strong>The CTA.</strong> The agent drops the link in the body, which depresses replies. Swap it for a soft ask: "want me to send the invite?"</li>
+      <li><strong>The sequence.</strong> One step is thin. Add follow-ups at <strong>day 4, 9, and 16</strong>.</li>
+      <li><strong>The variables.</strong> Spot-check that company and first name filled correctly.</li>
+    </ul>
+    <blockquote>The audit is ceremonial. The real work happened in the twenty minutes before.</blockquote>
+  </section>
+
+  <!-- closed loop -->
+  <section>
+    <h2>Campaigns that improve themselves</h2>
+    <p>The next layer closes the loop.</p>
+    <p>The agent reads reply data daily. It finds the subject line winning a statistically meaningful test, kills the loser, writes a new challenger, and runs it again. Same for openers, CTAs, and pacing.</p>
+
+    <div class="diagram" role="img" aria-label="A four-step cycle: read reply data daily, pick the winning variant, write a new challenger, kill the loser, and back to reading reply data. It improves itself Tuesday to Thursday with nobody opening the dashboard.">
+      <svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ah2" markerWidth="11" markerHeight="11" refX="7.5" refY="5" orient="auto"><path d="M0,0 L9,5 L0,10 Z" fill="#14315B"/></marker>
+        </defs>
+        <g font-family="'IBM Plex Sans', sans-serif">
+          <rect x="24" y="24" width="210" height="62" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="129" y="52" text-anchor="middle" font-size="18" font-weight="600" fill="#13161B">Read reply data</text>
+          <text x="129" y="73" text-anchor="middle" font-size="13" fill="#262C35" font-family="'IBM Plex Mono', monospace">daily</text>
+
+          <rect x="326" y="24" width="210" height="62" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="431" y="52" text-anchor="middle" font-size="18" font-weight="600" fill="#13161B">Pick the winner</text>
+          <text x="431" y="73" text-anchor="middle" font-size="13" fill="#262C35" font-family="'IBM Plex Mono', monospace">significant A/B test</text>
+
+          <rect x="326" y="214" width="210" height="62" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="431" y="242" text-anchor="middle" font-size="18" font-weight="600" fill="#13161B">Write a challenger</text>
+          <text x="431" y="263" text-anchor="middle" font-size="13" fill="#262C35" font-family="'IBM Plex Mono', monospace">run it again</text>
+
+          <rect x="24" y="214" width="210" height="62" rx="6" fill="#fff" stroke="#14315B" stroke-width="2"/>
+          <text x="129" y="242" text-anchor="middle" font-size="18" font-weight="600" fill="#13161B">Kill the loser</text>
+          <text x="129" y="263" text-anchor="middle" font-size="13" fill="#262C35" font-family="'IBM Plex Mono', monospace">deprecate</text>
+
+          <!-- clockwise arrows -->
+          <line x1="234" y1="55" x2="320" y2="55" stroke="#14315B" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="431" y1="86" x2="431" y2="208" stroke="#14315B" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="326" y1="245" x2="240" y2="245" stroke="#14315B" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="129" y1="214" x2="129" y2="92" stroke="#14315B" stroke-width="2" marker-end="url(#ah2)"/>
+
+          <text x="280" y="146" text-anchor="middle" font-size="15" font-weight="600" fill="#14315B" font-family="'IBM Plex Mono', monospace">Tue &#8594; Thu</text>
+          <text x="280" y="168" text-anchor="middle" font-size="13" fill="#262C35" font-family="'IBM Plex Mono', monospace">no dashboard</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">The loop runs itself between Tuesday and Thursday.</p>
+
+    <h3>Cross-client compounding</h3>
+    <p>One in-house team learns from one funnel. An operation running outbound for <strong>400+ companies</strong> learns from hundreds at once.</p>
+    <p>When a pattern wins in fintech, you know within a week if it transfers to SaaS or DevTools. Every win feeds back into every skill.</p>
+    <p class="note">Cheap execution does not give you this. Scale plus memory does.</p>
+  </section>
+
+  <!-- close -->
+  <section>
+    <h2>What this leaves you with</h2>
+    <p>Execution is now the cheap part. The agent builds the list, writes the copy, and pushes it live for the price of the data.</p>
+    <p>What it cannot do is make a weak offer worth a reply.</p>
+    <p>The proof cuts both ways.</p>
+    <p>One client uses none of this. Plain hand-written copy, a tight ICP, a genuinely good offer, the same list reloaded every four weeks. Replies every week for <strong>twenty-four months</strong>.</p>
+    <p>The reverse happens too. A clean pipeline carried a weak offer into <strong>5,000 inboxes</strong> and produced nothing.</p>
+    <p class="note">Outbound now costs enrichment credits. The only thing that turns them into pipeline is the offer.</p>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Want this stood up on your accounts</h2>
+    <p>If you want the stack built and trained on your accounts instead of assembled from scratch, that is the work that lasts.</p>
+    <p>Cold email is one surface. The same model wraps your outbound, your operations, and your back-office.</p>
+    <a class="mail" href="mailto:ghiles@muditek.com?subject=Make%20my%20outbound%20AI-executable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14"/><path d="m3 7 9 6 9-6"/></svg>ghiles@muditek.com</a>
+    <p class="fine">One line about the surface you'd hand off first. A direct reply from the person who builds these systems.</p>
+  </section>
+
+  <footer>
+    <p>The figures above are the public enrichment price ($0.03 per verified email) and the cost-control setting in the prompt (a 2,000-credit cap). Your costs depend on your provider and run size. No reply-rate or pipeline figures are claimed. The diagrams are schematics of the system described, not screenshots.</p>
+    <p class="sign">Built and operated by Muditek.</p>
+  </footer>
+
+</main>
+</body>
+</html>

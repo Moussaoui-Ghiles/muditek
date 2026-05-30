@@ -35,7 +35,7 @@ export function withDerivedThumbnail<T extends ThumbnailItem>(item: T): T {
   if (existsSync(publicCoverPng)) {
     return {
       ...item,
-      thumbnail_url: `/playbooks/${item.slug}/cover.png?v=6`,
+      thumbnail_url: `/playbooks/${item.slug}/cover.png?v=7`,
     };
   }
 

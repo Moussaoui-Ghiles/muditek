@@ -20,6 +20,7 @@ const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
   { value: "gtm", label: CONTENT_TOPIC_LABEL.gtm },
   { value: "agentic-engineering", label: CONTENT_TOPIC_LABEL["agentic-engineering"] },
   { value: "seo", label: CONTENT_TOPIC_LABEL.seo },
+  { value: "cold-email", label: CONTENT_TOPIC_LABEL["cold-email"] },
 ];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
@@ -427,6 +428,7 @@ export default function PlaybooksContent({
       gtm: 0,
       "agentic-engineering": 0,
       seo: 0,
+      "cold-email": 0,
     };
     for (const item of visibleItems) map[topicForItem(item)] += 1;
     return map;

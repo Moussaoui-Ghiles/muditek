@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
   const type: string = event.type ?? "";
   const data = event.data ?? {};
-  const eventId: string | undefined = data.email_id ?? event.id;
+  const eventId: string | undefined = headers["svix-id"] || event.id;
   const to: string | undefined = Array.isArray(data.to) ? data.to[0] : data.to;
   const broadcastId: string | undefined = data.broadcast_id;
   const taggedIssueId = tagValue(data.tags, "newsletter_issue_id");

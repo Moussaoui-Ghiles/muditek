@@ -2,7 +2,8 @@
 // Captures the first cover/page/hero element, clipped to 16:10 at the
 // element's own width so there is never an external white margin.
 import { createRequire } from "module";
-import { readdirSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { tmpdir } from "os";
 import { join, basename } from "path";
 
 const require = createRequire("/Users/ghilesmoussaoui/Desktop/mudiagent-muditel/package.json");
@@ -66,18 +67,6 @@ const COVER_COMPOSE_CSS_BY_SLUG = {
     header.cover .subtitle,header.cover p.subtitle{font-size:32px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;
       display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
   `,
-  "geo-playbook": `
-    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:#fbfaf7!important}
-    body::before,body::after{display:none!important}
-    body > *:not(.hero){display:none!important}
-    body{display:flex!important;flex-direction:column!important;justify-content:center!important;padding:0 112px!important;box-sizing:border-box!important;height:1000px!important}
-    header.hero{margin:0!important;padding:0!important;border:none!important;width:100%!important;max-width:none!important}
-    header.hero hr,header.hero .logos,header.hero p:not(:first-of-type){display:none!important}
-    header.hero h1{max-width:22ch!important;font-size:96px!important;line-height:0.96!important;margin:0 0 44px 0!important;letter-spacing:-0.025em!important;color:#0f2e5a!important}
-    header.hero p:first-of-type{font-size:30px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;color:#243854!important;
-      display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
-    header.hero p:first-of-type strong{font-weight:600!important}
-  `,
   "cold-email-claude-code-blueprint": `
     html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6f1e8)!important}
     body::before,body::after{display:none!important}
@@ -95,6 +84,14 @@ const COVER_COMPOSE_CSS_BY_SLUG = {
   `,
 };
 const COVER_COMPOSE_SLUGS = new Set(Object.keys(COVER_COMPOSE_CSS_BY_SLUG));
+
+// Slugs that render their first viewport as the cover (true "first page of
+// the HTML, exactly as you see it"). Useful for playbooks whose hero already
+// fits in one fold and uses absolute /media/ asset paths — we rewrite those
+// to file:// URLs so images and logos actually load during gen, then snap
+// the first 1600x1000 viewport untouched.
+const FIRST_PAGE_SLUGS = new Set(["geo-playbook"]);
+const PUBLIC_DIR = join(ROOT, "public");
 
 const files = readdirSync(HTML_DIR)
   .filter((f) => f.endsWith(".html"))
@@ -128,6 +125,30 @@ for (const file of files) {
       const outPath = join(OUT_DIR, slug, "cover.png");
       await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });
       console.log(`OK   ${slug}  via composed-hero  1600x1000`);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.close();
+      continue;
+    }
+
+    // First-page slugs: render the raw HTML, rewrite absolute /media/ srcs to
+    // file:// so images load during gen, screenshot the natural first viewport
+    // exactly as it would appear when opening the standalone file in a browser.
+    if (FIRST_PAGE_SLUGS.has(slug)) {
+      // Rewrite absolute /media/** srcs to file://PUBLIC_DIR/media/** so the
+      // images and logos load when the standalone HTML is opened via file://
+      // (no http server, no Playwright route plumbing). The result is the
+      // true first viewport, exactly as you'd see opening the .html itself.
+      const raw = readFileSync(join(HTML_DIR, file), "utf-8");
+      const rewritten = raw.replace(/(src|href)="\/media\//g, `$1="file://${PUBLIC_DIR}/media/`);
+      const tmpPath = join(tmpdir(), `cover-render-${slug}.html`);
+      writeFileSync(tmpPath, rewritten);
+      await page.setViewportSize({ width: 1600, height: 1000 });
+      await page.goto(`file://${tmpPath}`, { waitUntil: "load", timeout: 30000 });
+      await page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()));
+      await page.waitForTimeout(800);
+      const outPath = join(OUT_DIR, slug, "cover.png");
+      await page.screenshot({ path: outPath, clip: { x: 0, y: 0, width: 1600, height: 1000 } });
+      console.log(`OK   ${slug}  via first-page  1600x1000`);
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.close();
       continue;

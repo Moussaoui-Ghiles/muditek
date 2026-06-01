@@ -66,6 +66,18 @@ const COVER_COMPOSE_CSS_BY_SLUG = {
     header.cover .subtitle,header.cover p.subtitle{font-size:32px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;
       display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
   `,
+  "geo-playbook": `
+    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:#fbfaf7!important}
+    body::before,body::after{display:none!important}
+    body > *:not(.hero){display:none!important}
+    body{display:flex!important;flex-direction:column!important;justify-content:center!important;padding:0 112px!important;box-sizing:border-box!important;height:1000px!important}
+    header.hero{margin:0!important;padding:0!important;border:none!important;width:100%!important;max-width:none!important}
+    header.hero hr,header.hero .logos,header.hero p:not(:first-of-type){display:none!important}
+    header.hero h1{max-width:22ch!important;font-size:96px!important;line-height:0.96!important;margin:0 0 44px 0!important;letter-spacing:-0.025em!important;color:#0f2e5a!important}
+    header.hero p:first-of-type{font-size:30px!important;max-width:48ch!important;line-height:1.32!important;margin:0!important;color:#243854!important;
+      display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+    header.hero p:first-of-type strong{font-weight:600!important}
+  `,
   "cold-email-claude-code-blueprint": `
     html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:1000px!important;background:var(--paper,#f6f1e8)!important}
     body::before,body::after{display:none!important}

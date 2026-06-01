@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cited, Not Ranked: The Complete GEO Playbook</title>
+<meta name="description" content="The complete Generative Engine Optimization playbook: make ChatGPT, Perplexity, Claude and Google AI Overviews find, read, and cite your content.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#14315B; --navy-deep:#0E2340; --ink:#16202C; --ink-soft:#243244;
+  --paper:#FFFFFF; --surface:#F2F6FA; --surface-2:#E9F0F7;
+  --line:#D3DEEA; --line-strong:#B7C7D8; --signal:#9A342F;
+  --maxw:860px; --measure:70ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:clamp(1.06rem,0.55vw + 1rem,1.22rem);line-height:1.68;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+
+/* document letterhead (static, not a nav bar) */
+.letterhead{width:min(var(--maxw),92vw);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem;padding:2.8rem 0 2.1rem;border-bottom:1px solid var(--line);text-align:center}
+.letterhead__logo{height:clamp(60px,9vw,92px);width:auto;display:block}
+.letterhead__meta{font-family:"IBM Plex Mono",monospace;font-size:.76rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+
+.hero,.doc,.toc{width:min(var(--maxw),92vw);margin-inline:auto}
+.hero{padding:clamp(2rem,5vw,3.4rem) 0 1.2rem}
+.doc{padding-bottom:4.5rem}
+.doc p,.doc li,.hero p{max-width:var(--measure)}
+
+h1,h2,h3,h4{font-family:"IBM Plex Sans",sans-serif;color:var(--navy);line-height:1.08;letter-spacing:-0.025em;text-wrap:balance;font-weight:700}
+h1[id],h2[id]{scroll-margin-top:1.4rem}
+.hero>h1{font-size:clamp(2.5rem,6.2vw,4rem);letter-spacing:-0.04em;margin:0 0 1.1rem;font-weight:700}
+.hero>p{font-size:clamp(1.25rem,1.4vw + 1rem,1.62rem);line-height:1.32;color:var(--navy);font-weight:600;max-width:30ch;margin:0 0 1.7rem;letter-spacing:-0.02em}
+.hero>p:not(:first-of-type){max-width:var(--measure);font-size:inherit;color:var(--ink);font-weight:400;line-height:1.68;letter-spacing:0}
+.hero>p:not(:first-of-type) strong{color:var(--navy);font-weight:600}
+
+h2{font-size:clamp(1.6rem,3vw + 0.5rem,2.3rem);margin:3.4rem 0 1.1rem;padding-bottom:.5rem;border-bottom:2px solid var(--line-strong);letter-spacing:-0.03em}
+h3{font-size:clamp(1.2rem,1vw + 0.9rem,1.5rem);margin:2.4rem 0 .7rem;color:var(--navy)}
+h1.part{font-size:clamp(2rem,4vw + 0.5rem,3rem);margin:5.5rem 0 2rem;padding-top:2.2rem;border-top:3px solid var(--navy);letter-spacing:-0.035em}
+h1.part span{display:block;color:var(--navy)}
+p{margin:0 0 1.15rem}
+strong{font-weight:600;color:var(--navy)}
+a{color:var(--navy);text-underline-offset:3px;text-decoration-thickness:1px}
+ul,ol{margin:0 0 1.3rem;padding-left:1.3rem}
+li{margin:.4rem 0}
+li::marker{color:var(--navy)}
+
+/* table of contents (document-report style: ruled, not a card) */
+.toc{margin:2.4rem auto 0;padding:1.4rem 0 .4rem;border-top:2px solid var(--navy)}
+.toc__title{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);border:0;margin:0 0 1.2rem;padding:0;font-family:"IBM Plex Mono",monospace;font-weight:600}
+.toc__list{list-style:none;margin:0;padding:0;column-gap:3rem}
+@media(min-width:760px){.toc__list{columns:2}}
+.toc__group{break-inside:avoid;margin:0 0 1rem;padding:0}
+.toc__group>a{display:block;font-weight:700;color:var(--navy);text-decoration:none;font-size:1.02rem;letter-spacing:-0.01em}
+.toc__group>a:hover{text-decoration:underline}
+.toc__group ul{list-style:none;margin:.3rem 0 0;padding:0}
+.toc__group ul li{margin:.16rem 0}
+.toc__group ul a{color:var(--ink-soft);text-decoration:none;font-size:.94rem}
+.toc__group ul a:hover{color:var(--navy);text-decoration:underline}
+
+/* tables */
+.tw{overflow-x:auto;margin:1.4rem 0 1.8rem;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.96em}
+thead th{background:var(--navy);color:#fff;text-align:left;font-weight:600;padding:.7rem 1rem;letter-spacing:-0.01em}
+tbody td{padding:.65rem 1rem;border-top:1px solid var(--line);vertical-align:top;color:var(--ink)}
+tbody tr:nth-child(even){background:var(--surface)}
+table strong{color:var(--navy)}
+
+/* code + copy button */
+.codewrap{position:relative;margin:1.3rem 0 1.6rem}
+.codewrap pre{margin:0}
+pre{background:var(--navy-deep);color:#EAF2FB;border-radius:12px;padding:1.2rem 1.3rem;padding-top:2.7rem;overflow-x:auto;font-size:.92rem;line-height:1.6;border:1px solid var(--navy)}
+pre code{font-family:"IBM Plex Mono",monospace;color:inherit;background:none;padding:0;font-size:1em}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .42em;border-radius:6px;font-size:.88em;font-weight:500}
+.copy{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  color:#CFE0F2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:.4rem .7rem;cursor:pointer;transition:background .18s,color .18s,transform .18s}
+.copy:hover{background:rgba(255,255,255,.16);color:#fff}
+.copy:active{transform:translateY(1px)}
+.copy.ok{background:#2E5E3A;border-color:#2E5E3A;color:#fff}
+
+/* callouts */
+blockquote{margin:1.6rem 0;padding:1.1rem 1.4rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:12px;color:var(--ink-soft);font-weight:500}
+blockquote p{margin:0;max-width:none}
+blockquote strong{color:var(--navy)}
+
+/* figures */
+figure{margin:1.8rem 0 2.2rem}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+figcaption{margin-top:.7rem;font-size:.92rem;line-height:1.45;color:var(--ink-soft);font-style:italic;text-align:center;max-width:62ch;margin-inline:auto}
+
+hr{border:0;height:1px;background:var(--line-strong);margin:3rem 0}
+
+/* logo strip */
+.logos{display:flex;align-items:center;gap:clamp(1rem,2.4vw,1.9rem);flex-wrap:wrap;margin:0 0 2.2rem;padding:1rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.logos--tight{border:0;padding:.4rem 0;margin:.4rem 0 1.2rem;gap:1.4rem}
+.logos img{height:26px;width:auto;display:block}
+.logos__cap{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:600}
+
+/* index mapping */
+.imap{display:flex;flex-direction:column;gap:.7rem;margin:1.2rem 0 1.8rem}
+.imap__row{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding:.85rem 1.1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;font-weight:600;color:var(--navy)}
+.imap__src,.imap__dst{display:inline-flex;align-items:center;gap:.5rem}
+.imap__src img,.imap__dst img{height:22px;width:auto}
+.imap__arr{font-family:"IBM Plex Mono",monospace;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+.imap__dst{color:var(--ink)}
+
+/* checklist */
+.checklist{list-style:none;padding-left:0;margin:1.2rem 0 1.8rem;display:grid;gap:.55rem}
+.checklist li{position:relative;padding-left:2rem;margin:0}
+.checklist li::before{content:"";position:absolute;left:0;top:.18em;width:1.15rem;height:1.15rem;border:2px solid var(--navy);border-radius:5px;background:var(--paper)}
+
+/* inline stack logos */
+p img[alt="Vercel"],p img[alt="GitHub"]{height:20px;width:auto;display:inline-block;vertical-align:-4px;margin-left:.35rem}
+
+/* CTA panel */
+.cta{background:var(--navy);color:#fff;border-radius:18px;padding:clamp(1.9rem,4vw,3rem);margin:3.5rem 0 1rem}
+.cta h2{color:#fff;border:0;margin:0 0 1.1rem;padding:0;font-size:clamp(1.7rem,3vw + .5rem,2.4rem);scroll-margin-top:1.4rem}
+.cta p{color:#E7EEF6;max-width:62ch}
+.cta strong{color:#fff}
+.cta p:last-child{margin:1.7rem 0 0}
+.cta p:last-child a{display:inline-block;background:#fff;color:var(--navy);font-weight:700;text-decoration:none;padding:.95rem 1.7rem;border-radius:11px;font-size:1.15rem;letter-spacing:-0.01em;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.cta p:last-child a:hover{transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.cta p:last-child a{transition:none}}
+
+/* footer */
+.site-footer{background:var(--paper);color:var(--ink);border-top:1px solid var(--line);padding:clamp(2rem,5vw,3rem) clamp(1rem,4vw,2.5rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.2rem;margin-top:4rem}
+.site-footer img{height:30px;width:auto}
+.site-footer p{margin:0;color:var(--ink-soft);max-width:none;font-size:1rem}
+.site-footer a{color:var(--navy);font-weight:600}
+
+/* reveal: visible by default; animates only when JS + motion ok */
+.js.motion .reveal:not(.in){opacity:0;transform:translateY(14px)}
+.js.motion .reveal.in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+
+@media print{
+  .copy{display:none}
+  body{font-size:11pt;line-height:1.5;color:#000}
+  pre{background:#0E2340 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1.part{break-before:page}
+  figure,table,pre,blockquote,.toc{break-inside:avoid}
+}
+@media (max-width:560px){
+  .imap__row{font-size:.95rem}
+  thead th,tbody td{padding:.55rem .7rem}
+  .site-header__tag{display:none}
+}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img class="letterhead__logo" src="/media/geo-playbook/muditek-logo.svg" alt="Muditek">
+  <span class="letterhead__meta">GEO Playbook</span>
+</header>
+<header class="hero">
+<h1>Cited, Not Ranked: The Complete GEO Playbook</h1>
+<p><strong>The page ChatGPT cites and the page Google ranks are usually two different pages. This is the playbook for owning the first one.</strong></p>
+<div class="logos" role="img" aria-label="Covers ChatGPT, Claude, Perplexity, Gemini, Copilot and Google AI Overviews">
+<span class="logos__cap">Optimize for</span>
+<img src="/media/geo-playbook/logos/openai.svg" alt="ChatGPT" loading="lazy"><img src="/media/geo-playbook/logos/claude.svg" alt="Claude" loading="lazy"><img src="/media/geo-playbook/logos/perplexity.svg" alt="Perplexity" loading="lazy"><img src="/media/geo-playbook/logos/gemini.svg" alt="Gemini" loading="lazy"><img src="/media/geo-playbook/logos/copilot.svg" alt="Copilot" loading="lazy"><img src="/media/geo-playbook/logos/google.svg" alt="Google AI Overviews" loading="lazy">
+</div>
+<p>Only 6.82% of the pages ChatGPT cites also sit in Google's top 10. Nearly a third of the most-cited AI pages don't rank on Google at all. AI search threw out the old rulebook: it rewards clear structure and reliable sourcing, not backlinks or PageRank, and <strong>83% of AI Overview citations come from pages outside the organic top 10</strong>.</p>
+<p>That cuts both ways. On queries that surface an AI answer, organic clicks fall ~61%. But the brands cited <em>inside</em> that answer pick up a +35% click lift while everyone else bleeds out. Being cited is the new position #1, and right now roughly 9 of 10 sites have done nothing about it.</p>
+<p>This is the complete method, end to end: every step, the proof behind each one, the tactics that waste your time, and the honest limits. The base setup takes about an hour.</p>
+<hr>
+</header>
+<nav class="toc" aria-label="Table of contents">
+<h2 class="toc__title">Contents</h2>
+<ol class="toc__list">
+<li class="toc__group"><a href="#why-this-matters-now">Why This Matters Now</a></li>
+<li class="toc__group"><a href="#the-system-at-a-glance">The System at a Glance</a></li>
+<li class="toc__group is-part"><a href="#part-1-make-content-readable-to-ai">Part 1: Make Content Readable to AI</a><ul><li><a href="#1-sort-crawlers-with-robots-txt">1. Sort Crawlers with robots.txt</a></li><li><a href="#2-write-an-llms-txt">2. Write an llms.txt</a></li><li><a href="#3-cross-link-sites-into-a-discovery-mesh">3. Cross-Link Sites into a Discovery Mesh</a></li><li><a href="#4-serve-full-content-and-markdown-routes">4. Serve Full Content and Markdown Routes</a></li></ul></li>
+<li class="toc__group is-part"><a href="#part-2-make-sure-ai-can-find-you">Part 2: Make Sure AI Can Find You</a><ul><li><a href="#5-register-with-google">5. Register with Google</a></li><li><a href="#6-register-with-bing-and-turn-on-indexnow">6. Register with Bing, and Turn On IndexNow</a></li><li><a href="#7-join-the-perplexity-publisher-program">7. Join the Perplexity Publisher Program</a></li></ul></li>
+<li class="toc__group is-part"><a href="#part-3-build-a-dedicated-knowledge-site-advanced">Part 3: Build a Dedicated Knowledge Site (Advanced)</a><ul><li><a href="#8-three-layers-a-structured-api">8. Three Layers + a Structured API</a></li><li><a href="#9-give-each-project-its-own-page">9. Give Each Project Its Own Page</a></li><li><a href="#10-mirror-structured-data-to-the-main-domain">10. Mirror Structured Data to the Main Domain</a></li><li><a href="#launch-checklist">Launch Checklist</a></li></ul></li>
+<li class="toc__group is-part"><a href="#part-4-what-actually-moves-visibility">Part 4: What Actually Moves Visibility</a><ul><li><a href="#which-content-changes-lift-visibility">Which Content Changes Lift Visibility</a></li><li><a href="#what-gets-a-page-cited">What Gets a Page Cited</a></li><li><a href="#how-citation-actually-works">How Citation Actually Works</a></li></ul></li>
+<li class="toc__group is-part"><a href="#part-5-what-does-not-work">Part 5: What Does NOT Work</a><ul><li><a href="#the-json-ld-reality">The JSON-LD Reality</a></li></ul></li>
+<li class="toc__group is-part"><a href="#part-6-trade-offs-and-reality-check">Part 6: Trade-offs and Reality Check</a></li>
+<li class="toc__group"><a href="#what-success-looks-like">What Success Looks Like</a></li>
+<li class="toc__group"><a href="#the-one-hour-implementation-order">The One-Hour Implementation Order</a></li>
+</ol>
+</nav>
+<article class="doc">
+<h2 id="why-this-matters-now">Why This Matters Now</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Figure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI search growth</td>
+<td>+527% YoY (H1 2025)</td>
+</tr>
+<tr>
+<td>AI Overviews trigger rate</td>
+<td>~48% of all queries (+58% YoY)</td>
+</tr>
+<tr>
+<td>Consumers using AI search</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>ChatGPT weekly active users</td>
+<td>900M (Feb 2026)</td>
+</tr>
+<tr>
+<td>AI referral conversion vs organic</td>
+<td>4.4–5x better</td>
+</tr>
+<tr>
+<td>AI search share of referral traffic</td>
+<td>&lt;1% (Google still &gt;90%)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The paradox:</strong> consumer behavior is moving to AI search, but the traffic volume is still tiny. GEO is a <strong>brand-visibility play, not a traffic play.</strong> It is worth one hour of setup, not a week. The product remains the real competitive advantage.</p>
+<p><strong>It is a separate surface from Google.</strong> Only 6.82% of ChatGPT results overlap with Google's top 10, and 28.3% of the most-cited ChatGPT pages rank nowhere on Google at all. Traditional SEO tools cannot see most of this.</p>
+<p><strong>The cost of being absent.</strong> Queries that show an AI Overview see a ~61% organic click-through decline (1.76% to 0.61%). But brands cited <em>inside</em> the AI answer see a +35% organic CTR and +91% paid CTR lift versus uncited competitors. Being cited is the new position #1.</p>
+<hr>
+<h2 id="the-system-at-a-glance">The System at a Glance</h2>
+<p>Eight moves take existing content from invisible to citable. The first five are the one-hour base. The last three are the advanced knowledge layer.</p>
+<figure><img src="/media/geo-playbook/02-system-overview-8-steps.jpeg" alt="The GEO system: eight steps from existing content to AI citation" loading="lazy"><figcaption>The GEO system: eight steps from existing content to AI citation</figcaption></figure>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>robots.txt</td>
+<td>Allow search crawlers, block training</td>
+</tr>
+<tr>
+<td>1</td>
+<td>llms.txt</td>
+<td>Markdown site summary for AI + cross-site mesh</td>
+</tr>
+<tr>
+<td>2</td>
+<td>llms-full.txt</td>
+<td>Full knowledge base + <code>.md</code> routes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Bing</td>
+<td>IndexNow + AI Performance panel</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Google</td>
+<td>Search Console + sitemap</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Perplexity</td>
+<td>Publisher program + citation analytics</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Knowledge endpoint</td>
+<td>JSON API + per-project pages</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Mirror to main domain</td>
+<td>Daily sync to the root domain</td>
+</tr>
+</tbody>
+</table></div>
+<p>The goal of all eight: <strong>AI can find, read, and cite the content accurately</strong>, accurate citations, complete descriptions, and fresh data the model can trust.</p>
+<hr>
+<h1 class="part" id="part-1-make-content-readable-to-ai"><span>Part 1: Make Content Readable to AI</span></h1>
+<h2 id="1-sort-crawlers-with-robots-txt">1. Sort Crawlers with robots.txt</h2>
+<p>robots.txt is not an on/off switch. AI crawlers come in five types that do different jobs. Treating them as one bucket either leaks content to training or removes the site from AI search entirely.</p>
+<figure><img src="/media/geo-playbook/03-robots-txt-crawler-types.jpeg" alt="The five AI crawler types and how to handle each" loading="lazy"><figcaption>The five AI crawler types and how to handle each</figcaption></figure>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Crawler type</th>
+<th>Examples</th>
+<th>What it does</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td>GPTBot, ClaudeBot, Meta-ExternalAgent, CCBot</td>
+<td>Pulls content to train models</td>
+<td><strong>Block</strong> (optional)</td>
+</tr>
+<tr>
+<td>Search &amp; retrieval</td>
+<td>OAI-SearchBot, Claude-SearchBot, PerplexityBot</td>
+<td>Fetches live to answer queries</td>
+<td><strong>Allow</strong></td>
+</tr>
+<tr>
+<td>User-triggered</td>
+<td>ChatGPT-User, Claude-User, Perplexity-User, Google-Agent</td>
+<td>Fires when a user pastes a URL</td>
+<td><strong>Allow</strong></td>
+</tr>
+<tr>
+<td>Opt-out tokens</td>
+<td>Google-Extended, Applebot-Extended</td>
+<td>Signals, not crawlers, opt out of training</td>
+<td>Control</td>
+</tr>
+<tr>
+<td>Undeclared</td>
+<td>Bytespider, xAI Grok bot</td>
+<td>Do not identify, may ignore rules</td>
+<td><strong>Block</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The rule that matters:</strong> blocking search &amp; retrieval crawlers makes the site vanish from AI search. Blocking training crawlers only keeps content out of model training, it does not affect current AI search results.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code># Search &amp; retrieval: allow
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# User-triggered: allow
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Training: block
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Opt-out tokens
+User-agent: Google-Extended
+Disallow: /
+
+# Undeclared: block
+User-agent: Bytespider
+Disallow: /
+</code></pre></div>
+<h2 id="2-write-an-llms-txt">2. Write an llms.txt</h2>
+<p><code>llms.txt</code> is a Markdown file at the site root that describes what the site is, its key pages, and who is behind it, built for AI consumption the way robots.txt is built for crawlers.</p>
+<p><strong>Adoption is still low, which is the opportunity.</strong> Over 840,000 sites have deployed llms.txt (Anthropic, Cloudflare, Stripe, Vercel among them), yet across ~300,000 domains only <strong>10.13%</strong> have one, roughly 9 of 10 sites have not adopted it. Adoption is nearly flat across traffic tiers (8–10%), so being early is a genuine edge.</p>
+<p>The format is deliberately simple:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-markdown"># Your Project Name
+
+&gt; One-line description of what this is.
+
+## Links
+
+- [Documentation](https://yoursite.com/docs)
+- [GitHub](https://github.com/you/project)
+- [Blog](https://yoursite.com/blog)
+
+## About
+
+Short paragraph explaining the project, its purpose,
+key features, and what makes it different.
+</code></pre></div>
+<p>A filled-in example, which is what AI actually reads:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-markdown"># Acme Analytics
+
+&gt; Open-source product analytics for developers. Self-hostable, privacy-first, SQL-native.
+
+Acme Analytics is a self-hosted analytics platform built on ClickHouse. It tracks
+product events without third-party cookies, exposes raw SQL, and runs on your own
+infrastructure. Built for engineering teams that want full data ownership.
+
+## Docs
+
+- [Quickstart](https://acme.dev/docs/quickstart): Install and send your first event in 5 minutes.
+- [SQL reference](https://acme.dev/docs/sql): Query event data directly.
+- [Self-hosting guide](https://acme.dev/docs/self-host): Deploy with Docker or Kubernetes.
+
+## Product
+
+- [Pricing](https://acme.dev/pricing): Free self-hosted, paid cloud tiers.
+- [Acme vs Mixpanel and Amplitude](https://acme.dev/vs): Where Acme fits.
+
+## Optional
+
+- [Changelog](https://acme.dev/changelog): Release history.
+- [Blog](https://acme.dev/blog): Engineering write-ups.
+</code></pre></div>
+<p><strong>One spec detail worth knowing:</strong> the H1 (project name) is the <em>only</em> required line; the blockquote summary and section lists are recommended. A section titled <code>## Optional</code> carries special meaning, crawlers may skip those links when a shorter context is needed, so reserve it for secondary material.</p>
+<p>A real, well-structured llms.txt reads like a clean machine-readable profile, identity, core projects, quick recommendations, links:</p>
+<figure><img src="/media/geo-playbook/04-llms-txt-example.jpeg" alt="A real llms.txt serving a machine-readable site profile" loading="lazy"><figcaption>A real llms.txt serving a machine-readable site profile</figcaption></figure>
+<p>After publishing, submit it to <code>directory.llmstxt.cloud</code>, <code>llmstxt.site</code>, and the <code>llms-txt-hub</code> repository on GitHub via PR. Changes take effect after crawlers revisit, usually within a few days.</p>
+<h2 id="3-cross-link-sites-into-a-discovery-mesh">3. Cross-Link Sites into a Discovery Mesh</h2>
+<p>For multiple properties, have each site's llms.txt link to the others. A crawler entering through any one site can follow the links and discover everything. One entry point exposes the whole network.</p>
+<figure><img src="/media/geo-playbook/05-cross-link-mesh.jpeg" alt="Each site's llms.txt links to the others, any entry point discovers the entire network" loading="lazy"><figcaption>Each site's llms.txt links to the others, any entry point discovers the entire network</figcaption></figure>
+<p>Add the sibling sites as a section inside every property's llms.txt:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-markdown">## Network
+
+- [Main site](https://example.com/llms.txt): Product, docs, and pricing.
+- [Blog](https://blog.example.com/llms.txt): Engineering write-ups and guides.
+- [Changelog](https://changelog.example.com/llms.txt): Release history.
+</code></pre></div>
+<p>Every property lists every other one. A crawler entering through any single site follows the links and reaches the whole network.</p>
+<h2 id="4-serve-full-content-and-markdown-routes">4. Serve Full Content and Markdown Routes</h2>
+<p><code>llms.txt</code> is the summary. <code>llms-full.txt</code> is the complete version, typically 30–60KB, containing project descriptions, FAQs, usage scenarios, competitive comparisons, and README excerpts.</p>
+<p>A workable <code>llms-full.txt</code> skeleton:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-markdown"># Acme Analytics, Full Knowledge Base
+
+&gt; Open-source, self-hosted product analytics. Privacy-first, SQL-native.
+
+## What it is
+[Two or three paragraphs: the problem, the approach, who it is for.]
+
+## Core features
+[Bulleted, each with one line of context.]
+
+## How it compares
+[Acme vs Mixpanel, Amplitude, PostHog: one honest line each.]
+
+## Use cases
+[Concrete scenarios, phrased the way users actually ask.]
+
+## FAQ
+[Real questions, direct answers.]
+
+## Install
+[The exact commands.]
+
+## Links
+[Docs, GitHub, pricing, blog.]
+</code></pre></div>
+<p><strong>The full version gets far more traffic.</strong> In a 7-day analysis of CDN logs, <code>llms-full.txt</code> was visited at a median of 79 vs 14 for <code>llms.txt</code> (mean 248 vs 62), roughly 4–5x more, with ChatGPT the majority of visits. The reason: LLMs tend to embed full content upfront rather than retrieving page by page. AI that finds the summary wants the full version.</p>
+<p><strong>Markdown routes go one step further.</strong> Serving a <code>.md</code> version of every page strips the noise: a 15,000-token HTML page becomes a ~3,000-token Markdown document, about 80% less to parse.</p>
+<figure><img src="/media/geo-playbook/06-html-vs-markdown-tokens.jpeg" alt="HTML carries ~80% noise (nav, CSS, ads, footer); Markdown is pure content" loading="lazy"><figcaption>HTML carries ~80% noise (nav, CSS, ads, footer); Markdown is pure content</figcaption></figure>
+<p>Declare the Markdown alternate in the page <code>&lt;head&gt;</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-html">&lt;link rel=&quot;alternate&quot; type=&quot;text/markdown&quot; href=&quot;/page.md&quot; /&gt;
+</code></pre></div>
+<p>Claude Code and Cursor already send <code>Accept: text/markdown</code> headers when fetching docs. This is standard HTTP/1.1 content negotiation, in the spec since 1997.</p>
+<hr>
+<h1 class="part" id="part-2-make-sure-ai-can-find-you"><span>Part 2: Make Sure AI Can Find You</span></h1>
+<p>Readable content is useless if AI never reaches it. AI search does not run its own web crawl from scratch, it leans on existing search indexes:</p>
+<div class="imap">
+<div class="imap__row"><span class="imap__src"><img src="/media/geo-playbook/logos/openai.svg" alt="ChatGPT" loading="lazy"> ChatGPT search</span><span class="imap__arr">runs on</span><span class="imap__dst"><img src="/media/geo-playbook/logos/bing.svg" alt="Bing" loading="lazy"> Bing</span></div>
+<div class="imap__row"><span class="imap__src"><img src="/media/geo-playbook/logos/google.svg" alt="Google" loading="lazy"> Google AI Overviews</span><span class="imap__arr">use</span><span class="imap__dst">Google's own index</span></div>
+<div class="imap__row"><span class="imap__src"><img src="/media/geo-playbook/logos/perplexity.svg" alt="Perplexity" loading="lazy"> Perplexity</span><span class="imap__arr">relies on</span><span class="imap__dst">external search APIs</span></div>
+</div>
+<p>If pages are not indexed by Google and Bing, none of the Part 1 work matters.</p>
+<h2 id="5-register-with-google">5. Register with Google</h2>
+<ol>
+<li>Open Google Search Console, verify the domain (DNS record or HTML file).</li>
+<li>Submit the sitemap (<code>yoursite.com/sitemap.xml</code>).</li>
+<li>Check the <strong>Pages</strong> report for indexed vs excluded pages.</li>
+<li>For any important page not indexed, use <strong>URL Inspection → Request Indexing</strong>.</li>
+</ol>
+<p>Google has no AI-specific panel yet, but AI Overviews pull from a wider range than the top 10, even pages that do not rank can appear in AI answers.</p>
+<h2 id="6-register-with-bing-and-turn-on-indexnow">6. Register with Bing, and Turn On IndexNow</h2>
+<p>Bing matters more than its market share suggests: <strong>Copilot, DuckDuckGo, Yahoo, and ChatGPT search all run on the Bing index underneath.</strong></p>
+<figure><img src="/media/geo-playbook/07-bing-index-hub.jpeg" alt="One Bing index feeds Copilot, DuckDuckGo, Yahoo, and ChatGPT" loading="lazy"><figcaption>One Bing index feeds Copilot, DuckDuckGo, Yahoo, and ChatGPT</figcaption></figure>
+<ol>
+<li>Register in Bing Webmaster Tools, submit the sitemap.</li>
+<li>Check the <strong>AI Performance</strong> panel to see how often AI cites the content.</li>
+<li>Set up <strong>IndexNow</strong> so Bing is notified the moment new content publishes, instead of waiting for a crawl.</li>
+</ol>
+<p><strong>IndexNow setup:</strong></p>
+<ul>
+<li>Generate a key: 8–128 characters, hex only (a–z, A–Z, 0–9, dashes). Host it as <code>{key}.txt</code> at the site root to prove ownership.</li>
+<li>On publish, POST to <code>api.indexnow.org/indexnow</code> with <code>host</code>, <code>key</code>, and a <code>urlList</code> of changed URLs (up to 10,000 per request); a single URL can also go via GET. An HTTP 200 means received.</li>
+<li>Bing picks them up within minutes, and one submission propagates to every IndexNow engine. Most static-site generators and CMS platforms have IndexNow plugins.</li>
+</ul>
+<p>The key file, hosted at your root, contains nothing but the key string:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code>https://example.com/a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6.txt
+</code></pre></div>
+<p>Ping a single changed URL with a GET request:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code>https://api.indexnow.org/indexnow?url=https://example.com/new-page&amp;key=a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+</code></pre></div>
+<p>Or submit up to 10,000 URLs at once with a POST:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-json">{
+  &quot;host&quot;: &quot;example.com&quot;,
+  &quot;key&quot;: &quot;a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6&quot;,
+  &quot;keyLocation&quot;: &quot;https://example.com/a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6.txt&quot;,
+  &quot;urlList&quot;: [
+    &quot;https://example.com/new-page&quot;,
+    &quot;https://example.com/updated-page&quot;
+  ]
+}
+</code></pre></div>
+<p>An HTTP 200 means the request was received. One ping reaches every IndexNow engine.</p>
+<h2 id="7-join-the-perplexity-publisher-program">7. Join the Perplexity Publisher Program</h2>
+<p>Perplexity runs a publisher program (<code>pplx.ai/publisher-program</code>). Approved publishers get an 80/20 revenue share and access to citation analytics data.</p>
+<hr>
+<h1 class="part" id="part-3-build-a-dedicated-knowledge-site-advanced"><span>Part 3: Build a Dedicated Knowledge Site (Advanced)</span></h1>
+<p>Instead of letting AI scrape scattered sources, give it a single, organized entry point. This is the highest-leverage move for anyone with multiple products or a body of work.</p>
+<h2 id="8-three-layers-a-structured-api">8. Three Layers + a Structured API</h2>
+<p>A knowledge site provides three layers, plus machine-readable data:</p>
+<ol>
+<li><strong>Overview</strong>, <code>llms.txt</code>.</li>
+<li><strong>Full version</strong>, <code>llms-full.txt</code> (30–60KB).</li>
+<li><strong>Standalone knowledge pages</strong>, one per core project.</li>
+<li><strong>JSON APIs</strong>, so AI tools can fetch data programmatically.</li>
+</ol>
+<p>Pull data live from upstream (e.g. the GitHub API) with caching that refreshes periodically, keeping maintenance near zero.</p>
+<figure><img src="/media/geo-playbook/08-knowledge-site-page.jpeg" alt="A knowledge site: human-readable overview plus a full endpoint list for AI" loading="lazy"><figcaption>A knowledge site: human-readable overview plus a full endpoint list for AI</figcaption></figure>
+<p><strong>Give AI a narrative, not a list.</strong> When a model answers &quot;who is this&quot; or &quot;what does this team do,&quot; a coherent description that connects the projects, how they relate, the technical direction, the overall picture, works far better than a flat list.</p>
+<p>A reference implementation serves an llms.txt overview, a 50KB llms-full.txt, per-project pages, and JSON endpoints (<code>/api/profile</code>, <code>/api/projects</code>, <code>/api/blog</code>, <code>/api/weekly</code>) that pull live GitHub data with hourly ISR caching. Stack: Next.js + TypeScript on Vercel. The JSON returns structured project data with live stats:</p>
+<figure><img src="/media/geo-playbook/09-json-api-source.jpeg" alt="Structured JSON: identity, skills, links, endpoints, and a typed project array" loading="lazy"><figcaption>Structured JSON: identity, skills, links, endpoints, and a typed project array</figcaption></figure>
+<h2 id="9-give-each-project-its-own-page">9. Give Each Project Its Own Page</h2>
+<p>Each project needs a standalone, self-contained Markdown page, not a row in a list. Include a citable summary, core features, competitive comparisons, use cases, and install commands.</p>
+<figure><img src="/media/geo-playbook/10-per-project-page.jpeg" alt="A standalone project page: summary, features, comparison, install, FAQ, links" loading="lazy"><figcaption>A standalone project page: summary, features, comparison, install, FAQ, links</figcaption></figure>
+<p>Copy this template per project. It mirrors the structure that actually gets cited:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-markdown"># Pake
+
+&gt; Turn any webpage into a lightweight desktop app with Rust + Tauri. ~20x smaller than Electron.
+
+Pake is an open-source desktop-app packager. It wraps any web page into a native app
+using Tauri (Rust + the system WebView), so the result is typically under 5MB versus
+80MB+ for Electron. Works on macOS, Windows, and Linux.
+
+Latest release: v3.11.0 (2026-03-27)
+
+## Key features
+
+- ~20x smaller than Electron apps
+- macOS, Windows, and Linux
+- Shortcut customization and immersive window mode
+- System tray integration
+- CLI for custom app packaging
+
+## How it compares
+
+Pake vs Electron, Nativefier, WebCatalog, Flotato: Pake uses Tauri (Rust + system
+WebView) instead of bundling Chromium, which makes apps ~20x smaller and lighter.
+
+## When to use it
+
+- Turn a website into a desktop app
+- Electron feels too large or heavy
+- Wrap ChatGPT, Notion, or YouTube as a standalone app
+- A small desktop app built from a single URL
+
+## Install
+
+```bash
+npm install -g pake-cli
+```
+
+## FAQ
+
+**How does Pake compare to Electron?** Pake uses Tauri instead of bundling Chromium,
+so apps are ~20x smaller and more resource-efficient.
+
+**Can I package any website?** Yes. The CLI turns any URL into a desktop app with a
+custom window size, icon, and shortcuts.
+
+## Links
+
+- GitHub: https://github.com/your-org/pake
+- All projects: https://example.com/api/projects.json
+- Full knowledge base: https://example.com/llms-full.txt
+</code></pre></div>
+<p>Note what earns the citation: a one-line citable summary at the top, a real comparison, use cases phrased the way people ask them, and copy-paste install commands.</p>
+<p><strong>URL structure is a ranking signal.</strong> Natural-language slugs get cited more than opaque IDs. <code>/projects/pake</code> tells the model what the page is about before it reads a word; <code>/page?id=47</code> tells it nothing. Cited pages have titles with noticeably higher semantic similarity to the user's query, so the title and slug should mirror how people actually ask.</p>
+<h2 id="10-mirror-structured-data-to-the-main-domain">10. Mirror Structured Data to the Main Domain</h2>
+<p>Subdomains carry less authority than root domains, and a crawler that discovers <code>example.com</code> will not automatically find <code>docs.example.com</code> or <code>api.example.com</code>. Data spread across subdomains means AI sees only part of the picture.</p>
+<p><strong>The fix:</strong> mirror the key structured data onto the main domain so <code>example.com/llms.txt</code>, <code>example.com/projects/xxx.md</code>, and <code>example.com/api/projects.json</code> all live under one roof. Crawlers find the main site through search indexing and reach everything without leaving.</p>
+<figure><img src="/media/geo-playbook/11-sync-to-main-domain.jpeg" alt="A daily GitHub Action syncs the data source to the main domain where crawlers find it" loading="lazy"><figcaption>A daily GitHub Action syncs the data source to the main domain where crawlers find it</figcaption></figure>
+<p>Implementation options: scheduled CI sync, build-time fetching, or reverse proxy. A reference setup uses a GitHub Action that syncs subdomain data to the main repo nightly.</p>
+<h2 id="launch-checklist">Launch Checklist</h2>
+<p>For every new site, run this list to avoid gaps:</p>
+<ul class="checklist">
+<li><strong>robots.txt</strong>, crawler permissions sorted by type</li>
+<li><strong>llms.txt</strong>, site summary with cross-references to other properties</li>
+<li><strong>sitemap</strong>, submitted to Google and Bing</li>
+<li><strong>Bing Webmaster Tools</strong>, IndexNow enabled</li>
+<li><strong>Google Search Console</strong>, indexing monitored</li>
+<li>Each property's llms.txt references the others (discovery mesh)</li>
+</ul>
+<blockquote>
+<p>The biggest trap is chasing every GEO technique at once, creating a mess and losing the plot. The base five steps deliver most of the value.</p>
+</blockquote>
+<hr>
+<h1 class="part" id="part-4-what-actually-moves-visibility"><span>Part 4: What Actually Moves Visibility</span></h1>
+<p>GEO is not folklore. The numbers below come from controlled testing of what changes citation, and they converge.</p>
+<h2 id="which-content-changes-lift-visibility">Which Content Changes Lift Visibility</h2>
+<p>Nine content modifications were tested against a 10,000-query benchmark across nine domains, then validated on a live engine.</p>
+<figure><img src="/media/geo-playbook/12-geo-paper-lift-chart.jpeg" alt="Visibility lift by GEO method: authoritative citations +115%, quotations +43%, statistics +33%" loading="lazy"><figcaption>Visibility lift by GEO method: authoritative citations +115%, quotations +43%, statistics +33%</figcaption></figure>
+<p><strong>The numbers, stated precisely.</strong> The chart headlines +115% / +43% / +33%. The per-method figures are more specific, and the distinction matters for setting expectations:</p>
+<ul>
+<li>The three strongest methods, <strong>Cite Sources, Quotation Addition, Statistics Addition</strong>, each lift visibility <strong>+30–40%</strong> (position-adjusted metric; +15–30% on the subjective metric). The methods that add credible substance win.</li>
+<li>The <strong>+115%</strong> figure is not a blanket &quot;authoritative&quot; lift. It is the specific result for <strong>Cite Sources applied to a page ranked #5 in search</strong> (+115.1%), the democratization finding below. The &quot;Authoritative tone&quot; method on its own measured roughly +89%.</li>
+<li>The classic SEO move, <strong>Keyword Stuffing, does not work</strong>. On the live Perplexity test it scored 10% <em>worse</em> than doing nothing.</li>
+</ul>
+<p><strong>All nine modifications tested, ordered by effect:</strong></p>
+<ol>
+<li><strong>Cite Sources</strong>, add citations to credible sources <em>(top tier)</em></li>
+<li><strong>Quotation Addition</strong>, add direct quotes from authorities <em>(top tier)</em></li>
+<li><strong>Statistics Addition</strong>, replace vague claims with hard numbers <em>(top tier)</em></li>
+<li><strong>Fluency Optimization</strong>, tighten and clarify the writing <em>(strong, and the best combiner)</em></li>
+<li><strong>Authoritative tone</strong>, write with confidence and authority (~+89%)</li>
+<li><strong>Easy-to-Understand</strong>, simplify language and structure</li>
+<li><strong>Unique Words</strong>, add distinctive, specific terminology</li>
+<li><strong>Technical Terms</strong>, add precise domain vocabulary</li>
+<li><strong>Keyword Stuffing</strong>, the old SEO reflex: <em>fails</em>, roughly 10% worse than baseline</li>
+</ol>
+<p>Methods 1 to 3 add credible substance and win across the board. Methods 4 to 8 sharpen content that already exists. Method 9 is the one to drop.</p>
+<p><strong>How visibility is measured</strong> (so the numbers above mean something): two metrics. <em>Position-Adjusted Word Count</em> is the share of the answer's words that cite you, weighted higher when your citation lands earlier. <em>Subjective Impression</em> scores seven things an LLM judges, relevance, influence, uniqueness, position, amount of your content shown, click-likelihood, and diversity.</p>
+<p><strong>Method effectiveness varies by content type</strong> (use this to pick a strategy):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Best-fit domains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authoritative tone</td>
+<td>Debate, History, Science</td>
+</tr>
+<tr>
+<td>Fluency Optimization</td>
+<td>Business, Science, Health</td>
+</tr>
+<tr>
+<td>Cite Sources</td>
+<td>Statements / Facts, Law &amp; Government</td>
+</tr>
+<tr>
+<td>Quotation Addition</td>
+<td>People &amp; Society, Explanation, History</td>
+</tr>
+<tr>
+<td>Statistics Addition</td>
+<td>Law &amp; Government, Debate, Opinion</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>GEO democratizes visibility.</strong> Because generative engines condition on content rather than backlinks, lower-ranked sites gain the most. Cite Sources gave a site ranked #5 in search a <strong>+115.1%</strong> visibility increase, while the top-ranked site <em>lost</em> 30.3%. Small creators can compete on content quality alone.</p>
+<p><strong>Combine methods.</strong> The strongest pair is <strong>Fluency Optimization + Statistics Addition</strong> (more than 5.5% above any single method). Cite Sources is weak alone but the best combiner (+31.4% on average when paired).</p>
+<p><strong>It generalizes to real engines.</strong> On Perplexity, Quotation Addition lifted visibility +22%, and Statistics Addition reached +37% on the subjective metric.</p>
+<h2 id="what-gets-a-page-cited">What Gets a Page Cited</h2>
+<p>Running 602 prompts across the three major AI platforms and analyzing tens of thousands of pages surfaces the patterns most useful for creators:</p>
+<ul>
+<li><strong>Specificity wins.</strong> Pages with real data, clear definitions, and side-by-side comparisons see 50%+ higher impact than vague pages. Step-by-step structure helps. <strong>Pure FAQ format actively hurts</strong>, the opposite of what most &quot;GEO score&quot; tools advise.</li>
+<li><strong>Depth wins.</strong> AI favors long content it can slice into reusable segments. High-impact pages average ~2,000 words with 10+ headings; low-impact pages average ~170 words, a 10x gap. <strong>Sweet spot: 1,000–3,000 words.</strong></li>
+<li><strong>Relevance beats mechanics.</strong> Heading hierarchy, meta descriptions, and keyword density predict less than one variable: whether the page actually answers the question asked.</li>
+<li><strong>Platforms differ.</strong> ChatGPT cites few sources but uses each deeply, per-citation impact over 5x Google's, so go <em>deep</em> per page. Perplexity casts a wider net, citing 2x+ as many sources, so go <em>wide</em>.</li>
+<li><strong>Content type matters.</strong> Official sites, news, and industry verticals are ~80% of citation sources, but encyclopedia and explainer pages carry <strong>3x the impact</strong> of news pages. <strong>83% of citations are English content</strong>, international projects need English versions.</li>
+</ul>
+<h2 id="how-citation-actually-works">How Citation Actually Works</h2>
+<ul>
+<li><strong>Retrieved ≠ cited.</strong> Of all pages ChatGPT retrieves in a session, <strong>only 15% make the final answer.</strong> Getting into the retrieval pool is just the first hurdle.</li>
+<li><strong>Third-party beats first-party.</strong> Brands are cited <strong>6.5x more</strong> through third-party sources (Reddit, Hacker News) than through their own domain. A well-structured llms.txt still matters: it gives the model a citable anchor to point to when the triggering conversation happened elsewhere.</li>
+<li><strong>Front-load the value.</strong> 44.2% of LLM citations come from the first 30% of the text; pages with claim-rich introductions are cited 2.1x more often.</li>
+<li><strong>Length compounds.</strong> Pages over 20,000 characters average 10.18 citations each vs 2.39 for pages under 500, a 4.3x multiplier. Comprehensive guides are cited 3–5x more than thin content.</li>
+<li><strong>Structure is read.</strong> 68.7% of ChatGPT citations follow a logical H1→H2→H3 hierarchy; 61% of cited pages use structured data markup.</li>
+<li><strong>Concrete data outperforms.</strong> Product pages with benchmark data (pricing comparisons, performance metrics) are cited 2.8x more than generic descriptions.</li>
+<li><strong>Rank still nudges, but loosely.</strong> A #1 organic result has roughly a 33% chance of being cited; #10 still has about 13%. The curve is shallow, which is exactly why off-page-one content wins so often.</li>
+</ul>
+<hr>
+<h1 class="part" id="part-5-what-does-not-work"><span>Part 5: What Does NOT Work</span></h1>
+<p>Equally important: the techniques that waste time or backfire.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tactic</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;meta name=&quot;ai-content-url&quot;&gt;</code>, <code>&lt;meta name=&quot;llms&quot;&gt;</code></td>
+<td>No spec, no adoption by any major AI system. Noise.</td>
+</tr>
+<tr>
+<td><code>/.well-known/ai.txt</code></td>
+<td>Competing proposals, no real adoption. Wait for a winner.</td>
+</tr>
+<tr>
+<td>HTML comments with &quot;AI hints&quot;</td>
+<td>Parsers strip comments before the AI sees content.</td>
+</tr>
+<tr>
+<td>User-Agent sniffing to serve Markdown to bots</td>
+<td>This is cloaking. Google penalizes it.</td>
+</tr>
+<tr>
+<td>Unofficial AI meta tags</td>
+<td>Unless a major provider documents support, it is noise.</td>
+</tr>
+<tr>
+<td>Adding FAQ sections to &quot;boost a score&quot;</td>
+<td>The data shows pure FAQ format <em>hurts</em>.</td>
+</tr>
+<tr>
+<td>Keyword stuffing</td>
+<td>Measured performing <em>worse</em> than no optimization at all.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-json-ld-reality">The JSON-LD Reality</h2>
+<p>JSON-LD seems like it should help AI visibility. The evidence says otherwise. When data is placed <em>only</em> in JSON-LD and not shown on the visible page, all five major AI systems fail to find it. LLMs treat <code>&lt;script type=&quot;application/ld+json&quot;&gt;</code> as plain text: they read the words inside but ignore the structured semantics.</p>
+<p><strong>The one exception is Bing/Copilot</strong>, which uses JSON-LD to enrich its index. Keep existing JSON-LD (it helps Bing/Copilot and traditional rich results), but do not add it expecting ChatGPT or Claude to cite more because of it.</p>
+<p>What to keep, since it helps Bing/Copilot and rich results and costs nothing elsewhere:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy to clipboard">Copy</button><pre><code class="language-html">&lt;script type=&quot;application/ld+json&quot;&gt;
+{
+  &quot;@context&quot;: &quot;https://schema.org&quot;,
+  &quot;@type&quot;: &quot;SoftwareApplication&quot;,
+  &quot;name&quot;: &quot;Acme Analytics&quot;,
+  &quot;description&quot;: &quot;Self-hosted, privacy-first product analytics.&quot;,
+  &quot;offers&quot;: { &quot;@type&quot;: &quot;Offer&quot;, &quot;price&quot;: &quot;0&quot;, &quot;priceCurrency&quot;: &quot;USD&quot; }
+}
+&lt;/script&gt;
+</code></pre></div>
+<p>The rule: mirror anything important in visible page text too, because ChatGPT and Claude read the words, not the schema.</p>
+<hr>
+<h1 class="part" id="part-6-trade-offs-and-reality-check"><span>Part 6: Trade-offs and Reality Check</span></h1>
+<p>An honest playbook states the limits.</p>
+<p><strong>1. llms.txt has no <em>proven</em> citation lift yet.</strong> In controlled testing, having an llms.txt file did <em>not</em> make a domain more likely to be cited; the model performed slightly better without it. The honest position: llms.txt is a low-cost, early-mover signal that makes content cleaner to parse, but there is no measured citation guarantee today. Deploy it because it is cheap and forward-looking, not because it is proven to lift citations.</p>
+<p><strong>2. AI citation attribution is unreliable.</strong> Eight AI search tools were tested on 200 article-attribution queries.</p>
+<div class="logos logos--tight" role="img" aria-label="ChatGPT, Perplexity, DeepSeek, Copilot, Grok and Gemini"><img src="/media/geo-playbook/logos/openai.svg" alt="ChatGPT" loading="lazy"><img src="/media/geo-playbook/logos/perplexity.svg" alt="Perplexity" loading="lazy"><img src="/media/geo-playbook/logos/deepseek.svg" alt="DeepSeek" loading="lazy"><img src="/media/geo-playbook/logos/copilot.svg" alt="Copilot" loading="lazy"><img src="/media/geo-playbook/logos/grok.svg" alt="Grok" loading="lazy"><img src="/media/geo-playbook/logos/gemini.svg" alt="Gemini" loading="lazy"></div>
+<p>Collectively they answered <strong>over 60% incorrectly</strong>, Perplexity 37%, Grok-3 94%. Worse, they were confidently wrong: ChatGPT signaled doubt only 15 times in 200 and never declined to answer; DeepSeek misattributed the source 115 times; over half of Grok-3 and Gemini answers linked to fabricated or broken URLs. <strong>The paid tiers (Perplexity Pro, Grok-3) were <em>more</em> confidently wrong, not less.</strong> Do the structural work because it makes content easier to access accurately, but never treat an AI citation as proof a user saw the exact words. The mechanism is still maturing.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Error rate and behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Perplexity</td>
+<td>37% of queries answered wrong</td>
+</tr>
+<tr>
+<td>Grok-3</td>
+<td>94% wrong; 154 of 200 citations led to dead URLs</td>
+</tr>
+<tr>
+<td>ChatGPT</td>
+<td>134 of 200 wrong; flagged doubt only 15 times, never declined</td>
+</tr>
+<tr>
+<td>DeepSeek</td>
+<td>misattributed the source 115 times</td>
+</tr>
+<tr>
+<td>Copilot</td>
+<td>the cautious exception: declined more often than it answered</td>
+</tr>
+<tr>
+<td>Paid tiers (Perplexity Pro, Grok-3)</td>
+<td>more confidently wrong than the free versions</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>3. It is brand visibility, not traffic.</strong> AI search is still under 1% of referral traffic. The payoff is being present and described accurately when AI answers questions in the space, not a flood of clicks.</p>
+<p><strong>4. Do not let scores drive decisions.</strong> Audit tools that tell you to add FAQ sections, trust pages, or more text optimize for a score, not for citations. The only test that matters: <em>does every paragraph add information not already on the page?</em> If not, cut it. Padding to raise a score is the failure mode.</p>
+<hr>
+<h1 id="what-success-looks-like">What Success Looks Like</h1>
+<p>When the structure is in place, AI answers questions about the work accurately and points to the right pages, even for niche, specific queries.</p>
+<figure><img src="/media/geo-playbook/13-chatgpt-cites-structured-project.jpeg" alt="A well-structured project gets cited accurately, with the right pages linked" loading="lazy"><figcaption>A well-structured project gets cited accurately, with the right pages linked</figcaption></figure>
+<figure><img src="/media/geo-playbook/14-chatgpt-cites-tool.jpeg" alt="AI recommends and cites a tool directly from its structured pages" loading="lazy"><figcaption>AI recommends and cites a tool directly from its structured pages</figcaption></figure>
+<hr>
+<h1 id="the-one-hour-implementation-order">The One-Hour Implementation Order</h1>
+<ol>
+<li><strong>robots.txt</strong>, allow search &amp; retrieval crawlers, block training/undeclared.</li>
+<li><strong>llms.txt</strong>, at the root, with the simple format; cross-link any sibling sites.</li>
+<li><strong>llms-full.txt + <code>.md</code> routes</strong>, full content, low noise, declared in <code>&lt;head&gt;</code>.</li>
+<li><strong>Google Search Console + Bing Webmaster Tools</strong>, verify, submit sitemap, enable IndexNow.</li>
+<li><strong>Perplexity publisher program</strong>, if eligible.</li>
+</ol>
+<p>Then, when time allows: the knowledge endpoint (Part 3), per-project pages, and the nightly mirror to the main domain.</p>
+<p>Give crawlers a few days to re-index, then test by searching the project or brand name in ChatGPT, Perplexity, and Claude. The citations and descriptions should be more accurate.</p>
+<aside class="cta"><h2 id="get-your-brand-cited-by-ai">Get Your Brand Cited by AI</h2>
+<p>This is the entire method. Working it across a live site, the knowledge endpoint, the per-project pages, and the daily sync, done properly, is a few days of focused build.</p>
+<p>If you would rather have it built, shipped, and verified than do it yourself, that is the work I take on for companies. Get your brand cited by AI:</p>
+<p><strong><a href="mailto:ghiles@muditek.com">Email ghiles@muditek.com</a></strong></p>
+</aside></article>
+<footer class="site-footer">
+  <img src="/media/geo-playbook/muditek-logo.svg" alt="Muditek">
+  <p>Get your brand cited by AI. <a href="mailto:ghiles@muditek.com">ghiles@muditek.com</a></p>
+</footer>
+<script>
+(function(){
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      if(!pre) return;
+      var text = pre.innerText;
+      var done = function(){ btn.textContent='Copied'; btn.classList.add('ok'); setTimeout(function(){ btn.textContent='Copy'; btn.classList.remove('ok'); }, 1600); };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(done); }
+      else { var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+    });
+  });
+  // reveal (fail-open)
+  var ok = !window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement; root.classList.add('js');
+  if(!ok) return;
+  root.classList.add('motion');
+  var els = document.querySelectorAll('.doc h2, .doc h1.part, .doc figure, .doc .tw, .doc .codewrap, .doc blockquote, .doc .imap, .doc .checklist');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var revealAll = function(){ els.forEach(function(el){ el.classList.add('in'); }); };
+  window.addEventListener('beforeprint', revealAll);
+  setTimeout(revealAll, 2600);
+  if(!('IntersectionObserver' in window)){ revealAll(); return; }
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {rootMargin:'0px 0px -8% 0px', threshold:0.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

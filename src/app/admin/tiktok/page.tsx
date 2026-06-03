@@ -4,12 +4,25 @@ import { ensureTikTokSchema } from "@/lib/tiktok-schema";
 
 export const dynamic = "force-dynamic";
 
+type PageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
 function dateString(value: unknown): string | null {
   if (!value) return null;
   return new Date(value as string | Date).toISOString();
 }
 
-export default async function AdminTikTokPage() {
+function searchValue(
+  params: Record<string, string | string[] | undefined>,
+  key: string,
+) {
+  const value = params[key];
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function AdminTikTokPage({ searchParams }: PageProps) {
+  const params = searchParams ? await searchParams : {};
   const sql = getDb();
   let accounts: Array<Record<string, unknown>> = [];
   let attempts: Array<Record<string, unknown>> = [];
@@ -65,10 +78,10 @@ export default async function AdminTikTokPage() {
               Acquisition
             </p>
             <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.03em] sm:text-[34px]">
-              TikTok draft poster.
+              TikTok draft sender.
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Send generated slideshow folders to TikTok as drafts. Final sound, native text, and publish stay in the TikTok app.
+              Connect owned TikTok accounts, upload slideshow drafts, then finish sound, native text, and publishing inside TikTok.
             </p>
           </div>
         </header>
@@ -110,6 +123,10 @@ export default async function AdminTikTokPage() {
           }}
           baseUrl={process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com"}
           databaseError={databaseError}
+          notice={{
+            connected: searchValue(params, "connected") || null,
+            error: searchValue(params, "error") || null,
+          }}
         />
       </div>
     </main>

@@ -7,13 +7,17 @@ import {
   CheckCircle2,
   Clipboard,
   Clock,
-  ExternalLink,
+  FileImage,
+  FolderInput,
   KeyRound,
   ListChecks,
   Loader2,
   RadioTower,
+  RefreshCw,
   Send,
-  UploadCloud,
+  ShieldCheck,
+  TerminalSquare,
+  UserPlus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,6 +76,10 @@ type Props = {
   env: EnvState;
   baseUrl: string;
   databaseError: string | null;
+  notice: {
+    connected: string | null;
+    error: string | null;
+  };
 };
 
 function formatDate(value: string | null | undefined) {
@@ -103,6 +111,28 @@ function statusTone(status: string) {
   if (value === "failed") return "bad";
   if (value.includes("processing") || value === "uploading" || value === "created") return "warn";
   return "muted";
+}
+
+function readableError(value: string) {
+  return decodeURIComponent(value)
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function requiredAction(accounts: Account[], env: EnvState) {
+  if (!env.clientKey || !env.clientSecret) return "TikTok app credentials are not set.";
+  if (!env.blob) return "Image hosting is not configured.";
+  if (accounts.length === 0) return "Connect the TikTok account once.";
+  if (!env.posterApiKey) return "Browser uploads work. Folder automation needs the poster key.";
+  return "Ready to send drafts.";
+}
+
+function successfulAttempts(attempts: Attempt[]) {
+  return attempts.filter((attempt) => {
+    const value = attempt.status.toLowerCase();
+    return value === "send_to_user_inbox" || value === "publish_complete";
+  }).length;
 }
 
 function StatusBadge({ value }: { value: string }) {
@@ -149,7 +179,7 @@ function EnvItem({ label, ok }: { label: string; ok: boolean }) {
       <span className="text-sm text-muted-foreground">{label}</span>
       <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
         {ok ? <CheckCircle2 className="size-3.5 text-emerald-300" /> : <AlertTriangle className="size-3.5 text-amber-300" />}
-        {ok ? "Set" : "Missing"}
+        {ok ? "Ready" : "Needs setup"}
       </span>
     </div>
   );
@@ -161,6 +191,7 @@ export default function TikTokContent({
   env,
   baseUrl,
   databaseError,
+  notice,
 }: Props) {
   const [handle, setHandle] = useState(accounts[0]?.handle || "muditek.ai");
   const [selectedAccountId, setSelectedAccountId] = useState(
@@ -177,6 +208,9 @@ export default function TikTokContent({
   const connectHref = `/api/admin/tiktok/connect?handle=${encodeURIComponent(handle.replace(/^@/, ""))}`;
   const selectedAccount = accounts.find((account) => String(account.id) === selectedAccountId) ?? accounts[0] ?? null;
   const readyToSend = Boolean(accounts.length > 0 && env.posterApiKey && env.blob);
+  const browserReady = Boolean(accounts.length > 0 && env.blob);
+  const setupReady = Boolean(env.clientKey && env.clientSecret && env.blob && accounts.length > 0);
+  const lastAttempt = attempts[0] ?? null;
   const command = useMemo(() => {
     const accountArg = selectedAccount
       ? ` --account-id ${selectedAccount.id}`
@@ -225,92 +259,211 @@ export default function TikTokContent({
         </div>
       )}
 
-      <section className="grid gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 md:grid-cols-3">
+      {notice.connected && (
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-4 text-sm text-emerald-100">
+          <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+          <span>TikTok account connected. You can send a browser draft now.</span>
+        </div>
+      )}
+
+      {notice.error && (
+        <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <span>{readableError(notice.error)}</span>
+        </div>
+      )}
+
+      <section className="grid gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 md:grid-cols-4">
         <ReadinessCell
           icon={RadioTower}
-          label="Accounts"
-          value={accounts.length > 0 ? `${accounts.length} connected` : "None connected"}
+          label="TikTok account"
+          value={accounts.length > 0 ? `${accounts.length} connected` : "Connect once"}
           ok={accounts.length > 0}
         />
         <ReadinessCell
-          icon={KeyRound}
-          label="Automation key"
-          value={env.posterApiKey ? "Configured" : "Missing"}
-          ok={env.posterApiKey}
+          icon={FileImage}
+          label="Browser upload"
+          value={browserReady ? "Ready" : "Needs account"}
+          ok={browserReady}
         />
         <ReadinessCell
-          icon={UploadCloud}
-          label="Image hosting"
-          value={env.blob ? "Vercel Blob ready" : "Blob token missing"}
-          ok={env.blob}
+          icon={FolderInput}
+          label="Folder sender"
+          value={readyToSend ? "Ready" : "Optional setup"}
+          ok={readyToSend}
+        />
+        <ReadinessCell
+          icon={Clock}
+          label="Last draft"
+          value={lastAttempt ? formatDate(lastAttempt.createdAt) : "None yet"}
+          ok={successfulAttempts(attempts) > 0}
         />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px]">
         <Card className="bg-card/45 p-0">
           <div className="border-b border-border/60 p-5">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                  Accounts
+                  Main action
                 </p>
-                <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em]">Connected TikTok accounts</h2>
+                <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em]">
+                  Send a TikTok draft from this browser
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  Upload PNG/JPEG slides, choose the connected account, and TikTok receives a draft. You still publish manually inside TikTok.
+                </p>
               </div>
-              <RadioTower className="size-5 text-muted-foreground" />
+              <Badge
+                variant="outline"
+                className={browserReady ? "rounded-md border-emerald-500/25 text-emerald-200" : "rounded-md"}
+              >
+                {browserReady ? "Ready" : requiredAction(accounts, env)}
+              </Badge>
             </div>
           </div>
 
-          <div className="p-5">
-            {accounts.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border/70 bg-background/35 p-5">
-                <p className="text-sm font-medium text-foreground">No TikTok account connected.</p>
-                <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-                  Connect the account once. After that, the local script can send slideshow drafts through the API.
+          <div className="grid gap-5 p-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="space-y-4 rounded-xl border border-border/60 bg-background/30 p-4">
+              <div>
+                <Label htmlFor="manual-account">Post as</Label>
+                <select
+                  id="manual-account"
+                  value={selectedAccountId}
+                  onChange={(event) => setSelectedAccountId(event.target.value)}
+                  className="mt-2 h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  disabled={accounts.length === 0}
+                >
+                  {accounts.length === 0 ? (
+                    <option value="">Connect account first</option>
+                  ) : (
+                    accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        @{account.handle}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <Label htmlFor="manual-slides">Slides</Label>
+                <Input
+                  id="manual-slides"
+                  type="file"
+                  multiple
+                  accept="image/png,image/jpeg"
+                  onChange={(event) => setManualFiles(Array.from(event.target.files ?? []))}
+                  className="mt-2"
+                />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {manualFiles.length > 0
+                    ? `${manualFiles.length} slide${manualFiles.length === 1 ? "" : "s"} selected`
+                    : "PNG or JPEG, up to 35 slides."}
                 </p>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {accounts.map((account) => {
+
+              <Button
+                onClick={sendManualDraft}
+                disabled={sending || manualFiles.length === 0 || !selectedAccountId || !env.blob}
+                className="w-full"
+              >
+                {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                {sending ? "Sending draft..." : "Send to TikTok drafts"}
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="manual-title">TikTok title</Label>
+                  <Input
+                    id="manual-title"
+                    value={manualTitle}
+                    onChange={(event) => setManualTitle(event.target.value)}
+                    placeholder="Optional"
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="manual-source">Internal label</Label>
+                  <Input
+                    id="manual-source"
+                    value={manualSource}
+                    onChange={(event) => setManualSource(event.target.value)}
+                    placeholder="post-folder"
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="manual-caption">Caption</Label>
+                <textarea
+                  id="manual-caption"
+                  value={manualCaption}
+                  onChange={(event) => setManualCaption(event.target.value)}
+                  rows={7}
+                  className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  placeholder="Paste the caption here"
+                />
+              </div>
+              {sendResult && (
+                <p className="rounded-lg border border-border/60 bg-background/35 p-3 text-sm text-muted-foreground">
+                  {sendResult}
+                </p>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        <aside className="space-y-6">
+          <Card className="bg-card/45 p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-muted-foreground" />
+                  <h2 className="text-base font-semibold">Connection</h2>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {setupReady ? "TikTok is connected for draft uploads." : requiredAction(accounts, env)}
+                </p>
+              </div>
+              <HealthDot tone={setupReady ? "good" : "warn"} />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {accounts.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border/70 bg-background/35 p-4 text-sm text-muted-foreground">
+                  No TikTok account connected yet.
+                </div>
+              ) : (
+                accounts.map((account) => {
                   const state = tokenState(account);
                   return (
-                    <div
-                      key={account.id}
-                      className="grid gap-4 rounded-xl border border-border/60 bg-background/35 p-4 md:grid-cols-[minmax(0,1fr)_220px]"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <HealthDot tone={state.tone} />
-                          <h3 className="truncate text-base font-semibold">@{account.handle}</h3>
-                          <Badge variant="outline" className="rounded-md">ID {account.id}</Badge>
+                    <div key={account.id} className="rounded-xl border border-border/60 bg-background/35 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold">@{account.handle}</p>
+                          <p className="mt-1 truncate text-xs text-muted-foreground">
+                            {account.displayName || "TikTok account"}
+                          </p>
                         </div>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {account.displayName || "TikTok account"} · open_id {shortId(account.openId)}
-                        </p>
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          Scope: {account.scope || "not reported"}
-                        </p>
+                        <StatusBadge value={state.label} />
                       </div>
-                      <div className="rounded-lg border border-border/50 bg-card/40 p-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs text-muted-foreground">Token</span>
-                          <StatusBadge value={state.label} />
-                        </div>
-                        <p className="mt-3 text-xs text-muted-foreground">
-                          Access expires: {formatDate(account.accessExpires)}
-                        </p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Refresh expires: {formatDate(account.refreshExpires)}
-                        </p>
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <span>Access: {formatDate(account.accessExpires)}</span>
+                        <span>Refresh: {formatDate(account.refreshExpires)}</span>
                       </div>
                     </div>
                   );
-                })}
-              </div>
-            )}
+                })
+              )}
+            </div>
 
-            <div className="mt-5 grid gap-4 rounded-xl border border-border/60 bg-background/30 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)_auto] lg:items-end">
-              <div className="min-w-0 flex-1">
-                <Label htmlFor="tiktok-handle">Account label</Label>
+            <div className="mt-5 space-y-3 rounded-xl border border-border/60 bg-background/30 p-4">
+              <div>
+                <Label htmlFor="tiktok-handle">Account label for new connection</Label>
                 <Input
                   id="tiktok-handle"
                   value={handle}
@@ -319,103 +472,45 @@ export default function TikTokContent({
                   placeholder="muditek.ai"
                 />
               </div>
-              <div className="min-w-0">
-                <Label htmlFor="target-account">Target account</Label>
-                <select
-                  id="target-account"
-                  value={selectedAccountId}
-                  onChange={(event) => setSelectedAccountId(event.target.value)}
-                  className="mt-2 h-8 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                  disabled={accounts.length === 0}
-                >
-                  {accounts.length === 0 ? (
-                    <option value="">Connect first</option>
-                  ) : (
-                    accounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        @{account.handle} · ID {account.id}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div>
-              <Button nativeButton={false} render={<a href={connectHref} />}>
-                <ExternalLink className="size-4" />
-                Connect TikTok
+              <Button nativeButton={false} variant="outline" className="w-full" render={<a href={connectHref} />}>
+                {accounts.length > 0 ? <RefreshCw className="size-4" /> : <UserPlus className="size-4" />}
+                {accounts.length > 0 ? "Add or refresh account" : "Connect TikTok account"}
               </Button>
             </div>
-          </div>
-        </Card>
-
-        <aside className="space-y-6">
-          <Card className="bg-card/45 p-5">
-            <div className="flex items-center gap-2">
-              <KeyRound className="size-4 text-muted-foreground" />
-              <h2 className="text-base font-semibold">Setup</h2>
-            </div>
-            <div className="mt-4">
-              <EnvItem label="Client key" ok={env.clientKey} />
-              <EnvItem label="Client secret" ok={env.clientSecret} />
-              <EnvItem label="Poster API key" ok={env.posterApiKey} />
-              <EnvItem label="Vercel Blob" ok={env.blob} />
-            </div>
-            <p className="mt-4 break-all rounded-lg border border-border/50 bg-background/35 p-3 text-xs leading-5 text-muted-foreground">
-              Redirect: {env.redirectUri}
-            </p>
-          </Card>
-
-          <Card className="bg-card/45 p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Clipboard className="size-4 text-muted-foreground" />
-                <h2 className="text-base font-semibold">Automation command</h2>
-              </div>
-              <Button size="sm" variant="outline" onClick={copyCommand}>
-                {copied ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
-                {copied ? "Copied" : "Copy"}
-              </Button>
-            </div>
-            <pre className="mt-4 overflow-x-auto rounded-lg border border-border/50 bg-background/50 p-3 text-xs leading-5 text-muted-foreground">
-              {command}
-            </pre>
-            <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-              <HealthDot tone={readyToSend ? "good" : "warn"} />
-              {readyToSend
-                ? `Targets ${selectedAccount ? `@${selectedAccount.handle}` : "the selected account"}.`
-                : "Connect an account and set the API key before live sending."}
-            </p>
           </Card>
 
           <Card className="bg-card/45 p-5">
             <div className="flex items-center gap-2">
               <ListChecks className="size-4 text-muted-foreground" />
-              <h2 className="text-base font-semibold">What this does</h2>
+              <h2 className="text-base font-semibold">What happens</h2>
             </div>
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
-              <WorkflowStep index="1" text="Connect each TikTok account once." />
-              <WorkflowStep index="2" text="Run the folder command for the target account." />
-              <WorkflowStep index="3" text="Open TikTok, add native text and sound, publish." />
+              <WorkflowStep index="1" text="Slides upload to private Vercel Blob URLs." />
+              <WorkflowStep index="2" text="TikTok imports those images into your drafts." />
+              <WorkflowStep index="3" text="You open TikTok, add sound/native edits, then publish." />
             </div>
           </Card>
         </aside>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
         <Card className="bg-card/45 p-0">
           <div className="flex flex-col gap-2 border-b border-border/60 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                 Draft history
               </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em]">Recent send attempts</h2>
+              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em]">Recent attempts</h2>
             </div>
-            <Clock className="size-5 text-muted-foreground" />
+            <Badge variant="outline" className="rounded-md">
+              {successfulAttempts(attempts)} ready
+            </Badge>
           </div>
 
           {attempts.length === 0 ? (
             <div className="p-5">
               <div className="rounded-xl border border-dashed border-border/70 bg-background/35 p-5 text-sm text-muted-foreground">
-                No TikTok draft attempts yet.
+                No drafts sent yet. The first successful upload will appear here.
               </div>
             </div>
           ) : (
@@ -423,18 +518,18 @@ export default function TikTokContent({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Post</TableHead>
+                    <TableHead>Draft</TableHead>
                     <TableHead>Account</TableHead>
                     <TableHead>Slides</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Publish ID</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>TikTok ID</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {attempts.map((attempt) => (
                     <TableRow key={attempt.id}>
-                      <TableCell className="min-w-[240px] whitespace-normal">
+                      <TableCell className="min-w-[260px] whitespace-normal">
                         <p className="font-medium text-foreground">
                           {attempt.title || attempt.sourceLabel || "Untitled draft"}
                         </p>
@@ -460,94 +555,56 @@ export default function TikTokContent({
         </Card>
 
         <Card className="bg-card/45 p-5">
-          <div className="flex items-center gap-2">
-            <UploadCloud className="size-4 text-muted-foreground" />
-            <h2 className="text-base font-semibold">Manual fallback</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <KeyRound className="size-4 text-muted-foreground" />
+                <h2 className="text-base font-semibold">System status</h2>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Only red/yellow rows need action.
+              </p>
+            </div>
+            <HealthDot tone={setupReady && env.posterApiKey ? "good" : "warn"} />
           </div>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Use this only when the local folder script is not convenient.
+          <div className="mt-4">
+            <EnvItem label="TikTok client key" ok={env.clientKey} />
+            <EnvItem label="TikTok client secret" ok={env.clientSecret} />
+            <EnvItem label="Image hosting" ok={env.blob} />
+            <EnvItem label="Folder sender key" ok={env.posterApiKey} />
+          </div>
+          <p className="mt-4 break-all rounded-lg border border-border/50 bg-background/35 p-3 text-xs leading-5 text-muted-foreground">
+            Callback URL: {env.redirectUri}
           </p>
 
-          <div className="mt-5 space-y-4">
-            <div>
-              <Label htmlFor="manual-account">Target account</Label>
-              <select
-                id="manual-account"
-                value={selectedAccountId}
-                onChange={(event) => setSelectedAccountId(event.target.value)}
-                className="mt-2 h-8 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                disabled={accounts.length === 0}
-              >
-                {accounts.length === 0 ? (
-                  <option value="">Connect first</option>
-                ) : (
-                  accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      @{account.handle} · ID {account.id}
-                    </option>
-                  ))
-                )}
-              </select>
+          <details className="mt-4 rounded-xl border border-border/60 bg-background/30 p-4">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
+              <span className="flex items-center gap-2">
+                <TerminalSquare className="size-4 text-muted-foreground" />
+                Folder automation for agents
+              </span>
+              <Badge variant="outline" className="rounded-md">
+                Optional
+              </Badge>
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              This is only for local scripts that send a finished slide folder without using the browser form.
+            </p>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="text-xs text-muted-foreground">
+                {readyToSend
+                  ? `Targets ${selectedAccount ? `@${selectedAccount.handle}` : "the selected account"}.`
+                  : "Needs connected account, Blob, and folder sender key."}
+              </span>
+              <Button size="sm" variant="outline" onClick={copyCommand}>
+                {copied ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                {copied ? "Copied" : "Copy"}
+              </Button>
             </div>
-            <div>
-              <Label htmlFor="manual-source">Source label</Label>
-              <Input
-                id="manual-source"
-                value={manualSource}
-                onChange={(event) => setManualSource(event.target.value)}
-                placeholder="2026-06-03/post-folder"
-                className="mt-2"
-              />
-            </div>
-            <div>
-              <Label htmlFor="manual-title">Title</Label>
-              <Input
-                id="manual-title"
-                value={manualTitle}
-                onChange={(event) => setManualTitle(event.target.value)}
-                placeholder="Optional TikTok photo title"
-                className="mt-2"
-              />
-            </div>
-            <div>
-              <Label htmlFor="manual-caption">Caption</Label>
-              <textarea
-                id="manual-caption"
-                value={manualCaption}
-                onChange={(event) => setManualCaption(event.target.value)}
-                rows={5}
-                className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                placeholder="Caption pasted from POST.md"
-              />
-            </div>
-            <div>
-              <Label htmlFor="manual-slides">Slides</Label>
-              <Input
-                id="manual-slides"
-                type="file"
-                multiple
-                accept="image/png,image/jpeg"
-                onChange={(event) => setManualFiles(Array.from(event.target.files ?? []))}
-                className="mt-2"
-              />
-              <p className="mt-2 text-xs text-muted-foreground">
-                {manualFiles.length > 0 ? `${manualFiles.length} file(s) selected` : "PNG/JPEG slides only."}
-              </p>
-            </div>
-            <Button
-              onClick={sendManualDraft}
-              disabled={sending || manualFiles.length === 0 || !selectedAccountId}
-              className="w-full"
-            >
-              {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-              {sending ? "Sending draft..." : "Send draft"}
-            </Button>
-            {sendResult && (
-              <p className="rounded-lg border border-border/60 bg-background/35 p-3 text-sm text-muted-foreground">
-                {sendResult}
-              </p>
-            )}
-          </div>
+            <pre className="mt-3 max-h-40 overflow-auto rounded-lg border border-border/50 bg-background/60 p-3 text-xs leading-5 text-muted-foreground">
+              {command}
+            </pre>
+          </details>
         </Card>
       </section>
     </div>

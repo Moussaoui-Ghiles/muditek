@@ -68,9 +68,37 @@ export async function ensureTikTokSchema(sql: Sql) {
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS tiktok_poster_api_keys (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      key_prefix TEXT NOT NULL,
+      key_hash TEXT NOT NULL UNIQUE,
+      created_by TEXT,
+      last_used_at TIMESTAMPTZ,
+      revoked_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    ALTER TABLE tiktok_poster_api_keys
+    ADD COLUMN IF NOT EXISTS name TEXT DEFAULT 'TikTok poster key',
+    ADD COLUMN IF NOT EXISTS key_prefix TEXT,
+    ADD COLUMN IF NOT EXISTS key_hash TEXT,
+    ADD COLUMN IF NOT EXISTS created_by TEXT,
+    ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS revoked_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()
+  `;
+
   await sql`CREATE INDEX IF NOT EXISTS tiktok_accounts_open_id_idx ON tiktok_accounts (open_id)`;
   await sql`CREATE INDEX IF NOT EXISTS tiktok_accounts_handle_idx ON tiktok_accounts (lower(handle))`;
   await sql`CREATE INDEX IF NOT EXISTS tiktok_post_attempts_created_idx ON tiktok_post_attempts (created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS tiktok_post_attempts_account_idx ON tiktok_post_attempts (account_id)`;
   await sql`CREATE INDEX IF NOT EXISTS tiktok_post_attempts_status_idx ON tiktok_post_attempts (status)`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS tiktok_poster_api_keys_hash_idx ON tiktok_poster_api_keys (key_hash) WHERE key_hash IS NOT NULL`;
+  await sql`CREATE INDEX IF NOT EXISTS tiktok_poster_api_keys_active_idx ON tiktok_poster_api_keys (revoked_at, created_at DESC)`;
 }

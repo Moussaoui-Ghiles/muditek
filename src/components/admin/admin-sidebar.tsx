@@ -16,6 +16,7 @@ import {
   Newspaper,
   Activity,
   Archive,
+  Clapperboard,
 } from "lucide-react";
 
 import {
@@ -56,6 +57,7 @@ const NAV = [
   {
     label: "Acquisition",
     items: [
+      { href: "/admin/tiktok", title: "TikTok", icon: Clapperboard },
       { href: "/admin/nurture", title: "Nurture", icon: MailOpen },
       { href: "/admin/content", title: "Resources", icon: Package },
     ],

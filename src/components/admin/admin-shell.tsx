@@ -19,6 +19,7 @@ const TITLES: Record<string, string> = {
   "/admin/usage": "Usage",
   "/admin/leads": "Leads",
   "/admin/campaigns": "Legacy campaigns",
+  "/admin/tiktok": "TikTok",
   "/admin/nurture": "Nurture",
   "/admin/content": "Resources",
   "/admin/emails": "Email log",

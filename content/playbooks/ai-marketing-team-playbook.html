@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build an AI Marketing Team That Stops Producing Slop</title>
+<meta name="description" content="One chatbot agrees with everything you say, so it ships slop. This playbook gives you the five-gate system, the role-card prompts, and the review protocol to run a marketing team of AI agents that argue before they publish.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#14315B; --navy-deep:#0E2340; --ink:#16202C; --ink-soft:#243244;
+  --paper:#FFFFFF; --surface:#F2F6FA; --surface-2:#E9F0F7;
+  --line:#D3DEEA; --line-strong:#B7C7D8; --signal:#9A342F;
+  --maxw:840px; --measure:60ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:clamp(1.18rem,0.5vw + 1.08rem,1.34rem);line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+
+/* document letterhead (static, not a nav bar) */
+.letterhead{width:min(var(--maxw),92vw);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1.15rem;padding:3.6rem 0 2.8rem;border-bottom:1px solid var(--line);text-align:center}
+.letterhead__logo{height:clamp(64px,9vw,96px);width:auto;display:block}
+.letterhead__meta{font-family:"IBM Plex Mono",monospace;font-size:.92rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+
+.hero,.doc,.toc{width:min(var(--maxw),92vw);margin-inline:auto}
+.hero{padding:clamp(2.6rem,6vw,4.4rem) 0 1.6rem}
+.doc{padding-bottom:5rem}
+.doc p,.doc li,.hero p{max-width:var(--measure)}
+
+/* scannable rhythm: one idea per line, blank line between thoughts */
+.doc p,.hero p:not(:first-of-type){margin:0 0 1.25rem}
+.lede{font-size:clamp(1.4rem,1.4vw+1.1rem,1.75rem);font-weight:600;color:var(--navy);line-height:1.32;letter-spacing:-0.02em;max-width:26ch;margin:2.4rem 0 1.4rem}
+.lede:first-child{margin-top:0}
+.spacer{height:1.1rem}
+
+h1,h2,h3,h4{font-family:"IBM Plex Sans",sans-serif;color:var(--navy);line-height:1.08;letter-spacing:-0.025em;text-wrap:balance;font-weight:700}
+h1[id],h2[id]{scroll-margin-top:1.4rem}
+.hero>h1{font-size:clamp(2.7rem,6.6vw,4.4rem);line-height:1.04;letter-spacing:-0.04em;margin:0 0 1.7rem;font-weight:700}
+.hero>p:first-of-type{font-size:clamp(1.5rem,1.7vw + 1.1rem,2rem);line-height:1.4;color:var(--navy);font-weight:600;max-width:24ch;margin:0 0 2.4rem;letter-spacing:-0.02em}
+.hero>p:not(:first-of-type){max-width:var(--measure);font-size:inherit;color:var(--ink);font-weight:400;line-height:1.6;letter-spacing:0}
+.hero>p strong{color:var(--navy);font-weight:600}
+
+h2{font-size:clamp(1.9rem,3.2vw + 0.5rem,2.6rem);margin:4.6rem 0 1.5rem;padding-bottom:.6rem;border-bottom:2px solid var(--line-strong);letter-spacing:-0.03em}
+h3{font-size:clamp(1.4rem,1vw + 1.05rem,1.7rem);margin:3rem 0 .9rem;color:var(--navy)}
+h1.part{font-size:clamp(2.4rem,4.4vw + 0.5rem,3.4rem);margin:6.2rem 0 2.2rem;padding-top:2.4rem;border-top:3px solid var(--navy);letter-spacing:-0.035em}
+h1.part span{display:block;color:var(--navy)}
+p{margin:0 0 1.25rem}
+strong{font-weight:600;color:var(--navy)}
+em{color:var(--ink)}
+a{color:var(--navy);text-underline-offset:3px;text-decoration-thickness:1px}
+
+/* arrow lists */
+.arrows{list-style:none;padding-left:0;margin:1.3rem 0 1.8rem;display:grid;gap:1rem}
+.arrows li{position:relative;padding-left:2rem;margin:0;max-width:var(--measure);line-height:1.5}
+.arrows li::before{content:"\2192";position:absolute;left:0;top:0;color:var(--signal);font-weight:700;font-family:"IBM Plex Mono",monospace}
+.arrows li strong{color:var(--navy)}
+
+/* mono kicker for an ordered sequence (the five gates ARE a sequence) */
+.gatekick{font-family:"IBM Plex Mono",monospace;font-size:.95rem;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);font-weight:600;margin:4.6rem 0 .3rem}
+.gatekick + h2{margin-top:.3rem;border-top:0}
+
+/* table of contents (document-report style: ruled, not a card) */
+.toc{margin:3rem auto 0;padding:1.7rem 0 .6rem;border-top:2px solid var(--navy)}
+.toc__title{font-size:.95rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);border:0;margin:0 0 1.4rem;padding:0;font-family:"IBM Plex Mono",monospace;font-weight:600}
+.toc__list{list-style:none;margin:0;padding:0;column-gap:3.2rem}
+@media(min-width:760px){.toc__list{columns:2}}
+.toc__group{break-inside:avoid;margin:0 0 1.2rem;padding:0}
+.toc__group>a{display:block;font-weight:700;color:var(--navy);text-decoration:none;font-size:1.18rem;letter-spacing:-0.01em;line-height:1.4}
+.toc__group>a:hover{text-decoration:underline}
+.toc__group ul{list-style:none;margin:.4rem 0 0;padding:0}
+.toc__group ul li{margin:.28rem 0}
+.toc__group ul a{color:var(--ink-soft);text-decoration:none;font-size:1.06rem}
+.toc__group ul a:hover{color:var(--navy);text-decoration:underline}
+
+/* tables */
+.tw{overflow-x:auto;margin:1.7rem 0 2.2rem;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:1.02rem}
+thead th{background:var(--navy);color:#fff;text-align:left;font-weight:600;padding:.95rem 1.2rem;letter-spacing:-0.01em}
+tbody td{padding:.9rem 1.2rem;border-top:1px solid var(--line);vertical-align:top;color:var(--ink);line-height:1.55}
+tbody tr:nth-child(even){background:var(--surface)}
+table strong{color:var(--navy)}
+
+/* code + copy button */
+.codewrap{position:relative;margin:1.8rem 0 2.2rem}
+.codewrap pre{margin:0}
+.tmpl-tag{font-family:"IBM Plex Mono",monospace;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);font-weight:600;margin:0 0 .6rem}
+pre{background:var(--navy-deep);color:#EAF2FB;border-radius:14px;padding:1.5rem 1.6rem;padding-top:3.2rem;overflow-x:auto;font-size:1.02rem;line-height:1.78;border:1px solid var(--navy)}
+pre code{font-family:"IBM Plex Mono",monospace;color:inherit;background:none;padding:0;font-size:1em;white-space:pre}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.14em .44em;border-radius:6px;font-size:.92em;font-weight:500}
+.copy{position:absolute;top:.8rem;right:.8rem;z-index:2;font-family:"IBM Plex Mono",monospace;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  color:#CFE0F2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:.5rem .85rem;cursor:pointer;transition:background .18s,color .18s,transform .18s}
+.copy:hover{background:rgba(255,255,255,.16);color:#fff}
+.copy:active{transform:translateY(1px)}
+.copy.ok{background:#2E5E3A;border-color:#2E5E3A;color:#fff}
+
+/* callouts */
+blockquote{margin:2rem 0;padding:1.5rem 1.7rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;color:var(--ink);font-weight:500}
+blockquote p{margin:0;max-width:none;color:var(--ink);font-size:1.12rem;line-height:1.5}
+blockquote strong{color:var(--navy)}
+
+hr{border:0;height:1px;background:var(--line-strong);margin:3.4rem 0}
+
+/* logo strip */
+.logos{display:flex;align-items:center;gap:clamp(1.3rem,2.6vw,2.1rem);flex-wrap:wrap;margin:0 0 2.6rem;padding:1.3rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--navy)}
+.logos img{height:33px;width:auto;display:block;color:var(--navy)}
+.logos__cap{font-family:"IBM Plex Mono",monospace;font-size:.92rem;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-weight:600}
+
+/* the four seats */
+.seats{display:grid;gap:1.1rem;margin:1.6rem 0 2.2rem}
+@media(min-width:680px){.seats{grid-template-columns:repeat(2,1fr)}}
+.seat{padding:1.5rem 1.6rem;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.seat h4{margin:0 0 .5rem;font-size:1.32rem;color:var(--navy);letter-spacing:-0.01em}
+.seat p{margin:0;font-size:1.1rem;line-height:1.55;color:var(--ink);max-width:none}
+.seat .seat__job{font-family:"IBM Plex Mono",monospace;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);font-weight:600;display:block;margin-bottom:.45rem}
+
+/* five-gate flow (original, on-brand) */
+.flow{display:flex;flex-wrap:wrap;gap:.85rem;margin:2rem 0 .5rem;align-items:stretch}
+.flow__node{flex:1 1 150px;min-width:140px;display:flex;flex-direction:column;gap:.4rem;padding:1.25rem 1.3rem;background:var(--surface);border:1px solid var(--line);border-radius:13px}
+.flow__node[data-accent]{background:var(--navy);border-color:var(--navy)}
+.flow__num{font-family:"IBM Plex Mono",monospace;font-size:.92rem;letter-spacing:.12em;color:var(--ink-soft);font-weight:600}
+.flow__node[data-accent] .flow__num{color:#9FC0E6}
+.flow__name{font-weight:700;color:var(--navy);font-size:1.4rem;letter-spacing:-0.015em;line-height:1.1}
+.flow__node[data-accent] .flow__name{color:#fff}
+.flow__job{font-family:"IBM Plex Mono",monospace;font-size:1rem;color:var(--ink-soft);line-height:1.35}
+.flow__node[data-accent] .flow__job{color:#CFE0F2}
+.flow__cap{font-family:"IBM Plex Mono",monospace;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-weight:600;margin:0 0 .4rem}
+
+/* CTA panel */
+.cta{background:var(--navy);color:#fff;border-radius:18px;padding:clamp(2.2rem,4.5vw,3.4rem);margin:4.5rem 0 1rem}
+.cta h2{color:#fff;border:0;margin:0 0 1.3rem;padding:0;font-size:clamp(1.9rem,3.2vw + .5rem,2.6rem);scroll-margin-top:1.4rem}
+.cta p{color:#EAF1F8;max-width:54ch;margin:0 0 1.1rem}
+.cta strong{color:#fff}
+.cta p:last-child{margin:2rem 0 0}
+.cta p:last-child a{display:inline-block;background:#fff;color:var(--navy);font-weight:700;text-decoration:none;padding:1.05rem 1.9rem;border-radius:12px;font-size:1.25rem;letter-spacing:-0.01em;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.cta p:last-child a:hover{transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.cta p:last-child a{transition:none}}
+
+/* footer */
+.site-footer{background:var(--paper);color:var(--ink);border-top:1px solid var(--line);padding:clamp(2rem,5vw,3rem) clamp(1rem,4vw,2.5rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.2rem;margin-top:4rem}
+.site-footer img{height:34px;width:auto}
+.site-footer p{margin:0;color:var(--ink-soft);max-width:48ch;font-size:1.12rem;line-height:1.6}
+.site-footer a{color:var(--navy);font-weight:600}
+
+/* reveal: visible by default; animates only when JS + motion ok */
+.js.motion .reveal:not(.in){opacity:0;transform:translateY(14px)}
+.js.motion .reveal.in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+
+@media print{
+  .copy{display:none}
+  body{font-size:11pt;line-height:1.5;color:#000}
+  pre{background:#0E2340 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1.part{break-before:page}
+  table,pre,blockquote,.toc,.seats,.codewrap{break-inside:avoid}
+}
+@media (max-width:560px){
+  thead th,tbody td{padding:.7rem .8rem}
+}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img class="letterhead__logo" src="/media/ai-marketing-team-playbook/muditek-logo.svg" alt="Muditek">
+  <span class="letterhead__meta">AI Marketing Team Playbook</span>
+</header>
+<header class="hero">
+<h1>Build an AI Marketing Team That Stops Producing Slop</h1>
+<p><strong>One chatbot agrees with everything you say. That is exactly why it ships slop. A team that argues first does not.</strong></p>
+<div class="logos" role="img" aria-label="Works with Claude, ChatGPT, Gemini and local models via Ollama">
+<span class="logos__cap">Works with any model</span>
+<img src="/media/ai-marketing-team-playbook/logos/claude.svg" alt="Claude" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/openai.svg" alt="ChatGPT" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/gemini.svg" alt="Gemini" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/ollama.svg" alt="Ollama (local models)" loading="lazy">
+</div>
+<p class="flow__cap">The system, end to end</p>
+<div class="flow" role="img" aria-label="The five gates in order: Intake, Specialist, Adversary, Lead, Memo">
+<div class="flow__node"><span class="flow__num">Gate 1</span><span class="flow__name">Intake</span><span class="flow__job">reshape the brief</span></div>
+<div class="flow__node"><span class="flow__num">Gate 2</span><span class="flow__name">Specialist</span><span class="flow__job">draft, one angle</span></div>
+<div class="flow__node" data-accent><span class="flow__num">Gate 3</span><span class="flow__name">Adversary</span><span class="flow__job">attack the draft</span></div>
+<div class="flow__node"><span class="flow__num">Gate 4</span><span class="flow__name">Lead</span><span class="flow__job">synthesize</span></div>
+<div class="flow__node"><span class="flow__num">Gate 5</span><span class="flow__name">Memo</span><span class="flow__job">reviewable record</span></div>
+</div>
+<p>The fix is an org chart, not a smarter model.</p>
+<p>Split the work across agents that each hold one job.</p>
+<p>Put two of them in opposition.</p>
+<p>Make the output a record you can review, not a one-line answer.</p>
+<p>Everything below is the system. Copy it, fill it with your brief, and your team argues before it ships.</p>
+<hr>
+</header>
+<nav class="toc" aria-label="Table of contents">
+<h2 class="toc__title">Contents</h2>
+<ol class="toc__list">
+<li class="toc__group"><a href="#why-one-chatbot-produces-slop">Why One Chatbot Produces Slop</a></li>
+<li class="toc__group"><a href="#the-five-gate-system">The Five-Gate System</a></li>
+<li class="toc__group is-part"><a href="#the-five-gates">The Five Gates, Built for Marketing</a><ul>
+<li><a href="#gate-1">Gate 1: Reject the Bad Brief</a></li>
+<li><a href="#gate-2">Gate 2: Roles Are Filters, Not Personas</a></li>
+<li><a href="#gate-3">Gate 3: Build In Opposition</a></li>
+<li><a href="#gate-4">Gate 4: Why a Single Assistant Hits a Wall</a></li>
+<li><a href="#gate-5">Gate 5: Ship a Decision Memo, Not an Answer</a></li>
+</ul></li>
+<li class="toc__group"><a href="#staff-the-team">Staff the Team: The Four Seats</a></li>
+<li class="toc__group"><a href="#the-same-system-anywhere">The Same System on Any Function</a></li>
+<li class="toc__group"><a href="#wire-it-up">Wire It Up</a></li>
+<li class="toc__group"><a href="#the-honest-limits">The Honest Limits</a></li>
+</ol>
+</nav>
+<article class="doc">
+
+<h2 id="why-one-chatbot-produces-slop">Why One Chatbot Produces Slop</h2>
+<p class="lede">A single AI agrees with you too much.</p>
+<p>Whatever you say, it nods.</p>
+<p>Ask if your draft is good, it tells you it is great.</p>
+<p>Ask for a hook, it hands you the safe one.</p>
+<p>A bigger model does not fix this. The problem is not brains.</p>
+<p>It is that there is one voice in the room, and that voice wants to please you.</p>
+<div class="spacer"></div>
+<p>Watch a single assistant take a real brief.</p>
+<p>It either dumps a generic answer, or on anything sensitive it refuses.</p>
+<p>One exit or the other.</p>
+<p>Nothing in between attacks the work before it ships.</p>
+<div class="spacer"></div>
+<p>An agent team adds that missing middle.</p>
+<p>It turns "write me the launch post" into "run this brief through a process."</p>
+<p>One agent reshapes the brief. A specialist drafts. An adversary tears it apart. A lead turns the fight into a memo you can read.</p>
+<p>Same model. It just works inside an organization now, instead of bouncing off one wall and coming back as agreement.</p>
+<blockquote><p><strong>The test for every gate below:</strong> if you deleted it, what slop would walk straight through? Each one stops a specific failure. That is why the setup is worth it.</p></blockquote>
+
+<h2 id="the-five-gate-system">The Five-Gate System</h2>
+<p>A usable team comes down to five gates.</p>
+<p>Miss one and the whole thing leaks.</p>
+<p>This is the checklist. Everything after it is these same five gates, built for marketing.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the five-gate checklist">Copy</button><pre><code>1. Intake    Clarify the bad brief first. No clarity, no work.
+2. Specialist  Each role holds exactly one judgment angle.
+3. Adversary   Force counter-arguments. Don't let the team agree with itself.
+4. Lead      Only assigns, synthesizes, and keeps records. No opinions.
+5. Memo      Output a reviewable record, not a one-line answer.
+
+Without Intake, the team perfectly executes the wrong brief.
+Without Specialist, every role blurs into the same mush.
+Without Adversary, the team hypes your draft and ships slop.
+Without Lead, you get a pile of disconnected fragments.
+Without Memo, you make the same mistake next campaign.</code></pre></div>
+<div class="tw"><table>
+<thead><tr><th>Gate</th><th>The job</th><th>Stops</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Intake</strong></td><td>The lead refuses a vague brief and reshapes it into something answerable</td><td>Confident work on the wrong question</td></tr>
+<tr><td><strong>2. Specialist</strong></td><td>Each role is one judgment filter, not a personality</td><td>Five voices that all say the same thing</td></tr>
+<tr><td><strong>3. Adversary</strong></td><td>A dedicated critic attacks the draft on purpose</td><td>Confirmation bias and brand-safe blandness</td></tr>
+<tr><td><strong>4. Lead</strong></td><td>One coordinator assigns, synthesizes, and never opines</td><td>A pile of fragments with no decision</td></tr>
+<tr><td><strong>5. Memo</strong></td><td>The output is a traceable record, not a verdict</td><td>Unsourced claims you cannot review later</td></tr>
+</tbody>
+</table></div>
+
+<h1 class="part" id="the-five-gates"><span>The Five Gates, Built for Marketing</span></h1>
+
+<p class="gatekick">Gate 1</p>
+<h2 id="gate-1">Reject the Bad Brief First</h2>
+<p>Throw a real team a half-baked brief and the good ones do not start.</p>
+<p>They push back.</p>
+<p>Same here. The Lead refuses to draft until five things are clear.</p>
+<p>This one gate kills more wasted output than any other, because most slop is a perfect answer to a question nobody asked.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the marketing intake gate">Copy</button><pre><code>MARKETING INTAKE GATE
+For any content or campaign brief, the Lead asks five things first:
+
+1. Objective:  What outcome? Pipeline, signups, awareness, retention.
+2. Audience:   Who exactly? Role, stage of awareness, the pain in their words.
+3. Channel:    Where does this run, and in what format?
+4. Proof:      What real evidence and numbers can we stand on?
+               What are we NOT allowed to claim?
+5. Constraint: Brand rules, banned words, legal lines, length.
+
+If these five aren't clear, drafting doesn't start.</code></pre></div>
+<p>Give it a vague ask like "we need something for the launch."</p>
+<p>The Lead should come back with questions, not copy.</p>
+<p>You answer them, it greenlights the work, and only then does anything get drafted.</p>
+<p><strong>The refusal is the feature.</strong></p>
+
+<p class="gatekick">Gate 2</p>
+<h2 id="gate-2">Roles Are Filters, Not Personas</h2>
+<p>This is where most people building "AI teams" go wrong.</p>
+<p>They write "you are a world-class copywriter, make it punchy" and get a cosplay bot.</p>
+<p>Same output, new costume.</p>
+<p>A role is not a personality. It is a single judgment filter, stated as what it must produce and what it may never do.</p>
+<div class="tw"><table>
+<thead><tr><th>Persona prompt (weak)</th><th>Filter prompt (strong)</th></tr></thead>
+<tbody>
+<tr><td>"You are an expert copywriter. Make this post engaging."</td><td>"Your only job: one promise, one reader. Tag every claim to a real source. Refuse if there is no claim to make."</td></tr>
+<tr><td>Sounds confident, judges nothing</td><td>Holds a boundary the model cannot please its way out of</td></tr>
+</tbody>
+</table></div>
+<p>The transferable asset is the schema.</p>
+<p>Every role card has the same five fields.</p>
+<p>Fill them and a general model becomes a specialist that holds a line.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the role card schema">Copy</button><pre><code>ROLE CARD SCHEMA  (fill one per agent)
+
+Job:       One judgment angle, stated as a single responsibility.
+Input:     What this role is allowed to look at. Nothing else.
+Output:    The specific questions this role must answer every time.
+Forbidden: What it may never do, even when you ask nicely.
+Stop:      The condition under which it must refuse and say so out loud.</code></pre></div>
+<p>Here are two seats every marketing team needs, written as filters.</p>
+<p>They are built to disagree. You are not engineering conflict, you are casting roles whose jobs naturally pull apart.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the Writer role card">Copy</button><pre><code>ROLE CARD: THE WRITER  (specialist)
+
+Job:       Turn the brief into the clearest possible draft.
+           One promise, one reader.
+Input:     The intake memo, the proof points, the brand voice guide,
+           the audience pain in their own words.
+Output:
+  - A draft that makes ONE promise to ONE reader
+  - The single line that earns the scroll-stop
+  - Every claim tagged to a real source
+Forbidden: Cannot invent a number, a name, an outcome, or a customer
+           that is not in the proof points.
+Stop:      If the brief has no real proof to stand on,
+           must say "no claim to make yet" and stop.</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the Skeptic role card">Copy</button><pre><code>ROLE CARD: THE SKEPTIC  (adversary / brand-voice cop)
+
+Job:       Attack the draft. Find every weak claim, vague line,
+           and sentence that sounds off-brand.
+Input:     The draft, the proof points, the brand voice guide.
+Output:
+  - Every sentence a smart buyer would call BS on
+  - Every claim with no source behind it
+  - Every line a competitor could have written word-for-word
+Forbidden: Cannot soften the critique to be polite.
+           No "looks good overall."
+Stop:      If the draft has no specific claims to attack,
+           must say "this is fluff, send it back" and stop.</code></pre></div>
+<blockquote><p>Why these two? The Writer wants to ship. The Skeptic wants to cut. Their jobs point in opposite directions by design, so you never have to fake the tension.</p></blockquote>
+
+<p class="gatekick">Gate 3</p>
+<h2 id="gate-3">Build In Opposition</h2>
+<p>The adversary is not theater.</p>
+<p>It is the only reliable cure for an AI that agrees with you.</p>
+<p>Left alone, the Writer and your own enthusiasm form a loop.</p>
+<p>It ends in a confident, sourceless, on-brand-but-empty post.</p>
+<p>The Skeptic breaks that loop on a schedule, not when you happen to remember.</p>
+<p>Run it as a fixed three-round protocol so the fight produces real disagreement, not vibes.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the draft versus critique protocol">Copy</button><pre><code>DRAFT vs CRITIQUE PROTOCOL
+
+Round 1:
+  Writer ships the strongest version of the draft. No hedging.
+  Skeptic writes only the strongest case against it. No encouragement.
+
+Round 2:
+  Writer must answer the Skeptic's three hardest hits.
+  Skeptic must name the three assumptions the draft is betting on.
+
+Round 3:
+  Both write:
+   - If this flops, what is the most likely reason
+   - What evidence would change my mind
+   - The one test worth running before publish
+
+Lead collects only three things:
+  1. What both sides agree is true
+  2. The claims they still disagree on
+  3. What to verify or cut before it ships</code></pre></div>
+<p>By the end, the argument has moved.</p>
+<p>From "I like it / I don't" to a short list of checkable claims.</p>
+<p>That beats crowning a winner.</p>
+<p>You are surfacing what the draft quietly bets on, before your audience does.</p>
+
+<p class="gatekick">Gate 4</p>
+<h2 id="gate-4">Why a Single Assistant Hits a Wall</h2>
+<p>Ask one default assistant "is this launch post good?" and you get one of two dead ends.</p>
+<p>It says yes, because it is built to please.</p>
+<p>Or on anything risky, it refuses.</p>
+<p>One exit either way. Neither improves the work.</p>
+<p>The team adds the missing middle.</p>
+<p>The Lead interrogates the brief. The Writer commits to one angle. The Skeptic lays out the weak spots. The memo lands on a next action, not a verdict.</p>
+<p>Same model. The question now travels through positions that check each other.</p>
+
+<p class="gatekick">Gate 5</p>
+<h2 id="gate-5">Ship a Decision Memo, Not an Answer</h2>
+<p>The worst output is a confident one-liner you cannot audit.</p>
+<p>The best is a record.</p>
+<p>What it decided. What it assumed. What would prove it wrong.</p>
+<p>When you ask it to greenlight a piece, the answer is not "publish this."</p>
+<p>It is a document you can review now, and re-read in three months when you forgot why you made the call.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the content decision memo template">Copy</button><pre><code>CONTENT DECISION MEMO
+
+Brief:         The original ask.
+
+Scope:         Objective / audience / channel / constraints.
+
+Core promise:  The one thing this says to one reader.
+Case for:      Strongest argument to ship it as-is.
+Case against:  Strongest argument to kill or rework it.
+
+Key assumptions:
+  1. ...
+  2. ...
+  3. ...
+
+Kill condition: What would make publishing this the wrong move.
+
+Risks:
+  - Claim risk        (anything unsourced)
+  - Brand-voice risk  (anywhere it stops sounding like us)
+  - Hallucination risk (any number or fact the model produced)
+
+Next action:   Publish / revise / test. Not "looks good."
+Confidence:    Low / Medium / High, with the reason.</code></pre></div>
+<p>Keep the memo.</p>
+<p>A marketing team gets better over time not because the model improves.</p>
+<p>It gets better because you can look back at what it assumed and see where the call went wrong.</p>
+<p>A one-line answer gives you nothing to learn from.</p>
+
+<h2 id="staff-the-team">Staff the Team: The Four Seats</h2>
+<p>Every gate maps to a seat.</p>
+<p>You do not need ten agents. You need four jobs filled and kept honest about their limits.</p>
+<p>The hard part is not creating the agents. It is writing each one's boundary: what it owns, what it cannot touch, when it hands back to the Lead.</p>
+<div class="seats">
+<div class="seat"><span class="seat__job">Collector</span><h4>The Researcher</h4><p>Pulls the raw material: the brief, the audience pain, the real numbers, the competitor angles, the source links. Gathers, never judges.</p></div>
+<div class="seat"><span class="seat__job">Specialist</span><h4>The Writer</h4><p>Turns the intake memo into one draft with one promise. Holds the voice. Tags every claim to a source or refuses to make it.</p></div>
+<div class="seat"><span class="seat__job">Adversary</span><h4>The Skeptic</h4><p>Attacks the draft on purpose. Flags fluff, unsourced claims, and any line a competitor could have written. Never polite.</p></div>
+<div class="seat"><span class="seat__job">Lead</span><h4>The Editor</h4><p>Refuses bad briefs, assigns the work, runs the debate, and writes the decision memo. Synthesizes. Holds no opinion of its own.</p></div>
+</div>
+
+<h2 id="the-same-system-anywhere">The Same System on Any Function</h2>
+<p>Marketing is just the function in front of you.</p>
+<p>The four seats hold across the whole business.</p>
+<p>Swap who sits in each chair and the gates do not change.</p>
+<p>This is the proof you are learning a system, not a content trick.</p>
+<div class="tw"><table>
+<thead><tr><th>Function</th><th>Collector</th><th>Specialist</th><th>Adversary</th><th>Lead</th></tr></thead>
+<tbody>
+<tr><td><strong>Content</strong></td><td>research, briefs</td><td>writer</td><td>fact-check, brand cop</td><td>editor</td></tr>
+<tr><td><strong>Demand gen</strong></td><td>channel data</td><td>campaign strategist</td><td>skeptical buyer</td><td>growth lead</td></tr>
+<tr><td><strong>Product marketing</strong></td><td>user feedback</td><td>positioning writer</td><td>"so what" critic</td><td>PMM lead</td></tr>
+<tr><td><strong>Sales</strong></td><td>lead research</td><td>account strategist</td><td>objection handler</td><td>sales lead</td></tr>
+</tbody>
+</table></div>
+<p class="lede">More agents was never the point.</p>
+<p>The point is forcing one question through several independent judgments before anyone acts on it.</p>
+
+<h2 id="wire-it-up">Wire It Up</h2>
+<p>Order matters.</p>
+<p>Run the gates in sequence and each one cleans up before the next begins.</p>
+<p>This is the loop you automate.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy the build order">Copy</button><pre><code>1. Intake     One agent reshapes the brief into the five answers.
+              No answers, no work.
+2. Draft      The Writer drafts from the intake memo only.
+3. Adversary  The Skeptic attacks it. Two independent agents,
+              not one model playing both voices in one breath.
+4. Synthesis  The Lead writes the decision memo, a source on every claim.
+
+You read the memo, not the six drafts.</code></pre></div>
+<p>One rule makes or breaks it.</p>
+<p>The Writer and the Skeptic have to be two real agents with their own context.</p>
+<p>Not two paragraphs inside one prompt.</p>
+<p>One model told to "play the writer and the critic" will write a polite review of its own work and call it done.</p>
+<p>They need separate seats so they can actually disagree.</p>
+<div class="logos" role="img" aria-label="Runs on Claude, ChatGPT, Gemini or a local model through Ollama">
+<span class="logos__cap">Runs on</span>
+<img src="/media/ai-marketing-team-playbook/logos/claude.svg" alt="Claude" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/openai.svg" alt="ChatGPT" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/gemini.svg" alt="Gemini" loading="lazy"><img src="/media/ai-marketing-team-playbook/logos/ollama.svg" alt="Ollama" loading="lazy">
+</div>
+<p>The model was never the moat.</p>
+<p>Claude, ChatGPT, and Gemini all run this fine.</p>
+<p>If the content is sensitive, run a local model through Ollama so nothing leaves your machine.</p>
+<p>The moat is wiring the team to real proof, and pointing disciplined critique at every draft before it ships.</p>
+
+<h2 id="the-honest-limits">The Honest Limits</h2>
+<p>This is not a magic content machine.</p>
+<p>Selling it as one is how you end up disappointed.</p>
+<ul class="arrows">
+<li><strong>Garbage proof in, garbage memo out.</strong> The team is only as honest as the evidence it gets. No real number? The Writer refuses to invent one. That is the point, not a bug.</li>
+<li><strong>The Skeptic can be wrong too.</strong> An adversary that attacks everything is as useless as a yes-man. Tune it to attack claims, not to complain.</li>
+<li><strong>More agents is not better.</strong> Four honest seats beat ten overlapping ones.</li>
+<li><strong>You still decide.</strong> The memo hands you a reviewable call with its assumptions on the table. It does not read itself for you.</li>
+</ul>
+<p class="lede">Run it honestly and the payoff is simple.</p>
+<p>Your AI stops producing the beige paragraph everyone else ships.</p>
+<p>Because for the first time, something in the room had the job of stopping it.</p>
+
+<section class="cta">
+<h2>From playbook to your whole marketing function</h2>
+<p>This playbook runs one agent team against one piece of content.</p>
+<p>That is the small version of a bigger shift: stop writing the work, start assigning it to a team that checks itself.</p>
+<p><strong>Muditek builds that shift into a business.</strong> We map your marketing workflows, package the brand rules and proof trapped in your team's heads into formats AI can read and run, and stand up the agent teams that execute it. Systems that draft, argue, and produce a reviewable record on their own.</p>
+<p><a href="https://muditek.com">See what Muditek builds</a></p>
+</section>
+
+</article>
+<footer class="site-footer">
+  <img src="/media/ai-marketing-team-playbook/muditek-logo.svg" alt="Muditek">
+  <p>Built by Muditek. We build the agent systems that run the work, not the tools your team babysits. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      if(!pre) return;
+      var text = pre.innerText;
+      var done = function(){ btn.textContent='Copied'; btn.classList.add('ok'); setTimeout(function(){ btn.textContent='Copy'; btn.classList.remove('ok'); }, 1600); };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(done); }
+      else { var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+    });
+  });
+  var ok = !window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement; root.classList.add('js');
+  if(!ok) return;
+  root.classList.add('motion');
+  var els = document.querySelectorAll('.doc h2, .doc h1.part, .doc .tw, .doc .codewrap, .doc blockquote, .doc .seats');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var revealAll = function(){ els.forEach(function(el){ el.classList.add('in'); }); };
+  window.addEventListener('beforeprint', revealAll);
+  setTimeout(revealAll, 2600);
+  if(!('IntersectionObserver' in window)){ revealAll(); return; }
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {rootMargin:'0px 0px -8% 0px', threshold:0.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

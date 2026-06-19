@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stop Prompting Agents. Build Loops That Ship. · Muditek</title>
+<meta name="description" content="A practical playbook for turning AI coding agents into durable loops: triggers, workers, verification, budgets, memory, and skills.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07111F;
+  --ink-2:#102033;
+  --navy:#0B2F66;
+  --blue:#1458B8;
+  --red:#B7192A;
+  --yellow:#FFB000;
+  --green:#087A50;
+  --paper:#FFFFFF;
+  --surface:#F3F8FF;
+  --surface-2:#E7F0FC;
+  --line:#8FA9C8;
+  --line-hard:#0B2F66;
+  --maxw:890px;
+  --measure:62ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:1.25rem;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+@media (max-width:620px){body{font-size:1.16rem;line-height:1.58}}
+a{color:var(--navy);text-decoration-thickness:2px;text-underline-offset:3px}
+strong{color:var(--navy);font-weight:700}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .4em;border-radius:6px;font-size:.9em;font-weight:600}
+.letterhead{
+  width:min(var(--maxw),92vw);
+  margin:0 auto;
+  padding:3.5rem 0 2.4rem;
+  border-bottom:3px solid var(--navy);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.4rem;
+}
+.letterhead img{height:72px;width:auto;display:block}
+.letterhead__meta{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--navy);
+  font-size:1rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0;
+  text-align:right;
+}
+@media (max-width:620px){
+  .letterhead{align-items:flex-start;flex-direction:column;padding-top:2.2rem}
+  .letterhead__meta{text-align:left}
+}
+.hero,.toc,.doc{
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+}
+.hero{padding:3.2rem 0 1.4rem}
+h1,h2,h3,h4{
+  color:var(--navy);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:0;
+  text-wrap:balance;
+}
+.hero h1{
+  font-size:4.45rem;
+  line-height:.98;
+  margin:0 0 1.6rem;
+  max-width:12ch;
+}
+@media (max-width:760px){.hero h1{font-size:3.4rem}}
+@media (max-width:460px){.hero h1{font-size:2.75rem}}
+.hero__lead{
+  margin:0 0 2rem;
+  color:var(--ink);
+  font-size:1.75rem;
+  line-height:1.35;
+  font-weight:700;
+  max-width:28ch;
+}
+@media (max-width:620px){.hero__lead{font-size:1.38rem}}
+.hero p:not(.hero__lead){max-width:var(--measure);margin:0 0 1.2rem}
+.proofline{
+  margin:2.2rem 0;
+  padding:1.1rem 0;
+  border-top:2px solid var(--line-hard);
+  border-bottom:2px solid var(--line-hard);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.8rem;
+}
+.proofline .stack-label{
+  color:var(--navy);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:1.02rem;
+  margin-right:.7rem;
+}
+.logo-tile{
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  min-height:54px;
+  border:2px solid var(--navy);
+  background:#fff;
+  padding:.7rem .85rem;
+}
+.logo-tile b{
+  color:var(--ink);
+  font-size:1.02rem;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.proofline img{height:32px;width:auto;display:block}
+.system-map{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:.75rem;
+  margin:2rem 0 .7rem;
+}
+.map-node{
+  min-height:118px;
+  border:2px solid var(--navy);
+  background:var(--surface);
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.map-node.is-hot{background:var(--navy);color:#fff}
+.map-node.is-warn{background:var(--yellow)}
+.map-node.is-stop{background:var(--red);color:#fff}
+.map-node b{display:block;color:inherit;font-size:1.22rem;line-height:1.1}
+.map-node span{display:block;color:inherit;font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:700;line-height:1.25}
+@media (max-width:820px){.system-map{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:430px){.system-map{grid-template-columns:1fr}}
+.caption{
+  color:var(--navy);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1rem;
+  font-weight:700;
+  margin:0 0 2.2rem;
+}
+.toc{
+  margin-top:2.5rem;
+  padding:1.7rem 0 .7rem;
+  border-top:4px solid var(--navy);
+  border-bottom:1px solid var(--line);
+}
+.toc h2{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1.05rem;
+  text-transform:uppercase;
+  margin:0 0 1.2rem;
+  color:var(--red);
+}
+.toc ol{
+  list-style:none;
+  padding:0;
+  margin:0;
+  columns:2;
+  column-gap:3rem;
+}
+.toc li{break-inside:avoid;margin:0 0 .8rem}
+.toc a{color:var(--navy);font-weight:700;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+@media (max-width:680px){.toc ol{columns:1}}
+.doc{padding:1.8rem 0 5rem}
+.doc p,.doc li{max-width:var(--measure)}
+.doc p{margin:0 0 1.2rem}
+h2{
+  font-size:2.6rem;
+  margin:4.8rem 0 1.4rem;
+  padding-bottom:.55rem;
+  border-bottom:3px solid var(--line-hard);
+}
+@media (max-width:620px){h2{font-size:2.15rem;margin-top:3.8rem}}
+h3{
+  font-size:1.62rem;
+  margin:2.6rem 0 .8rem;
+}
+.lede{
+  color:var(--navy);
+  font-size:1.55rem;
+  line-height:1.35;
+  font-weight:700;
+  max-width:28ch;
+  margin:0 0 1.5rem;
+}
+.callout{
+  margin:2rem 0;
+  background:var(--surface);
+  border:2px solid var(--navy);
+  border-left:10px solid var(--red);
+  padding:1.5rem 1.6rem;
+}
+.callout p{max-width:none;margin:0;color:var(--ink);font-weight:600}
+.ruler{
+  margin:2.2rem 0;
+  border:0;
+  height:3px;
+  background:var(--navy);
+}
+.stage-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1rem;
+  margin:1.7rem 0 2.2rem;
+}
+.stage{
+  border:2px solid var(--navy);
+  background:#fff;
+  padding:1.35rem;
+}
+.stage:nth-child(3n){background:var(--surface)}
+.stage b{
+  display:block;
+  color:var(--red);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1rem;
+  margin-bottom:.45rem;
+}
+.stage h3{
+  font-size:1.45rem;
+  margin:0 0 .55rem;
+}
+.stage p{font-size:1.08rem;line-height:1.5;margin:0;color:var(--ink);max-width:none}
+@media (max-width:720px){.stage-grid{grid-template-columns:1fr}}
+.tw{
+  overflow-x:auto;
+  margin:1.6rem 0 2.2rem;
+  border:2px solid var(--navy);
+}
+table{width:100%;border-collapse:collapse;font-size:1.05rem}
+th{
+  background:var(--navy);
+  color:#fff;
+  padding:1rem 1.1rem;
+  text-align:left;
+  font-weight:700;
+}
+td{
+  border-top:1px solid var(--line);
+  padding:.95rem 1.1rem;
+  vertical-align:top;
+  color:var(--ink);
+}
+tr:nth-child(even) td{background:var(--surface)}
+.codewrap{position:relative;margin:1.7rem 0 2.2rem}
+.code-title{
+  margin:0 0 .55rem;
+  color:var(--red);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:1.02rem;
+  text-transform:uppercase;
+}
+pre{
+  margin:0;
+  background:var(--ink);
+  color:#fff;
+  border:2px solid var(--ink);
+  padding:3.35rem 1.45rem 1.35rem;
+  overflow-x:auto;
+  line-height:1.7;
+  font-size:1rem;
+}
+pre code{
+  color:#fff;
+  background:none;
+  border-radius:0;
+  padding:0;
+  font-size:1em;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.copy{
+  position:absolute;
+  top:2.95rem;
+  right:.8rem;
+  border:2px solid #fff;
+  background:#fff;
+  color:var(--ink);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:.92rem;
+  padding:.5rem .75rem;
+  cursor:pointer;
+}
+.copy:hover{background:var(--yellow);color:var(--ink)}
+.copy.ok{background:var(--green);border-color:var(--green);color:#fff}
+.checklist{
+  list-style:none;
+  padding:0;
+  margin:1.3rem 0 2rem;
+  display:grid;
+  gap:.95rem;
+}
+.checklist li{
+  position:relative;
+  padding-left:2rem;
+  margin:0;
+  font-weight:600;
+}
+.checklist li:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.55rem;
+  width:.8rem;
+  height:.8rem;
+  background:var(--red);
+  border:2px solid var(--ink);
+}
+.cta{
+  margin:5rem 0 1rem;
+  background:var(--navy);
+  color:#fff;
+  border:4px solid var(--navy);
+  padding:3rem;
+}
+.cta h2{
+  color:#fff;
+  border:0;
+  margin:0 0 1.2rem;
+  padding:0;
+  font-size:2.55rem;
+}
+.cta p{color:#fff;max-width:58ch}
+.cta strong{color:#fff}
+.cta a{
+  display:inline-block;
+  margin-top:.8rem;
+  background:#fff;
+  color:var(--navy);
+  border:3px solid #fff;
+  text-decoration:none;
+  font-weight:700;
+  padding:.95rem 1.35rem;
+  font-size:1.18rem;
+}
+.cta a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+@media (max-width:620px){.cta{padding:2rem 1.35rem}.cta h2{font-size:2.05rem}}
+.footer{
+  border-top:3px solid var(--navy);
+  width:min(var(--maxw),92vw);
+  margin:3.5rem auto 0;
+  padding:2rem 0 3rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+}
+.footer img{height:40px;width:auto}
+.footer p{margin:0;color:var(--ink);font-size:1rem;font-weight:600;max-width:52ch}
+@media (max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+.js.motion .reveal:not(.in){transform:translateY(12px)}
+.js.motion .reveal.in{transform:none;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+@media print{
+  body{font-size:11pt;color:#000}
+  .copy{display:none}
+  pre{background:#07111F !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,.stage,.callout,.codewrap,.tw,.cta{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img src="/media/loop-design-playbook/muditek-logo.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/muditek-logo.svg';" alt="Muditek">
+  <span class="letterhead__meta">Loop Design Playbook</span>
+</header>
+
+<header class="hero">
+  <h1>Stop Prompting Agents. Build Loops That Ship.</h1>
+  <p class="hero__lead">The agent is not the bottleneck anymore. The loop around it is.</p>
+  <div class="proofline" role="img" aria-label="Uses Claude Code, Hermes Agent, and OpenClaw icons from LobeHub">
+    <span class="stack-label">Reference stack</span>
+    <span class="logo-tile"><img src="/media/loop-design-playbook/logos/claude-code.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/logos/claude-code.svg';" alt="Claude Code" loading="lazy"><b>Claude Code</b></span>
+    <span class="logo-tile"><img src="/media/loop-design-playbook/logos/hermes-agent.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/logos/hermes-agent.svg';" alt="Hermes Agent" loading="lazy"><b>Hermes Agent</b></span>
+    <span class="logo-tile"><img src="/media/loop-design-playbook/logos/openclaw.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/logos/openclaw.svg';" alt="OpenClaw" loading="lazy"><b>OpenClaw</b></span>
+  </div>
+  <p>The AI-coding timeline found a six-word sentence and turned it into a slogan: design loops that prompt your agents.</p>
+  <p>Useful sentence. Weak execution, if it stays a sentence.</p>
+  <p>A loop is not a vibe, not a longer prompt, and not a mystical agent swarm. It is a control system: a trigger, a worker, a verifier, state, budget, and a halt condition.</p>
+  <p>This playbook turns the discourse into the actual build.</p>
+  <div class="system-map" role="img" aria-label="Loop system map: Trigger, State, Agent, Skills, Verification, Halt">
+    <div class="map-node"><span>01</span><b>Trigger</b></div>
+    <div class="map-node"><span>02</span><b>State</b></div>
+    <div class="map-node is-hot"><span>03</span><b>Agent</b></div>
+    <div class="map-node"><span>04</span><b>Skills</b></div>
+    <div class="map-node is-warn"><span>05</span><b>Verify</b></div>
+    <div class="map-node is-stop"><span>06</span><b>Halt</b></div>
+  </div>
+  <p class="caption">Cron is the clock. The model is the decision-maker. Verification is the only reason to trust the loop.</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#definition">1. What a Loop Actually Is</a></li>
+    <li><a href="#ladder">2. The Five-Level Ladder</a></li>
+    <li><a href="#blueprint">3. The Production Blueprint</a></li>
+    <li><a href="#skills">4. Why Skills Beat Prompts</a></li>
+    <li><a href="#build">5. Build the Smallest Useful Loop</a></li>
+    <li><a href="#guardrails">6. Guardrails That Keep It Alive</a></li>
+    <li><a href="#templates">7. Copy-Paste Templates</a></li>
+    <li><a href="#week-one">8. The First Week Rollout</a></li>
+    <li><a href="#limits">9. The Honest Limits</a></li>
+  </ol>
+</nav>
+
+<article class="doc">
+  <h2 id="definition">What a Loop Actually Is</h2>
+  <p class="lede">A loop is cron plus a decision-maker plus feedback.</p>
+  <p>Cron wakes something up.</p>
+  <p>The model reads the current state and decides what action to take.</p>
+  <p>Tools execute that action.</p>
+  <p>A verifier checks the result.</p>
+  <p>The loop either keeps going, hands off, or stops.</p>
+  <div class="callout">
+    <p>The important shift is role reversal. You stop being the person inside the loop typing the next prompt. You become the person who writes the loop, owns the constraints, and decides what work deserves to run without you.</p>
+  </div>
+  <p>That is why the phrase matters. Not because prompt engineering disappeared. It moved into a smaller, harder artifact: the loop spec.</p>
+
+  <h2 id="ladder">The Five-Level Ladder</h2>
+  <p>The word "loop" gets messy because people use it for five different things. Put them in order and the fight gets clearer.</p>
+  <div class="stage-grid">
+    <section class="stage">
+      <b>Level 1</b>
+      <h3>ReAct Loop</h3>
+      <p>One model reasons, calls a tool, reads the result, and repeats. Useful, but usually watched by a human.</p>
+    </section>
+    <section class="stage">
+      <b>Level 2</b>
+      <h3>Goal Loop</h3>
+      <p>The agent keeps prompting itself toward a goal. Powerful when bounded, useless when it spins.</p>
+    </section>
+    <section class="stage">
+      <b>Level 3</b>
+      <h3>Ralph Loop</h3>
+      <p>A fixed prompt and fixed context get rerun until the work converges. The discipline is context reset.</p>
+    </section>
+    <section class="stage">
+      <b>Level 4</b>
+      <h3>Validator Loop</h3>
+      <p>The agent keeps working until a separate validator says the task is done. This is where trust starts.</p>
+    </section>
+    <section class="stage">
+      <b>Level 5</b>
+      <h3>Orchestration Loop</h3>
+      <p>One loop schedules, dispatches, supervises, and recovers other loops. The unit of work becomes the loop itself.</p>
+    </section>
+  </div>
+  <p>Most people arguing online are mixing Level 2 and Level 5. The new part is not "run the same prompt again." The new part is durable orchestration: scheduled work, multiple agents, shared state, crash recovery, and verification that survives your laptop closing.</p>
+
+  <h2 id="blueprint">The Production Blueprint</h2>
+  <p class="lede">A production loop has six parts. Miss one and you are just burning tokens with confidence.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Part</th><th>What It Owns</th><th>Failure If Missing</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Trigger</strong></td><td>When the loop wakes up: cron, webhook, pull request, Slack message, file change.</td><td>The human has to remember to start it.</td></tr>
+        <tr><td><strong>State</strong></td><td>What the loop knows between runs: repo, issues, memory files, queue, decision log.</td><td>Every run starts from amnesia.</td></tr>
+        <tr><td><strong>Worker</strong></td><td>The agent that decides and acts. Claude Code, OpenClaw, Hermes Agent, Codex, or another operator.</td><td>The loop cannot choose the next move.</td></tr>
+        <tr><td><strong>Skills</strong></td><td>Named procedures the agent can call instead of re-deriving every workflow.</td><td>The agent reinvents the business every run.</td></tr>
+        <tr><td><strong>Verifier</strong></td><td>Checks the output: tests, build, reviewer model, browser screenshot, human approval gate.</td><td>Bad commits compound quietly.</td></tr>
+        <tr><td><strong>Halt</strong></td><td>Max iterations, no-progress detection, token or dollar ceiling, and escalation path.</td><td>The loop becomes an invoice machine.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The model is one cell in the table. The expensive engineering is everything around it.</p>
+
+  <h2 id="skills">Why Skills Beat Prompts</h2>
+  <p>The loop is plumbing. The asset is the skill it calls.</p>
+  <p>A prompt tells an agent what you want this time. A skill teaches the agent how your business does a repeatable job every time.</p>
+  <p>If the loop has no skill library, it has to rediscover your standards on every run: how you review a pull request, how you qualify a lead, how you write a CTA, how you decide whether a claim is safe.</p>
+  <p>That is not automation. That is recurring confusion with a model bill attached.</p>
+  <div class="callout">
+    <p>Loop design compounds only when the loop calls named skills with narrow ownership, explicit inputs, expected outputs, and refusal conditions.</p>
+  </div>
+  <p>For Muditek-style AI adoption, this maps directly to the Three Folders: business context, prompt/SOP repository, and data sources. The loop reads the business. The skill performs the job. The verifier checks the result.</p>
+
+  <h2 id="build">Build the Smallest Useful Loop</h2>
+  <p class="lede">Do not start with "run my company." Start with one annoying recurring surface.</p>
+  <p>The canonical starter is pull-request babysitting: watch open PRs, fix build failures, address comments, rerun checks, and stop when the PR is clean or blocked.</p>
+  <p>It works because the state is concrete, the tools are available, the verifier is obvious, and the blast radius is bounded.</p>
+  <div class="codewrap">
+    <p class="code-title">Starter Loop Command</p>
+    <button class="copy" type="button" aria-label="Copy starter loop command">Copy</button>
+    <pre><code>/loop babysit all my PRs.
+Auto-fix build issues.
+When review comments come in, use a worktree agent to fix them.
+Rerun checks after every fix.
+Stop when every PR is green, blocked on human input, or has hit the budget ceiling.</code></pre>
+  </div>
+  <p>That command is not the system. It is the top layer. The system is the contract below it.</p>
+
+  <h2 id="guardrails">Guardrails That Keep It Alive</h2>
+  <p>The worst loop is the one that almost works forever.</p>
+  <p>Every serious loop needs three hard stops before it touches live work.</p>
+  <ul class="checklist">
+    <li><strong>Iteration ceiling.</strong> Decide how many passes it gets before escalation.</li>
+    <li><strong>No-progress detection.</strong> If two consecutive runs change nothing important, stop.</li>
+    <li><strong>Spend ceiling.</strong> Cap tokens, dollars, API credits, or runtime before the loop starts.</li>
+  </ul>
+  <p>Then add the fourth guardrail: permission boundaries. The loop can read broadly, but it should write narrowly. If it needs to cross a boundary, it asks.</p>
+  <div class="callout">
+    <p>A loop with no verifier is just a confident generator. A loop with no halt condition is a liability. A loop with no skill library is expensive forgetfulness.</p>
+  </div>
+
+  <h2 id="templates">Copy-Paste Templates</h2>
+  <p>Use these as the first draft of a real loop spec. Fill them in before you let an agent run unattended.</p>
+  <div class="codewrap">
+    <p class="code-title">Loop Spec</p>
+    <button class="copy" type="button" aria-label="Copy loop spec template">Copy</button>
+    <pre><code>LOOP SPEC: [name]
+
+Business surface:
+  The exact workflow this loop owns.
+
+Trigger:
+  What wakes it up.
+
+State it may read:
+  - Repos:
+  - Docs:
+  - Tickets:
+  - Data sources:
+  - Memory files:
+
+Tools it may call:
+  - Allowed:
+  - Forbidden:
+
+Skills it must use:
+  - [skill name]: [when to call it]
+  - [skill name]: [when to call it]
+
+Definition of done:
+  The observable condition that means the loop can stop.
+
+Verifier:
+  The command, review step, model check, screenshot, or human approval gate.
+
+Hard stops:
+  - Max iterations:
+  - Max runtime:
+  - Max spend:
+  - No-progress rule:
+
+Escalation:
+  What the loop says when it cannot finish safely.</code></pre>
+  </div>
+
+  <div class="codewrap">
+    <p class="code-title">Verifier Prompt</p>
+    <button class="copy" type="button" aria-label="Copy verifier prompt template">Copy</button>
+    <pre><code>You are the verifier for this loop.
+
+Judge only the definition of done.
+Do not reward effort.
+Do not infer success from confident language.
+
+Inputs:
+  - Original loop spec
+  - Files changed
+  - Commands run
+  - Tool outputs
+  - Known blockers
+
+Return:
+  PASS: if the definition of done is met.
+  FAIL: if specific missing work remains.
+  BLOCKED: if the next step needs human input or a permission boundary.
+
+For FAIL or BLOCKED, list the smallest next action.
+No general advice.</code></pre>
+  </div>
+
+  <div class="codewrap">
+    <p class="code-title">Skill Card</p>
+    <button class="copy" type="button" aria-label="Copy skill card template">Copy</button>
+    <pre><code>SKILL: [name]
+
+Owns:
+  The repeatable job this skill performs.
+
+Use when:
+  The exact trigger for using this skill.
+
+Inputs:
+  - Required:
+  - Optional:
+
+Procedure:
+  1. Read:
+  2. Decide:
+  3. Act:
+  4. Verify:
+
+Output:
+  The artifact or decision the caller receives.
+
+Never:
+  Actions this skill may not take.
+
+Refuse when:
+  Missing data, unsafe scope, weak proof, or unclear ownership.</code></pre>
+  </div>
+
+  <h2 id="week-one">The First Week Rollout</h2>
+  <p class="lede">A good first loop is boring on purpose.</p>
+  <p>You are proving the control system, not chasing the most impressive demo.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Day</th><th>Build</th><th>Exit Condition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Day 1</strong></td><td>Pick one recurring surface. Write the loop spec. Name the state, tools, verifier, and stop rules.</td><td>A human can read the spec and know exactly what the loop may touch.</td></tr>
+        <tr><td><strong>Day 2</strong></td><td>Create two skills: the worker skill and the verification skill.</td><td>The agent has a named procedure instead of a vague instruction.</td></tr>
+        <tr><td><strong>Day 3</strong></td><td>Run manually once with full observation.</td><td>You catch missing permissions, missing context, and vague done criteria.</td></tr>
+        <tr><td><strong>Day 4</strong></td><td>Add budget, iteration, and no-progress stops.</td><td>The loop cannot run forever.</td></tr>
+        <tr><td><strong>Day 5</strong></td><td>Schedule it. Keep the first schedule conservative.</td><td>The loop runs without you starting it.</td></tr>
+        <tr><td><strong>Day 6</strong></td><td>Write every mistake into memory or the skill file.</td><td>The second run is cleaner than the first.</td></tr>
+        <tr><td><strong>Day 7</strong></td><td>Promote or kill it.</td><td>If it saved attention and did not create hidden risk, expand the scope. If not, tighten or delete.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The win is not that the agent did work. The win is that the same work can run again with better context, better stops, and a cleaner verifier.</p>
+
+  <h2 id="limits">The Honest Limits</h2>
+  <p>Loops do not remove judgment. They move judgment earlier.</p>
+  <p>You still decide which workflows deserve automation. You still define the blast radius. You still own the verifier. You still kill the loop when the economics stop making sense.</p>
+  <ul class="checklist">
+    <li><strong>Do not loop weak work.</strong> If the workflow is unclear manually, automation makes the confusion run faster.</li>
+    <li><strong>Do not let the worker grade itself.</strong> Use tests, logs, screenshots, reviewer models, or human approval where risk matters.</li>
+    <li><strong>Do not hide cost.</strong> Make spend visible per loop, not buried in one account-level model bill.</li>
+    <li><strong>Do not confuse agents with systems.</strong> A powerful model inside a weak loop is still a weak system.</li>
+  </ul>
+  <p class="lede">The practical answer to "WTF is a loop?" is simple.</p>
+  <p>It is the system that lets an agent work when you are not watching, without pretending the agent is safe by default.</p>
+  <p>Write the loop. Give it skills. Force verification. Cap the downside. Then let it run.</p>
+
+  <section class="cta">
+    <h2>From one loop to an AI-executable business</h2>
+    <p>This playbook shows one control system.</p>
+    <p><strong>Muditek builds the business version.</strong> We map your workflows, package your business context, turn SOPs into callable skills, connect the data sources, and stand up loops that execute with verification instead of vibes.</p>
+    <p>If your team is still prompting agents by hand, the bottleneck is not model quality. It is missing loop architecture.</p>
+    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+  </section>
+</article>
+
+<footer class="footer">
+  <img src="/media/loop-design-playbook/muditek-logo.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/muditek-logo.svg';" alt="Muditek">
+  <p>Built by Muditek. We build the agent systems that run the work, not the tools your team babysits. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      if(!pre) return;
+      var text = pre.innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 1500);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+        done();
+      }
+    });
+  });
+  var ok = !window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  root.classList.add('js');
+  if(!ok) return;
+  root.classList.add('motion');
+  var els = document.querySelectorAll('.doc h2, .doc .tw, .doc .codewrap, .doc .callout, .doc .stage-grid, .doc .cta');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var revealAll = function(){ els.forEach(function(el){ el.classList.add('in'); }); };
+  window.addEventListener('beforeprint', revealAll);
+  setTimeout(revealAll, 2200);
+  if(!('IntersectionObserver' in window)){ revealAll(); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {rootMargin:'0px 0px -7% 0px', threshold:.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -90,7 +90,7 @@ const COVER_COMPOSE_SLUGS = new Set(Object.keys(COVER_COMPOSE_CSS_BY_SLUG));
 // fits in one fold and uses absolute /media/ asset paths — we rewrite those
 // to file:// URLs so images and logos actually load during gen, then snap
 // the first 1600x1000 viewport untouched.
-const FIRST_PAGE_SLUGS = new Set(["geo-playbook", "ai-marketing-team-playbook"]);
+const FIRST_PAGE_SLUGS = new Set(["geo-playbook", "ai-marketing-team-playbook", "loop-design-playbook"]);
 const PUBLIC_DIR = join(ROOT, "public");
 
 const files = readdirSync(HTML_DIR)

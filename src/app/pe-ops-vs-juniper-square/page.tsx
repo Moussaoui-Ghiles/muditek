@@ -51,9 +51,13 @@ export default function PEOpsVsJuniperSquarePage() {
           {
             "@context": "https://schema.org",
             "@type": "Article",
-            name: "Muditek vs Juniper Square in 2026",
+            headline: "Muditek vs Juniper Square in 2026",
             description: "Detailed comparison between Muditek custom private equity operational infrastructure and Juniper Square SaaS platform.",
             url: "https://muditek.com/pe-ops-vs-juniper-square",
+            image: {
+              "@type": "ImageObject",
+              url: "https://muditek.com/pe-ops-vs-juniper-square/opengraph-image",
+            },
             isPartOf: { "@id": "https://muditek.com/#website" },
             author: { "@id": "https://muditek.com/#ghiles" },
             publisher: { "@id": "https://muditek.com/#organization" },

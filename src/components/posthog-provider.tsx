@@ -32,11 +32,22 @@ export function PostHogProvider({
   useEffect(() => {
     if (typeof window === "undefined") return;
     fireAiReferralOnce(({ ai_source, referrer }) => {
-      if (key && posthog.__loaded) {
-        posthog.register({ ai_source });
-        posthog.capture("ai_referral", { ai_source, referrer });
+      if (key) {
+        try {
+          posthog.register({ ai_source });
+          posthog.capture("ai_referral", { ai_source, referrer });
+        } catch {
+          // posthog not yet initialized on this paint — skip, PostHog autocapture still fires later
+        }
       }
-      window.gtag?.("event", "ai_referral", { ai_source, referrer });
+      // GA4: gtag may not exist yet on cold load. dataLayer is created by the inline
+      // GA snippet immediately, so push there as a reliable fallback.
+      const w = window as typeof window & { dataLayer?: unknown[] };
+      if (typeof w.gtag === "function") {
+        w.gtag("event", "ai_referral", { ai_source, referrer });
+      } else {
+        w.dataLayer?.push({ event: "ai_referral", ai_source, referrer });
+      }
     });
   }, [key]);
 

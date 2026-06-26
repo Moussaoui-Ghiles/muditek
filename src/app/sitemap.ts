@@ -23,7 +23,7 @@ const MARKETING: Array<{
   { path: "/mudiagent", priority: 0.9, changeFrequency: "monthly" },
   { path: "/revenue-leak-audit", priority: 0.9, changeFrequency: "monthly" },
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/ai-act", priority: 0.9, changeFrequency: "monthly" },
+  // NOTE: /ai-act re-added once the pillar page is built (page dir is currently empty).
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },

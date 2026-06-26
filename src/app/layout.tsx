@@ -132,7 +132,7 @@ export default function RootLayout({
                   contactType: "sales",
                   email: "biz@ghiless.com",
                   url: "https://muditek.com/about",
-                  availableLanguage: ["en", "fr"],
+                  availableLanguage: ["en"],
                 },
                 sameAs: [
                   "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",

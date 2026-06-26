@@ -156,6 +156,30 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
               name: config.label,
             },
           },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://muditek.com",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Who We Help",
+                item: "https://muditek.com/who-we-help",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: config.label,
+                item: url,
+              },
+            ],
+          },
         ]}
       />
 

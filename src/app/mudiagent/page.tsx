@@ -57,7 +57,7 @@ export default function MudiAgentPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <JsonLd
-        data={{
+        data={[{
           "@context": "https://schema.org",
           "@type": "Service",
           name: "mudiAgent",
@@ -70,7 +70,14 @@ export default function MudiAgentPage() {
             { "@type": "Offer", name: "Pilot Deployment", price: "15000", priceCurrency: "EUR", description: "One agent, one workflow. Live in 4 weeks." },
             { "@type": "Offer", name: "Monthly Retainer", price: "3000", priceCurrency: "EUR", description: "Monitoring, optimization, support, scaling." },
           ],
-        }}
+        }, {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
+            { "@type": "ListItem", position: 2, name: "mudiAgent", item: "https://muditek.com/mudiagent" },
+          ],
+        }]}
       />
       <Navbar />
 

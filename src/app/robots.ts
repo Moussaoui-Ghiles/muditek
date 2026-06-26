@@ -31,6 +31,10 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Perplexity-User", allow: "/", disallow: PROTECTED },
       { userAgent: "Google-Agent", allow: "/", disallow: PROTECTED },
 
+      // AI grounding opt-in — allow (powers Google AI Overviews/Gemini grounding & Apple AI)
+      { userAgent: "Google-Extended", allow: "/", disallow: PROTECTED },
+      { userAgent: "Applebot-Extended", allow: "/", disallow: PROTECTED },
+
       // Training bots — block (we publish for retrieval, not training datasets)
       { userAgent: "GPTBot", disallow: "/" },
       { userAgent: "ClaudeBot", disallow: "/" },
@@ -39,10 +43,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Meta-ExternalFetcher", disallow: "/" },
       { userAgent: "anthropic-ai", disallow: "/" },
       { userAgent: "cohere-ai", disallow: "/" },
-
-      // Opt-out tokens (training opt-out signals)
-      { userAgent: "Google-Extended", disallow: "/" },
-      { userAgent: "Applebot-Extended", disallow: "/" },
 
       // Undeclared / non-compliant — block
       { userAgent: "Bytespider", disallow: "/" },

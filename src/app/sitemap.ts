@@ -1,23 +1,34 @@
 import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
-import { CASE_STUDY_SLUGS } from "@/lib/case-studies";
+import { CASE_STUDIES } from "@/lib/case-studies";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const BASE = "https://muditek.com";
 
 export const dynamic = "force-dynamic";
 
-const MARKETING: Array<{ path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }> = [
+// Single stable "site last updated" date for static pages that carry no real
+// per-page date. Avoids emitting a false "everything updated right now" signal.
+const SITE_UPDATED = new Date("2026-05-04");
+
+const MARKETING: Array<{
+  path: string;
+  priority: number;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  // Real per-page dateModified, where the page declares one in its JSON-LD.
+  lastModified?: string;
+}> = [
   { path: "", priority: 1, changeFrequency: "weekly" },
   { path: "/mudiagent", priority: 0.9, changeFrequency: "monthly" },
   { path: "/revenue-leak-audit", priority: 0.9, changeFrequency: "monthly" },
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/ai-act", priority: 0.9, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
+  { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
@@ -25,8 +36,8 @@ const MARKETING: Array<{ path: string; priority: number; changeFrequency: Metada
 
 const MUDIKIT_MARKETING: typeof MARKETING = [
   { path: "/mudikit", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/mudikit-vs-skool", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/mudikit-vs-circle", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/mudikit-vs-skool", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
+  { path: "/mudikit-vs-circle", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -38,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = marketing.map((m) => ({
     url: `${BASE}${m.path}`,
-    lastModified: now,
+    lastModified: m.lastModified ? new Date(m.lastModified) : SITE_UPDATED,
     changeFrequency: m.changeFrequency,
     priority: m.priority,
   }));
@@ -46,16 +57,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of INDUSTRY_SLUGS) {
     entries.push({
       url: `${BASE}/who-we-help/${slug}`,
-      lastModified: now,
+      lastModified: SITE_UPDATED,
       changeFrequency: "monthly",
       priority: 0.7,
     });
   }
 
-  for (const slug of CASE_STUDY_SLUGS) {
+  for (const study of CASE_STUDIES) {
     entries.push({
-      url: `${BASE}/case-studies/${slug}`,
-      lastModified: now,
+      url: `${BASE}/case-studies/${study.slug}`,
+      lastModified: new Date(study.date),
       changeFrequency: "monthly",
       priority: 0.7,
     });

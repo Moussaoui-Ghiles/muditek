@@ -9,6 +9,7 @@ import { PullQuote } from "@/components/pull-quote";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { TestimonialBlock } from "@/components/testimonial-block";
 import { DataCitation } from "@/components/data-citation";
+import { JsonLd } from "@/components/json-ld";
 import { DATA_POINTS } from "@/lib/data-points";
 
 const ABOUT_TESTIMONIALS: Parameters<typeof TestimonialBlock>[0]["items"] = [];
@@ -67,6 +68,16 @@ const TRACK_RECORD = [
 export default function AboutPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ProfilePage",
+          "@id": "https://muditek.com/about#profilepage",
+          url: "https://muditek.com/about",
+          dateModified: "2026-06-25",
+          mainEntity: { "@id": "https://muditek.com/#ghiles" },
+        }}
+      />
       <Navbar />
 
       {/* ══════ HERO ══════ */}

@@ -54,7 +54,7 @@ export default function RevenueMachinePage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-emerald-500/20 flex flex-col items-center">
       <JsonLd
-        data={{
+        data={[{
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Revenue Leak Audit",
@@ -67,7 +67,14 @@ export default function RevenueMachinePage() {
             { "@type": "Offer", name: "Build the Fix", price: "5000", priceCurrency: "EUR", description: "Per fix. Speed-to-lead automation, pipeline scoring, outbound rebuild." },
             { "@type": "Offer", name: "Monthly Retainer", price: "3000", priceCurrency: "EUR", description: "Monthly Revenue Recovery Report. 3-5x return every billing cycle." },
           ],
-        }}
+        }, {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
+            { "@type": "ListItem", position: 2, name: "Revenue Leak Audit", item: "https://muditek.com/revenue-leak-audit" },
+          ],
+        }]}
       />
       <Navbar />
 

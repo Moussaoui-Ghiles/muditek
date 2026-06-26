@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDIES } from "@/lib/case-studies";
+import { PLAYBOOKS } from "@/lib/playbooks";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const BASE = "https://muditek.com";
@@ -31,6 +32,7 @@ const MARKETING: Array<{
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/playbooks", priority: 0.8, changeFrequency: "weekly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
 ];
 
@@ -67,6 +69,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({
       url: `${BASE}/case-studies/${study.slug}`,
       lastModified: new Date(study.date),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
+  for (const p of PLAYBOOKS) {
+    entries.push({
+      url: `${BASE}/playbooks/${p.slug}`,
+      lastModified: new Date(p.date),
       changeFrequency: "monthly",
       priority: 0.7,
     });

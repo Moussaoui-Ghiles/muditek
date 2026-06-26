@@ -148,15 +148,6 @@ export default function RootLayout({
                   "AI systems that eliminate operational waste. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
                 publisher: { "@id": "https://muditek.com/#organization" },
                 inLanguage: "en",
-                potentialAction: {
-                  "@type": "SearchAction",
-                  target: {
-                    "@type": "EntryPoint",
-                    urlTemplate:
-                      "https://muditek.com/newsletter?q={search_term_string}",
-                  },
-                  "query-input": "required name=search_term_string",
-                },
               },
               {
                 "@context": "https://schema.org",

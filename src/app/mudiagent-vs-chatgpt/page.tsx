@@ -48,13 +48,36 @@ export default function MudiAgentVsChatGPTPage() {
         data={[
           {
             "@context": "https://schema.org",
-            "@type": "WebPage",
+            "@type": "Article",
             name: "mudiAgent vs ChatGPT Enterprise in 2026",
             description: "Detailed comparison between mudiAgent on-premises AI and ChatGPT Enterprise for enterprise operations.",
             url: "https://muditek.com/mudiagent-vs-chatgpt",
             isPartOf: { "@id": "https://muditek.com/#website" },
+            author: { "@id": "https://muditek.com/#ghiles" },
+            publisher: { "@id": "https://muditek.com/#organization" },
+            mainEntityOfPage: { "@type": "WebPage", "@id": "https://muditek.com/mudiagent-vs-chatgpt" },
+            inLanguage: "en",
+            articleSection: "Comparison",
             datePublished: "2026-04-15",
             dateModified: "2026-05-04",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://muditek.com",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "mudiAgent vs ChatGPT Enterprise",
+                item: "https://muditek.com/mudiagent-vs-chatgpt",
+              },
+            ],
           },
           {
             "@context": "https://schema.org",

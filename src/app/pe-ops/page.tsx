@@ -50,7 +50,7 @@ export default function PEOpsPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-sky-500/20 flex flex-col items-center">
       <JsonLd
-        data={{
+        data={[{
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Operational Infrastructure for Investment Firms",
@@ -63,7 +63,14 @@ export default function PEOpsPage() {
             { "@type": "Offer", name: "Build", price: "40000", priceCurrency: "EUR", description: "Custom-built operational infrastructure. 4-8 weeks." },
             { "@type": "Offer", name: "Monthly Retainer", price: "5000", priceCurrency: "EUR", description: "New funds, jurisdictions, regulatory changes. Ongoing support." },
           ],
-        }}
+        }, {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
+            { "@type": "ListItem", position: 2, name: "Operational Infrastructure for Investment Firms", item: "https://muditek.com/pe-ops" },
+          ],
+        }]}
       />
       <Navbar />
 

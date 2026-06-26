@@ -25,6 +25,7 @@ const nextConfig = {
     ],
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -52,9 +53,10 @@ const nextConfig = {
         destination: "/revenue-leak-audit",
         permanent: true,
       },
+      // /buy handled by src/app/buy/page.tsx (do not re-add a config redirect here)
       {
-        source: "/buy",
-        destination: "/",
+        source: "/tools",
+        destination: "/tools/revenue-leak-calculator",
         permanent: true,
       },
       {

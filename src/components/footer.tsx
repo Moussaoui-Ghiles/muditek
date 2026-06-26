@@ -59,6 +59,7 @@ export function Footer() {
             </div>
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Learn</span>
+              <Link href="/playbooks" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Playbooks</Link>
               <Link href="/case-studies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Case Studies</Link>
               <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
               <Link href="/sign-up" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Portal</Link>

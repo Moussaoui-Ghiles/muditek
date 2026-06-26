@@ -80,6 +80,9 @@ export function Navbar() {
             </div>
           </div>
 
+          <Link href="/playbooks" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            Playbooks
+          </Link>
           <Link href="/about" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             About
           </Link>
@@ -123,14 +126,14 @@ export function Navbar() {
               Join Portal
             </Link>
           )}
-          <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
-          >
-            Book a Call
-          </a>
+          {isLoaded && isSignedIn && (
+            <Link
+              href="/portal"
+              className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
+            >
+              Portal
+            </Link>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -185,6 +188,16 @@ export function Navbar() {
               <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
             </div>
           </div>
+
+          <Link
+            href="/playbooks"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "180ms" : "0ms" }}
+          >
+            Playbooks
+          </Link>
 
           <Link
             href="/about"
@@ -242,17 +255,17 @@ export function Navbar() {
             </>
           )}
 
-          <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "500ms" : "0ms" }}
-          >
-            Book a Call
-          </a>
+          {isLoaded && !isSignedIn && (
+            <Link
+              href="/sign-up"
+              className={`mt-8 px-8 py-4 bg-primary text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
+                mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+              }`}
+              style={{ transitionDelay: mobileOpen ? "500ms" : "0ms" }}
+            >
+              Join Portal
+            </Link>
+          )}
         </div>
       </div>
     </>

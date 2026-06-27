@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { PLAYBOOKS } from "@/lib/playbooks";
+import { PUBLIC_SKILLS } from "@/lib/skills-public";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const BASE = "https://muditek.com";
@@ -33,6 +34,7 @@ const MARKETING: Array<{
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/playbooks", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/skills", priority: 0.8, changeFrequency: "weekly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
 ];
 
@@ -80,6 +82,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(p.date),
       changeFrequency: "monthly",
       priority: 0.7,
+    });
+  }
+
+  for (const s of PUBLIC_SKILLS) {
+    entries.push({
+      url: `${BASE}/skills/${s.slug}`,
+      lastModified: new Date(s.date),
+      changeFrequency: "monthly",
+      priority: 0.6,
     });
   }
 

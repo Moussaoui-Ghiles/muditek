@@ -29,6 +29,7 @@ export const PORTAL_TOOLS: PortalTool[] = [
       "Enter a business type and location. The workbench runs the Google Maps Apify actor and returns real businesses, websites, phones, ratings, review counts, and any emails returned by the scraper.",
     category: "Lead gen",
     access: "free",
+    publicHref: "/tools/google-maps-lead-finder",
   },
   {
     slug: "linkedin-serper-lead-finder",
@@ -38,6 +39,7 @@ export const PORTAL_TOOLS: PortalTool[] = [
       "Build targeted LinkedIn profile searches with role, market, and company keywords. The workbench uses Serper to return live Google results for LinkedIn profiles.",
     category: "Lead gen",
     access: "free",
+    publicHref: "/tools/linkedin-lead-finder",
   },
 ];
 

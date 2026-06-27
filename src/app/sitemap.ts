@@ -4,6 +4,7 @@ import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { PLAYBOOKS } from "@/lib/playbooks";
 import { PUBLIC_SKILLS } from "@/lib/skills-public";
+import { PUBLIC_TOOLS } from "@/lib/tools-public";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 const BASE = "https://muditek.com";
@@ -28,6 +29,7 @@ const MARKETING: Array<{
   // NOTE: /ai-act re-added once the pillar page is built (page dir is currently empty).
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/tools", priority: 0.8, changeFrequency: "weekly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
   { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
@@ -91,6 +93,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(s.date),
       changeFrequency: "monthly",
       priority: 0.6,
+    });
+  }
+
+  for (const t of PUBLIC_TOOLS) {
+    entries.push({
+      url: `${BASE}/tools/${t.slug}`,
+      lastModified: new Date(t.date),
+      changeFrequency: "monthly",
+      priority: 0.7,
     });
   }
 

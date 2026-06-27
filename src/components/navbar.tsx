@@ -73,6 +73,14 @@ export function Navbar() {
                 Case Studies
               </Link>
               <div className="h-px bg-white/[0.04] mx-5 my-2" />
+              <Link href="/tools/google-maps-lead-finder" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Google Maps Lead Finder
+                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
+              </Link>
+              <Link href="/tools/linkedin-lead-finder" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                LinkedIn Lead Finder
+                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
+              </Link>
               <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Revenue Leak Calculator
                 <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
@@ -80,6 +88,9 @@ export function Navbar() {
             </div>
           </div>
 
+          <Link href="/tools" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            Tools
+          </Link>
           <Link href="/playbooks" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Playbooks
           </Link>
@@ -188,9 +199,21 @@ export function Navbar() {
               <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
               <Link href="/who-we-help" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Who We Help</Link>
               <Link href="/case-studies" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Case Studies</Link>
+              <Link href="/tools/google-maps-lead-finder" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Google Maps Lead Finder</Link>
+              <Link href="/tools/linkedin-lead-finder" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">LinkedIn Lead Finder</Link>
               <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
             </div>
           </div>
+
+          <Link
+            href="/tools"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "150ms" : "0ms" }}
+          >
+            Tools
+          </Link>
 
           <Link
             href="/playbooks"

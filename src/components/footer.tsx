@@ -49,6 +49,14 @@ export function Footer() {
               <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
             </div>
             <div>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Free Tools</span>
+              <Link href="/tools" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">All Tools</Link>
+              <Link href="/tools/google-maps-lead-finder" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Google Maps Lead Finder</Link>
+              <Link href="/tools/linkedin-lead-finder" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">LinkedIn Lead Finder</Link>
+              <Link href="/tools/find-agency-leads" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Find Agency Leads</Link>
+              <Link href="/tools/find-b2b-saas-leads" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Find B2B SaaS Leads</Link>
+            </div>
+            <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Industries</span>
               <Link href="/who-we-help" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Who We Help</Link>
               <Link href="/who-we-help/private-equity" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Private Equity & VC</Link>

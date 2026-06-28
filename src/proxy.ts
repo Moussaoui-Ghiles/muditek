@@ -21,6 +21,8 @@ const isPublicRoute = createRouteMatcher([
   "/playbooks/(.*)",
   "/skills",
   "/skills/(.*)",
+  "/workflows",
+  "/workflows/(.*)",
   "/revenue-leak-audit",
   "/newsletter",
   "/newsletter/(.*)",

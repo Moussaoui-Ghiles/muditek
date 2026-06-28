@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { PLAYBOOKS } from "@/lib/playbooks";
 import { PUBLIC_SKILLS } from "@/lib/skills-public";
+import { PUBLIC_WORKFLOWS } from "@/lib/workflows-public";
 import { PUBLIC_TOOLS } from "@/lib/tools-public";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
@@ -32,6 +33,7 @@ const MARKETING: Array<{
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/playbooks", priority: 0.8, changeFrequency: "weekly" },
   { path: "/skills", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/workflows", priority: 0.8, changeFrequency: "weekly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
 ];
 
@@ -88,6 +90,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(t.date),
       changeFrequency: "monthly",
       priority: 0.7,
+    });
+  }
+
+  for (const w of PUBLIC_WORKFLOWS) {
+    entries.push({
+      url: `${BASE}/workflows/${w.slug}`,
+      lastModified: new Date(w.date),
+      changeFrequency: "monthly",
+      priority: 0.6,
     });
   }
 

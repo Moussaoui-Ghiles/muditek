@@ -84,6 +84,9 @@ export function Navbar() {
           <Link href="/skills" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Skills
           </Link>
+          <Link href="/workflows" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
+            Workflows
+          </Link>
           <Link href="/about" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             About
           </Link>
@@ -207,6 +210,16 @@ export function Navbar() {
             style={{ transitionDelay: mobileOpen ? "190ms" : "0ms" }}
           >
             Skills
+          </Link>
+
+          <Link
+            href="/workflows"
+            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            }`}
+            style={{ transitionDelay: mobileOpen ? "195ms" : "0ms" }}
+          >
+            Workflows
           </Link>
 
           <Link

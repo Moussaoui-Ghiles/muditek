@@ -43,22 +43,53 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Retired consulting offers -> portal funnel (2026-06 pivot).
+      {
+        source: "/pe-ops",
+        destination: "/portal",
+        permanent: true,
+      },
+      {
+        source: "/mudiagent",
+        destination: "/portal",
+        permanent: true,
+      },
+      {
+        source: "/revenue-leak-audit",
+        destination: "/tools/revenue-leak-calculator",
+        permanent: true,
+      },
+      {
+        source: "/mudiagent-vs-chatgpt",
+        destination: "/tools",
+        permanent: true,
+      },
+      {
+        source: "/pe-ops-vs-juniper-square",
+        destination: "/tools",
+        permanent: true,
+      },
+      {
+        source: "/who-we-help",
+        destination: "/tools",
+        permanent: true,
+      },
+      {
+        source: "/who-we-help/:path*",
+        destination: "/tools",
+        permanent: true,
+      },
       {
         source: "/revenue-machine",
-        destination: "/revenue-leak-audit",
+        destination: "/tools/revenue-leak-calculator",
         permanent: true,
       },
       {
         source: "/revenue-recovery",
-        destination: "/revenue-leak-audit",
-        permanent: true,
-      },
-      // /buy handled by src/app/buy/page.tsx (do not re-add a config redirect here)
-      {
-        source: "/tools",
         destination: "/tools/revenue-leak-calculator",
         permanent: true,
       },
+      // /buy handled by src/app/buy/page.tsx (do not re-add a config redirect here)
       {
         // Legacy LinkedIn campaign URLs — UUID at root → /c/[id]
         source: "/:id(:?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",

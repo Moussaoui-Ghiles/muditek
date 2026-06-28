@@ -14,7 +14,7 @@ import { DATA_POINTS } from "@/lib/data-points";
 export const metadata: Metadata = {
   title: "Muditek | AI Systems That Eliminate Operational Waste",
   description:
-    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
+    "A free portal of AI agents, n8n workflows, operator skills, and lead tools that do real marketing, sales, and ops work with no added headcount. Join free.",
   alternates: {
     canonical: "https://muditek.com",
     types: { "text/markdown": "https://muditek.com/index.md" },
@@ -22,14 +22,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Muditek | AI Systems That Eliminate Operational Waste",
     description:
-      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
+      "A free portal of AI agents, n8n workflows, operator skills, and lead tools that do real marketing, sales, and ops work with no added headcount. Join free.",
     url: "https://muditek.com",
     type: "website",
   },
 };
 
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
 
 const VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260309_042944_4a2205b7-b061-490a-852b-92d9e9955ce9.mp4";
@@ -106,7 +104,7 @@ export default function Home() {
               Your best people are stuck doing work that doesn&apos;t <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">need them.</span>
            </h1>
            <p className="mt-8 text-lg md:text-xl text-foreground/80 max-w-2xl leading-relaxed">
-             We find where you&apos;re bleeding money, then build the AI systems that fix it.
+             Get the AI agents, workflows, and playbooks that do that work for you. Free.
            </p>
            <p className="mt-4 text-sm text-foreground/60 max-w-xl italic">
              From{" "}
@@ -125,15 +123,15 @@ export default function Home() {
            </p>
 
            <div className="mt-14 flex flex-col sm:flex-row items-center gap-5">
-              <Link href="#solutions" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <Link href="/sign-up" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
-                  See Which Solution Fits
+                  Join the Portal Free
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
               </Link>
-              <Link href="#contact" className="group px-8 py-5 border border-white/[0.15] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.05] transition-colors btn-press">
-                 Book a Call
+              <Link href="/tools" className="group px-8 py-5 border border-white/[0.15] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.05] transition-colors btn-press">
+                 Explore Free Tools
               </Link>
            </div>
         </div>
@@ -362,9 +360,9 @@ export default function Home() {
                  We pull your data, run the analysis, and show you exactly where the money goes. In euros. With the formulas. If we can&apos;t find meaningful waste, you pay nothing.
                </p>
 
-               <Link href="#contact" className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group">
+               <Link href="/sign-up" className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group">
                  <span className="relative z-10 flex items-center gap-3">
-                   Book a Call
+                   Join the Portal Free
                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform stroke-current"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                  </span>
                </Link>
@@ -389,15 +387,15 @@ export default function Home() {
                   Stop paying people to do work <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/40 italic font-medium pr-2">a machine</span> should handle.
                </h2>
                <p className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto mb-14 leading-relaxed">
-                  30-minute call. No pitch. We&apos;ll tell you if we can help, and how much you&apos;re losing by waiting.
+                  Free account. No card. The AI agents, workflows, and tools that do the work are ready the moment you sign up.
                </p>
 
-               <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+               <Link href="/sign-up" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_40px_rgba(255,255,255,0.05)]">
                   <span className="relative z-10 flex items-center gap-4">
-                     Book a Call
+                     Join the Portal Free
                      <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />
                   </span>
-               </a>
+               </Link>
             </ScrollReveal>
          </div>
 

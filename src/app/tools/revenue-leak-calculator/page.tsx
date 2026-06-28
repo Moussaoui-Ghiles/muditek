@@ -7,8 +7,6 @@ import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
 
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
 
 interface LeakResult {
   name: string;
@@ -420,21 +418,16 @@ export default function RevenueLeakCalculatorPage() {
 
               {/* CTA — always visible */}
               <div className="mt-12 pt-10 border-t border-white/[0.05]">
-                <p className="text-base text-foreground/60 font-light leading-relaxed mb-2">
-                  This is an estimate based on published industry benchmarks. The full diagnostic uses your actual CRM and Stripe data to find every leak with exact euro amounts and formulas — including leaks this calculator can&apos;t detect.
-                </p>
-                <p className="text-sm text-foreground/50 font-mono tracking-wider mb-8">
-                  If we can&apos;t find €50K in annual leakage, you pay nothing.
+                <p className="text-base text-foreground/60 font-light leading-relaxed mb-8">
+                  This is an estimate based on published industry benchmarks. Open a free account to get the agent workflows and lead tools that plug these leaks, with no added headcount.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <a
-                    href={BOOKING_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/sign-up"
                     className="inline-flex items-center justify-center px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform btn-press"
                   >
-                    Book Your Diagnostic
+                    Join the Portal Free
                   </a>
                   <a
                     href="/subscribe"

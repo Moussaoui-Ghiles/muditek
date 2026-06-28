@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
-import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { PLAYBOOKS } from "@/lib/playbooks";
 import { PUBLIC_SKILLS } from "@/lib/skills-public";
@@ -23,17 +22,13 @@ const MARKETING: Array<{
   lastModified?: string;
 }> = [
   { path: "", priority: 1, changeFrequency: "weekly" },
-  { path: "/mudiagent", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/revenue-leak-audit", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
   // NOTE: /ai-act re-added once the pillar page is built (page dir is currently empty).
+  // Retired consulting offers (/mudiagent, /pe-ops, /revenue-leak-audit, the /vs
+  // pages, /who-we-help) now 301 to the funnel, so they are no longer listed here.
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
   { path: "/tools", priority: 0.8, changeFrequency: "weekly" },
   { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
-  { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
-  { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/playbooks", priority: 0.8, changeFrequency: "weekly" },
   { path: "/skills", priority: 0.8, changeFrequency: "weekly" },
@@ -59,15 +54,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: m.changeFrequency,
     priority: m.priority,
   }));
-
-  for (const slug of INDUSTRY_SLUGS) {
-    entries.push({
-      url: `${BASE}/who-we-help/${slug}`,
-      lastModified: SITE_UPDATED,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    });
-  }
 
   for (const study of CASE_STUDIES) {
     entries.push({

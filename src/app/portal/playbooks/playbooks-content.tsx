@@ -22,6 +22,7 @@ const TOPIC_OPTIONS: Array<{ value: TopicFilter; label: string }> = [
   { value: "seo", label: CONTENT_TOPIC_LABEL.seo },
   { value: "cold-email", label: CONTENT_TOPIC_LABEL["cold-email"] },
   { value: "geo", label: CONTENT_TOPIC_LABEL.geo },
+  { value: "local-ai", label: CONTENT_TOPIC_LABEL["local-ai"] },
 ];
 
 function isAccessible(item: ContentItem, access: PortalAccess): boolean {
@@ -431,6 +432,7 @@ export default function PlaybooksContent({
       seo: 0,
       "cold-email": 0,
       geo: 0,
+      "local-ai": 0,
     };
     for (const item of visibleItems) map[topicForItem(item)] += 1;
     return map;

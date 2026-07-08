@@ -10,6 +10,19 @@ Apply three frameworks in order. Each builds on the previous:
 
 Do not skip step 3. An offer that looks good on paper but has no operational blueprint is not a real offer.
 
+## Demand gate (run before constructing anything)
+
+A mechanically perfect offer for something nobody buys is still worth $0. Gate the idea before building it.
+
+Three pass/fail checks:
+1. Cold traffic only buys new money — leads, calls, sales. Not optimization, not systems, not CRM cleanup. If the offer is "get more from what you already have," cold buyers reply "send me more info" and never buy. (Fazio)
+2. Need vs want vs buy. A business may NEED operational cleanup but will WANT and BUY the thing that produces new leads or revenue. Sell what they buy, not what they need.
+3. Active demand now. "You are strictly confined to selling what has active market demand at this moment." Map the offer to a category with proven demand before proceeding.
+
+Kill diagnostic: if cold outreach gets no traction (on the order of 50 emails or 78 LinkedIn messages and nothing back), the offer has no active demand. That is an offer problem, not a copy problem. Do not rewrite the copy — fix or kill the offer.
+
+3-DM validation (for a new productized offer): if 3 different people asked the same question in the last 60 days (DMs, comments, sales calls), that question is a validated offer. Do not ask "is there a market" — read the inbox.
+
 ## Core model
 Build offers by increasing perceived value and realized outcomes while reducing buyer risk, delay, and effort.
 
@@ -23,6 +36,10 @@ Design every offer across 6 parts:
 
 Additional rule: if the offer is meant for scale, it should be sellable through cold traffic or outbound without depending only on referrals.
 
+## Positioning (Category of One)
+
+Write down three words for what the offer helps people do. Pick the one to own, and build the offer's language around it. Cross-check against "new beats better": the word should signal a novel mechanism, not an incremental improvement on what the buyer already tried and got burned by.
+
 ## Value equation
 Use this as the main design lens:
 
@@ -30,11 +47,27 @@ Use this as the main design lens:
 
 ### Increase value by raising:
 - Dream outcome: make the end state concrete, important, and economically meaningful
-- Perceived likelihood: add proof, specificity, authority, transparent mechanism, and credibility
+- Perceived likelihood: add proof, specificity, transparent mechanism, and credibility. Two high-leverage levers: (a) mirror proof beats authority proof — a case study matching the prospect's exact revenue and problem closes, authority only impresses; (b) new beats better — a novel mechanism resets prior skepticism and prior burns ("rebuild the infrastructure your closer works inside" is a different category than "find you a closer")
 
 ### Increase value by lowering:
 - Time delay: shorten time to first win and time to core outcome
 - Effort and sacrifice: reduce buyer workload, decisions, confusion, and operational burden
+
+## Friction removal (Six Horsemen)
+
+The value equation is the design lens. This is the operational audit that complements it. First establish the valuable claim ("I will help you get X" — if people want it, the claim is valuable). Everything after is removing friction across five buckets:
+
+1. Delay — how long until they get it
+2. Effort — new things they must start doing
+3. Sacrifice — things they liked that they must stop doing
+4. Risk — new risks they now take on
+5. Inconsistency — sometimes works, sometimes does not
+
+Inconsistency is the silent killer: a phone that is 95% reliable is a phone you hate. Reliability is part of the offer, not a footnote.
+
+Method: itemize every step before and after purchase, tag each as delay / effort / sacrifice / risk / inconsistency, then build a specific solution or bonus for each. Value is hard to define; problems are easy. Remove the problems and what is left is the value (the iPhone is what remains after everything that sucks about a phone is removed).
+
+Output a friction list ranked by severity. Fix the top three before touching anything else.
 
 ## "You're f\*\*\*ing me" scale
 
@@ -55,6 +88,18 @@ Reframe price as investment by making inaction more expensive than action. Show 
 - The gap between those two numbers is the value. That gap should be absurd.
 
 "Costly" means the number is large. "Not expensive" means relative to what they get or what they lose, it's a bargain. Always calculate and present both sides.
+
+## Offer quality diagnostic (4-component + Forward Test)
+
+Before scoring, run the offer through four components. An offer that "prints" has all four:
+1. Names the problem the prospect already has — from research, not assumptions.
+2. Provides a believable mechanism — not just the outcome ("30 calls") but HOW it happens.
+3. Removes the risk of the first step — "want me to send it over?" beats "book a call."
+4. Specific enough to be credible, broad enough to be relevant — situation specificity, not data-point specificity.
+
+The offer answers one question: "What is in it for me, right now, with as little risk as possible?"
+
+Forward Test: would the prospect forward this to a colleague with the same problem? If not, the offer is broken. Fix it before proceeding.
 
 ## Desire stacking
 For premium or high-ticket offers, combine multiple compatible desires into one coherent promise.
@@ -85,6 +130,8 @@ Useful deliverable categories:
 
 Rule: do not add random bonuses. Add only components that improve certainty, speed, or ease.
 Also document the core process clearly enough that it can be repeated, measured, and improved.
+
+Bonus deployment (not discounting): itemize each objection, build one bonus that removes each. On the call, make the core ask first. If they say no, identify the specific constraint behind the no and plug the one bonus that removes it — add value instead of cutting price. Deliver the remaining bonuses post-purchase as surprise delighters. Fast buyers get them as gifts; hesitant buyers get them as closers.
 
 ## Tiering
 Use these tiers when appropriate:
@@ -157,6 +204,22 @@ Useful premium funnel shapes:
 
 Rule: the best funnel is the one that reduces friction while preserving qualification quality.
 
+## Awareness stages (match the pitch to the buyer)
+
+The same offer pitched to the wrong awareness stage dies silently. Identify the stage, then match the frame.
+
+| Stage | Buyer state | What to lead with |
+|---|---|---|
+| 1. Unaware | Has symptoms, blames the market or lead quality | Cannot sell yet. Educate first. |
+| 2. Problem aware | Knows the pain, not the solution | Lead with diagnosis, not the service. |
+| 3. Solution aware | Knows the category, not why you | Why your approach produces what others do not. |
+| 4. Product aware | Knows you specifically | Confirm fit, handle remaining uncertainty. |
+| 5. Most aware | Ready to buy | Smooth process, set expectations. |
+
+Failure mode: pitching everyone like stage 4/5 when they are at stage 2/3.
+
+Match the positioning frame to their revenue reality: Launch frame (pre-consistent revenue — build it right once so they don't rebuild later), Scaling frame (stuck at a ceiling — one surgical fix, "you've done the hard part, this specific thing is holding you back"), or market-fit frame.
+
 ## Qualification
 Qualification is part of offer design, not just sales ops.
 
@@ -181,6 +244,18 @@ Calendar and pre-call rules:
 - Optimize speed-to-call after lead capture whenever possible
 
 Rule: qualification should improve quality without adding needless friction.
+
+## Constraint diagnosis (for offer → improve mode)
+
+When improving an existing offer that is stuck, do not add levers randomly. At any moment the business has exactly ONE binding constraint. Find it, put all effort there, a new one appears, repeat. Most people work the wrong constraint because it is the familiar one (usually "more traffic").
+
+Diagnose before prescribing:
+- Where does the pipeline actually break? Traffic, booked calls, show rate, close rate, capacity, price, delivery, or retention?
+- The constraint is often NOT what the operator thinks. A client stuck at $60-70K/month with a 48% close rate and every slot full did not need traffic. He needed calendar capacity and a higher price.
+- Price is frequently the untouched constraint: raising $3K to $5K at that close rate went from 22 closes x $3K = $66K to 18 closes x $5K = $90K. +$24K/month by changing one number.
+- Never run capacity at 100% — buyers who see no availability leave.
+
+Fix the weakest binding constraint first. Re-diagnose after each fix.
 
 ## Scoring rubric
 Evaluate every offer on:

@@ -1,6 +1,6 @@
 ---
 name: offer-creation
-description: "Create, improve, reposition, and evaluate business offers using live market research plus structured offer design. Use when the task is to: (1) turn a topic, niche, or problem into an offer, (2) improve an existing offer, (3) adapt an offer to a new market or segment, (4) choose pricing, guarantees, tiers, or qualification rules, or (5) analyze whether an offer is strong enough to sell."
+description: Create, improve, reposition, and evaluate business offers using live market research plus structured offer design. Use when the task is to: (1) turn a topic, niche, or problem into an offer, (2) improve an existing offer, (3) adapt an offer to a new market or segment, (4) choose pricing, guarantees, tiers, or qualification rules, or (5) analyze whether an offer is strong enough to sell.
 ---
 
 # Offer Creation
@@ -12,8 +12,9 @@ Use this skill to build offers systematically instead of brainstorming randomly.
 1. Run live market research before making strong claims about demand, pricing, guarantees, objections, or competitor patterns.
 2. Apply three frameworks in order: Hormozi (what to build) → Haynes (how to frame it) → Fazio (how to deliver it). Do not skip the operational layer.
 3. An offer is not complete until it has a fulfillment factory with mapped stations, an intake form, a pre-call sequence, a communication cadence, and a case study production process.
+4. Gate demand before constructing. A mechanically perfect offer for something nobody buys is worth nothing. Confirm active market demand (cold traffic buys new money, not optimization) before designing. See `references/framework.md` → Demand gate.
 
-**Always read `references/framework.md` before starting any work.** It contains the full detail on every concept referenced in this skill — value equation, "you're f\*\*\*ing me" scale, desire stacking, guarantees, pricing, fulfillment factory, intake forms, pre-call sequence, communication cadence, case study flywheel. Without it, you will produce shallow output.
+**Always read `references/framework.md` before starting any work.** It contains the full detail on every concept referenced in this skill — value equation, "you're f\*\*\*ing me" scale, desire stacking, guarantees, pricing, fulfillment factory, intake forms, pre-call sequence, communication cadence, case study flywheel, demand gate, friction removal (Six Horsemen), awareness stages, offer quality diagnostic, constraint diagnosis. Without it, you will produce shallow output.
 
 Also read before starting:
 - `references/market-research.md` — live research workflow using web tools
@@ -26,7 +27,7 @@ Choose one mode first.
 Use when the user starts with a topic, niche, market, audience, or problem and wants a net-new offer.
 
 ### 2. Offer → improve
-Use when the user already has an offer and wants to strengthen positioning, pricing, guarantees, tiering, or conversion quality.
+Use when the user already has an offer and wants to strengthen positioning, pricing, guarantees, tiering, or conversion quality. Start with constraint diagnosis (`references/framework.md` → Constraint diagnosis): find the ONE binding constraint before adding levers.
 
 ### 3. Offer → adapt
 Use when the user wants to keep the core mechanism but retarget it to a different niche, buyer, or channel.
@@ -60,6 +61,8 @@ Follow `references/market-research.md`.
 
 Minimum standard: do not present claims about current markets as facts unless they are supported by URLs you actually checked.
 
+Demand gate (pass/fail): before moving on, confirm the offer sells new money (leads, calls, sales) into active demand, not optimization nobody buys. If cold signal is dead (roughly 50 outreach touches, nothing back), that is an offer problem, not a copy problem — fix or kill the offer, do not proceed to construction. See `references/framework.md` → Demand gate.
+
 ### Step 3: Build or diagnose the offer (Hormozi — what to build)
 Use the value equation from `references/framework.md`.
 
@@ -83,6 +86,9 @@ Apply these checks from `references/framework.md`:
 - Desire density: for premium offers, are 3-5 independently compelling desires stacked? Rich buyers buy on desire density, not price.
 - Tier check: do the tiers (if any) improve speed and certainty at each level? Not every offer needs all three tiers — if stakes are too high for DIY, skip it.
 - 30-day recurring value test: if the offer has a retainer, can the client point to what they received THIS month that is worth more than what they paid? Name the specific monthly deliverable.
+- Awareness stage match: identify the buyer's awareness stage (1-5) and match the frame. Pitching stage 2/3 buyers like stage 4/5 kills deals silently. See `references/framework.md` → Awareness stages.
+- Friction removal (Six Horsemen): audit the offer across delay, effort, sacrifice, risk, inconsistency. Rank by severity, fix the top three. See `references/framework.md` → Friction removal.
+- 4-component + Forward Test: the offer must name the real problem, give a believable mechanism, remove first-step risk, and be specific yet relevant. Would the prospect forward it to a peer? If not, it is broken. See `references/framework.md` → Offer quality diagnostic.
 
 ### Step 5: Construct the offer
 Build these parts explicitly:
@@ -137,6 +143,8 @@ Evaluate:
 For service offers, distinguish mindful work from mindless work and push repeatable mindless work toward automation or systemization where realistic.
 
 ### Step 8: Score and refine
+Before scoring, confirm two hard gates pass: (1) the demand gate (active demand for new money, not optimization nobody buys), and (2) the Forward Test (a prospect would forward this offer to a peer with the same problem). If either fails, fix that first — a strong rubric score on an offer with no demand is a false positive.
+
 Score the offer on the rubric in `references/framework.md`.
 
 If the score is weak, fix the weakest levers first instead of rewriting everything randomly.

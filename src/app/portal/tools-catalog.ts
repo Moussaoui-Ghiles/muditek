@@ -31,12 +31,48 @@ export const PORTAL_TOOLS: PortalTool[] = [
     access: "free",
   },
   {
+    slug: "google-maps-company-finder",
+    title: "Google Maps Company Finder",
+    short: "Build precise local lead lists with SerpAPI Google Maps results.",
+    description:
+      "Enter a query and optional location. The tool returns local results with business name, website, address, rating, reviews and local-map metadata.",
+    category: "Lead gen",
+    access: "free",
+  },
+  {
     slug: "linkedin-serper-lead-finder",
     title: "LinkedIn Serper Lead Finder",
     short: "Search LinkedIn profiles through programmable Google queries.",
     description:
       "Build targeted LinkedIn profile searches with role, market, and company keywords. The workbench uses Serper to return live Google results for LinkedIn profiles.",
     category: "Lead gen",
+    access: "free",
+  },
+  {
+    slug: "apollo-lead-finder",
+    title: "Apollo Lead Finder",
+    short: "Enrich LinkedIn lead pages with public contact and profile fields.",
+    description:
+      "Pass a LinkedIn profile or company page URL to Apollo and return public profile snippets, contact methods, job titles and org details.",
+    category: "Lead gen",
+    access: "free",
+  },
+  {
+    slug: "website-url-scraper",
+    title: "Website URL Scraper",
+    short: "Extract deduplicated URLs and embedded emails from any landing page.",
+    description:
+      "Fetches a public webpage, extracts anchor links, resolves relative URLs, and surfaces all inline email mentions.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "website-text-contact-extractor",
+    title: "Website Contact Text Extractor",
+    short: "Convert page HTML to clean text and extract emails/phones.",
+    description:
+      "Scrapes a webpage to readable text, then returns key contact signals with a safe preview for validation.",
+    category: "Research",
     access: "free",
   },
 ];

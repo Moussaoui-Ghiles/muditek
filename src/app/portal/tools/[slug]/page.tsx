@@ -4,7 +4,11 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Lock } from "lucide-react";
 import { getPortalTool } from "@/app/portal/tools-catalog";
 import { GoogleMapsLeadWorkbench } from "@/components/portal/google-maps-lead-workbench";
+import { GoogleMapsSerpLeadWorkbench } from "@/components/portal/google-maps-serp-lead-workbench";
 import { LinkedInSerperLeadWorkbench } from "@/components/portal/linkedin-serper-lead-workbench";
+import { ApolloLeadWorkbench } from "@/components/portal/apollo-lead-workbench";
+import { WebsiteTextContactExtractorWorkbench } from "@/components/portal/website-text-contact-extractor-workbench";
+import { WebsiteUrlScraperWorkbench } from "@/components/portal/website-url-scraper-workbench";
 import { RevenueLeakWorkbench } from "@/components/portal/revenue-leak-workbench";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
 import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
@@ -20,7 +24,11 @@ function ToolWorkbench({
     return <RevenueLeakWorkbench />;
   }
   if (slug === "google-maps-lead-finder") return <GoogleMapsLeadWorkbench />;
+  if (slug === "google-maps-company-finder") return <GoogleMapsSerpLeadWorkbench />;
   if (slug === "linkedin-serper-lead-finder") return <LinkedInSerperLeadWorkbench />;
+  if (slug === "apollo-lead-finder") return <ApolloLeadWorkbench />;
+  if (slug === "website-url-scraper") return <WebsiteUrlScraperWorkbench />;
+  if (slug === "website-text-contact-extractor") return <WebsiteTextContactExtractorWorkbench />;
   return null;
 }
 
@@ -82,6 +90,9 @@ function toolTrustLabel(slug: string): string {
   if (slug === "revenue-leak-calculator") return "Cited benchmarks";
   if (slug === "google-maps-lead-finder") return "Apify backed";
   if (slug === "linkedin-serper-lead-finder") return "Serper backed";
+  if (slug === "google-maps-company-finder") return "SerpAPI backed";
+  if (slug === "apollo-lead-finder") return "Apify Apollo backed";
+  if (slug.includes("website")) return "Fetch backed";
   return "Portal workbench";
 }
 

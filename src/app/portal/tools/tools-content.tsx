@@ -7,8 +7,11 @@ import {
   ArrowUpRight,
   Calculator,
   Filter,
+  FileSearch,
   Lock,
   MapPinned,
+  Globe,
+  Link2,
   Search,
   UserSearch,
   Wrench,
@@ -28,6 +31,10 @@ function isToolLocked(tool: PortalTool, access: PortalAccess): boolean {
 function ToolIcon({ slug, className }: { slug: string; className?: string }) {
   if (slug.includes("maps")) return <MapPinned className={className} />;
   if (slug.includes("linkedin")) return <UserSearch className={className} />;
+  if (slug.includes("apollo")) return <Search className={className} />;
+  if (slug.includes("website")) return <Globe className={className} />;
+  if (slug.includes("url") || slug.includes("text")) return <Link2 className={className} />;
+  if (slug.includes("scraper")) return <FileSearch className={className} />;
   if (slug.includes("calculator")) return <Calculator className={className} />;
   return <Wrench className={className} />;
 }

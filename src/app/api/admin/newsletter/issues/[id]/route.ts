@@ -8,6 +8,7 @@ import {
   getNewsletterCampaign,
   getNewsletterCampaignPreflight,
 } from "@/lib/newsletter-campaign";
+import { isNewsletterAudienceFilter } from "@/lib/newsletter-audience";
 
 function sentCount(stats: unknown): number {
   if (!stats || typeof stats !== "object") return 0;
@@ -94,7 +95,7 @@ export async function PATCH(
   if (
     audienceProvided &&
     audienceFilter !== null &&
-    !["HOT", "WARM", "COLD", "ENGAGED", "UNSEGMENTED"].includes(String(audienceFilter))
+    !isNewsletterAudienceFilter(audienceFilter)
   ) {
     return NextResponse.json({ error: "Invalid audience_filter" }, { status: 400 });
   }

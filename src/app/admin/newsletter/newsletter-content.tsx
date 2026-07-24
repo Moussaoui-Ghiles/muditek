@@ -64,7 +64,11 @@ interface AudienceBreakdown {
 
 interface AudienceSummary {
   sendingEnabled: boolean;
-  consent?: { confirmed?: number; unconfirmed?: number };
+  cohorts?: {
+    outbound_interest?: number;
+    portal_active_30d?: number;
+    recent_90d?: number;
+  };
   recentHealth?: {
     sent?: number;
     delivered?: number;
@@ -251,7 +255,7 @@ export default function NewsletterContent() {
             Sending {audienceSummary?.sendingEnabled ? "enabled" : "stopped"}
           </Badge>
           <Button variant="outline" onClick={seedPrograms} disabled={seedingPrograms}>
-            {seedingPrograms ? "Loading…" : "Load optional repermission drafts"}
+            {seedingPrograms ? "Loading…" : "Load outbound campaign drafts"}
           </Button>
           <Button onClick={createIssue} disabled={creatingLoading}>
             {creatingLoading ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
@@ -260,15 +264,16 @@ export default function NewsletterContent() {
         </div>
       </header>
 
-      <section className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-5">
+      <section className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-6">
         <AudienceCell label="Active list" value={activeByStatus.active ?? 0} />
-        <AudienceCell label="Recorded consent" value={audienceSummary?.consent?.confirmed ?? 0} />
-        <AudienceCell label="Legacy active" value={audienceSummary?.consent?.unconfirmed ?? 0} />
+        <AudienceCell label="Outbound interest" value={audienceSummary?.cohorts?.outbound_interest ?? 0} />
+        <AudienceCell label="Portal active · 30d" value={audienceSummary?.cohorts?.portal_active_30d ?? 0} />
+        <AudienceCell label="Joined · 90d" value={audienceSummary?.cohorts?.recent_90d ?? 0} />
         <AudienceCell label="Bounced" value={activeByStatus.bounced ?? 0} />
         <AudienceCell label="Unsubscribed" value={activeByStatus.unsub ?? 0} />
       </section>
       <p className="text-xs text-muted-foreground">
-        Segments: HOT {formatNumber(segmentCounts.HOT)} · WARM {formatNumber(segmentCounts.WARM)} ·
+        Legacy Beehiiv: HOT {formatNumber(segmentCounts.HOT)} · WARM {formatNumber(segmentCounts.WARM)} ·
         COLD {formatNumber(segmentCounts.COLD)}. Last 30 days:{" "}
         {formatNumber(audienceSummary?.recentHealth?.delivered)} delivered,{" "}
         {formatNumber(audienceSummary?.recentHealth?.bounced)} bounced,{" "}

@@ -167,6 +167,70 @@ async function campaignAudienceSnapshot(
   audienceFilter: string | null,
 ) {
   const sql = getDb();
+  if (audienceFilter === "OUTBOUND_INTEREST") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND EXISTS (
+          SELECT 1
+          FROM portal_usage_events p
+          WHERE lower(p.email) = lower(s.email)
+            AND (
+              p.resource_slug ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+              OR p.path ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+            )
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
+  if (audienceFilter === "PORTAL_ACTIVE_30D") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND EXISTS (
+          SELECT 1
+          FROM portal_usage_events p
+          WHERE lower(p.email) = lower(s.email)
+            AND p.created_at >= NOW() - INTERVAL '30 days'
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
+  if (audienceFilter === "RECENT_90D") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND s.subscribed_at >= NOW() - INTERVAL '90 days'
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
   if (audienceFilter === "HOT" || audienceFilter === "WARM" || audienceFilter === "COLD") {
     const rows = await sql`
       SELECT COUNT(*)::int AS count,
@@ -371,7 +435,71 @@ export async function controlNewsletterCampaign(
       throw new Error("Campaign already exists. Resume or retry it instead.");
     }
 
-    if (issue.audience_filter === "HOT" || issue.audience_filter === "WARM" || issue.audience_filter === "COLD") {
+    if (issue.audience_filter === "OUTBOUND_INTEREST") {
+      await sql`
+        INSERT INTO newsletter_campaign_deliveries
+          (issue_id, subscriber_id, email, unsub_token)
+        SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
+        FROM newsletter_subscribers s
+        WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND EXISTS (
+            SELECT 1
+            FROM portal_usage_events p
+            WHERE lower(p.email) = lower(s.email)
+              AND (
+                p.resource_slug ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+                OR p.path ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+              )
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ON CONFLICT (issue_id, subscriber_id) DO NOTHING
+      `;
+    } else if (issue.audience_filter === "PORTAL_ACTIVE_30D") {
+      await sql`
+        INSERT INTO newsletter_campaign_deliveries
+          (issue_id, subscriber_id, email, unsub_token)
+        SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
+        FROM newsletter_subscribers s
+        WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND EXISTS (
+            SELECT 1
+            FROM portal_usage_events p
+            WHERE lower(p.email) = lower(s.email)
+              AND p.created_at >= NOW() - INTERVAL '30 days'
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ON CONFLICT (issue_id, subscriber_id) DO NOTHING
+      `;
+    } else if (issue.audience_filter === "RECENT_90D") {
+      await sql`
+        INSERT INTO newsletter_campaign_deliveries
+          (issue_id, subscriber_id, email, unsub_token)
+        SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
+        FROM newsletter_subscribers s
+        WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND s.subscribed_at >= NOW() - INTERVAL '90 days'
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ON CONFLICT (issue_id, subscriber_id) DO NOTHING
+      `;
+    } else if (issue.audience_filter === "HOT" || issue.audience_filter === "WARM" || issue.audience_filter === "COLD") {
       await sql`
         INSERT INTO newsletter_campaign_deliveries
           (issue_id, subscriber_id, email, unsub_token)

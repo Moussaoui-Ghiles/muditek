@@ -9,9 +9,13 @@ import {
   newsletterTestSendingEnabled,
 } from "./newsletter-sending";
 import {
+  NEWSLETTER_CAMPAIGN_DRAFTS,
   NEWSLETTER_LIFECYCLE,
-  NEWSLETTER_REACTIVATION_DRAFTS,
 } from "./newsletter-programs";
+import {
+  NEWSLETTER_AUDIENCE_FILTERS,
+  isNewsletterAudienceFilter,
+} from "./newsletter-audience";
 
 const originalEnabled = process.env.NEWSLETTER_EMAILS_ENABLED;
 const originalTestEnabled = process.env.NEWSLETTER_TEST_EMAILS_ENABLED;
@@ -36,8 +40,8 @@ describe("newsletter preflight", () => {
     }
   });
 
-  it("accepts every reactivation draft", () => {
-    for (const draft of NEWSLETTER_REACTIVATION_DRAFTS) {
+  it("accepts every outbound campaign draft", () => {
+    for (const draft of NEWSLETTER_CAMPAIGN_DRAFTS) {
       const result = validateNewsletterDraft({
         subject: draft.subject,
         previewText: draft.previewText,
@@ -47,6 +51,14 @@ describe("newsletter preflight", () => {
       });
       expect(result.errors).toEqual([]);
     }
+  });
+
+  it("recognizes every supported audience cohort and rejects arbitrary input", () => {
+    for (const filter of NEWSLETTER_AUDIENCE_FILTERS) {
+      expect(isNewsletterAudienceFilter(filter)).toBe(true);
+    }
+    expect(isNewsletterAudienceFilter("EVERYONE_I_FEEL_LIKE")).toBe(false);
+    expect(isNewsletterAudienceFilter(null)).toBe(false);
   });
 
   it("blocks unsafe links, inline images, and unknown placeholders", () => {

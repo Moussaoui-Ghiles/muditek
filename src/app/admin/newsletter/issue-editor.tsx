@@ -79,11 +79,14 @@ interface Props {
 
 const AUDIENCE_OPTIONS: Array<{ value: string; label: string; dotClass: string }> = [
   { value: "all", label: "All active", dotClass: "bg-zinc-400" },
-  { value: "ENGAGED", label: "HOT + WARM", dotClass: "bg-violet-400" },
-  { value: "UNSEGMENTED", label: "Unsegmented", dotClass: "bg-zinc-500" },
-  { value: "HOT", label: "HOT", dotClass: "bg-[var(--color-warn,#f5a524)]" },
-  { value: "WARM", label: "WARM", dotClass: "bg-[var(--color-live,#32d583)]" },
-  { value: "COLD", label: "COLD", dotClass: "bg-[var(--color-cool,#70b7ff)]" },
+  { value: "OUTBOUND_INTEREST", label: "Outbound interest", dotClass: "bg-orange-400" },
+  { value: "PORTAL_ACTIVE_30D", label: "Portal active · 30d", dotClass: "bg-emerald-400" },
+  { value: "RECENT_90D", label: "Joined · 90d", dotClass: "bg-sky-400" },
+  { value: "ENGAGED", label: "Legacy HOT + WARM", dotClass: "bg-violet-400" },
+  { value: "UNSEGMENTED", label: "New / unsegmented", dotClass: "bg-zinc-500" },
+  { value: "HOT", label: "Legacy HOT", dotClass: "bg-[var(--color-warn,#f5a524)]" },
+  { value: "WARM", label: "Legacy WARM", dotClass: "bg-[var(--color-live,#32d583)]" },
+  { value: "COLD", label: "Legacy COLD", dotClass: "bg-[var(--color-cool,#70b7ff)]" },
 ];
 
 function sentCount(issue: Issue): number {

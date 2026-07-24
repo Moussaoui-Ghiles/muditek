@@ -3,8 +3,8 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { ensureNewsletterCampaignSchema } from "@/lib/newsletter-campaign";
 import {
+  NEWSLETTER_CAMPAIGN_DRAFTS,
   NEWSLETTER_LIFECYCLE,
-  NEWSLETTER_REACTIVATION_DRAFTS,
 } from "@/lib/newsletter-programs";
 
 export async function GET(request: Request) {
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   if (!admin.authorized) return admin.response;
   return NextResponse.json({
     lifecycle: NEWSLETTER_LIFECYCLE,
-    reactivation: NEWSLETTER_REACTIVATION_DRAFTS,
+    campaigns: NEWSLETTER_CAMPAIGN_DRAFTS,
   });
 }
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   await ensureNewsletterCampaignSchema();
   const sql = getDb();
   const drafts = [];
-  for (const draft of NEWSLETTER_REACTIVATION_DRAFTS) {
+  for (const draft of NEWSLETTER_CAMPAIGN_DRAFTS) {
     const rows = await sql`
       INSERT INTO newsletter_issues
         (

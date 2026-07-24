@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   await ensureNewsletterCampaignSchema();
   await ensureNewsletterLifecycleSchema();
   const sql = getDb();
-  const [rows, totals, consent, sources, recentHealth, campaignQueue, lifecycleQueue] =
+  const [rows, totals, cohorts, sources, recentHealth, campaignQueue, lifecycleQueue] =
     await Promise.all([
       sql`
     SELECT
@@ -31,12 +31,31 @@ export async function GET(request: Request) {
       sql`
     SELECT
       COUNT(*) FILTER (
-        WHERE status = 'active' AND consent_confirmed_at IS NOT NULL
-      )::int AS confirmed,
+        WHERE s.status = 'active'
+          AND EXISTS (
+            SELECT 1
+            FROM portal_usage_events p
+            WHERE lower(p.email) = lower(s.email)
+              AND (
+                p.resource_slug ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+                OR p.path ~* '(outbound|cold-email|lead-gen|lead-finder|agentic-sdr|revenue-leak)'
+              )
+          )
+      )::int AS outbound_interest,
       COUNT(*) FILTER (
-        WHERE status = 'active' AND consent_confirmed_at IS NULL
-      )::int AS unconfirmed
-    FROM newsletter_subscribers
+        WHERE s.status = 'active'
+          AND EXISTS (
+            SELECT 1
+            FROM portal_usage_events p
+            WHERE lower(p.email) = lower(s.email)
+              AND p.created_at >= NOW() - INTERVAL '30 days'
+          )
+      )::int AS portal_active_30d,
+      COUNT(*) FILTER (
+        WHERE s.status = 'active'
+          AND s.subscribed_at >= NOW() - INTERVAL '90 days'
+      )::int AS recent_90d
+    FROM newsletter_subscribers s
   `,
       sql`
     SELECT COALESCE(consent_source, source, 'unknown') AS source, COUNT(*)::int AS count
@@ -70,7 +89,7 @@ export async function GET(request: Request) {
     sendingEnabled: newsletterSendingEnabled(),
     breakdown: rows,
     totals,
-    consent: consent[0],
+    cohorts: cohorts[0],
     sources,
     recentHealth: recentHealth[0],
     campaignQueue,

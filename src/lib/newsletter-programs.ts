@@ -1,3 +1,5 @@
+import type { NewsletterAudienceFilter } from "@/lib/newsletter-audience";
+
 export type NewsletterLifecycleStep = {
   step: number;
   delayDays: number;
@@ -11,8 +13,8 @@ export type NewsletterProgramDraft = {
   subject: string;
   previewText: string;
   html: string;
-  campaignType: "reactivation" | "editorial";
-  audienceFilter: "ENGAGED" | "COLD" | "UNSEGMENTED" | null;
+  campaignType: "editorial";
+  audienceFilter: NewsletterAudienceFilter | null;
 };
 
 const BOOKING_URL =
@@ -22,93 +24,106 @@ export const NEWSLETTER_LIFECYCLE: NewsletterLifecycleStep[] = [
   {
     step: 1,
     delayDays: 0,
-    subject: "start here: one workflow",
-    previewText: "Pick one repeated task. I’ll show you how to make it AI-executable.",
+    subject: "start with the outbound math",
+    previewText: "Before tools or copy, work out what one qualified meeting is worth.",
     html: `
       <p>You’re in.</p>
-      <p>Each week I’ll break down one real business workflow: what starts it, what information it needs, what AI can handle, and where a human still matters.</p>
-      <p>Start with one task your team repeats every week. Write down three things:</p>
-      <ol>
-        <li>What triggers the task?</li>
-        <li>What information does the person need?</li>
-        <li>What does a good finished result look like?</li>
-      </ol>
-      <p>Reply with the task. If it is a good candidate for AI, I’ll tell you the first part I would change.</p>
+      <p>I’m documenting how I build outbound systems that produce qualified sales meetings, including the tests that fail.</p>
+      <p>The first number is simple:</p>
+      <p><strong>Average deal value × close rate on qualified meetings = expected value of one meeting.</strong></p>
+      <p>If a deal is worth €10,000 and one in five qualified meetings closes, one meeting is worth €2,000 on average. Everything else—budget, volume, and what you can afford to pay—starts there.</p>
+      <p>Reply with your average deal value and close rate. I’ll send the math back.</p>
       <p>Ghiles</p>
     `,
   },
   {
     step: 2,
     delayDays: 3,
-    subject: "why your AI output still sounds generic",
-    previewText: "The model is rarely the problem. It is missing your business.",
+    subject: "cold email usually dies before the copy",
+    previewText: "Three operational failures kill most campaigns before the message gets a fair test.",
     html: `
-      <p>Most teams blame the model when AI produces generic work.</p>
-      <p>The model is usually missing three things:</p>
+      <p>Most cold-email campaigns blame the copy. The failure usually happened earlier:</p>
       <ol>
-        <li><strong>Business context:</strong> who you serve, how you decide, and how you speak.</li>
-        <li><strong>Executable workflows:</strong> the prompts and SOPs that describe how good work gets done.</li>
-        <li><strong>Source material:</strong> the past emails, calls, documents, and examples that define your standard.</li>
+        <li>They sent from the main company domain.</li>
+        <li>They bought a broad list instead of starting from a real market signal.</li>
+        <li>They judged one script instead of testing controlled variants.</li>
       </ol>
-      <p>Without those three folders, every employee starts from a blank chat and edits the same generic output again.</p>
-      <p>Pick one workflow from the first email. Put its context, instructions, and three examples in one folder. Then run the task again. That comparison tells you whether the problem was the model or the missing business knowledge.</p>
+      <p>A clever opening line cannot rescue damaged infrastructure or the wrong buyer list.</p>
+      <p>Reply with the market you sell to. I’ll tell you the first list source I would test.</p>
       <p>Ghiles</p>
     `,
   },
   {
     step: 3,
     delayDays: 8,
-    subject: "the 10-hour test",
-    previewText: "A simple threshold for deciding whether a workflow is worth rebuilding.",
+    subject: "the offer I’m testing",
+    previewText: "A small infrastructure fee, then payment only when a qualified meeting shows.",
     html: `
-      <p>Not every repeated task deserves automation.</p>
-      <p>I use a simple first test: if one workflow consumes at least 10 team-hours a week, produces a repeatable output, and depends on information you already own, it is worth auditing.</p>
-      <p>For one week, track:</p>
+      <p>I’m testing a simple service for B2B firms with €10K+ deals:</p>
       <ol>
-        <li>How often the task happens.</li>
-        <li>Minutes spent each time.</li>
-        <li>Where people wait, copy data, or redo work.</li>
+        <li>I build the sending infrastructure.</li>
+        <li>I source and verify the exact decision-makers.</li>
+        <li>I test the messaging and handle replies.</li>
+        <li>You pay a small tech fee, then a fixed price per qualified meeting that actually shows up.</li>
       </ol>
-      <p>That gives you a real baseline. No “AI transformation” guesswork.</p>
-      <p>If your company has 20+ people and you find a workflow above that threshold, I can map what to automate, what to augment, and what should stay human.</p>
-      <p><a href="${BOOKING_URL}">Book a 30-minute workflow call</a></p>
+      <p>No show, no meeting fee. “Qualified” is written into the agreement before anything sends.</p>
+      <p>This only fits companies with a sales-led offer, enough reachable buyers, and someone who can take the calls.</p>
+      <p><a href="${BOOKING_URL}">Check the numbers with me</a></p>
       <p>Ghiles</p>
     `,
   },
 ];
 
-const REACTIVATION_HTML = `
-  <p>You subscribed to my previous B2B Agents newsletter. Then I stopped publishing consistently, and the direction changed.</p>
-  <p>I’m restarting it with one clear promise: one useful email a week showing how a real business workflow becomes AI-executable. No AI news roundup. No tool dump.</p>
-  <p>Each issue will show the trigger, inputs, instructions, source material, and human checks behind the workflow.</p>
-  <p>If that is useful to you, confirm once below. If not, do nothing. I’ll mark this address dormant and stop sending.</p>
-  <p><a href="{{NEWSLETTER_CONFIRM_URL}}">Keep me on the newsletter</a></p>
-  <p>Ghiles</p>
-`;
-
-export const NEWSLETTER_REACTIVATION_DRAFTS: NewsletterProgramDraft[] = [
+export const NEWSLETTER_CAMPAIGN_DRAFTS: NewsletterProgramDraft[] = [
   {
-    slug: "newsletter-reset-engaged",
-    subject: "should I keep sending this?",
-    previewText: "The newsletter is changing. Choose whether you want the new version.",
-    html: REACTIVATION_HTML,
-    campaignType: "reactivation",
-    audienceFilter: "ENGAGED",
+    slug: "outbound-build-log-introduction",
+    subject: "what I’m building now",
+    previewText: "A transparent reset: qualified meetings, real tests, and the numbers behind them.",
+    html: `
+      <p>I stopped publishing consistently. That’s on me.</p>
+      <p>I’m back with a narrower focus: building an outbound engine for B2B firms with high-value deals.</p>
+      <p>The model is simple: a small fee covers the infrastructure, then the client pays per qualified meeting that actually shows up.</p>
+      <p>I’ll publish the work behind it: which niches reply, where the lists come from, what damages deliverability, how replies become meetings, and which tests die.</p>
+      <p>No fake revenue screenshots. No weekly AI-news roundup.</p>
+      <p>If you sell a €10K+ B2B offer, reply with your target buyer. I’ll tell you whether the market is large enough to test.</p>
+      <p>Ghiles</p>
+    `,
+    campaignType: "editorial",
+    audienceFilter: "OUTBOUND_INTEREST",
   },
   {
-    slug: "newsletter-reset-cold",
-    subject: "should I keep sending this?",
-    previewText: "The newsletter is changing. Choose whether you want the new version.",
-    html: REACTIVATION_HTML,
-    campaignType: "reactivation",
-    audienceFilter: "COLD",
+    slug: "outbound-meeting-value",
+    subject: "what one qualified meeting is worth",
+    previewText: "The formula that tells you whether outbound economics work before you spend anything.",
+    html: `
+      <p>Before domains, copy, or lead lists, calculate one number:</p>
+      <p><strong>Average deal value × close rate on qualified meetings.</strong></p>
+      <p>A €10,000 deal at a 20% close rate makes one qualified meeting worth €2,000 in expected revenue.</p>
+      <p>If the meeting costs €300, the acquisition cost is roughly €1,500 per closed deal before the infrastructure fee. The client keeps most of the upside, and the operator only earns when a real buyer shows.</p>
+      <p>The calculation also exposes bad fits. A low-ticket offer, a tiny market, or nobody available to close the calls will not work because the unit economics fail.</p>
+      <p>Reply with your deal value and close rate. I’ll run the calculation with your numbers.</p>
+      <p>Ghiles</p>
+    `,
+    campaignType: "editorial",
+    audienceFilter: "PORTAL_ACTIVE_30D",
   },
   {
-    slug: "newsletter-reset-unsegmented",
-    subject: "should I keep sending this?",
-    previewText: "The newsletter is changing. Choose whether you want the new version.",
-    html: REACTIVATION_HTML,
-    campaignType: "reactivation",
-    audienceFilter: "UNSEGMENTED",
+    slug: "outbound-three-failures",
+    subject: "the three ways cold email dies",
+    previewText: "Most campaigns fail before their copy gets a fair test.",
+    html: `
+      <p>Most cold-email postmortems blame the message.</p>
+      <p>The campaign often died earlier:</p>
+      <ol>
+        <li><strong>Infrastructure:</strong> sending from the main domain or ramping volume before inboxes are ready.</li>
+        <li><strong>Data:</strong> buying a broad database export instead of starting with a registry, trigger, or other reason the buyer belongs in the list.</li>
+        <li><strong>Testing:</strong> sending one script and calling the channel dead.</li>
+      </ol>
+      <p>The copy matters after those three are controlled. Until then, rewriting the opening line is theatre.</p>
+      <p>Reply with the market you target. I’ll send back the first list source and signal I would test.</p>
+      <p>Ghiles</p>
+    `,
+    campaignType: "editorial",
+    audienceFilter: "RECENT_90D",
   },
 ];

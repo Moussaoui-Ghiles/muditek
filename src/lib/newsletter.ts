@@ -235,7 +235,8 @@ export async function sendIssue(
     const emails = chunk.map((s) => {
       const unsubUrl = `${baseUrl}/api/newsletter/unsubscribe/${s.unsub_token}`;
       const prefsUrl = `${baseUrl}/preferences/${s.unsub_token}`;
-      const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl });
+      const confirmUrl = `${baseUrl}/newsletter/confirm/${issueId}/${s.unsub_token}`;
+      const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl, confirmUrl });
       const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
       return {
         from: NEWSLETTER_FROM,

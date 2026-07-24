@@ -2,6 +2,13 @@ export function containsInlineImages(html: string): boolean {
   return /<img\b[^>]*\bsrc=["']data:image\//i.test(html);
 }
 
+export function personalizeNewsletterHtml(
+  html: string,
+  values: { confirmUrl: string },
+): string {
+  return html.replaceAll("{{NEWSLETTER_CONFIRM_URL}}", values.confirmUrl);
+}
+
 function addStyle(html: string, tag: string, style: string): string {
   const re = new RegExp(`<${tag}(\\s[^>]*)?>`, "gi");
   return html.replace(re, (match, attrs = "") => {
@@ -38,8 +45,14 @@ export function styleIssueHtmlForEmail(html: string): string {
   return out;
 }
 
-export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; prefsUrl: string }): string {
+export function wrapIssueHtml(
+  bodyHtml: string,
+  footer: { unsubUrl: string; prefsUrl: string; confirmUrl?: string },
+): string {
   const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
+  const personalizedBody = personalizeNewsletterHtml(bodyHtml, {
+    confirmUrl: footer.confirmUrl ?? "#confirm-subscription",
+  });
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;padding:40px 20px;background:#ffffff;color:#1a1a1a;">
       <div style="margin-bottom:28px;">
@@ -48,7 +61,7 @@ export function wrapIssueHtml(bodyHtml: string, footer: { unsubUrl: string; pref
         </a>
       </div>
 
-      ${styleIssueHtmlForEmail(bodyHtml)}
+      ${styleIssueHtmlForEmail(personalizedBody)}
 
       <p style="margin:48px 0 0;font-size:12px;color:#8a8a8a;line-height:1.7;">
         Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a;text-decoration:underline;">ghiles@muditek.com</a><br/>

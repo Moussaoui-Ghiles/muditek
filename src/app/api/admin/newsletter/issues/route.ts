@@ -3,11 +3,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { ensureUniqueSlug, renderIssueHtml } from "@/lib/newsletter";
 import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
+import { ensureNewsletterCampaignSchema } from "@/lib/newsletter-campaign";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
+  await ensureNewsletterCampaignSchema();
   const sql = getDb();
   const rows = await sql`
     SELECT id, subject, slug, status, audience_filter, scheduled_at, sent_at, stats, created_at, updated_at
@@ -18,15 +20,22 @@ export async function GET(request: Request) {
   const events = await sql`
     SELECT
       issue_id,
-      COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
-      COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
-      COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
-      COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'sent')::int AS sent_events,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'delivered')::int AS delivered,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'opened')::int AS opened,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'clicked')::int AS clicked,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'bounced')::int AS bounced,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'complained')::int AS complained
     FROM newsletter_events
     WHERE issue_id IS NOT NULL
     GROUP BY issue_id
   `;
   const eventByIssue = new Map(events.map((row) => [String(row.issue_id), row]));
+  const campaigns = await sql`
+    SELECT issue_id, status, total, sent, failed, suppressed, batches, last_error, updated_at
+    FROM newsletter_campaign_runs
+  `;
+  const campaignByIssue = new Map(campaigns.map((row) => [String(row.issue_id), row]));
   return NextResponse.json({
     issues: rows.map((issue) => ({
       ...issue,
@@ -36,6 +45,7 @@ export async function GET(request: Request) {
         bounced: 0,
         complained: 0,
       },
+      campaign: campaignByIssue.get(String(issue.id)) ?? null,
     })),
   });
 }

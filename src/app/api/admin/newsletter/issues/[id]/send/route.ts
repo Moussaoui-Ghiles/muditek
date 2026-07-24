@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
-import { sendIssue } from "@/lib/newsletter";
+import {
+  controlNewsletterCampaign,
+  getNewsletterCampaign,
+} from "@/lib/newsletter-campaign";
+
+const ACTIONS = new Set(["start", "pause", "resume", "cancel", "retry"]);
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const admin = await requireAdmin(request);
+  if (!admin.authorized) return admin.response;
+  const { id } = await params;
+  return NextResponse.json({ campaign: await getNewsletterCampaign(id) });
+}
 
 export async function POST(
   request: Request,
@@ -10,23 +25,24 @@ export async function POST(
   if (!admin.authorized) return admin.response;
 
   const { id } = await params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin;
-
   try {
-    let limit = 100;
-    try {
-      const body = await request.json();
-      if (body?.limit !== undefined) {
-        limit = Number(body.limit);
-      }
-    } catch {}
-    if (!Number.isFinite(limit) || limit < 1 || limit > 100) {
-      return NextResponse.json({ error: "limit must be between 1 and 100" }, { status: 400 });
+    const body = await request.json();
+    const action = String(body?.action ?? "");
+    if (!ACTIONS.has(action)) {
+      return NextResponse.json(
+        { error: "action must be start, pause, resume, cancel, or retry" },
+        { status: 400 },
+      );
     }
-
-    const result = await sendIssue(id, baseUrl, { limit });
-    return NextResponse.json({ ok: true, ...result });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Send failed" }, { status: 500 });
+    const campaign = await controlNewsletterCampaign(
+      id,
+      action as "start" | "pause" | "resume" | "cancel" | "retry",
+    );
+    return NextResponse.json({ ok: true, campaign });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Send failed" },
+      { status: 500 },
+    );
   }
 }

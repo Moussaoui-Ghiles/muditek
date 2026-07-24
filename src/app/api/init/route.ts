@@ -193,6 +193,14 @@ export async function GET(request: Request) {
     ALTER TABLE newsletter_subscribers
     ADD COLUMN IF NOT EXISTS clerk_user_id TEXT
   `;
+  await sql`
+    ALTER TABLE newsletter_subscribers
+    ADD COLUMN IF NOT EXISTS consent_confirmed_at TIMESTAMP
+  `;
+  await sql`
+    ALTER TABLE newsletter_subscribers
+    ADD COLUMN IF NOT EXISTS consent_source TEXT
+  `;
 
   await sql`CREATE INDEX IF NOT EXISTS newsletter_subs_status_idx ON newsletter_subscribers (status)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_subs_segment_idx ON newsletter_subscribers (segment)`;

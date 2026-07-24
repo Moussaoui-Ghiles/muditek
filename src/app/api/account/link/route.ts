@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
-import { sendFreeWelcomeEmail } from "@/lib/email-templates";
 import { ensurePortalMembershipsSchema } from "@/lib/portal-memberships-schema";
 
 export async function POST() {
@@ -40,15 +39,6 @@ export async function POST() {
     ON CONFLICT (email, role) DO UPDATE
     SET status = 'active', updated_at = NOW()
   `;
-
-  if (isNew) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
-    try {
-      await sendFreeWelcomeEmail(email, user?.firstName || null, baseUrl);
-    } catch (err) {
-      console.error("account/link: welcome email failed", err);
-    }
-  }
 
   return NextResponse.json({ ok: true, new: isNew });
 }

@@ -10,10 +10,10 @@ export function Footer() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-12 border-b border-white/[0.06]">
           <div className="shrink-0">
             <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground/70 block mb-1">
-              B2B Agents
+              Muditek Newsletter
             </span>
             <span className="text-sm text-foreground/50 font-light">
-              One deployable system per week for B2B operators.
+              One real business workflow each week.
             </span>
           </div>
           <EmailCapture

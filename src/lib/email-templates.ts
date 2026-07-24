@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { getDb } from "@/lib/db";
+import { assertNewsletterSendingEnabled } from "@/lib/newsletter-sending";
 
 const FROM = "Ghiles <resources@mail.ghiless.com>";
 
@@ -30,58 +31,6 @@ async function logEmail(
   } catch {
     /* logging failures never block sends */
   }
-}
-
-/**
- * Welcome email sent to newsletter-only signups (free account, no Stripe).
- */
-export async function sendFreeWelcomeEmail(
-  to: string,
-  name: string | null,
-  baseUrl: string
-): Promise<void> {
-  const portalUrl = `${baseUrl}/portal`;
-  const safeName = escapeHtml(name || "there");
-  const subject = "AI won't replace you. Someone using it will.";
-
-  const { data, error } = await getResend().emails.send({
-    from: FROM,
-    to,
-    subject,
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
-        <h2 style="margin: 0 0 16px; font-size: 22px; color: #111;">You're in, ${safeName}.</h2>
-        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
-          Quick truth. AI isn't going to replace your business. A competitor who puts it to work will.
-        </p>
-        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
-          That's why Muditek exists. Not AI tips. The skills and playbooks that get AI doing real work in your business, so you come out of this shift ahead instead of behind. Tools you'll use day to day are on the way too.
-        </p>
-        <p style="margin: 0 0 14px; font-size: 16px; color: #444; line-height: 1.6;">
-          It's all free. I'd rather hand you the stuff that works and earn the relationship than sell you something you don't need yet.
-        </p>
-        <p style="margin: 0 0 24px; font-size: 16px; color: #444; line-height: 1.6;">
-          Over the next week and a half I'll send you three short emails. Each one fixes a specific problem and points you to exactly what handles it.
-        </p>
-        <a href="${escapeHtml(portalUrl)}"
-           style="display: inline-block; padding: 14px 28px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">
-          Open your portal
-        </a>
-        <p style="margin: 24px 0 0; font-size: 16px; color: #444; line-height: 1.6;">
-          And if there's something you're trying to get AI to do in your business, just reply and tell me. I read every email.
-        </p>
-        <p style="margin: 24px 0 0; font-size: 14px; color: #666; line-height: 1.5;">
-          - Ghiles
-        </p>
-        <p style="margin: 16px 0 0; font-size: 14px; color: #666; line-height: 1.5;">
-          Unsubscribe any time from the footer of any email.
-        </p>
-      </div>
-    `,
-  });
-
-  if (error) throw new Error(`Welcome email failed: ${error.message}`);
-  await logEmail(to, "free-welcome", subject, data?.id ?? null);
 }
 
 /**
@@ -129,26 +78,6 @@ export async function sendWelcomeEmail(
 }
 
 /**
- * Send a nurture sequence email.
- */
-export async function sendSequenceEmail(
-  to: string,
-  subject: string,
-  bodyHtml: string,
-  step?: number
-): Promise<void> {
-  const { data, error } = await getResend().emails.send({
-    from: FROM,
-    to,
-    subject,
-    html: bodyHtml,
-  });
-
-  if (error) throw new Error(`Sequence email failed: ${error.message}`);
-  await logEmail(to, step ? `nurture-step-${step}` : "nurture", subject, data?.id ?? null);
-}
-
-/**
  * Send drop notification to a subscriber.
  */
 export async function sendDropNotification(
@@ -158,6 +87,7 @@ export async function sendDropNotification(
   _unused: string,
   baseUrl: string
 ): Promise<void> {
+  assertNewsletterSendingEnabled();
   const portalUrl = `${baseUrl}/portal`;
   const safeName = escapeHtml(name);
   const safeTitle = escapeHtml(dropTitle);

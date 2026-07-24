@@ -201,6 +201,10 @@ export async function GET(request: Request) {
     ALTER TABLE newsletter_subscribers
     ADD COLUMN IF NOT EXISTS consent_source TEXT
   `;
+  await sql`
+    ALTER TABLE newsletter_subscribers
+    ADD COLUMN IF NOT EXISTS consent_text_version TEXT
+  `;
 
   await sql`CREATE INDEX IF NOT EXISTS newsletter_subs_status_idx ON newsletter_subscribers (status)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_subs_segment_idx ON newsletter_subscribers (segment)`;
@@ -226,6 +230,14 @@ export async function GET(request: Request) {
 
   await sql`CREATE INDEX IF NOT EXISTS newsletter_issues_status_idx ON newsletter_issues (status)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_issues_sent_idx ON newsletter_issues (sent_at DESC)`;
+  await sql`ALTER TABLE newsletter_issues ADD COLUMN IF NOT EXISTS preview_text TEXT`;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS campaign_type TEXT NOT NULL DEFAULT 'editorial'
+  `;
+  await sql`ALTER TABLE newsletter_issues ADD COLUMN IF NOT EXISTS test_sent_at TIMESTAMP`;
+  await sql`ALTER TABLE newsletter_issues ADD COLUMN IF NOT EXISTS test_sent_to TEXT`;
+  await sql`ALTER TABLE newsletter_issues ADD COLUMN IF NOT EXISTS test_content_hash TEXT`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS newsletter_events (
@@ -245,6 +257,87 @@ export async function GET(request: Request) {
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_issue_idx ON newsletter_events (issue_id)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_event_idx ON newsletter_events (event)`;
   await sql`CREATE INDEX IF NOT EXISTS newsletter_events_ts_idx ON newsletter_events (ts DESC)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS newsletter_campaign_runs (
+      issue_id UUID PRIMARY KEY REFERENCES newsletter_issues(id) ON DELETE CASCADE,
+      status TEXT NOT NULL DEFAULT 'queued',
+      total INTEGER NOT NULL DEFAULT 0,
+      sent INTEGER NOT NULL DEFAULT 0,
+      failed INTEGER NOT NULL DEFAULT 0,
+      suppressed INTEGER NOT NULL DEFAULT 0,
+      batches INTEGER NOT NULL DEFAULT 0,
+      last_error TEXT,
+      locked_until TIMESTAMP,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      started_at TIMESTAMP,
+      completed_at TIMESTAMP,
+      content_hash TEXT,
+      audience_signature TEXT,
+      approved_at TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS newsletter_campaign_deliveries (
+      issue_id UUID NOT NULL REFERENCES newsletter_issues(id) ON DELETE CASCADE,
+      subscriber_id UUID NOT NULL REFERENCES newsletter_subscribers(id) ON DELETE CASCADE,
+      email TEXT NOT NULL,
+      unsub_token UUID NOT NULL,
+      status TEXT NOT NULL DEFAULT 'queued',
+      batch_key TEXT,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      resend_email_id TEXT,
+      last_error TEXT,
+      claimed_at TIMESTAMP,
+      sent_at TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (issue_id, subscriber_id)
+    )
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS content_hash TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS audience_signature TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS newsletter_lifecycle_deliveries (
+      subscriber_id UUID NOT NULL REFERENCES newsletter_subscribers(id) ON DELETE CASCADE,
+      step INTEGER NOT NULL,
+      subject TEXT NOT NULL,
+      preview_text TEXT NOT NULL,
+      html TEXT NOT NULL,
+      scheduled_at TIMESTAMP NOT NULL,
+      status TEXT NOT NULL DEFAULT 'queued',
+      batch_key TEXT,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      resend_email_id TEXT,
+      last_error TEXT,
+      locked_until TIMESTAMP,
+      sent_at TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (subscriber_id, step)
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS newsletter_campaign_runs_status_idx
+    ON newsletter_campaign_runs (status, locked_until)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS newsletter_campaign_deliveries_status_idx
+    ON newsletter_campaign_deliveries (issue_id, status)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS newsletter_lifecycle_due_idx
+    ON newsletter_lifecycle_deliveries (status, scheduled_at)
+  `;
 
   await sql`
     CREATE TABLE IF NOT EXISTS portal_memberships (

@@ -1,113 +1,31 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-import { NURTURE_SEQUENCE } from "@/lib/sequences";
-import { sendSequenceEmail } from "@/lib/email-templates";
-import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 import {
   processNewsletterCampaigns,
   sunsetExpiredReactivation,
 } from "@/lib/newsletter-campaign";
+import { processNewsletterLifecycle } from "@/lib/newsletter-lifecycle";
+import { newsletterSendingEnabled } from "@/lib/newsletter-sending";
 
 export const maxDuration = 300;
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
-  const [newsletterFallback, newsletterSunset] = await Promise.all([
-    processNewsletterCampaigns(baseUrl, 1),
-    sunsetExpiredReactivation(),
-  ]);
-
-  if (process.env.NURTURE_SEQUENCE_ENABLED !== "true") {
+  if (!newsletterSendingEnabled()) {
     return NextResponse.json({
-      processed: 0,
-      sent: 0,
-      skipped: 0,
-      errors: 0,
       paused: true,
-      newsletterFallback,
-      newsletterSunset,
+      reason: "NEWSLETTER_EMAILS_ENABLED is not true",
     });
   }
 
-  const sql = getDb();
-  await ensureResourceLeadSchema(sql);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+  const [campaign, lifecycle, sunset] = await Promise.all([
+    processNewsletterCampaigns(baseUrl, 1),
+    processNewsletterLifecycle(baseUrl),
+    sunsetExpiredReactivation(),
+  ]);
 
-  const allLeads = await sql`
-    WITH raw_leads AS (
-      SELECT lower(email) AS email, name, created_at AS enrolled_at
-      FROM resource_leads
-      UNION ALL
-      SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
-      FROM newsletter_subscribers
-      WHERE status = 'active'
-        AND source IN ('portal', 'portal-signup', 'sign-up')
-    )
-    SELECT DISTINCT ON (email)
-      email, name, enrolled_at
-    FROM raw_leads
-    ORDER BY email, enrolled_at ASC
-  `;
-
-  let sent = 0;
-  let skipped = 0;
-  let errors = 0;
-
-  for (const lead of allLeads) {
-    // Skip if already a subscriber
-    const isSubscriber = await sql`
-      SELECT 1 FROM subscribers WHERE email = ${lead.email} AND status = 'active'
-    `;
-    if (isSubscriber.length > 0) {
-      skipped++;
-      continue;
-    }
-
-    // Get already-sent steps for this email
-    const sentSteps = await sql`
-      SELECT step FROM sequence_sends WHERE email = ${lead.email}
-    `;
-    const sentStepNumbers = new Set(sentSteps.map((s) => s.step));
-
-    // Find the next step to send
-    const enrolledAt = new Date(lead.enrolled_at);
-    const now = new Date();
-
-    for (const step of NURTURE_SEQUENCE) {
-      if (sentStepNumbers.has(step.step)) continue;
-
-      // Check if enough days have passed
-      const dueDate = new Date(enrolledAt);
-      dueDate.setDate(dueDate.getDate() + step.delayDays);
-
-      if (now < dueDate) break; // Not due yet, and later steps won't be either
-
-      const portalUrl = `${baseUrl}/portal`;
-      const html = step.buildHtml(lead.name || "there", portalUrl);
-
-      try {
-        await sendSequenceEmail(lead.email, step.subject, html, step.step);
-
-        await sql`
-          INSERT INTO sequence_sends (email, step)
-          VALUES (${lead.email}, ${step.step})
-          ON CONFLICT (email, step) DO NOTHING
-        `;
-
-        sent++;
-      } catch {
-        errors++;
-      }
-
-      // Only send one step per lead per cron run
-      break;
-    }
-  }
-
-  return NextResponse.json({ processed: allLeads.length, sent, skipped, errors });
+  return NextResponse.json({ paused: false, campaign, lifecycle, sunset });
 }

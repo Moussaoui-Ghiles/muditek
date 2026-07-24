@@ -10,6 +10,18 @@ import {
   campaignSafetyStopReason,
   isRetryableResendError,
 } from "@/lib/newsletter-campaign-policy";
+import {
+  newsletterContentHash,
+  validateNewsletterDraft,
+  type NewsletterCampaignType,
+} from "@/lib/newsletter-preflight";
+import {
+  assertNewsletterSendingEnabled,
+  assertNewsletterPostalAddress,
+  NEWSLETTER_MONTHLY_LIMIT,
+  newsletterPostalAddress,
+  newsletterSendingEnabled,
+} from "@/lib/newsletter-sending";
 
 const BATCH_SIZE = 100;
 const MAX_ATTEMPTS = 3;
@@ -17,6 +29,7 @@ const LOCK_MINUTES = 5;
 // One batch per minute gives delivery webhooks time to update the safety circuit
 // breaker before another 100 recipients are released.
 const DEFAULT_BATCHES_PER_RUN = 1;
+const VALID_EMAIL_PATTERN = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$";
 
 type CampaignAction = "start" | "pause" | "resume" | "cancel" | "retry";
 
@@ -32,10 +45,14 @@ type Issue = {
   id: string;
   subject: string;
   html: string;
+  preview_text: string | null;
   audience_filter: string | null;
+  campaign_type: NewsletterCampaignType;
 };
 
-export async function ensureNewsletterCampaignSchema() {
+let campaignSchemaPromise: Promise<void> | null = null;
+
+async function applyNewsletterCampaignSchema() {
   const sql = getDb();
 
   await sql`
@@ -52,6 +69,9 @@ export async function ensureNewsletterCampaignSchema() {
       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
       started_at TIMESTAMP,
       completed_at TIMESTAMP,
+      content_hash TEXT,
+      audience_signature TEXT,
+      approved_at TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT NOW()
     )
   `;
@@ -94,25 +114,261 @@ export async function ensureNewsletterCampaignSchema() {
     ALTER TABLE newsletter_subscribers
     ADD COLUMN IF NOT EXISTS consent_source TEXT
   `;
+  await sql`
+    ALTER TABLE newsletter_subscribers
+    ADD COLUMN IF NOT EXISTS consent_text_version TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS preview_text TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS campaign_type TEXT NOT NULL DEFAULT 'editorial'
+  `;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS test_sent_at TIMESTAMP
+  `;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS test_sent_to TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_issues
+    ADD COLUMN IF NOT EXISTS test_content_hash TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS content_hash TEXT
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP
+  `;
+  await sql`
+    ALTER TABLE newsletter_campaign_runs
+    ADD COLUMN IF NOT EXISTS audience_signature TEXT
+  `;
 }
 
-export async function controlNewsletterCampaign(issueId: string, action: CampaignAction) {
+export function ensureNewsletterCampaignSchema(): Promise<void> {
+  if (!campaignSchemaPromise) {
+    campaignSchemaPromise = applyNewsletterCampaignSchema().catch((error) => {
+      campaignSchemaPromise = null;
+      throw error;
+    });
+  }
+  return campaignSchemaPromise;
+}
+
+async function campaignAudienceSnapshot(
+  issueId: string,
+  audienceFilter: string | null,
+  campaignType: NewsletterCampaignType,
+) {
+  const sql = getDb();
+  const requireConfirmed = campaignType !== "reactivation";
+  if (audienceFilter === "HOT" || audienceFilter === "WARM" || audienceFilter === "COLD") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND s.segment = ${audienceFilter}
+        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
+  if (audienceFilter === "ENGAGED") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND s.segment IN ('HOT', 'WARM')
+        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
+  if (audienceFilter === "UNSEGMENTED") {
+    const rows = await sql`
+      SELECT COUNT(*)::int AS count,
+             md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+      FROM newsletter_subscribers s
+      WHERE s.status = 'active'
+        AND s.email ~* ${VALID_EMAIL_PATTERN}
+        AND s.segment IS NULL
+        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+        AND NOT EXISTS (
+          SELECT 1 FROM newsletter_events e
+          WHERE e.issue_id = ${issueId}
+            AND e.subscriber_id = s.id
+            AND e.event = 'sent'
+        )
+    `;
+    return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+  }
+  const rows = await sql`
+    SELECT COUNT(*)::int AS count,
+           md5(COALESCE(string_agg(s.id::text, ',' ORDER BY s.id), '')) AS signature
+    FROM newsletter_subscribers s
+    WHERE s.status = 'active'
+      AND s.email ~* ${VALID_EMAIL_PATTERN}
+      AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+      AND NOT EXISTS (
+        SELECT 1 FROM newsletter_events e
+        WHERE e.issue_id = ${issueId}
+          AND e.subscriber_id = s.id
+          AND e.event = 'sent'
+      )
+  `;
+  return { count: Number(rows[0]?.count ?? 0), signature: String(rows[0]?.signature ?? "") };
+}
+
+async function currentMonthlyUsage() {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT
+      (
+        SELECT COUNT(*)::int
+        FROM newsletter_campaign_deliveries
+        WHERE status = 'sent'
+          AND sent_at >= date_trunc('month', NOW())
+      ) +
+      (
+        SELECT COUNT(*)::int
+        FROM email_log
+        WHERE sent_at >= date_trunc('month', NOW())
+      ) AS used
+  `;
+  return Number(rows[0]?.used ?? 0);
+}
+
+export async function getNewsletterCampaignPreflight(issueId: string) {
+  await ensureNewsletterCampaignSchema();
+  const sql = getDb();
+  const rows = await sql`
+    SELECT id, subject, html, preview_text, audience_filter, campaign_type,
+           test_sent_at, test_sent_to, test_content_hash
+    FROM newsletter_issues
+    WHERE id = ${issueId}
+    LIMIT 1
+  `;
+  if (rows.length === 0) throw new Error("Issue not found");
+  const issue = rows[0] as Issue & {
+    test_sent_at: string | null;
+    test_sent_to: string | null;
+    test_content_hash: string | null;
+  };
+  const contentHash = newsletterContentHash({
+    subject: issue.subject,
+    previewText: issue.preview_text,
+    html: issue.html,
+    audienceFilter: issue.audience_filter,
+    campaignType: issue.campaign_type,
+  });
+  const validation = validateNewsletterDraft({
+    subject: issue.subject,
+    previewText: issue.preview_text,
+    html: issue.html,
+    audienceFilter: issue.audience_filter,
+    campaignType: issue.campaign_type,
+  });
+  const [audience, monthlyUsed] = await Promise.all([
+    campaignAudienceSnapshot(issueId, issue.audience_filter, issue.campaign_type),
+    currentMonthlyUsage(),
+  ]);
+  const audienceCount = audience.count;
+  const freshTest = Boolean(
+    issue.test_sent_at && issue.test_content_hash && issue.test_content_hash === contentHash,
+  );
+  const errors = [...validation.errors];
+  if (!freshTest) {
+    errors.push({
+      code: "test_required",
+      message: "Send a fresh test after the latest content or audience change.",
+    });
+  }
+  if (audienceCount === 0) {
+    errors.push({ code: "audience_empty", message: "The selected audience is empty." });
+  }
+  if (monthlyUsed + audienceCount > NEWSLETTER_MONTHLY_LIMIT) {
+    errors.push({
+      code: "monthly_limit",
+      message: `This campaign would exceed the ${NEWSLETTER_MONTHLY_LIMIT.toLocaleString()} monthly email limit.`,
+    });
+  }
+  if (!newsletterSendingEnabled()) {
+    errors.push({
+      code: "sending_disabled",
+      message: "Production sending is disabled by NEWSLETTER_EMAILS_ENABLED.",
+    });
+  }
+  if (!newsletterPostalAddress()) {
+    errors.push({
+      code: "postal_address_missing",
+      message: "NEWSLETTER_POSTAL_ADDRESS is required in the email footer.",
+    });
+  }
+  return {
+    ...validation,
+    errors,
+    audienceCount,
+    audienceSignature: audience.signature,
+    monthlyUsed,
+    monthlyLimit: NEWSLETTER_MONTHLY_LIMIT,
+    monthlyRemaining: Math.max(0, NEWSLETTER_MONTHLY_LIMIT - monthlyUsed),
+    expectedConfirmation: `LAUNCH ${audienceCount}`,
+    contentHash,
+    freshTest,
+    testSentAt: issue.test_sent_at,
+    testSentTo: issue.test_sent_to,
+    sendingEnabled: newsletterSendingEnabled(),
+  };
+}
+
+export async function controlNewsletterCampaign(
+  issueId: string,
+  action: CampaignAction,
+  options: { confirmation?: string } = {},
+) {
   await ensureNewsletterCampaignSchema();
   const sql = getDb();
 
   if (action === "start") {
+    assertNewsletterSendingEnabled();
     const issues = await sql`
-      SELECT id, subject, html, audience_filter, status
+      SELECT id, subject, html, preview_text, audience_filter, campaign_type, status
       FROM newsletter_issues
       WHERE id = ${issueId}
       LIMIT 1
     `;
     if (issues.length === 0) throw new Error("Issue not found");
     const issue = issues[0];
-    const bodyHtml = String(issue.html ?? "").trim();
-    if (!String(issue.subject ?? "").trim()) throw new Error("Subject is required");
-    if (!bodyHtml || bodyHtml === "<p></p>") throw new Error("Issue has no body");
     if (!process.env.RESEND_API_KEY) throw new Error("Resend API key is not configured");
+
+    const preflight = await getNewsletterCampaignPreflight(issueId);
+    if (preflight.errors.length > 0) {
+      throw new Error(preflight.errors.map((finding) => finding.message).join(" "));
+    }
+    if (options.confirmation !== preflight.expectedConfirmation) {
+      throw new Error(`Type ${preflight.expectedConfirmation} to approve this exact audience.`);
+    }
 
     const existing = await sql`
       SELECT status FROM newsletter_campaign_runs WHERE issue_id = ${issueId} LIMIT 1
@@ -121,6 +377,7 @@ export async function controlNewsletterCampaign(issueId: string, action: Campaig
       throw new Error("Campaign already exists. Resume or retry it instead.");
     }
 
+    const requireConfirmed = issue.campaign_type !== "reactivation";
     if (issue.audience_filter === "HOT" || issue.audience_filter === "WARM" || issue.audience_filter === "COLD") {
       await sql`
         INSERT INTO newsletter_campaign_deliveries
@@ -128,7 +385,45 @@ export async function controlNewsletterCampaign(issueId: string, action: Campaig
         SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
         FROM newsletter_subscribers s
         WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
           AND s.segment = ${issue.audience_filter}
+          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ON CONFLICT (issue_id, subscriber_id) DO NOTHING
+      `;
+    } else if (issue.audience_filter === "ENGAGED") {
+      await sql`
+        INSERT INTO newsletter_campaign_deliveries
+          (issue_id, subscriber_id, email, unsub_token)
+        SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
+        FROM newsletter_subscribers s
+        WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND s.segment IN ('HOT', 'WARM')
+          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
+          AND NOT EXISTS (
+            SELECT 1 FROM newsletter_events e
+            WHERE e.issue_id = ${issueId}
+              AND e.subscriber_id = s.id
+              AND e.event = 'sent'
+          )
+        ON CONFLICT (issue_id, subscriber_id) DO NOTHING
+      `;
+    } else if (issue.audience_filter === "UNSEGMENTED") {
+      await sql`
+        INSERT INTO newsletter_campaign_deliveries
+          (issue_id, subscriber_id, email, unsub_token)
+        SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
+        FROM newsletter_subscribers s
+        WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND s.segment IS NULL
+          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}
@@ -144,6 +439,8 @@ export async function controlNewsletterCampaign(issueId: string, action: Campaig
         SELECT ${issueId}, s.id, lower(s.email), s.unsub_token
         FROM newsletter_subscribers s
         WHERE s.status = 'active'
+          AND s.email ~* ${VALID_EMAIL_PATTERN}
+          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}
@@ -155,16 +452,33 @@ export async function controlNewsletterCampaign(issueId: string, action: Campaig
     }
 
     const counts = await sql`
-      SELECT COUNT(*)::int AS total
+      SELECT
+        COUNT(*)::int AS total,
+        md5(COALESCE(string_agg(subscriber_id::text, ',' ORDER BY subscriber_id), '')) AS signature
       FROM newsletter_campaign_deliveries
       WHERE issue_id = ${issueId}
     `;
     const total = Number(counts[0]?.total ?? 0);
     if (total === 0) throw new Error("No active subscribers for this audience");
+    if (
+      total !== preflight.audienceCount ||
+      String(counts[0]?.signature ?? "") !== preflight.audienceSignature
+    ) {
+      await sql`DELETE FROM newsletter_campaign_deliveries WHERE issue_id = ${issueId}`;
+      throw new Error("Audience changed during approval. Review the new count and approve again.");
+    }
 
     await sql`
-      INSERT INTO newsletter_campaign_runs (issue_id, status, total)
-      VALUES (${issueId}, 'queued', ${total})
+      INSERT INTO newsletter_campaign_runs
+        (issue_id, status, total, content_hash, audience_signature, approved_at)
+      VALUES (
+        ${issueId},
+        'queued',
+        ${total},
+        ${preflight.contentHash},
+        ${preflight.audienceSignature},
+        NOW()
+      )
     `;
     await sql`
       UPDATE newsletter_issues
@@ -341,14 +655,33 @@ async function suppressInactive(issueId: string) {
 async function claimDeliveryBatch(issueId: string): Promise<Delivery[]> {
   const sql = getDb();
 
-  const retry = await sql`
-    SELECT subscriber_id, email, unsub_token::text, batch_key, attempts
-    FROM newsletter_campaign_deliveries
+  await sql`
+    UPDATE newsletter_campaign_deliveries
+    SET status = 'failed',
+        last_error = COALESCE(last_error, 'Retry limit reached'),
+        updated_at = NOW()
     WHERE issue_id = ${issueId}
       AND status = 'processing'
-      AND batch_key IS NOT NULL
-    ORDER BY subscriber_id
-    LIMIT ${BATCH_SIZE}
+      AND attempts >= ${MAX_ATTEMPTS}
+  `;
+  const retry = await sql`
+    WITH retry_batch AS (
+      SELECT batch_key
+      FROM newsletter_campaign_deliveries
+      WHERE issue_id = ${issueId}
+        AND status = 'processing'
+        AND batch_key IS NOT NULL
+        AND attempts < ${MAX_ATTEMPTS}
+      ORDER BY claimed_at
+      LIMIT 1
+    )
+    UPDATE newsletter_campaign_deliveries d
+    SET attempts = attempts + 1, claimed_at = NOW(), updated_at = NOW()
+    FROM retry_batch
+    WHERE d.issue_id = ${issueId}
+      AND d.status = 'processing'
+      AND d.batch_key = retry_batch.batch_key
+    RETURNING d.subscriber_id, d.email, d.unsub_token::text, d.batch_key, d.attempts
   `;
   if (retry.length > 0) return retry as Delivery[];
 
@@ -379,14 +712,22 @@ async function claimDeliveryBatch(issueId: string): Promise<Delivery[]> {
 }
 
 async function sendDeliveryBatch(issue: Issue, deliveries: Delivery[], baseUrl: string) {
+  assertNewsletterSendingEnabled();
+  const postalAddress = assertNewsletterPostalAddress();
   const sql = getDb();
   const resend = new Resend(process.env.RESEND_API_KEY);
   const emails = deliveries.map((delivery) => {
     const unsubUrl = `${baseUrl}/api/newsletter/unsubscribe/${delivery.unsub_token}`;
     const prefsUrl = `${baseUrl}/preferences/${delivery.unsub_token}`;
     const confirmUrl = `${baseUrl}/newsletter/confirm/${issue.id}/${delivery.unsub_token}`;
-    const html = wrapIssueHtml(issue.html, { unsubUrl, prefsUrl, confirmUrl });
-    const text = `${htmlToPlainText(issue.html)}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
+    const html = wrapIssueHtml(issue.html, {
+      unsubUrl,
+      prefsUrl,
+      confirmUrl,
+      previewText: issue.preview_text,
+      postalAddress,
+    });
+    const text = `${htmlToPlainText(issue.html)}\n\n--\nMuditek · Ghiles Moussaoui\n${postalAddress}\nYou are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
     return {
       from: NEWSLETTER_FROM,
       replyTo: NEWSLETTER_REPLY_TO,
@@ -417,7 +758,6 @@ async function sendDeliveryBatch(issue: Issue, deliveries: Delivery[], baseUrl: 
     await sql`
       UPDATE newsletter_campaign_deliveries
       SET status = ${canRetry ? "processing" : "failed"},
-          attempts = attempts + 1,
           last_error = ${message},
           claimed_at = NOW(),
           updated_at = NOW()
@@ -427,35 +767,66 @@ async function sendDeliveryBatch(issue: Issue, deliveries: Delivery[], baseUrl: 
   }
 
   const items = result.data?.data ?? [];
-  for (let index = 0; index < deliveries.length; index += 1) {
-    const delivery = deliveries[index];
-    const emailId = items[index]?.id ?? null;
-    await sql`
-      UPDATE newsletter_campaign_deliveries
-      SET status = 'sent', resend_email_id = ${emailId}, sent_at = NOW(), last_error = NULL, updated_at = NOW()
-      WHERE issue_id = ${issue.id} AND subscriber_id = ${delivery.subscriber_id}
-    `;
-    await sql`
-      INSERT INTO newsletter_events
-        (subscriber_id, issue_id, email, event, resend_email_id, event_id)
-      VALUES
-        (${delivery.subscriber_id}, ${issue.id}, ${delivery.email}, 'sent', ${emailId},
-         ${`local-sent:${issue.id}:${delivery.subscriber_id}`})
-      ON CONFLICT (event_id) DO NOTHING
-    `;
-  }
+  const accepted = deliveries.map((delivery, index) => ({
+    subscriber_id: delivery.subscriber_id,
+    resend_email_id: items[index]?.id ?? null,
+  }));
+  await sql`
+    WITH accepted AS (
+      SELECT subscriber_id, resend_email_id
+      FROM jsonb_to_recordset(${JSON.stringify(accepted)}::jsonb)
+        AS item(subscriber_id UUID, resend_email_id TEXT)
+    ),
+    updated AS (
+      UPDATE newsletter_campaign_deliveries d
+      SET status = 'sent',
+          resend_email_id = accepted.resend_email_id,
+          sent_at = NOW(),
+          last_error = NULL,
+          updated_at = NOW()
+      FROM accepted
+      WHERE d.issue_id = ${issue.id}
+        AND d.subscriber_id = accepted.subscriber_id
+        AND d.batch_key = ${batchKey}
+      RETURNING d.subscriber_id, d.email, d.resend_email_id
+    )
+    INSERT INTO newsletter_events
+      (subscriber_id, issue_id, email, event, resend_email_id, event_id)
+    SELECT
+      updated.subscriber_id,
+      ${issue.id},
+      updated.email,
+      'sent',
+      updated.resend_email_id,
+      'local-sent:' || ${issue.id} || ':' || updated.subscriber_id::text
+    FROM updated
+    ON CONFLICT (event_id) DO NOTHING
+  `;
 }
 
 async function processClaimedCampaign(issueId: string, baseUrl: string, maxBatches: number) {
   const sql = getDb();
   const issues = await sql`
-    SELECT id, subject, html, audience_filter
+    SELECT id, subject, html, preview_text, audience_filter, campaign_type
     FROM newsletter_issues
     WHERE id = ${issueId}
     LIMIT 1
   `;
   if (issues.length === 0) throw new Error("Issue not found");
   const issue = issues[0] as Issue;
+  const runRows = await sql`
+    SELECT content_hash FROM newsletter_campaign_runs WHERE issue_id = ${issueId} LIMIT 1
+  `;
+  const currentHash = newsletterContentHash({
+    subject: issue.subject,
+    previewText: issue.preview_text,
+    html: issue.html,
+    audienceFilter: issue.audience_filter,
+    campaignType: issue.campaign_type,
+  });
+  if (!runRows[0]?.content_hash || runRows[0].content_hash !== currentHash) {
+    throw new Error("Campaign content changed after approval. Start a new campaign.");
+  }
 
   await sql`UPDATE newsletter_issues SET status = 'sending', updated_at = NOW() WHERE id = ${issueId}`;
 
@@ -481,6 +852,12 @@ async function processClaimedCampaign(issueId: string, baseUrl: string, maxBatch
     await suppressInactive(issueId);
     const deliveries = await claimDeliveryBatch(issueId);
     if (deliveries.length === 0) break;
+    const monthlyUsed = await currentMonthlyUsage();
+    if (monthlyUsed + deliveries.length > NEWSLETTER_MONTHLY_LIMIT) {
+      throw new Error(
+        `Automatically paused: monthly usage would exceed ${NEWSLETTER_MONTHLY_LIMIT.toLocaleString()} emails.`,
+      );
+    }
 
     try {
       await sendDeliveryBatch(issue, deliveries, baseUrl);
@@ -535,6 +912,7 @@ export async function processNewsletterCampaigns(
   requestedIssueId?: string,
 ) {
   await ensureNewsletterCampaignSchema();
+  assertNewsletterSendingEnabled();
   const maxBatches = Math.max(
     1,
     Math.min(
@@ -566,13 +944,19 @@ export async function processNewsletterCampaigns(
 }
 
 export async function sunsetExpiredReactivation() {
+  await ensureNewsletterCampaignSchema();
   const sql = getDb();
   const issues = await sql`
     SELECT id
     FROM newsletter_issues
-    WHERE slug = 'reactivation-3-keep-sending'
-      AND status = 'sent'
+    WHERE status = 'sent'
       AND sent_at < NOW() - INTERVAL '7 days'
+      AND (
+        campaign_type = 'reactivation'
+        OR slug = 'reactivation-3-keep-sending'
+      )
+      AND NOT (COALESCE(stats, '{}'::jsonb) ? 'sunset_completed_at')
+    ORDER BY sent_at
     LIMIT 1
   `;
   if (issues.length === 0) return { dormant: 0 };
@@ -597,6 +981,13 @@ export async function sunsetExpiredReactivation() {
       RETURNING s.id
     )
     SELECT COUNT(*)::int AS count FROM updated
+  `;
+  await sql`
+    UPDATE newsletter_issues
+    SET stats = COALESCE(stats, '{}'::jsonb) ||
+          jsonb_build_object('sunset_completed_at', NOW()::text),
+        updated_at = NOW()
+    WHERE id = ${issueId}
   `;
   return { dormant: Number(rows[0]?.count ?? 0) };
 }

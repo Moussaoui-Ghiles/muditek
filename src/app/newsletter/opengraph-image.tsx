@@ -2,13 +2,13 @@ import { OG_SIZE, OG_CONTENT_TYPE, ogImage } from "@/lib/og";
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
-export const alt = "B2B Agents Newsletter | Muditek";
+export const alt = "Muditek Newsletter";
 
 export default function Image() {
   return ogImage({
     eyebrow: "Newsletter",
-    title: "B2B Agents: AI automation systems weekly.",
+    title: "Make one workflow AI-executable each week.",
     subtitle:
-      "Join 5,000+ operators. Real implementations: prompts, n8n workflows, agentic SDR systems. Every week.",
+      "The inputs, instructions, source material, AI steps, and human checks behind real business work.",
   });
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { ensureNewsletterCampaignSchema } from "@/lib/newsletter-campaign";
+import { NEWSLETTER_REACTIVATION_CONSENT_VERSION } from "@/lib/newsletter-consent";
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -19,7 +20,8 @@ export async function POST(
     UPDATE newsletter_subscribers
     SET status = 'active',
         consent_confirmed_at = NOW(),
-        consent_source = ${`newsletter:${issueId}`}
+        consent_source = ${`newsletter:${issueId}`},
+        consent_text_version = ${NEWSLETTER_REACTIVATION_CONSENT_VERSION}
     WHERE unsub_token = ${token}
     RETURNING id, email
   `;

@@ -62,6 +62,17 @@ interface AudienceBreakdown {
   count: number;
 }
 
+interface AudienceSummary {
+  sendingEnabled: boolean;
+  consent?: { confirmed?: number; unconfirmed?: number };
+  recentHealth?: {
+    sent?: number;
+    delivered?: number;
+    bounced?: number;
+    complained?: number;
+  };
+}
+
 function formatNumber(value: number | null | undefined): string {
   return Number(value ?? 0).toLocaleString();
 }
@@ -88,7 +99,8 @@ function sendState(issue: Issue): SendState {
   if (issue.status === "cancelled") return "cancelled";
   if (issue.status === "queued") return "queued";
   if (issue.status === "sending") return "sending";
-  const sent = stat(issue, "sent") || Number(issue.event_stats?.sent_events ?? 0);
+  const eventSent = Number(issue.event_stats?.sent_events ?? 0);
+  const sent = eventSent > 0 ? eventSent : stat(issue, "sent");
   const remaining = stat(issue, "remaining");
   if (issue.status === "sent" || (sent > 0 && remaining === 0)) return "sent";
   if (sent > 0 || remaining > 0) return "sending";
@@ -110,7 +122,9 @@ export default function NewsletterContent() {
   const [issues, setIssues] = useState<Issue[] | null>(null);
   const [breakdown, setBreakdown] = useState<AudienceBreakdown[] | null>(null);
   const [totals, setTotals] = useState<{ status: string; count: number }[] | null>(null);
+  const [audienceSummary, setAudienceSummary] = useState<AudienceSummary | null>(null);
   const [creatingLoading, setCreatingLoading] = useState(false);
+  const [seedingPrograms, setSeedingPrograms] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [savingPortalId, setSavingPortalId] = useState<string | null>(null);
@@ -126,6 +140,7 @@ export default function NewsletterContent() {
       setIssues(issuesRes.issues ?? []);
       setBreakdown(audRes.breakdown ?? []);
       setTotals(audRes.totals ?? []);
+      setAudienceSummary(audRes);
     });
     return () => {
       cancelled = true;
@@ -151,6 +166,16 @@ export default function NewsletterContent() {
       }
     } finally {
       setCreatingLoading(false);
+    }
+  }
+
+  async function seedPrograms() {
+    setSeedingPrograms(true);
+    try {
+      const response = await fetch("/api/admin/newsletter/programs", { method: "POST" });
+      if (response.ok) setReloadKey((key) => key + 1);
+    } finally {
+      setSeedingPrograms(false);
     }
   }
 
@@ -221,19 +246,34 @@ export default function NewsletterContent() {
           </p>
           <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.03em]">Emails</h1>
         </div>
-        <Button onClick={createIssue} disabled={creatingLoading}>
-          {creatingLoading ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
-          {creatingLoading ? "Creating..." : "New email"}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Badge variant={audienceSummary?.sendingEnabled ? "default" : "destructive"}>
+            Sending {audienceSummary?.sendingEnabled ? "enabled" : "stopped"}
+          </Badge>
+          <Button variant="outline" onClick={seedPrograms} disabled={seedingPrograms}>
+            {seedingPrograms ? "Loading…" : "Load reset drafts"}
+          </Button>
+          <Button onClick={createIssue} disabled={creatingLoading}>
+            {creatingLoading ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
+            {creatingLoading ? "Creating..." : "New email"}
+          </Button>
+        </div>
       </header>
 
       <section className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-5">
         <AudienceCell label="Active list" value={activeByStatus.active ?? 0} />
-        <AudienceCell label="HOT" value={segmentCounts.HOT ?? 0} />
-        <AudienceCell label="WARM" value={segmentCounts.WARM ?? 0} />
-        <AudienceCell label="COLD" value={segmentCounts.COLD ?? 0} />
+        <AudienceCell label="Confirmed" value={audienceSummary?.consent?.confirmed ?? 0} />
+        <AudienceCell label="Needs re-permission" value={audienceSummary?.consent?.unconfirmed ?? 0} />
+        <AudienceCell label="Bounced" value={activeByStatus.bounced ?? 0} />
         <AudienceCell label="Unsubscribed" value={activeByStatus.unsub ?? 0} />
       </section>
+      <p className="text-xs text-muted-foreground">
+        Segments: HOT {formatNumber(segmentCounts.HOT)} · WARM {formatNumber(segmentCounts.WARM)} ·
+        COLD {formatNumber(segmentCounts.COLD)}. Last 30 days:{" "}
+        {formatNumber(audienceSummary?.recentHealth?.delivered)} delivered,{" "}
+        {formatNumber(audienceSummary?.recentHealth?.bounced)} bounced,{" "}
+        {formatNumber(audienceSummary?.recentHealth?.complained)} complaints.
+      </p>
 
       <section className="rounded-xl border border-border/60 bg-card/45">
         <div className="flex flex-col gap-3 border-b border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -311,7 +351,8 @@ function IssueRow({
 }) {
   const state = sendState(issue);
   const portalArticle = isPortalNewsletterArticle(issue.stats);
-  const sent = stat(issue, "sent") || Number(issue.event_stats?.sent_events ?? 0);
+  const eventSent = Number(issue.event_stats?.sent_events ?? 0);
+  const sent = eventSent > 0 ? eventSent : stat(issue, "sent");
   const remaining = stat(issue, "remaining");
   const delivered = Number(issue.event_stats?.delivered ?? 0);
   const failed = stat(issue, "failed");

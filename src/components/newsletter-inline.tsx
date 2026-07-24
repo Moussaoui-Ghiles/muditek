@@ -22,29 +22,28 @@ export function NewsletterInline({
             <div className="doppelrand-inner px-6 py-2.5 flex items-center gap-3 bg-background">
               <div className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-pulse" />
               <span className="text-sm font-black uppercase tracking-[0.3em] text-foreground/70 pt-[1px]">
-                B2B Agents Newsletter
+                Muditek Newsletter
               </span>
             </div>
           </div>
 
           <h3 className="text-2xl md:text-3xl font-black tracking-[-0.02em] leading-[1.1] mb-4 text-balance">
-            One deployable system.{" "}
+            One real workflow.{" "}
             <span className={accentColor === "primary" ? "text-primary italic font-medium" : accentColor === "emerald" ? "text-emerald-400 italic font-medium" : "text-sky-400 italic font-medium"}>
               Every week.
             </span>
           </h3>
 
           <p className="text-sm text-foreground/60 font-light leading-relaxed mb-8 max-w-lg mx-auto">
-            Last edition: an outbound system that books 153 calls for
-            $1,200/month. The one before: an AI agent that writes proposals
-            in 12 minutes. You get the full build, every week.
+            The trigger, inputs, instructions, source material, and human checks
+            behind one AI-executable business workflow. No AI news roundup.
           </p>
 
           <EmailCapture
             tags={allTags}
             accentColor={accentColor}
             buttonText="Subscribe"
-            successMessage="You're in. Check your inbox."
+            successMessage="You're subscribed."
             compact
             className="max-w-md mx-auto"
           />

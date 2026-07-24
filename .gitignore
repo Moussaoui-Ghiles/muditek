@@ -37,6 +37,7 @@ next-env.d.ts
 
 # playwright-cli local snapshots
 .playwright-cli/
+/output/playwright/
 .superpowers/
 CLAUDE.md
 

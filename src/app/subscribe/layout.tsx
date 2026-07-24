@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Subscribe | B2B Agents Newsletter | Muditek",
+  title: "Subscribe | Muditek Newsletter",
   description:
-    "Join 5,000+ operators on the B2B Agents newsletter. AI automation systems, revenue operations, and operator playbooks delivered weekly. Unsubscribe anytime.",
+    "One real business workflow each week, including the inputs, instructions, source material, AI steps, and human checks.",
   alternates: { canonical: "https://muditek.com/subscribe" },
   openGraph: {
-    title: "Subscribe | B2B Agents Newsletter | Muditek",
+    title: "Subscribe | Muditek Newsletter",
     description:
-      "AI automation systems, revenue operations, and operator playbooks delivered weekly. Pick your topics. Unsubscribe anytime.",
+      "One real business workflow each week. Pick your topics and unsubscribe any time.",
     url: "https://muditek.com/subscribe",
     type: "website",
   },

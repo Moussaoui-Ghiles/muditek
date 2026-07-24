@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { sendFreeWelcomeEmail } from "@/lib/email-templates";
+import { newsletterSendingEnabled } from "@/lib/newsletter-sending";
+import {
+  enrollNewsletterLifecycle,
+  ensureNewsletterLifecycleSchema,
+  processNewsletterLifecycle,
+} from "@/lib/newsletter-lifecycle";
+import { NEWSLETTER_CONSENT_VERSION } from "@/lib/newsletter-consent";
 
 const VALID_TOPICS = new Set(["ai-agents", "gtm-systems", "solo-operator"]);
 
@@ -60,30 +66,69 @@ export async function POST(request: Request) {
     const finalTopics = chosen.length > 0 ? chosen : Array.from(VALID_TOPICS);
 
     const sql = getDb();
+    await ensureNewsletterLifecycleSchema();
 
     const existing = await sql`
       SELECT id, status FROM newsletter_subscribers WHERE email = ${email}
     `;
 
     if (existing.length > 0) {
-      await sql`
+      const rows = await sql`
         UPDATE newsletter_subscribers
-        SET status = 'active', topics = ${finalTopics}, unsub_at = NULL
+        SET status = 'active',
+            topics = ${finalTopics},
+            unsub_at = NULL,
+            consent_confirmed_at = NOW(),
+            consent_source = ${`form:${source}`},
+            consent_text_version = ${NEWSLETTER_CONSENT_VERSION}
         WHERE email = ${email}
+        RETURNING id
       `;
+      await enrollNewsletterLifecycle(String(rows[0].id));
+      if (newsletterSendingEnabled()) {
+        try {
+          await processNewsletterLifecycle(
+            process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com",
+            String(rows[0].id),
+          );
+        } catch (error) {
+          console.error("subscribe: welcome queued after immediate send failed", error);
+        }
+      }
       return NextResponse.json({ ok: true, resubscribed: true });
     }
 
-    await sql`
-      INSERT INTO newsletter_subscribers (email, source, topics)
-      VALUES (${email}, ${source}, ${finalTopics})
+    const inserted = await sql`
+      INSERT INTO newsletter_subscribers
+        (
+          email,
+          source,
+          topics,
+          consent_confirmed_at,
+          consent_source,
+          consent_text_version
+        )
+      VALUES
+        (
+          ${email},
+          ${source},
+          ${finalTopics},
+          NOW(),
+          ${`form:${source}`},
+          ${NEWSLETTER_CONSENT_VERSION}
+        )
+      RETURNING id
     `;
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
-    try {
-      await sendFreeWelcomeEmail(email, null, baseUrl);
-    } catch (err) {
-      console.error("subscribe: welcome email failed", err);
+    await enrollNewsletterLifecycle(String(inserted[0].id));
+    if (newsletterSendingEnabled()) {
+      try {
+        await processNewsletterLifecycle(
+          process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com",
+          String(inserted[0].id),
+        );
+      } catch (error) {
+        console.error("subscribe: welcome queued after immediate send failed", error);
+      }
     }
 
     return NextResponse.json({ ok: true });

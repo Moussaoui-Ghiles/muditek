@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { trackEvent } from "@/lib/client-analytics";
+import { NEWSLETTER_CONSENT_TEXT } from "@/lib/newsletter-consent";
 
 const VALID_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"] as const;
 type Topic = (typeof VALID_TOPICS)[number];
@@ -175,6 +176,9 @@ export function EmailCapture({
           )}
         </button>
       </form>
+      <p className="mt-2 text-[11px] leading-relaxed text-foreground/35">
+        {NEWSLETTER_CONSENT_TEXT}
+      </p>
 
       {status === "error" && (
         <p className="text-sm text-red-400/80 mt-2">{errorMsg}</p>

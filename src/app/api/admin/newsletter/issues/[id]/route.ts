@@ -6,6 +6,7 @@ import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-po
 import {
   ensureNewsletterCampaignSchema,
   getNewsletterCampaign,
+  getNewsletterCampaignPreflight,
 } from "@/lib/newsletter-campaign";
 
 function sentCount(stats: unknown): number {
@@ -25,7 +26,9 @@ export async function GET(
   await ensureNewsletterCampaignSchema();
   const sql = getDb();
   const rows = await sql`
-    SELECT id, subject, slug, markdown_src, html, status, audience_filter, scheduled_at, sent_at, stats, created_at, updated_at, resend_broadcast_id
+    SELECT id, subject, slug, markdown_src, html, preview_text, campaign_type,
+           status, audience_filter, scheduled_at, sent_at, stats, created_at,
+           updated_at, resend_broadcast_id, test_sent_at, test_sent_to
     FROM newsletter_issues WHERE id = ${id} LIMIT 1
   `;
   if (rows.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -44,6 +47,7 @@ export async function GET(
     ...rows[0],
     event_stats: events[0],
     campaign: await getNewsletterCampaign(id),
+    preflight: await getNewsletterCampaignPreflight(id),
   });
 }
 
@@ -60,6 +64,10 @@ export async function PATCH(
   const subject: string | undefined = body.subject;
   const markdown: string | undefined = body.markdown_src;
   const htmlInput: string | undefined = typeof body.html === "string" ? body.html : undefined;
+  const previewText: string | undefined =
+    typeof body.preview_text === "string" ? body.preview_text.slice(0, 200) : undefined;
+  const campaignType: string | undefined =
+    typeof body.campaign_type === "string" ? body.campaign_type : undefined;
   const audienceProvided = Object.prototype.hasOwnProperty.call(body, "audience_filter");
   const audienceFilter: string | null | undefined = body.audience_filter;
   const portalArticleProvided =
@@ -76,7 +84,20 @@ export async function PATCH(
     subject !== undefined ||
     markdown !== undefined ||
     htmlInput !== undefined ||
+    previewText !== undefined ||
+    campaignType !== undefined ||
     audienceProvided;
+
+  if (campaignType !== undefined && !["reactivation", "editorial"].includes(campaignType)) {
+    return NextResponse.json({ error: "Invalid campaign_type" }, { status: 400 });
+  }
+  if (
+    audienceProvided &&
+    audienceFilter !== null &&
+    !["HOT", "WARM", "COLD", "ENGAGED", "UNSEGMENTED"].includes(String(audienceFilter))
+  ) {
+    return NextResponse.json({ error: "Invalid audience_filter" }, { status: 400 });
+  }
 
   if (portalArticleProvided && portalArticle === null) {
     return NextResponse.json({ error: "portal_article must be true or false" }, { status: 400 });
@@ -125,7 +146,12 @@ export async function PATCH(
           subject = COALESCE(${subject ?? null}, subject),
           markdown_src = COALESCE(${markdown ?? null}, markdown_src),
           html = COALESCE(${html ?? null}, html),
+          preview_text = COALESCE(${previewText ?? null}, preview_text),
+          campaign_type = COALESCE(${campaignType ?? null}, campaign_type),
           audience_filter = ${audienceFilter ?? null},
+          test_sent_at = NULL,
+          test_sent_to = NULL,
+          test_content_hash = NULL,
           updated_at = NOW()
         WHERE id = ${id}
         RETURNING id, subject, slug, status, audience_filter, stats
@@ -136,6 +162,11 @@ export async function PATCH(
           subject = COALESCE(${subject ?? null}, subject),
           markdown_src = COALESCE(${markdown ?? null}, markdown_src),
           html = COALESCE(${html ?? null}, html),
+          preview_text = COALESCE(${previewText ?? null}, preview_text),
+          campaign_type = COALESCE(${campaignType ?? null}, campaign_type),
+          test_sent_at = NULL,
+          test_sent_to = NULL,
+          test_content_hash = NULL,
           updated_at = NOW()
         WHERE id = ${id}
         RETURNING id, subject, slug, status, audience_filter, stats

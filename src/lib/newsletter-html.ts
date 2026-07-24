@@ -47,13 +47,30 @@ export function styleIssueHtmlForEmail(html: string): string {
 
 export function wrapIssueHtml(
   bodyHtml: string,
-  footer: { unsubUrl: string; prefsUrl: string; confirmUrl?: string },
+  footer: {
+    unsubUrl: string;
+    prefsUrl: string;
+    confirmUrl?: string;
+    previewText?: string | null;
+    postalAddress?: string | null;
+  },
 ): string {
   const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
   const personalizedBody = personalizeNewsletterHtml(bodyHtml, {
     confirmUrl: footer.confirmUrl ?? "#confirm-subscription",
   });
+  const previewText = (footer.previewText ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const postalAddress = (footer.postalAddress ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
   return `
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;mso-hide:all;">
+      ${previewText}
+    </div>
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;padding:40px 20px;background:#ffffff;color:#1a1a1a;">
       <div style="margin-bottom:28px;">
         <a href="https://muditek.com" style="text-decoration:none;display:inline-block;">
@@ -65,6 +82,8 @@ export function wrapIssueHtml(
 
       <p style="margin:48px 0 0;font-size:12px;color:#8a8a8a;line-height:1.7;">
         Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a;text-decoration:underline;">ghiles@muditek.com</a><br/>
+        ${postalAddress ? `${postalAddress}<br/>` : ""}
+        You&apos;re receiving this because you subscribed to Muditek.<br/>
         <a href="${footer.prefsUrl}" style="color:#8a8a8a;text-decoration:underline;">Manage preferences</a> &middot; <a href="${footer.unsubUrl}" style="color:#8a8a8a;text-decoration:underline;">Unsubscribe</a>
       </p>
     </div>

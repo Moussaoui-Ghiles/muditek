@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/logo/logo";
+import { NEWSLETTER_CONSENT_TEXT } from "@/lib/newsletter-consent";
 
 const TOPICS = [
-  { value: "ai-agents", label: "AI agents for enterprise" },
-  { value: "gtm-systems", label: "Go-to-market systems" },
-  { value: "solo-operator", label: "Solo operator playbooks" },
+  { value: "ai-agents", label: "Workflow audits and AI adoption" },
+  { value: "gtm-systems", label: "Revenue workflows" },
+  { value: "solo-operator", label: "Operator systems" },
 ];
 
 export default function SubscribePage() {
@@ -52,7 +53,7 @@ export default function SubscribePage() {
         <div className="max-w-md text-center">
           <h1 className="text-3xl font-bold mb-4">You&apos;re in.</h1>
           <p className="text-[#a0a0a6]">
-            Next issue drops this week. Check your inbox for a confirmation.
+            Your first workflow email is queued.
           </p>
         </div>
       </main>
@@ -72,10 +73,10 @@ export default function SubscribePage() {
             Muditek Newsletter
           </p>
           <h1 className="text-3xl font-bold tracking-tight mb-3">
-            The playbook behind $3M+ in B2B.
+            Make one workflow AI-executable each week.
           </h1>
           <p className="text-[#a0a0a6]">
-            What I&apos;m shipping, what&apos;s working, what&apos;s breaking. Every week.
+            One real system, including the inputs, instructions, and human checks.
           </p>
         </div>
 
@@ -126,7 +127,7 @@ export default function SubscribePage() {
           </button>
 
           <p className="text-xs text-[#636366] text-center">
-            Unsubscribe anytime. One-click in every email.
+            {NEWSLETTER_CONSENT_TEXT} One-click unsubscribe is included in every email.
           </p>
         </form>
       </div>

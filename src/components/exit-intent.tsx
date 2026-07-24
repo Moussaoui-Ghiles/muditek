@@ -32,8 +32,9 @@ const PAGE_CONFIG: Record<string, { heading: string; description: string; tags: 
 };
 
 const DEFAULT_CONFIG = {
-  heading: "One deployable system. Every week.",
-  description: "Last edition: an outbound system that books 153 calls for $1,200/month. You get the full build — architecture, code, and steps to deploy it.",
+  heading: "One real workflow. Every week.",
+  description:
+    "See the trigger, inputs, instructions, source material, and human checks behind one AI-executable business workflow.",
   tags: ["source:exit-intent"],
   accent: "primary" as const,
 };
@@ -53,16 +54,17 @@ function isSuppressed(pathname: string): boolean {
 }
 
 export function ExitIntent() {
-  const [visible, setVisible] = useState(false);
+  const [visibleOnPath, setVisibleOnPath] = useState<string | null>(null);
   const pathname = usePathname();
   const suppressed = isSuppressed(pathname);
+  const visible = visibleOnPath === pathname;
 
   const showPopup = useCallback(() => {
     if (typeof window === "undefined") return;
     if (sessionStorage.getItem("exit-intent-shown")) return;
     sessionStorage.setItem("exit-intent-shown", "1");
-    setVisible(true);
-  }, []);
+    setVisibleOnPath(pathname);
+  }, [pathname]);
 
   useEffect(() => {
     if (suppressed) return;
@@ -80,11 +82,6 @@ export function ExitIntent() {
     };
   }, [showPopup, suppressed]);
 
-  // Reset on navigation
-  useEffect(() => {
-    setVisible(false);
-  }, [pathname]);
-
   if (!visible || suppressed) return null;
 
   const config = PAGE_CONFIG[pathname] || DEFAULT_CONFIG;
@@ -99,14 +96,14 @@ export function ExitIntent() {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-        onClick={() => setVisible(false)}
+        onClick={() => setVisibleOnPath(null)}
       />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-card border border-white/[0.08] rounded-[4px] p-8 md:p-10 shadow-2xl animate-in">
         {/* Close */}
         <button
-          onClick={() => setVisible(false)}
+          onClick={() => setVisibleOnPath(null)}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-foreground/40 hover:text-foreground transition-colors"
           aria-label="Close"
         >
@@ -129,7 +126,7 @@ export function ExitIntent() {
           accentColor={config.accent}
           buttonText="Send It"
           successMessage="Done. Check your inbox."
-          onSuccess={() => setTimeout(() => setVisible(false), 2000)}
+          onSuccess={() => setTimeout(() => setVisibleOnPath(null), 2000)}
         />
 
         <p className="text-xs text-foreground/30 mt-4 font-mono tracking-wider">

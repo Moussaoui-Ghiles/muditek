@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -14,11 +15,11 @@ import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 const NEWSLETTER_FAQ = [
   {
     q: "What does the Muditek newsletter cover?",
-    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype. Only systems that have run in production.",
+    a: "One real business workflow at a time: the trigger, inputs, instructions, source material, AI steps, and human checks. No AI news roundup and no generic tool list.",
   },
   {
     q: "How often does it send?",
-    a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
+    a: "Weekly. One email, one workflow, one job.",
   },
   {
     q: "Will issues move behind a paywall later?",
@@ -26,19 +27,19 @@ const NEWSLETTER_FAQ = [
   },
   {
     q: "Who reads it?",
-    a: "5,000+ B2B operators, AI builders, and founders across telecom, SaaS, agencies, and finance. Most subscribers run their own ops or sales teams and ship what they read here.",
+    a: "Founders, COOs, operations leaders, and builders who want AI to handle real work without losing business context or human control.",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
+  title: "Muditek Newsletter | Real AI Workflows for B2B Operators",
   description:
-    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Unsubscribe anytime.",
+    "One real business workflow each week, including the inputs, instructions, source material, AI steps, and human checks.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
-    title: "B2B Agents Newsletter | Muditek",
+    title: "Muditek Newsletter | Real AI Workflows",
     description:
-      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy.",
+      "One real business workflow each week. No AI news roundup and no generic tool list.",
     url: "https://muditek.com/newsletter",
     type: "website",
   },
@@ -98,11 +99,13 @@ function NewsletterCardCover({ issue, index }: { issue: Issue; index: number }) 
   if (image) {
     return (
       <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08] bg-card">
-        <img
+        <Image
           src={image}
           alt=""
+          fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-          loading="lazy"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/75 via-background/10 to-transparent" />
       </div>
@@ -152,23 +155,23 @@ export default async function NewsletterPage() {
           <ScrollReveal>
             <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-8 flex items-center justify-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
-              B2B Agents Newsletter
+              Muditek Newsletter
               <span className="w-8 h-[1px] bg-primary/50" />
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
             <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.95] text-foreground mb-8 text-balance">
-              Every edition ships a <span className="text-primary italic font-medium">deployable system.</span>
+              Make one workflow <span className="text-primary italic font-medium">AI-executable.</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
             <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
-              Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
+              See the trigger, inputs, instructions, source material, AI steps, and human checks behind real business work.
             </p>
             <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12 italic">
-              Read by{" "}
+              Joined by{" "}
               <DataCitation
                 claim="5,000+ B2B operators"
                 source={DATA_POINTS.newsletterSubscribers.source}
@@ -180,7 +183,7 @@ export default async function NewsletterPage() {
                 source={DATA_POINTS.issuesShipped.source}
                 n={DATA_POINTS.issuesShipped.n}
               />
-              {" "}in 2026.
+              {" "}to date.
             </p>
           </ScrollReveal>
 
@@ -189,7 +192,7 @@ export default async function NewsletterPage() {
               <EmailCapture
                 source="newsletter-hero"
                 buttonText="Subscribe"
-                successMessage="You're in. Check your inbox."
+                successMessage="You're subscribed."
                 accentColor="primary"
               />
             </div>
@@ -269,16 +272,16 @@ export default async function NewsletterPage() {
         <div className="max-w-[800px] w-full px-6 text-center">
           <ScrollReveal>
             <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance">
-              Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
+              One workflow. The real inputs. <span className="text-primary italic font-medium">The full reasoning.</span>
             </h2>
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              Every issue points back to the portal so readers can open the resource, save it, and keep the system tied to one account.
+              Subscribe for the weekly breakdown, then use the archive when you are ready to build it.
             </p>
             <div className="max-w-md mx-auto">
               <EmailCapture
                 source="newsletter-footer"
                 buttonText="Subscribe"
-                successMessage="You're in. Check your inbox."
+                successMessage="You're subscribed."
                 accentColor="primary"
               />
             </div>

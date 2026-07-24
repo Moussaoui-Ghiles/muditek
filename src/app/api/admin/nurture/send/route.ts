@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       error:
-        "Manual nurture sends are disabled. Nurture is controlled by the scheduled sequence and NURTURE_SEQUENCE_ENABLED.",
+        "Manual lifecycle sends are disabled. Confirmed signups are processed by the durable newsletter lifecycle queue.",
     },
     { status: 410 },
   );

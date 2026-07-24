@@ -19,6 +19,8 @@ import { isPortalNewsletterArticle, setPortalNewsletterArticle } from "@/lib/new
 interface Issue {
   id: string;
   subject: string;
+  preview_text: string | null;
+  campaign_type: "reactivation" | "editorial";
   slug: string;
   markdown_src: string | null;
   html: string | null;
@@ -54,6 +56,20 @@ interface Issue {
     batches: number;
     last_error: string | null;
   } | null;
+  preflight?: {
+    errors: Array<{ code: string; message: string }>;
+    warnings: Array<{ code: string; message: string }>;
+    audienceCount: number;
+    monthlyUsed: number;
+    monthlyLimit: number;
+    monthlyRemaining: number;
+    expectedConfirmation: string;
+    freshTest: boolean;
+    testSentAt: string | null;
+    testSentTo: string | null;
+    sendingEnabled: boolean;
+    wordCount: number;
+  };
 }
 
 interface Props {
@@ -63,6 +79,8 @@ interface Props {
 
 const AUDIENCE_OPTIONS: Array<{ value: string; label: string; dotClass: string }> = [
   { value: "all", label: "All active", dotClass: "bg-zinc-400" },
+  { value: "ENGAGED", label: "HOT + WARM", dotClass: "bg-violet-400" },
+  { value: "UNSEGMENTED", label: "Unsegmented", dotClass: "bg-zinc-500" },
   { value: "HOT", label: "HOT", dotClass: "bg-[var(--color-warn,#f5a524)]" },
   { value: "WARM", label: "WARM", dotClass: "bg-[var(--color-live,#32d583)]" },
   { value: "COLD", label: "COLD", dotClass: "bg-[var(--color-cool,#70b7ff)]" },
@@ -71,7 +89,7 @@ const AUDIENCE_OPTIONS: Array<{ value: string; label: string; dotClass: string }
 function sentCount(issue: Issue): number {
   const fromStats = typeof issue.stats?.sent === "number" ? issue.stats.sent : 0;
   const fromEvents = Number(issue.event_stats?.sent_events ?? 0);
-  return Math.max(fromStats, fromEvents);
+  return fromEvents > 0 ? fromEvents : fromStats;
 }
 
 function remainingCount(issue: Issue): number {
@@ -90,6 +108,8 @@ function remainingCount(issue: Issue): number {
 export default function IssueEditor({ issueId, onClose }: Props) {
   const [issue, setIssue] = useState<Issue | null>(null);
   const [subject, setSubject] = useState("");
+  const [previewText, setPreviewText] = useState("");
+  const [campaignType, setCampaignType] = useState<"reactivation" | "editorial">("editorial");
   const [html, setHtml] = useState("");
   const [audience, setAudience] = useState<string>("all");
   const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -101,6 +121,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const [testSending, setTestSending] = useState(false);
   const [testMsg, setTestMsg] = useState<string | null>(null);
   const [confirmSend, setConfirmSend] = useState(false);
+  const [launchConfirmation, setLaunchConfirmation] = useState("");
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -119,6 +140,8 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       .then((data: Issue) => {
         setIssue(data);
         setSubject(data.subject ?? "");
+        setPreviewText(data.preview_text ?? "");
+        setCampaignType(data.campaign_type ?? "editorial");
         setHtml(data.html ?? "");
         setAudience(data.audience_filter ?? "all");
         setPortalArticle(isPortalNewsletterArticle(data.stats));
@@ -130,7 +153,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     return () => window.clearInterval(timer);
   }, [issueId, issue?.status]);
 
-  // The paid Resend plan removes the delivery quota, but this Vercel project
+  // This Vercel project cannot run per-minute crons. While the operator keeps
   // cannot run per-minute crons. While the operator keeps this page open, the
   // browser advances one durable 100-recipient batch at a time. Closing the
   // page leaves the queue intact; reopening resumes it.
@@ -153,7 +176,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         workerBusyRef.current = false;
       }
     };
-    const timer = window.setInterval(() => void advance(), 5000);
+    const timer = window.setInterval(() => void advance(), 60_000);
     return () => window.clearInterval(timer);
   }, [issue?.status, issueId]);
 
@@ -167,19 +190,25 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subject,
+          preview_text: previewText,
+          campaign_type: campaignType,
           html,
           audience_filter: audience === "all" ? null : audience,
           portal_article: portalArticle,
         }),
       });
       if (res.ok) {
+        const refreshed = await fetch(`/api/admin/newsletter/issues/${issueId}`).then(
+          (response) => response.json(),
+        );
+        setIssue(refreshed);
         setSavedAt(new Date());
         dirtyRef.current = false;
       }
     } finally {
       setSaving(false);
     }
-  }, [issueId, subject, html, audience, portalArticle, issue]);
+  }, [issueId, subject, previewText, campaignType, html, audience, portalArticle, issue]);
 
   useEffect(() => {
     if (!issue) return;
@@ -192,7 +221,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [subject, html, audience, save, issue]);
+  }, [subject, previewText, campaignType, html, audience, save, issue]);
 
   function markDirty() {
     dirtyRef.current = true;
@@ -270,7 +299,13 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         body: JSON.stringify({ to: testTo }),
       });
       const data = await res.json();
-      if (res.ok) setTestMsg(`Sent to ${testTo}.`);
+      if (res.ok) {
+        setTestMsg(`Sent to ${testTo}.`);
+        const refreshed = await fetch(`/api/admin/newsletter/issues/${issueId}`).then(
+          (response) => response.json(),
+        );
+        setIssue(refreshed);
+      }
       else setTestMsg(`Error: ${data.error}`);
     } finally {
       setTestSending(false);
@@ -287,7 +322,10 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       const res = await fetch(`/api/admin/newsletter/issues/${issueId}/send`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({
+          action,
+          confirmation: action === "start" ? launchConfirmation : undefined,
+        }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -302,6 +340,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         );
         setIssue(refreshed);
         if (action === "start") setConfirmSend(false);
+        if (action === "start") setLaunchConfirmation("");
       } else {
         setSendResult(`Error: ${data.error}`);
       }
@@ -338,7 +377,12 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const readOnly = issue.status !== "draft" || totalSent > 0;
   const audienceOpt = AUDIENCE_OPTIONS.find((o) => o.value === audience) ?? AUDIENCE_OPTIONS[0];
   const finalPreviewHtml = html.trim()
-    ? wrapIssueHtml(html, { prefsUrl: "#preferences", unsubUrl: "#unsubscribe" })
+    ? wrapIssueHtml(html, {
+        prefsUrl: "#preferences",
+        unsubUrl: "#unsubscribe",
+        previewText,
+        postalAddress: "Business postal address",
+      })
     : "<p style='padding:40px;color:#999;font-family:system-ui'>Start writing to see the rendered email preview.</p>";
 
   return (
@@ -529,10 +573,43 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           placeholder="Subject"
           className="mb-6 w-full bg-transparent border-0 outline-none text-3xl md:text-5xl font-bold tracking-[-0.025em] text-zinc-50 placeholder:text-zinc-700 px-0 py-1 leading-[1.05]"
         />
+        <Input
+          type="text"
+          value={previewText}
+          readOnly={readOnly}
+          maxLength={200}
+          onChange={(event) => {
+            setPreviewText(event.target.value);
+            markDirty();
+          }}
+          placeholder="Inbox preview text"
+          className="mb-5 border-white/[0.08] bg-white/[0.025] text-zinc-200"
+        />
 
         {/* Audience pills */}
         {!focusMode && (
-          <div className="mb-10 flex items-center gap-2 flex-wrap">
+          <div className="mb-10 space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              {(["reactivation", "editorial"] as const).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  disabled={readOnly}
+                  onClick={() => {
+                    setCampaignType(type);
+                    markDirty();
+                  }}
+                  className={`h-7 px-3 rounded-full text-[12px] font-medium ${
+                    campaignType === type
+                      ? "bg-zinc-100 text-zinc-950"
+                      : "bg-white/[0.03] text-zinc-500"
+                  }`}
+                >
+                  {type === "reactivation" ? "Reactivation" : "Editorial · confirmed only"}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
             {AUDIENCE_OPTIONS.map((opt) => {
               const active = audience === opt.value;
               return (
@@ -555,6 +632,14 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                 </button>
               );
             })}
+            </div>
+            {issue.preflight && (
+              <p className="text-xs text-zinc-500">
+                Exact eligible audience: {issue.preflight.audienceCount.toLocaleString()} ·
+                monthly usage {issue.preflight.monthlyUsed.toLocaleString()} /{" "}
+                {issue.preflight.monthlyLimit.toLocaleString()}
+              </p>
+            )}
           </div>
         )}
 
@@ -590,11 +675,31 @@ export default function IssueEditor({ issueId, onClose }: Props) {
             <SendMetric label="Sent" value={totalSent} />
             <SendMetric label="Remaining" value={remaining} />
             <SendMetric label="Failed" value={issue.stats?.failed ?? 0} />
-            <SendMetric label="Delivered" value={issue.event_stats?.delivered ?? 0} />
-            <SendMetric label="Opened" value={issue.event_stats?.opened ?? 0} />
-            <SendMetric label="Clicked" value={issue.event_stats?.clicked ?? 0} />
-            <SendMetric label="Bounced" value={issue.event_stats?.bounced ?? 0} />
-            <SendMetric label="Complaints" value={issue.event_stats?.complained ?? 0} />
+            <SendMetric
+              label="Delivered"
+              value={issue.event_stats?.delivered ?? 0}
+              rate={rate(issue.event_stats?.delivered, totalSent)}
+            />
+            <SendMetric
+              label="Opened"
+              value={issue.event_stats?.opened ?? 0}
+              rate={rate(issue.event_stats?.opened, issue.event_stats?.delivered)}
+            />
+            <SendMetric
+              label="Clicked"
+              value={issue.event_stats?.clicked ?? 0}
+              rate={rate(issue.event_stats?.clicked, issue.event_stats?.delivered)}
+            />
+            <SendMetric
+              label="Bounced"
+              value={issue.event_stats?.bounced ?? 0}
+              rate={rate(issue.event_stats?.bounced, totalSent)}
+            />
+            <SendMetric
+              label="Complaints"
+              value={issue.event_stats?.complained ?? 0}
+              rate={rate(issue.event_stats?.complained, totalSent)}
+            />
           </div>
         )}
         {issue.campaign?.last_error && (
@@ -640,10 +745,31 @@ export default function IssueEditor({ issueId, onClose }: Props) {
           <DialogHeader>
             <DialogTitle>Launch to {audienceOpt.label}?</DialogTitle>
             <DialogDescription>
-              This snapshots the audience and queues controlled batches of 100. You can pause or
-              cancel, and the campaign will stop automatically if bounce or complaint rates become unsafe.
+              This snapshots exactly {issue.preflight?.audienceCount.toLocaleString() ?? "0"} eligible
+              recipients and releases 100 per minute. It auto-pauses on unsafe bounce or complaint rates.
             </DialogDescription>
           </DialogHeader>
+          <div className="space-y-3 py-2 text-sm">
+            {(issue.preflight?.errors ?? []).map((finding) => (
+              <p key={finding.code} className="text-red-300">Blocked: {finding.message}</p>
+            ))}
+            {(issue.preflight?.warnings ?? []).map((finding) => (
+              <p key={finding.code} className="text-amber-300">Review: {finding.message}</p>
+            ))}
+            {issue.preflight?.errors.length === 0 && (
+              <>
+                <p className="text-zinc-300">
+                  Test verified: {issue.preflight.testSentTo} · audience snapshot pending.
+                </p>
+                <Input
+                  value={launchConfirmation}
+                  onChange={(event) => setLaunchConfirmation(event.target.value)}
+                  placeholder={issue.preflight.expectedConfirmation}
+                  autoComplete="off"
+                />
+              </>
+            )}
+          </div>
           {sendResult && <p className="text-sm py-2 text-zinc-300">{sendResult}</p>}
           <DialogFooter>
             <Button
@@ -653,7 +779,14 @@ export default function IssueEditor({ issueId, onClose }: Props) {
             >
               Cancel
             </Button>
-            <Button onClick={() => campaignAction("start")} disabled={sending}>
+            <Button
+              onClick={() => campaignAction("start")}
+              disabled={
+                sending ||
+                (issue.preflight?.errors.length ?? 1) > 0 ||
+                launchConfirmation !== issue.preflight?.expectedConfirmation
+              }
+            >
               {sending ? "Queuing…" : "Launch campaign"}
             </Button>
           </DialogFooter>
@@ -689,13 +822,27 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   );
 }
 
-function SendMetric({ label, value }: { label: string; value: number }) {
+function rate(numerator: number | undefined, denominator: number | undefined) {
+  if (!denominator) return null;
+  return `${(((numerator ?? 0) / denominator) * 100).toFixed(1)}%`;
+}
+
+function SendMetric({
+  label,
+  value,
+  rate: metricRate,
+}: {
+  label: string;
+  value: number;
+  rate?: string | null;
+}) {
   return (
     <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
       <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{label}</p>
       <p className="mt-1 text-lg font-semibold text-zinc-200 tabular-nums">
         {Number(value ?? 0).toLocaleString()}
       </p>
+      {metricRate && <p className="mt-0.5 text-[11px] text-zinc-500">{metricRate}</p>}
     </div>
   );
 }

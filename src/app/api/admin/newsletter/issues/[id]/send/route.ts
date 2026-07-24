@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import {
   controlNewsletterCampaign,
   getNewsletterCampaign,
+  getNewsletterCampaignPreflight,
   processNewsletterCampaigns,
 } from "@/lib/newsletter-campaign";
 
@@ -15,7 +16,10 @@ export async function GET(
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
   const { id } = await params;
-  return NextResponse.json({ campaign: await getNewsletterCampaign(id) });
+  return NextResponse.json({
+    campaign: await getNewsletterCampaign(id),
+    preflight: await getNewsletterCampaignPreflight(id),
+  });
 }
 
 export async function POST(
@@ -43,6 +47,7 @@ export async function POST(
     const campaign = await controlNewsletterCampaign(
       id,
       action as "start" | "pause" | "resume" | "cancel" | "retry",
+      { confirmation: typeof body?.confirmation === "string" ? body.confirmation : undefined },
     );
     return NextResponse.json({ ok: true, campaign });
   } catch (error: unknown) {

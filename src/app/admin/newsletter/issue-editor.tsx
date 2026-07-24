@@ -22,7 +22,7 @@ interface Issue {
   slug: string;
   markdown_src: string | null;
   html: string | null;
-  status: "draft" | "scheduled" | "sent";
+  status: "draft" | "queued" | "sending" | "paused" | "failed" | "cancelled" | "sent";
   audience_filter: string | null;
   sent_at: string | null;
   stats: (Record<string, unknown> & {
@@ -40,9 +40,20 @@ interface Issue {
   event_stats?: {
     sent_events?: number;
     delivered?: number;
+    opened?: number;
+    clicked?: number;
     bounced?: number;
     complained?: number;
   };
+  campaign?: {
+    status: "queued" | "running" | "paused" | "failed" | "cancelled" | "completed";
+    total: number;
+    sent: number;
+    failed: number;
+    suppressed: number;
+    batches: number;
+    last_error: string | null;
+  } | null;
 }
 
 interface Props {
@@ -64,6 +75,15 @@ function sentCount(issue: Issue): number {
 }
 
 function remainingCount(issue: Issue): number {
+  if (issue.campaign) {
+    return Math.max(
+      0,
+      Number(issue.campaign.total) -
+        Number(issue.campaign.sent) -
+        Number(issue.campaign.failed) -
+        Number(issue.campaign.suppressed),
+    );
+  }
   return typeof issue.stats?.remaining === "number" ? issue.stats.remaining : 0;
 }
 
@@ -93,7 +113,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const sendInnerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    fetch(`/api/admin/newsletter/issues/${issueId}`)
+    const load = () => fetch(`/api/admin/newsletter/issues/${issueId}`)
       .then((r) => r.json())
       .then((data: Issue) => {
         setIssue(data);
@@ -102,7 +122,12 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         setAudience(data.audience_filter ?? "all");
         setPortalArticle(isPortalNewsletterArticle(data.stats));
       });
-  }, [issueId]);
+    void load();
+    const timer = window.setInterval(() => {
+      if (issue?.status === "queued" || issue?.status === "sending") void load();
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [issueId, issue?.status]);
 
   const save = useCallback(async () => {
     if (!issue) return;
@@ -224,23 +249,31 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     }
   }
 
-  async function doSend(limit?: number) {
+  async function campaignAction(
+    action: "start" | "pause" | "resume" | "cancel" | "retry",
+  ) {
     if (dirtyRef.current) await save();
     setSending(true);
     setSendResult(null);
     try {
       const res = await fetch(`/api/admin/newsletter/issues/${issueId}/send`, {
         method: "POST",
-        headers: limit ? { "content-type": "application/json" } : undefined,
-        body: limit ? JSON.stringify({ limit }) : undefined,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action }),
       });
       const data = await res.json();
       if (res.ok) {
-        setSendResult(`Sent ${data.sent} · Failed ${data.failed} · Remaining ${data.remaining}`);
+        const campaign = data.campaign;
+        setSendResult(
+          action === "start"
+            ? `Queued ${Number(campaign?.total ?? 0).toLocaleString()} recipients.`
+            : `Campaign ${action} complete.`,
+        );
         const refreshed = await fetch(`/api/admin/newsletter/issues/${issueId}`).then(
           (r) => r.json(),
         );
         setIssue(refreshed);
+        if (action === "start") setConfirmSend(false);
       } else {
         setSendResult(`Error: ${data.error}`);
       }
@@ -268,9 +301,13 @@ export default function IssueEditor({ issueId, onClose }: Props) {
 
   const totalSent = sentCount(issue);
   const remaining = remainingCount(issue);
-  const isSent = issue.status === "sent" || (totalSent > 0 && remaining === 0);
-  const isSending = totalSent > 0 && remaining > 0;
-  const readOnly = totalSent > 0 || issue.status === "sent";
+  const isSent = issue.status === "sent" || issue.campaign?.status === "completed";
+  const isSending =
+    issue.status === "queued" ||
+    issue.status === "sending" ||
+    issue.campaign?.status === "queued" ||
+    issue.campaign?.status === "running";
+  const readOnly = issue.status !== "draft" || totalSent > 0;
   const audienceOpt = AUDIENCE_OPTIONS.find((o) => o.value === audience) ?? AUDIENCE_OPTIONS[0];
   const finalPreviewHtml = html.trim()
     ? wrapIssueHtml(html, { prefsUrl: "#preferences", unsubUrl: "#unsubscribe" })
@@ -396,7 +433,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                   onClick={() => setConfirmSend(true)}
                   className="magnetic-cta group h-9 pl-4 pr-1.5 inline-flex items-center gap-2 rounded-full bg-zinc-100 text-zinc-950 text-xs font-semibold tracking-wide hover:bg-white shadow-[0_8px_24px_-8px_rgba(255,255,255,0.18)]"
                 >
-                  Send 100
+                  Launch
                   <span
                     ref={sendInnerRef}
                     className="size-6 inline-flex items-center justify-center rounded-full bg-zinc-950/90 text-zinc-100 group-hover:translate-x-[1px] group-hover:-translate-y-[1px] spring"
@@ -405,6 +442,46 @@ export default function IssueEditor({ issueId, onClose }: Props) {
                   </span>
                 </button>
               </>
+            )}
+            {isSending && (
+              <button
+                type="button"
+                onClick={() => void campaignAction("pause")}
+                disabled={sending}
+                className="h-8 px-3 rounded-md text-xs font-medium text-amber-300 hover:bg-amber-500/[0.08]"
+              >
+                {sending ? "Working…" : "Pause"}
+              </button>
+            )}
+            {issue.status === "paused" && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => void campaignAction("resume")}
+                  disabled={sending}
+                  className="h-8 px-3 rounded-md text-xs font-medium text-emerald-300 hover:bg-emerald-500/[0.08]"
+                >
+                  Resume
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void campaignAction("cancel")}
+                  disabled={sending}
+                  className="h-8 px-3 rounded-md text-xs font-medium text-red-300 hover:bg-red-500/[0.08]"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+            {issue.status === "failed" && (
+              <button
+                type="button"
+                onClick={() => void campaignAction("retry")}
+                disabled={sending}
+                className="h-8 px-3 rounded-md text-xs font-medium text-amber-300 hover:bg-amber-500/[0.08]"
+              >
+                Retry failed
+              </button>
             )}
           </div>
         </div>
@@ -480,13 +557,22 @@ export default function IssueEditor({ issueId, onClose }: Props) {
         </div>
 
         {/* Sent stats */}
-        {totalSent > 0 && (
-          <div className="mt-10 grid gap-3 border-t border-white/[0.06] pt-6 text-sm text-zinc-500 sm:grid-cols-4">
+        {(totalSent > 0 || issue.campaign) && (
+          <div className="mt-10 grid gap-3 border-t border-white/[0.06] pt-6 text-sm text-zinc-500 sm:grid-cols-4 lg:grid-cols-8">
             <SendMetric label="Sent" value={totalSent} />
             <SendMetric label="Remaining" value={remaining} />
             <SendMetric label="Failed" value={issue.stats?.failed ?? 0} />
             <SendMetric label="Delivered" value={issue.event_stats?.delivered ?? 0} />
+            <SendMetric label="Opened" value={issue.event_stats?.opened ?? 0} />
+            <SendMetric label="Clicked" value={issue.event_stats?.clicked ?? 0} />
+            <SendMetric label="Bounced" value={issue.event_stats?.bounced ?? 0} />
+            <SendMetric label="Complaints" value={issue.event_stats?.complained ?? 0} />
           </div>
+        )}
+        {issue.campaign?.last_error && (
+          <p className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] p-3 text-sm text-amber-200">
+            {issue.campaign.last_error}
+          </p>
         )}
       </div>
 
@@ -524,9 +610,10 @@ export default function IssueEditor({ issueId, onClose }: Props) {
       <Dialog open={confirmSend} onOpenChange={setConfirmSend}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Send 100 to {audienceOpt.label}?</DialogTitle>
+            <DialogTitle>Launch to {audienceOpt.label}?</DialogTitle>
             <DialogDescription>
-              This sends the next batch of up to 100 people who have not received this email yet.
+              This snapshots the audience and queues controlled batches of 100. You can pause or
+              cancel, and the campaign will stop automatically if bounce or complaint rates become unsafe.
             </DialogDescription>
           </DialogHeader>
           {sendResult && <p className="text-sm py-2 text-zinc-300">{sendResult}</p>}
@@ -538,8 +625,8 @@ export default function IssueEditor({ issueId, onClose }: Props) {
             >
               Cancel
             </Button>
-            <Button onClick={() => doSend(100)} disabled={sending}>
-              {sending ? "Sending…" : "Send 100"}
+            <Button onClick={() => campaignAction("start")} disabled={sending}>
+              {sending ? "Queuing…" : "Launch campaign"}
             </Button>
           </DialogFooter>
         </DialogContent>

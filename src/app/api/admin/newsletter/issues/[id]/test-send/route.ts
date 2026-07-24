@@ -35,7 +35,8 @@ export async function POST(
 
   const unsubUrl = `${baseUrl}/api/newsletter/unsubscribe/${token}`;
   const prefsUrl = `${baseUrl}/preferences/${token}`;
-  const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl });
+  const confirmUrl = `${baseUrl}/newsletter/confirm/${id}/${token}`;
+  const html = wrapIssueHtml(issue.html ?? "", { unsubUrl, prefsUrl, confirmUrl });
   const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
 
   const resend = new Resend(process.env.RESEND_API_KEY);

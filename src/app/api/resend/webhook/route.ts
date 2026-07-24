@@ -15,6 +15,18 @@ function tagValue(tags: unknown, name: string): string | null {
   return null;
 }
 
+type ResendWebhookEvent = {
+  id?: string;
+  type?: string;
+  data?: {
+    to?: string | string[];
+    broadcast_id?: string;
+    email_id?: string;
+    tags?: unknown;
+    [key: string]: unknown;
+  };
+};
+
 export async function POST(request: Request) {
   const secret = process.env.RESEND_WEBHOOK_SECRET;
   if (!secret) return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
@@ -26,10 +38,10 @@ export async function POST(request: Request) {
     "svix-signature": request.headers.get("svix-signature") ?? "",
   };
 
-  let event: any;
+  let event: ResendWebhookEvent;
   try {
     const wh = new Webhook(secret);
-    event = wh.verify(payload, headers);
+    event = wh.verify(payload, headers) as ResendWebhookEvent;
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
@@ -63,16 +75,23 @@ export async function POST(request: Request) {
       ON CONFLICT (event_id) DO NOTHING
     `;
 
-    if (eventType === "bounced" || eventType === "complained") {
-      if (to) {
-        await sql`
-          UPDATE newsletter_subscribers
-          SET status = ${eventType === "bounced" ? "bounced" : "complained"}
-          WHERE email = ${to.toLowerCase()}
-        `;
-      }
+    if ((eventType === "bounced" || eventType === "complained") && to) {
+      await sql`
+        UPDATE newsletter_subscribers
+        SET status = ${eventType === "bounced" ? "bounced" : "complained"}
+        WHERE lower(email) = ${to.toLowerCase()}
+      `;
     }
-  } catch {}
+  } catch (error) {
+    console.error("Resend webhook persistence failed", {
+      eventId,
+      eventType,
+      issueId,
+      message: error instanceof Error ? error.message : "Unknown database error",
+    });
+    // A non-2xx response tells Resend to retry instead of silently losing analytics.
+    return NextResponse.json({ error: "Webhook persistence failed" }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

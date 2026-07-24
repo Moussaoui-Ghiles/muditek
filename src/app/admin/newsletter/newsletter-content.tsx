@@ -17,13 +17,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type SendState = "draft" | "sending" | "sent" | "imported_article";
+type SendState = "draft" | "queued" | "sending" | "paused" | "failed" | "cancelled" | "sent" | "imported_article";
 
 interface Issue {
   id: string;
   subject: string;
   slug: string;
-  status: "draft" | "scheduled" | "sent";
+  status: "draft" | "queued" | "sending" | "paused" | "failed" | "cancelled" | "sent";
   audience_filter: string | null;
   sent_at: string | null;
   stats: (Record<string, unknown> & {
@@ -39,9 +39,19 @@ interface Issue {
   event_stats?: {
     sent_events?: number;
     delivered?: number;
+    opened?: number;
+    clicked?: number;
     bounced?: number;
     complained?: number;
   };
+  campaign?: {
+    status: string;
+    total: number;
+    sent: number;
+    failed: number;
+    suppressed: number;
+    last_error: string | null;
+  } | null;
   created_at: string;
   updated_at?: string | null;
 }
@@ -73,6 +83,11 @@ function stat(issue: Issue, key: keyof NonNullable<Issue["stats"]>): number {
 
 function sendState(issue: Issue): SendState {
   if (issue.stats?.source === "beehiiv_import") return "imported_article";
+  if (issue.status === "paused") return "paused";
+  if (issue.status === "failed") return "failed";
+  if (issue.status === "cancelled") return "cancelled";
+  if (issue.status === "queued") return "queued";
+  if (issue.status === "sending") return "sending";
   const sent = stat(issue, "sent") || Number(issue.event_stats?.sent_events ?? 0);
   const remaining = stat(issue, "remaining");
   if (issue.status === "sent" || (sent > 0 && remaining === 0)) return "sent";
@@ -81,7 +96,11 @@ function sendState(issue: Issue): SendState {
 }
 
 function statusBadge(state: SendState) {
+  if (state === "queued") return <Badge>Queued</Badge>;
   if (state === "sending") return <Badge>Sending</Badge>;
+  if (state === "paused") return <Badge variant="outline">Paused</Badge>;
+  if (state === "failed") return <Badge variant="destructive">Failed</Badge>;
+  if (state === "cancelled") return <Badge variant="outline">Cancelled</Badge>;
   if (state === "sent") return <Badge variant="secondary">Sent</Badge>;
   if (state === "imported_article") return <Badge variant="outline">Imported article</Badge>;
   return <Badge variant="outline">Draft</Badge>;

@@ -3,6 +3,10 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 import { renderIssueHtml } from "@/lib/newsletter";
 import { readBooleanFlag, setPortalNewsletterArticle } from "@/lib/newsletter-portal";
+import {
+  ensureNewsletterCampaignSchema,
+  getNewsletterCampaign,
+} from "@/lib/newsletter-campaign";
 
 function sentCount(stats: unknown): number {
   if (!stats || typeof stats !== "object") return 0;
@@ -18,6 +22,7 @@ export async function GET(
   if (!admin.authorized) return admin.response;
 
   const { id } = await params;
+  await ensureNewsletterCampaignSchema();
   const sql = getDb();
   const rows = await sql`
     SELECT id, subject, slug, markdown_src, html, status, audience_filter, scheduled_at, sent_at, stats, created_at, updated_at, resend_broadcast_id
@@ -26,14 +31,20 @@ export async function GET(
   if (rows.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const events = await sql`
     SELECT
-      COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
-      COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
-      COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
-      COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'sent')::int AS sent_events,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'delivered')::int AS delivered,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'opened')::int AS opened,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'clicked')::int AS clicked,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'bounced')::int AS bounced,
+      COUNT(DISTINCT subscriber_id) FILTER (WHERE event = 'complained')::int AS complained
     FROM newsletter_events
     WHERE issue_id = ${id}
   `;
-  return NextResponse.json({ ...rows[0], event_stats: events[0] });
+  return NextResponse.json({
+    ...rows[0],
+    event_stats: events[0],
+    campaign: await getNewsletterCampaign(id),
+  });
 }
 
 export async function PATCH(
@@ -74,7 +85,9 @@ export async function PATCH(
   const sql = getDb();
   const cur = await sql`SELECT status, stats FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
   if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const alreadySent = cur[0].status === "sent" || sentCount(cur[0].stats) > 0;
+  const alreadySent =
+    cur[0].status !== "draft" ||
+    sentCount(cur[0].stats) > 0;
   if (alreadySent && bodyEditProvided) {
     return NextResponse.json({ error: "Cannot edit an email after sending has started." }, { status: 409 });
   }
@@ -141,7 +154,7 @@ export async function DELETE(
   const sql = getDb();
   const cur = await sql`SELECT status, stats FROM newsletter_issues WHERE id = ${id} LIMIT 1`;
   if (cur.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (cur[0].status === "sent" || sentCount(cur[0].stats) > 0) {
+  if (cur[0].status !== "draft" || sentCount(cur[0].stats) > 0) {
     return NextResponse.json({ error: "Cannot delete an email after sending has started." }, { status: 409 });
   }
   await sql`DELETE FROM newsletter_issues WHERE id = ${id}`;

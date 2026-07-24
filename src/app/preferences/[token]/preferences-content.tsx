@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Logo } from "@/components/logo/logo";
 
 const TOPICS = [
-  { value: "ai-agents", label: "AI agents for enterprise" },
-  { value: "gtm-systems", label: "Go-to-market systems" },
-  { value: "solo-operator", label: "Solo operator playbooks" },
+  { value: "ai-agents", label: "Workflow audits and AI adoption" },
+  { value: "gtm-systems", label: "Revenue workflows" },
+  { value: "solo-operator", label: "Operator systems" },
 ];
 
 interface Props {
@@ -110,7 +110,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
           {email && <p className="text-sm text-[#a0a0a6] mt-2">{email}</p>}
         </div>
 
-        {unsubscribed && (
+        {unsubscribed && status === "unsub" && (
           <div className="mb-6 p-4 bg-[#151517] border border-white/[0.06] rounded-lg text-sm">
             You&apos;ve been unsubscribed. You can re-subscribe below anytime.
           </div>

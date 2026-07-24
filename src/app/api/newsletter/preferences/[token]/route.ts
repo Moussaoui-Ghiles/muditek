@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { unsubscribeNewsletterByToken } from "@/lib/newsletter-subscription";
 
 const VALID_TOPICS = new Set(["ai-agents", "gtm-systems", "solo-operator"]);
 
@@ -26,11 +27,8 @@ export async function POST(
   const sql = getDb();
 
   if (body.action === "unsub") {
-    await sql`
-      UPDATE newsletter_subscribers
-      SET status = 'unsub', unsub_at = NOW()
-      WHERE unsub_token = ${token}
-    `;
+    const found = await unsubscribeNewsletterByToken(token);
+    if (!found) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true, action: "unsub" });
   }
 

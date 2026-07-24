@@ -86,8 +86,42 @@ export async function enrollNewsletterLifecycle(subscriberId: string) {
           ${item.previewText},
           ${item.html},
           NOW() + (${item.delayDays} * INTERVAL '1 day')
-        )
-      ON CONFLICT (subscriber_id, step) DO NOTHING
+      )
+      ON CONFLICT (subscriber_id, step) DO UPDATE
+      SET subject = EXCLUDED.subject,
+          preview_text = EXCLUDED.preview_text,
+          html = EXCLUDED.html,
+          scheduled_at = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN EXCLUDED.scheduled_at
+            ELSE newsletter_lifecycle_deliveries.scheduled_at
+          END,
+          status = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN 'queued'
+            ELSE newsletter_lifecycle_deliveries.status
+          END,
+          batch_key = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN NULL
+            ELSE newsletter_lifecycle_deliveries.batch_key
+          END,
+          attempts = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN 0
+            ELSE newsletter_lifecycle_deliveries.attempts
+          END,
+          last_error = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN NULL
+            ELSE newsletter_lifecycle_deliveries.last_error
+          END,
+          locked_until = CASE
+            WHEN newsletter_lifecycle_deliveries.status = 'suppressed'
+              THEN NULL
+            ELSE newsletter_lifecycle_deliveries.locked_until
+          END,
+          updated_at = NOW()
     `;
   }
 }

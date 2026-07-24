@@ -3,9 +3,10 @@ import { requireAdmin } from "@/lib/admin-auth";
 import {
   controlNewsletterCampaign,
   getNewsletterCampaign,
+  processNewsletterCampaigns,
 } from "@/lib/newsletter-campaign";
 
-const ACTIONS = new Set(["start", "pause", "resume", "cancel", "retry"]);
+const ACTIONS = new Set(["start", "pause", "resume", "cancel", "retry", "process"]);
 
 export async function GET(
   request: Request,
@@ -30,9 +31,14 @@ export async function POST(
     const action = String(body?.action ?? "");
     if (!ACTIONS.has(action)) {
       return NextResponse.json(
-        { error: "action must be start, pause, resume, cancel, or retry" },
+        { error: "Invalid campaign action" },
         { status: 400 },
       );
+    }
+    if (action === "process") {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin;
+      const result = await processNewsletterCampaigns(baseUrl, 1, id);
+      return NextResponse.json({ ok: true, worker: result });
     }
     const campaign = await controlNewsletterCampaign(
       id,

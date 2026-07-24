@@ -301,8 +301,9 @@ async function safetyStopReason(issueId: string): Promise<string | null> {
   return campaignSafetyStopReason({ sent, delivered, bounced, complained });
 }
 
-async function claimCampaign() {
+async function claimCampaign(requestedIssueId?: string) {
   const sql = getDb();
+  const requested = requestedIssueId ?? null;
   const rows = await sql`
     UPDATE newsletter_campaign_runs
     SET status = 'running',
@@ -314,6 +315,7 @@ async function claimCampaign() {
       FROM newsletter_campaign_runs
       WHERE status IN ('queued', 'running')
         AND (locked_until IS NULL OR locked_until < NOW())
+        AND (${requested}::text IS NULL OR issue_id::text = ${requested})
       ORDER BY created_at ASC
       FOR UPDATE SKIP LOCKED
       LIMIT 1
@@ -527,7 +529,11 @@ async function processClaimedCampaign(issueId: string, baseUrl: string, maxBatch
   }
 }
 
-export async function processNewsletterCampaigns(baseUrl: string, requestedMaxBatches?: number) {
+export async function processNewsletterCampaigns(
+  baseUrl: string,
+  requestedMaxBatches?: number,
+  requestedIssueId?: string,
+) {
   await ensureNewsletterCampaignSchema();
   const maxBatches = Math.max(
     1,
@@ -537,7 +543,7 @@ export async function processNewsletterCampaigns(baseUrl: string, requestedMaxBa
         Number(process.env.NEWSLETTER_BATCHES_PER_RUN || DEFAULT_BATCHES_PER_RUN),
     ),
   );
-  const issueId = await claimCampaign();
+  const issueId = await claimCampaign(requestedIssueId);
   if (!issueId) return { processed: false, issueId: null };
 
   try {

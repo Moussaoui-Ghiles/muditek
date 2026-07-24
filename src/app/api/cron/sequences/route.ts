@@ -3,6 +3,10 @@ import { getDb } from "@/lib/db";
 import { NURTURE_SEQUENCE } from "@/lib/sequences";
 import { sendSequenceEmail } from "@/lib/email-templates";
 import { ensureResourceLeadSchema } from "@/lib/resource-leads";
+import {
+  processNewsletterCampaigns,
+  sunsetExpiredReactivation,
+} from "@/lib/newsletter-campaign";
 
 export const maxDuration = 300;
 
@@ -12,6 +16,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+  const [newsletterFallback, newsletterSunset] = await Promise.all([
+    processNewsletterCampaigns(baseUrl, 1),
+    sunsetExpiredReactivation(),
+  ]);
+
   if (process.env.NURTURE_SEQUENCE_ENABLED !== "true") {
     return NextResponse.json({
       processed: 0,
@@ -19,12 +30,12 @@ export async function GET(request: Request) {
       skipped: 0,
       errors: 0,
       paused: true,
+      newsletterFallback,
+      newsletterSunset,
     });
   }
 
   const sql = getDb();
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
   await ensureResourceLeadSchema(sql);
 
   const allLeads = await sql`

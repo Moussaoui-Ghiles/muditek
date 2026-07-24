@@ -111,6 +111,7 @@ export default function IssueEditor({ issueId, onClose }: Props) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sendBtnRef = useRef<HTMLButtonElement>(null);
   const sendInnerRef = useRef<HTMLSpanElement>(null);
+  const workerBusyRef = useRef(false);
 
   useEffect(() => {
     const load = () => fetch(`/api/admin/newsletter/issues/${issueId}`)
@@ -128,6 +129,33 @@ export default function IssueEditor({ issueId, onClose }: Props) {
     }, 5000);
     return () => window.clearInterval(timer);
   }, [issueId, issue?.status]);
+
+  // The paid Resend plan removes the delivery quota, but this Vercel project
+  // cannot run per-minute crons. While the operator keeps this page open, the
+  // browser advances one durable 100-recipient batch at a time. Closing the
+  // page leaves the queue intact; reopening resumes it.
+  useEffect(() => {
+    if (issue?.status !== "queued" || workerBusyRef.current) return;
+    const advance = async () => {
+      if (workerBusyRef.current) return;
+      workerBusyRef.current = true;
+      try {
+        await fetch(`/api/admin/newsletter/issues/${issueId}/send`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action: "process" }),
+        });
+        const refreshed = await fetch(`/api/admin/newsletter/issues/${issueId}`).then(
+          (response) => response.json(),
+        );
+        setIssue(refreshed);
+      } finally {
+        workerBusyRef.current = false;
+      }
+    };
+    const timer = window.setInterval(() => void advance(), 5000);
+    return () => window.clearInterval(timer);
+  }, [issue?.status, issueId]);
 
   const save = useCallback(async () => {
     if (!issue) return;

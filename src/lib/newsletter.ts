@@ -3,9 +3,10 @@ import { getDb } from "@/lib/db";
 export { containsInlineImages, htmlToPlainText, wrapIssueHtml } from "@/lib/newsletter-html";
 
 export const NEWSLETTER_FROM =
-  process.env.NEWSLETTER_FROM || "Ghiles <resources@mail.ghiless.com>";
+  process.env.NEWSLETTER_FROM ||
+  "Ghiles from Muditek <newsletter@mail.ghiless.com>";
 export const NEWSLETTER_REPLY_TO =
-  process.env.NEWSLETTER_REPLY_TO || "biz@ghiless.com";
+  process.env.NEWSLETTER_REPLY_TO || "ghiles@muditek.com";
 
 function escapeHtml(str: string): string {
   return str

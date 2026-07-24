@@ -251,7 +251,7 @@ export default function NewsletterContent() {
             Sending {audienceSummary?.sendingEnabled ? "enabled" : "stopped"}
           </Badge>
           <Button variant="outline" onClick={seedPrograms} disabled={seedingPrograms}>
-            {seedingPrograms ? "Loading…" : "Load reset drafts"}
+            {seedingPrograms ? "Loading…" : "Load optional repermission drafts"}
           </Button>
           <Button onClick={createIssue} disabled={creatingLoading}>
             {creatingLoading ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
@@ -262,8 +262,8 @@ export default function NewsletterContent() {
 
       <section className="grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-5">
         <AudienceCell label="Active list" value={activeByStatus.active ?? 0} />
-        <AudienceCell label="Confirmed" value={audienceSummary?.consent?.confirmed ?? 0} />
-        <AudienceCell label="Needs re-permission" value={audienceSummary?.consent?.unconfirmed ?? 0} />
+        <AudienceCell label="Recorded consent" value={audienceSummary?.consent?.confirmed ?? 0} />
+        <AudienceCell label="Legacy active" value={audienceSummary?.consent?.unconfirmed ?? 0} />
         <AudienceCell label="Bounced" value={activeByStatus.bounced ?? 0} />
         <AudienceCell label="Unsubscribed" value={activeByStatus.unsub ?? 0} />
       </section>

@@ -165,10 +165,8 @@ export function ensureNewsletterCampaignSchema(): Promise<void> {
 async function campaignAudienceSnapshot(
   issueId: string,
   audienceFilter: string | null,
-  campaignType: NewsletterCampaignType,
 ) {
   const sql = getDb();
-  const requireConfirmed = campaignType !== "reactivation";
   if (audienceFilter === "HOT" || audienceFilter === "WARM" || audienceFilter === "COLD") {
     const rows = await sql`
       SELECT COUNT(*)::int AS count,
@@ -177,7 +175,6 @@ async function campaignAudienceSnapshot(
       WHERE s.status = 'active'
         AND s.email ~* ${VALID_EMAIL_PATTERN}
         AND s.segment = ${audienceFilter}
-        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
         AND NOT EXISTS (
           SELECT 1 FROM newsletter_events e
           WHERE e.issue_id = ${issueId}
@@ -195,7 +192,6 @@ async function campaignAudienceSnapshot(
       WHERE s.status = 'active'
         AND s.email ~* ${VALID_EMAIL_PATTERN}
         AND s.segment IN ('HOT', 'WARM')
-        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
         AND NOT EXISTS (
           SELECT 1 FROM newsletter_events e
           WHERE e.issue_id = ${issueId}
@@ -213,7 +209,6 @@ async function campaignAudienceSnapshot(
       WHERE s.status = 'active'
         AND s.email ~* ${VALID_EMAIL_PATTERN}
         AND s.segment IS NULL
-        AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
         AND NOT EXISTS (
           SELECT 1 FROM newsletter_events e
           WHERE e.issue_id = ${issueId}
@@ -229,7 +224,6 @@ async function campaignAudienceSnapshot(
     FROM newsletter_subscribers s
     WHERE s.status = 'active'
       AND s.email ~* ${VALID_EMAIL_PATTERN}
-      AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
       AND NOT EXISTS (
         SELECT 1 FROM newsletter_events e
         WHERE e.issue_id = ${issueId}
@@ -290,7 +284,7 @@ export async function getNewsletterCampaignPreflight(issueId: string) {
     campaignType: issue.campaign_type,
   });
   const [audience, monthlyUsed] = await Promise.all([
-    campaignAudienceSnapshot(issueId, issue.audience_filter, issue.campaign_type),
+    campaignAudienceSnapshot(issueId, issue.audience_filter),
     currentMonthlyUsage(),
   ]);
   const audienceCount = audience.count;
@@ -377,7 +371,6 @@ export async function controlNewsletterCampaign(
       throw new Error("Campaign already exists. Resume or retry it instead.");
     }
 
-    const requireConfirmed = issue.campaign_type !== "reactivation";
     if (issue.audience_filter === "HOT" || issue.audience_filter === "WARM" || issue.audience_filter === "COLD") {
       await sql`
         INSERT INTO newsletter_campaign_deliveries
@@ -387,7 +380,6 @@ export async function controlNewsletterCampaign(
         WHERE s.status = 'active'
           AND s.email ~* ${VALID_EMAIL_PATTERN}
           AND s.segment = ${issue.audience_filter}
-          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}
@@ -405,7 +397,6 @@ export async function controlNewsletterCampaign(
         WHERE s.status = 'active'
           AND s.email ~* ${VALID_EMAIL_PATTERN}
           AND s.segment IN ('HOT', 'WARM')
-          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}
@@ -423,7 +414,6 @@ export async function controlNewsletterCampaign(
         WHERE s.status = 'active'
           AND s.email ~* ${VALID_EMAIL_PATTERN}
           AND s.segment IS NULL
-          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}
@@ -440,7 +430,6 @@ export async function controlNewsletterCampaign(
         FROM newsletter_subscribers s
         WHERE s.status = 'active'
           AND s.email ~* ${VALID_EMAIL_PATTERN}
-          AND (${requireConfirmed} = FALSE OR s.consent_confirmed_at IS NOT NULL)
           AND NOT EXISTS (
             SELECT 1 FROM newsletter_events e
             WHERE e.issue_id = ${issueId}

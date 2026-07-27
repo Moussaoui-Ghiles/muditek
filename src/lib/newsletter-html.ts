@@ -81,7 +81,7 @@ export function wrapIssueHtml(
       ${styleIssueHtmlForEmail(personalizedBody)}
 
       <p style="margin:48px 0 0;font-size:12px;color:#8a8a8a;line-height:1.7;">
-        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a;text-decoration:underline;">ghiles@muditek.com</a><br/>
+        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:biz@ghiless.com" style="color:#8a8a8a;text-decoration:underline;">biz@ghiless.com</a><br/>
         ${postalAddress ? `${postalAddress}<br/>` : ""}
         You&apos;re receiving this because you subscribed to Muditek.<br/>
         <a href="${footer.prefsUrl}" style="color:#8a8a8a;text-decoration:underline;">Manage preferences</a> &middot; <a href="${footer.unsubUrl}" style="color:#8a8a8a;text-decoration:underline;">Unsubscribe</a>

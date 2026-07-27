@@ -17,9 +17,6 @@ export type NewsletterProgramDraft = {
   audienceFilter: NewsletterAudienceFilter | null;
 };
 
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
-
 export const NEWSLETTER_LIFECYCLE: NewsletterLifecycleStep[] = [
   {
     step: 1,
@@ -68,7 +65,7 @@ export const NEWSLETTER_LIFECYCLE: NewsletterLifecycleStep[] = [
       </ol>
       <p>No show, no meeting fee. “Qualified” is written into the agreement before anything sends.</p>
       <p>This only fits companies with a sales-led offer, enough reachable buyers, and someone who can take the calls.</p>
-      <p><a href="${BOOKING_URL}">Check the numbers with me</a></p>
+      <p>Reply with your average deal value, close rate, and who you sell to. If the numbers work, I’ll say so and we’ll take it from there. If they don’t, I’ll tell you that instead.</p>
       <p>Ghiles</p>
     `,
   },

@@ -6,7 +6,7 @@ export const NEWSLETTER_FROM =
   process.env.NEWSLETTER_FROM ||
   "Ghiles from Muditek <newsletter@mail.ghiless.com>";
 export const NEWSLETTER_REPLY_TO =
-  process.env.NEWSLETTER_REPLY_TO || "ghiles@muditek.com";
+  process.env.NEWSLETTER_REPLY_TO || "biz@ghiless.com";
 
 function escapeHtml(str: string): string {
   return str

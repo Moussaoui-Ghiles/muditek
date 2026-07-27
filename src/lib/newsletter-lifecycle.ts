@@ -9,7 +9,7 @@ import {
 import { NEWSLETTER_LIFECYCLE } from "@/lib/newsletter-programs";
 import {
   assertNewsletterSendingEnabled,
-  assertNewsletterPostalAddress,
+  newsletterPostalAddress,
   NEWSLETTER_MONTHLY_LIMIT,
 } from "@/lib/newsletter-sending";
 import { isRetryableResendError } from "@/lib/newsletter-campaign-policy";
@@ -151,7 +151,7 @@ export async function processNewsletterLifecycle(
   requestedSubscriberId?: string,
 ) {
   assertNewsletterSendingEnabled();
-  const postalAddress = assertNewsletterPostalAddress();
+  const postalAddress = newsletterPostalAddress();
   await ensureNewsletterLifecycleSchema();
   const sql = getDb();
   const subscriberId = requestedSubscriberId ?? null;
@@ -267,7 +267,7 @@ export async function processNewsletterLifecycle(
       previewText: String(delivery.preview_text),
       postalAddress,
     });
-    const text = `${htmlToPlainText(String(delivery.html))}\n\n--\nMuditek · Ghiles Moussaoui\n${postalAddress}\nYou are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
+    const text = `${htmlToPlainText(String(delivery.html))}\n\n--\nMuditek · Ghiles Moussaoui\n${postalAddress ? `${postalAddress}\n` : ""}You are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
     return {
       from: NEWSLETTER_FROM,
       replyTo: NEWSLETTER_REPLY_TO,

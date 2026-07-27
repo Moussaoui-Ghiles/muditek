@@ -22,16 +22,8 @@ export function assertNewsletterSendingEnabled(): void {
   }
 }
 
+// Optional by owner decision (2026-07-27). When unset the footer omits the
+// postal line. Sending without it is not CAN-SPAM compliant.
 export function newsletterPostalAddress(): string {
   return (process.env.NEWSLETTER_POSTAL_ADDRESS || "").trim();
-}
-
-export function assertNewsletterPostalAddress(): string {
-  const address = newsletterPostalAddress();
-  if (!address) {
-    throw new Error(
-      "NEWSLETTER_POSTAL_ADDRESS is required for the marketing email footer.",
-    );
-  }
-  return address;
 }

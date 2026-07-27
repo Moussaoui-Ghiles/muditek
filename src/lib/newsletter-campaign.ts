@@ -17,7 +17,6 @@ import {
 } from "@/lib/newsletter-preflight";
 import {
   assertNewsletterSendingEnabled,
-  assertNewsletterPostalAddress,
   NEWSLETTER_MONTHLY_LIMIT,
   newsletterPostalAddress,
   newsletterSendingEnabled,
@@ -375,12 +374,6 @@ export async function getNewsletterCampaignPreflight(issueId: string) {
     errors.push({
       code: "sending_disabled",
       message: "Production sending is disabled by NEWSLETTER_EMAILS_ENABLED.",
-    });
-  }
-  if (!newsletterPostalAddress()) {
-    errors.push({
-      code: "postal_address_missing",
-      message: "NEWSLETTER_POSTAL_ADDRESS is required in the email footer.",
     });
   }
   return {
@@ -830,7 +823,7 @@ async function claimDeliveryBatch(issueId: string): Promise<Delivery[]> {
 
 async function sendDeliveryBatch(issue: Issue, deliveries: Delivery[], baseUrl: string) {
   assertNewsletterSendingEnabled();
-  const postalAddress = assertNewsletterPostalAddress();
+  const postalAddress = newsletterPostalAddress();
   const sql = getDb();
   const resend = new Resend(process.env.RESEND_API_KEY);
   const emails = deliveries.map((delivery) => {
@@ -844,7 +837,7 @@ async function sendDeliveryBatch(issue: Issue, deliveries: Delivery[], baseUrl: 
       previewText: issue.preview_text,
       postalAddress,
     });
-    const text = `${htmlToPlainText(issue.html)}\n\n--\nMuditek · Ghiles Moussaoui\n${postalAddress}\nYou are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
+    const text = `${htmlToPlainText(issue.html)}\n\n--\nMuditek · Ghiles Moussaoui\n${postalAddress ? `${postalAddress}\n` : ""}You are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
     return {
       from: NEWSLETTER_FROM,
       replyTo: NEWSLETTER_REPLY_TO,

@@ -32,12 +32,6 @@ export async function POST(
       { status: 409 },
     );
   }
-  if (!newsletterPostalAddress()) {
-    return NextResponse.json(
-      { error: "NEWSLETTER_POSTAL_ADDRESS is required before inbox testing." },
-      { status: 409 },
-    );
-  }
   await ensureNewsletterCampaignSchema();
   const body = await request.json();
   const to: string = String(body.to ?? "").trim().toLowerCase();
@@ -85,7 +79,7 @@ export async function POST(
     previewText: issue.preview_text,
     postalAddress: newsletterPostalAddress(),
   });
-  const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\n${newsletterPostalAddress()}\nYou are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
+  const text = `${htmlToPlainText(issue.html ?? "")}\n\n--\nMuditek · Ghiles Moussaoui\n${newsletterPostalAddress() ? `${newsletterPostalAddress()}\n` : ""}You are receiving this because you subscribed to Muditek.\nManage preferences: ${prefsUrl}\nUnsubscribe: ${unsubUrl}`;
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { data, error } = await resend.emails.send({

@@ -956,6 +956,8 @@ async function processClaimedCampaign(issueId: string, baseUrl: string, maxBatch
       await sql`
         UPDATE newsletter_issues SET status = 'paused', updated_at = NOW() WHERE id = ${issueId}
       `;
+      // Counters must reflect what actually went out before the breaker tripped.
+      await refreshCampaignCounts(issueId);
       return;
     }
 
@@ -1047,6 +1049,7 @@ export async function processNewsletterCampaigns(
     await sql`
       UPDATE newsletter_issues SET status = 'paused', updated_at = NOW() WHERE id = ${issueId}
     `;
+    await refreshCampaignCounts(issueId);
     return { processed: true, issueId, error: message };
   }
 

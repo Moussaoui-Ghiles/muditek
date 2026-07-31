@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cold Offer Review"
+  short_description: "Audit B2B offers for cold-buyer readiness"
+  default_prompt: "Use $cold-offer-review to audit this existing B2B offer for cold-buyer clarity, evidence, risk, and first-commitment gaps."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Buyer Signal List Research"
+  short_description: "Build evidence-backed buyer-signal list specs"
+  default_prompt: "Use $buyer-signal-list-research to turn an approved market and offer hypothesis into a reviewable sourcing specification."

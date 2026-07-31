@@ -1,0 +1,4 @@
+interface:
+  display_name: "Outbound Funnel & Economics"
+  short_description: "Audit outbound funnel and unit economics"
+  default_prompt: "Use $outbound-funnel-economics to audit this outbound cohort and calculate its funnel, CAC, payback, and break-even requirements."

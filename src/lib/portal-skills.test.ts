@@ -30,6 +30,21 @@ const EXPECTED_SKILLS = [
       "references/signal-rubric.md",
     ],
   },
+  {
+    slug: "outbound-funnel-economics",
+    title: "Outbound Funnel Economics",
+    files: [
+      "SKILL.md",
+      "agents/openai.yaml",
+      "references/intake-and-data-contract.md",
+      "references/interpretation-and-audit.md",
+      "references/metric-specification.md",
+      "references/source-boundaries.md",
+      "references/worked-examples.md",
+      "scripts/calculate.py",
+      "scripts/test_calculate.py",
+    ],
+  },
 ] as const;
 
 describe("shipped outbound skill bundles", () => {

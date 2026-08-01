@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { NURTURE_SEQUENCE } from "@/lib/sequences";
+import {
+  WELCOME_SEQUENCE,
+  WELCOME_SEQUENCE_ENROLLMENT_TYPE,
+} from "@/lib/sequences";
 import { sendSequenceEmail } from "@/lib/email-templates";
-import { ensureResourceLeadSchema } from "@/lib/resource-leads";
 import {
   processNewsletterCampaigns,
   sunsetExpiredReactivation,
@@ -23,7 +25,7 @@ export async function GET(request: Request) {
     sunsetExpiredReactivation(),
   ]);
 
-  if (process.env.NURTURE_SEQUENCE_ENABLED !== "true") {
+  if (process.env.WELCOME_SEQUENCE_ENABLED === "false") {
     return NextResponse.json({
       processed: 0,
       sent: 0,
@@ -36,38 +38,25 @@ export async function GET(request: Request) {
   }
 
   const sql = getDb();
-  await ensureResourceLeadSchema(sql);
 
   const allLeads = await sql`
-    WITH raw_leads AS (
-      SELECT lower(email) AS email, name, created_at AS enrolled_at
-      FROM resource_leads
-      UNION ALL
-      SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
-      FROM newsletter_subscribers
-      WHERE status = 'active'
-        AND source IN ('portal', 'portal-signup', 'sign-up')
-    )
-    SELECT DISTINCT ON (email)
-      email, name, enrolled_at
-    FROM raw_leads
-    ORDER BY email, enrolled_at ASC
+    SELECT
+      lower(s.email) AS email,
+      split_part(lower(s.email), '@', 1) AS name,
+      MIN(e.sent_at) AS enrolled_at,
+      s.unsub_token
+    FROM newsletter_subscribers s
+    JOIN email_log e ON lower(e.email) = lower(s.email)
+    WHERE s.status = 'active'
+      AND e.type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
+    GROUP BY lower(s.email), s.unsub_token
   `;
 
   let sent = 0;
-  let skipped = 0;
+  const skipped = 0;
   let errors = 0;
 
   for (const lead of allLeads) {
-    // Skip if already a subscriber
-    const isSubscriber = await sql`
-      SELECT 1 FROM subscribers WHERE email = ${lead.email} AND status = 'active'
-    `;
-    if (isSubscriber.length > 0) {
-      skipped++;
-      continue;
-    }
-
     // Get already-sent steps for this email
     const sentSteps = await sql`
       SELECT step FROM sequence_sends WHERE email = ${lead.email}
@@ -78,7 +67,7 @@ export async function GET(request: Request) {
     const enrolledAt = new Date(lead.enrolled_at);
     const now = new Date();
 
-    for (const step of NURTURE_SEQUENCE) {
+    for (const step of WELCOME_SEQUENCE.slice(1)) {
       if (sentStepNumbers.has(step.step)) continue;
 
       // Check if enough days have passed
@@ -87,11 +76,22 @@ export async function GET(request: Request) {
 
       if (now < dueDate) break; // Not due yet, and later steps won't be either
 
-      const portalUrl = `${baseUrl}/portal`;
-      const html = step.buildHtml(lead.name || "there", portalUrl);
+      const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe/${lead.unsub_token}`;
+      const preferencesUrl = `${baseUrl}/preferences/${lead.unsub_token}`;
+      const html = step.buildHtml(lead.name || "there", {
+        baseUrl,
+        preferencesUrl,
+        unsubscribeUrl,
+      });
 
       try {
-        await sendSequenceEmail(lead.email, step.subject, html, step.step);
+        await sendSequenceEmail(
+          lead.email,
+          step.subject,
+          html,
+          step.step,
+          unsubscribeUrl,
+        );
 
         await sql`
           INSERT INTO sequence_sends (email, step)

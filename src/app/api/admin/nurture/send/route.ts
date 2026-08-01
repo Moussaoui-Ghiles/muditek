@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       error:
-        "Manual nurture sends are disabled. Nurture is controlled by the scheduled sequence and NURTURE_SEQUENCE_ENABLED.",
+        "Manual welcome-sequence sends are disabled. The sequence is controlled by the scheduled cron and WELCOME_SEQUENCE_ENABLED.",
     },
     { status: 410 },
   );

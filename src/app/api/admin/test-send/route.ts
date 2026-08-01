@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
-  sendWelcomeEmail,
+  sendWelcomeSequencePreviewEmail,
   sendDropNotification,
 } from "@/lib/email-templates";
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     if (type === "welcome") {
-      await sendWelcomeEmail(to, "there", baseUrl);
+      await sendWelcomeSequencePreviewEmail(to, "there", baseUrl);
       return NextResponse.json({ sent: true });
     }
 

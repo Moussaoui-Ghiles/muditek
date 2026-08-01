@@ -1,65 +1,65 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
-import { NURTURE_SEQUENCE } from "@/lib/sequences";
-import { ensureResourceLeadSchema } from "@/lib/resource-leads";
+import {
+  WELCOME_SEQUENCE,
+  WELCOME_SEQUENCE_ENROLLMENT_TYPE,
+} from "@/lib/sequences";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin.authorized) return admin.response;
 
   const sql = getDb();
-  await ensureResourceLeadSchema(sql);
 
   const [stepCounts, upcoming, recent, totalEnrolled] = await Promise.all([
     sql`
-      SELECT step, COUNT(*)::int AS total
-      FROM sequence_sends
-      GROUP BY step
-      ORDER BY step ASC
+      SELECT ss.step, COUNT(*)::int AS total
+      FROM sequence_sends ss
+      WHERE EXISTS (
+        SELECT 1 FROM email_log e
+        WHERE lower(e.email) = lower(ss.email)
+          AND e.type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
+      )
+      GROUP BY ss.step
+      ORDER BY ss.step ASC
     `,
     sql`
-      WITH raw_leads AS (
-        SELECT lower(email) AS email, name, created_at AS enrolled_at
-        FROM resource_leads
-        UNION ALL
-        SELECT lower(email) AS email, split_part(email, '@', 1) AS name, subscribed_at AS enrolled_at
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ),
-      lead_progress AS (
-        SELECT DISTINCT ON (lead.email)
-          lead.email,
-          lead.name,
-          lead.enrolled_at,
-          (SELECT MAX(step) FROM sequence_sends WHERE email = lead.email) AS last_step
-        FROM raw_leads lead
-        WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
-        ORDER BY lead.email, lead.enrolled_at ASC
+      WITH lead_progress AS (
+        SELECT
+          lower(s.email) AS email,
+          split_part(lower(s.email), '@', 1) AS name,
+          MIN(e.sent_at) AS enrolled_at,
+          (SELECT MAX(step) FROM sequence_sends WHERE lower(email) = lower(s.email)) AS last_step
+        FROM newsletter_subscribers s
+        JOIN email_log e ON lower(e.email) = lower(s.email)
+        WHERE s.status = 'active'
+          AND e.type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
+        GROUP BY lower(s.email)
       )
       SELECT email, name, enrolled_at, last_step
       FROM lead_progress
-      WHERE last_step IS NULL OR last_step < 5
+      WHERE last_step IS NULL OR last_step < 3
       ORDER BY enrolled_at DESC
       LIMIT 50
     `,
     sql`
-      SELECT email, step, sent_at FROM sequence_sends
-      ORDER BY sent_at DESC
+      SELECT ss.email, ss.step, ss.sent_at
+      FROM sequence_sends ss
+      WHERE EXISTS (
+        SELECT 1 FROM email_log e
+        WHERE lower(e.email) = lower(ss.email)
+          AND e.type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
+      )
+      ORDER BY ss.sent_at DESC
       LIMIT 20
     `,
     sql`
-      SELECT COUNT(DISTINCT email)::int AS total
-      FROM (
-        SELECT lower(email) AS email FROM resource_leads
-        UNION
-        SELECT lower(email) AS email
-        FROM newsletter_subscribers
-        WHERE status = 'active'
-          AND source IN ('portal', 'portal-signup', 'sign-up')
-      ) lead
-      WHERE NOT EXISTS (SELECT 1 FROM subscribers sub WHERE sub.email = lead.email AND sub.status = 'active')
+      SELECT COUNT(DISTINCT lower(s.email))::int AS total
+      FROM newsletter_subscribers s
+      JOIN email_log e ON lower(e.email) = lower(s.email)
+      WHERE s.status = 'active'
+        AND e.type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
     `,
   ]);
 
@@ -69,7 +69,8 @@ export async function GET(request: Request) {
   }
 
   const enrolled = totalEnrolled[0]?.total ?? 0;
-  const stepInfo = NURTURE_SEQUENCE.map((s) => ({
+  countsByStep[1] = enrolled;
+  const stepInfo = WELCOME_SEQUENCE.map((s) => ({
     step: s.step,
     subject: s.subject,
     delayDays: s.delayDays,
@@ -79,7 +80,7 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const withDue = upcoming.map((lead) => {
-    const nextStep = NURTURE_SEQUENCE.find((s) => s.step > (lead.last_step || 1));
+    const nextStep = WELCOME_SEQUENCE.find((s) => s.step > (lead.last_step || 1));
     if (!nextStep) return { ...lead, nextStep: null, nextDue: null };
     const dueDate = new Date(lead.enrolled_at);
     dueDate.setDate(dueDate.getDate() + nextStep.delayDays);
@@ -92,7 +93,7 @@ export async function GET(request: Request) {
   });
 
   return NextResponse.json({
-    enabled: process.env.NURTURE_SEQUENCE_ENABLED === "true",
+    enabled: process.env.WELCOME_SEQUENCE_ENABLED !== "false",
     enrolled,
     stepInfo,
     upcoming: withDue.slice(0, 30),

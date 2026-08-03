@@ -5,6 +5,7 @@ import { htmlToPlainText } from "@/lib/newsletter-html";
 import {
   WELCOME_SEQUENCE,
   WELCOME_SEQUENCE_ENROLLMENT_TYPE,
+  welcomeSequenceIdempotencyKey,
 } from "@/lib/sequences";
 
 function getResend() {
@@ -45,7 +46,7 @@ export async function sendFreeWelcomeEmail(
   to: string,
   name: string | null,
   baseUrl: string
-): Promise<void> {
+): Promise<boolean> {
   const sql = getDb();
   const normalizedEmail = to.trim().toLowerCase();
   const subscriberRows = await sql`
@@ -60,6 +61,15 @@ export async function sendFreeWelcomeEmail(
     throw new Error("Welcome email requires an active newsletter subscriber");
   }
 
+  const existingEnrollment = await sql`
+    SELECT 1
+    FROM email_log
+    WHERE lower(email) = ${normalizedEmail}
+      AND type = ${WELCOME_SEQUENCE_ENROLLMENT_TYPE}
+    LIMIT 1
+  `;
+  if (existingEnrollment.length > 0) return false;
+
   const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
   const unsubscribeUrl = `${normalizedBaseUrl}/api/newsletter/unsubscribe/${subscriber.unsub_token}`;
   const preferencesUrl = `${normalizedBaseUrl}/preferences/${subscriber.unsub_token}`;
@@ -70,20 +80,23 @@ export async function sendFreeWelcomeEmail(
     unsubscribeUrl,
   });
 
-  const { data, error } = await getResend().emails.send({
-    from: NEWSLETTER_FROM,
-    replyTo: NEWSLETTER_REPLY_TO,
-    to: normalizedEmail,
-    subject: step.subject,
-    html,
-    text: htmlToPlainText(html),
-    tags: [{ name: "welcome_sequence_step", value: "1" }],
-    headers: {
-      "List-Unsubscribe": `<${unsubscribeUrl}>`,
-      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      "List-ID": "Muditek Newsletter <newsletter.muditek.com>",
+  const { data, error } = await getResend().emails.send(
+    {
+      from: NEWSLETTER_FROM,
+      replyTo: NEWSLETTER_REPLY_TO,
+      to: normalizedEmail,
+      subject: step.subject,
+      html,
+      text: htmlToPlainText(html),
+      tags: [{ name: "welcome_sequence_step", value: "1" }],
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        "List-ID": "Muditek Newsletter <newsletter.muditek.com>",
+      },
     },
-  });
+    { idempotencyKey: welcomeSequenceIdempotencyKey(normalizedEmail) },
+  );
 
   if (error) throw new Error(`Welcome email failed: ${error.message}`);
   await logEmail(
@@ -93,6 +106,7 @@ export async function sendFreeWelcomeEmail(
     data?.id ?? null,
     true,
   );
+  return true;
 }
 
 /**

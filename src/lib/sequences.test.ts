@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   WELCOME_SEQUENCE,
   WELCOME_SEQUENCE_ENROLLMENT_TYPE,
+  welcomeSequenceIdempotencyKey,
 } from "./sequences";
 
 const context = {
@@ -54,5 +55,14 @@ describe("Muditek welcome sequence", () => {
       expect(html).toContain(context.unsubscribeUrl);
       expect(html).not.toContain("—");
     }
+  });
+
+  it("uses one stable, privacy-safe Resend idempotency key per recipient", () => {
+    const lower = welcomeSequenceIdempotencyKey("person@example.com");
+    const mixedCase = welcomeSequenceIdempotencyKey(" Person@Example.com ");
+
+    expect(mixedCase).toBe(lower);
+    expect(lower).toMatch(/^welcome-sequence-v1-e1:[a-f0-9]{64}$/);
+    expect(lower).not.toContain("person@example.com");
   });
 });

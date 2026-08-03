@@ -28,8 +28,8 @@ export async function GET(request: Request) {
         (SELECT COUNT(DISTINCT lower(email))::int FROM portal_memberships WHERE status = 'active') AS portal_accounts,
         (SELECT COUNT(DISTINCT lower(email))::int FROM resource_leads) AS resource_signups,
         (SELECT COUNT(DISTINCT lower(email))::int FROM portal_usage_events WHERE email IS NOT NULL AND created_at >= NOW() - INTERVAL '30 days') AS portal_users_30d,
-        (SELECT COUNT(*)::int FROM newsletter_events WHERE event = 'sent') AS newsletter_sent_events,
-        (SELECT COUNT(*)::int FROM newsletter_events WHERE event = 'delivered') AS newsletter_delivered_events
+        (SELECT COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text))::int FROM newsletter_events WHERE event = 'sent') AS newsletter_sent_events,
+        (SELECT COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text))::int FROM newsletter_events WHERE event = 'delivered') AS newsletter_delivered_events
     `,
     sql`
       WITH people AS (
@@ -77,9 +77,9 @@ export async function GET(request: Request) {
       email_events AS (
         SELECT
           lower(email) AS email,
-          COUNT(*) FILTER (WHERE event = 'sent')::int AS newsletter_sent,
-          COUNT(*) FILTER (WHERE event = 'delivered')::int AS newsletter_delivered,
-          COUNT(*) FILTER (WHERE event = 'bounced')::int AS newsletter_bounced,
+          COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'sent')::int AS newsletter_sent,
+          COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'delivered')::int AS newsletter_delivered,
+          COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'bounced')::int AS newsletter_bounced,
           MAX(ts) AS last_newsletter_event_at
         FROM newsletter_events
         WHERE email IS NOT NULL

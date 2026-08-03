@@ -6,7 +6,16 @@
  * 1 was successfully delivered to Resend.
  */
 
+import { createHash } from "node:crypto";
+
 export const WELCOME_SEQUENCE_ENROLLMENT_TYPE = "welcome-sequence-v1-e1";
+
+export function welcomeSequenceIdempotencyKey(email: string): string {
+  const recipientHash = createHash("sha256")
+    .update(email.trim().toLowerCase())
+    .digest("hex");
+  return `${WELCOME_SEQUENCE_ENROLLMENT_TYPE}:${recipientHash}`;
+}
 
 function escapeHtml(str: string): string {
   return str

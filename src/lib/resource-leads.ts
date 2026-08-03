@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { sendFreeWelcomeEmail } from "@/lib/email-templates";
 import { ensurePortalMembershipsSchema } from "@/lib/portal-memberships-schema";
 
 type Sql = ReturnType<typeof getDb>;
@@ -68,7 +69,7 @@ export async function trackResourceLead({
       last_seen_at = NOW()
   `;
 
-  await sql`
+  const insertedSubscriber = await sql`
     INSERT INTO newsletter_subscribers (email, source, topics, clerk_user_id)
     VALUES (
       ${normalizedEmail},
@@ -76,8 +77,14 @@ export async function trackResourceLead({
       ARRAY['ai-agents','gtm-systems','solo-operator'],
       ${clerkUserId ?? null}
     )
-    ON CONFLICT (email) DO UPDATE
+    ON CONFLICT (email) DO NOTHING
+    RETURNING id
+  `;
+
+  await sql`
+    UPDATE newsletter_subscribers
     SET status = 'active', unsub_at = NULL
+    WHERE email = ${normalizedEmail}
   `;
 
   if (clerkUserId) {
@@ -95,4 +102,13 @@ export async function trackResourceLead({
     ON CONFLICT (email, role) DO UPDATE
     SET status = 'active', updated_at = NOW()
   `;
+
+  if (insertedSubscriber.length > 0) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+    try {
+      await sendFreeWelcomeEmail(normalizedEmail, name ?? null, baseUrl);
+    } catch (error) {
+      console.error("resource-lead: welcome email failed", error);
+    }
+  }
 }

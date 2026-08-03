@@ -18,7 +18,12 @@ export default async function PortalLayout({ children }: { children: React.React
   if (!email) return children;
 
   const sql = getDb();
-  await ensurePortalAccount({ sql, email, clerkUserId: user.id });
+  await ensurePortalAccount({
+    sql,
+    email,
+    clerkUserId: user.id,
+    name: user.firstName || null,
+  });
 
   const subs = await sql`
     SELECT id, email, name, status, stripe_customer_id, clerk_user_id

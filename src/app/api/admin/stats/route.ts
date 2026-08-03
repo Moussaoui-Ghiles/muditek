@@ -18,6 +18,13 @@ type IssueStats = {
   source?: string;
 };
 
+type NewsletterIssueEventStats = {
+  sent_events: number;
+  delivered: number;
+  bounced: number;
+  complained: number;
+};
+
 function numberFrom(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
@@ -108,10 +115,10 @@ export async function GET(request: Request) {
     sql`
       SELECT
         issue_id,
-        COUNT(*) FILTER (WHERE event = 'sent')::int AS sent_events,
-        COUNT(*) FILTER (WHERE event = 'delivered')::int AS delivered,
-        COUNT(*) FILTER (WHERE event = 'bounced')::int AS bounced,
-        COUNT(*) FILTER (WHERE event = 'complained')::int AS complained
+        COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'sent')::int AS sent_events,
+        COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'delivered')::int AS delivered,
+        COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'bounced')::int AS bounced,
+        COUNT(DISTINCT COALESCE(resend_email_id, event_id, id::text)) FILTER (WHERE event = 'complained')::int AS complained
       FROM newsletter_events
       WHERE issue_id IN (
         SELECT id FROM newsletter_issues
@@ -122,8 +129,15 @@ export async function GET(request: Request) {
     `,
   ]);
 
-  const eventByIssue = new Map<string, any>();
-  for (const row of issueEvents) eventByIssue.set(String(row.issue_id), row);
+  const eventByIssue = new Map<string, NewsletterIssueEventStats>();
+  for (const row of issueEvents) {
+    eventByIssue.set(String(row.issue_id), {
+      sent_events: Number(row.sent_events ?? 0),
+      delivered: Number(row.delivered ?? 0),
+      bounced: Number(row.bounced ?? 0),
+      complained: Number(row.complained ?? 0),
+    });
+  }
   const issue = issueRows[0];
   const stats = (issue?.stats ?? null) as IssueStats | null;
   const eventStats = issue ? eventByIssue.get(String(issue.id)) : null;

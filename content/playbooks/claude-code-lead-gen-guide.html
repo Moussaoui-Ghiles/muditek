@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run Your Entire Lead Gen and Outbound Motion with Claude Code · Muditek</title>
+<meta name="description" content="Run the whole go-to-market motion from Claude Code: context layer, a collapsed tool stack, lead sourcing, an enrichment waterfall, deterministic scoring, cold email with deliverability, an automated reply desk, signal-based outbound, and a weekly measurement loop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07111F;
+  --ink-2:#102033;
+  --navy:#0B2F66;
+  --blue:#1458B8;
+  --red:#B7192A;
+  --yellow:#FFB000;
+  --green:#087A50;
+  --paper:#FFFFFF;
+  --surface:#F3F8FF;
+  --surface-2:#E7F0FC;
+  --line:#8FA9C8;
+  --line-hard:#0B2F66;
+  --maxw:890px;
+  --measure:62ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:1.25rem;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+@media (max-width:620px){body{font-size:1.16rem;line-height:1.58}}
+a{color:var(--navy);text-decoration-thickness:2px;text-underline-offset:3px}
+strong{color:var(--navy);font-weight:700}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .4em;border-radius:6px;font-size:.9em;font-weight:600}
+.letterhead{
+  width:min(var(--maxw),92vw);
+  margin:0 auto;
+  padding:3.5rem 0 2.4rem;
+  border-bottom:3px solid var(--navy);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.4rem;
+}
+.letterhead img{height:64px;width:auto;display:block}
+.letterhead__meta{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--navy);
+  font-size:1rem;
+  font-weight:700;
+  text-transform:uppercase;
+  text-align:right;
+}
+@media (max-width:620px){
+  .letterhead{align-items:flex-start;flex-direction:column;padding-top:2.2rem}
+  .letterhead__meta{text-align:left}
+}
+.hero,.toc,.doc{
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+}
+.hero{padding:3.2rem 0 1.4rem}
+h1,h2,h3,h4{
+  color:var(--navy);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:0;
+  text-wrap:balance;
+}
+.hero h1{
+  font-size:4.05rem;
+  line-height:1;
+  margin:0 0 1.6rem;
+  max-width:18ch;
+}
+@media (max-width:760px){.hero h1{font-size:3.1rem}}
+@media (max-width:460px){.hero h1{font-size:2.5rem}}
+.hero__lead{
+  margin:0 0 2rem;
+  color:var(--ink);
+  font-size:1.72rem;
+  line-height:1.35;
+  font-weight:700;
+  max-width:34ch;
+}
+@media (max-width:620px){.hero__lead{font-size:1.36rem}}
+.hero p:not(.hero__lead){max-width:var(--measure);margin:0 0 1.2rem}
+.hero__thesis{font-weight:600}
+.caption{
+  color:var(--navy);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1rem;
+  font-weight:700;
+  margin:0 0 2.2rem;
+  max-width:var(--measure);
+}
+.system-map{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:.75rem;
+  margin:2.2rem 0 .7rem;
+}
+.map-node{
+  min-height:118px;
+  border:2px solid var(--navy);
+  background:var(--surface);
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.map-node.is-hot{background:var(--navy);color:#fff}
+.map-node.is-warn{background:var(--yellow)}
+.map-node.is-stop{background:var(--red);color:#fff}
+.map-node b{display:block;color:inherit;font-size:1.12rem;line-height:1.05}
+.map-node span{display:block;color:inherit;font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:700;line-height:1.25}
+@media (max-width:820px){.system-map{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:430px){.system-map{grid-template-columns:repeat(2,1fr)}}
+.toc{
+  margin-top:2.5rem;
+  padding:1.7rem 0 .7rem;
+  border-top:4px solid var(--navy);
+  border-bottom:1px solid var(--line);
+}
+.toc h2{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1.05rem;
+  text-transform:uppercase;
+  margin:0 0 1.2rem;
+  color:var(--red);
+  border:0;
+  padding:0;
+}
+.toc ol{
+  list-style:none;
+  padding:0;
+  margin:0;
+  columns:2;
+  column-gap:3rem;
+}
+.toc li{break-inside:avoid;margin:0 0 .8rem}
+.toc a{color:var(--navy);font-weight:700;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+@media (max-width:680px){.toc ol{columns:1}}
+.doc{padding:1.8rem 0 5rem}
+.doc p,.doc li{max-width:var(--measure)}
+.doc p{margin:0 0 1.2rem}
+h2{
+  font-size:2.6rem;
+  margin:4.8rem 0 1.4rem;
+  padding-bottom:.55rem;
+  border-bottom:3px solid var(--line-hard);
+}
+@media (max-width:620px){h2{font-size:2.15rem;margin-top:3.8rem}}
+h3{
+  font-size:1.62rem;
+  margin:2.6rem 0 .8rem;
+}
+h4{
+  font-size:1.28rem;
+  margin:2rem 0 .6rem;
+}
+.lede{
+  color:var(--navy);
+  font-size:1.5rem;
+  line-height:1.36;
+  font-weight:700;
+  max-width:34ch !important;
+  margin:0 0 1.5rem;
+}
+.bullets,.numlist{
+  margin:1.2rem 0 1.6rem;
+  padding-left:1.4rem;
+}
+.bullets li,.numlist li{margin:0 0 .6rem;padding-left:.2rem}
+.bullets li::marker{color:var(--red)}
+.numlist li::marker{color:var(--navy);font-weight:700}
+.callout{
+  margin:2rem 0;
+  background:var(--surface);
+  border:2px solid var(--navy);
+  border-left:10px solid var(--red);
+  padding:1.5rem 1.6rem;
+}
+.callout p{max-width:none;margin:0;color:var(--ink);font-weight:600}
+.ruler{margin:2.2rem 0;border:0;height:3px;background:var(--navy)}
+.tw{overflow-x:auto;margin:1.6rem 0 2.2rem;border:2px solid var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:1.05rem}
+th{background:var(--navy);color:#fff;padding:1rem 1.1rem;text-align:left;font-weight:700}
+td{border-top:1px solid var(--line);padding:.95rem 1.1rem;vertical-align:top;color:var(--ink)}
+tr:nth-child(even) td{background:var(--surface)}
+td code{white-space:nowrap}
+.codewrap{position:relative;margin:1.7rem 0 2.2rem}
+.code-title{
+  margin:0 0 .55rem;
+  color:var(--red);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:1.02rem;
+  text-transform:uppercase;
+  max-width:none;
+}
+pre{
+  margin:0;
+  background:var(--ink);
+  color:#fff;
+  border:2px solid var(--ink);
+  padding:3.35rem 1.45rem 1.35rem;
+  overflow-x:auto;
+  line-height:1.7;
+  font-size:1rem;
+}
+pre code{color:#fff;background:none;border-radius:0;padding:0;font-size:1em;white-space:pre;font-family:"IBM Plex Mono",monospace}
+.copy{
+  position:absolute;
+  top:2.95rem;
+  right:.8rem;
+  border:2px solid #fff;
+  background:#fff;
+  color:var(--ink);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:.92rem;
+  padding:.5rem .75rem;
+  cursor:pointer;
+}
+.codewrap:has(.code-title) .copy{top:2.95rem}
+.copy:hover{background:var(--yellow);color:var(--ink)}
+.copy.ok{background:var(--green);border-color:var(--green);color:#fff}
+.checklist{list-style:none;padding:0;margin:1.3rem 0 2rem;display:grid;gap:.95rem}
+.checklist li{position:relative;padding-left:2rem;margin:0;font-weight:600;max-width:var(--measure)}
+.checklist li:before{content:"";position:absolute;left:0;top:.55rem;width:.8rem;height:.8rem;background:var(--red);border:2px solid var(--ink)}
+.cta{margin:5rem 0 1rem;background:var(--navy);color:#fff;border:4px solid var(--navy);padding:3rem}
+.cta h2{color:#fff;border:0;margin:0 0 1.2rem;padding:0;font-size:2.55rem}
+.cta p{color:#fff;max-width:58ch}
+.cta strong{color:#fff}
+.cta a{display:inline-block;margin-top:.8rem;background:#fff;color:var(--navy);border:3px solid #fff;text-decoration:none;font-weight:700;padding:.95rem 1.35rem;font-size:1.18rem}
+.cta a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+@media (max-width:620px){.cta{padding:2rem 1.35rem}.cta h2{font-size:2.05rem}}
+.footer{
+  border-top:3px solid var(--navy);
+  width:min(var(--maxw),92vw);
+  margin:3.5rem auto 0;
+  padding:2rem 0 3rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+}
+.footer img{height:38px;width:auto}
+.footer p{margin:0;color:var(--ink);font-size:1rem;font-weight:600;max-width:52ch}
+@media (max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+.js.motion .reveal:not(.in){transform:translateY(12px)}
+.js.motion .reveal.in{transform:none;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+@media print{
+  body{font-size:11pt;color:#000}
+  .copy{display:none}
+  pre{background:#07111F !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,.callout,.codewrap,.tw,.cta{break-inside:avoid}
+}
+
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <span class="letterhead__meta">Lead Gen From Claude Code</span>
+</header>
+
+<header class="hero">
+  <h1>Run Your Entire Lead Gen and Outbound Motion with Claude Code</h1>
+  <p class="hero__lead">Every GTM tool is an API behind a login. Claude Code calls them directly, moves the data between jobs, and runs the whole motion from your files.</p>
+  <p class="hero__thesis">This guide shows you how to run the whole go-to-market motion from Claude Code as a solo founder or small team. No dashboards, no clicking between tabs, no monthly seats for every tool. Claude Code becomes the operator that reads your files, calls each tool's API directly, and moves data from one job to the next.</p>
+  <p>The core idea repeated across every workflow here: every GTM tool is an API behind a login. Claude Code calls those APIs directly. The model is a commodity now, so the moat is the context you feed it and the way you wire the tools together.</p>
+  <p><strong>When you finish this guide you will have:</strong> a project folder with your business context written down, your tool keys wired in, a lead-sourcing pipeline, an enrichment waterfall, a deterministic scoring and tiering system, cold email campaigns with proper deliverability, an automated reply desk, signal-based outbound, and a weekly measurement loop. You will also know exactly which 20 percent of the work to keep in human hands.</p>
+  <p><strong>Tools you will touch:</strong> Claude Code (the operator, works on the $20/mo plan); a search or scrape source (Apify, Exa); enrichment providers (LeadMagic, Prospeo, Wiza, FullEnrich); a signals source (PredictLeads, Common Room, Trigify); a sender (Instantly, Lemlist, Smartlead); optionally Clay for qualification and a CRM (Attio, HubSpot). You do not need all of them. Start with a cheap enrichment provider, an aggregator, and a sender, then add layers as your bottleneck moves.</p>
+  <p>Every number in this guide comes from real runs published by the operators who built these workflows. Where a number supports a step, it is kept in place. Nothing here is invented.</p>
+  <div class="system-map" role="img" aria-label="Build path: Context, Stack, Wire, Source, Enrich, Send">
+    <div class="map-node"><span>01</span><b>Context</b></div>
+    <div class="map-node"><span>02</span><b>Collapse Stack</b></div>
+    <div class="map-node is-hot"><span>03</span><b>Wire Tools</b></div>
+    <div class="map-node"><span>04</span><b>Source</b></div>
+    <div class="map-node is-warn"><span>05</span><b>Enrich + Score</b></div>
+    <div class="map-node is-stop"><span>06</span><b>Send + Reply</b></div>
+  </div>
+  <p class="caption">You don't start with a tool. You start with the context that makes the agent run GTM like your team, then wire the stack under it.</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#ch1">1. Set Up the Project and Context Layer</a></li>
+    <li><a href="#ch2">2. Audit and Collapse Your Tool Stack</a></li>
+    <li><a href="#ch3">3. Wire the Tools to the Agent</a></li>
+    <li><a href="#ch4">4. The Full Architecture: 7 Layers, 19 APIs</a></li>
+    <li><a href="#ch5">5. Source Your Leads</a></li>
+    <li><a href="#ch6">6. Run the Enrichment Waterfall</a></li>
+    <li><a href="#ch7">7. Score, Tier, and Match Effort to Account Worth</a></li>
+    <li><a href="#ch8">8. Run Cold Email Campaigns</a></li>
+    <li><a href="#ch9">9. Handle Replies</a></li>
+    <li><a href="#ch10">10. Build Signal-Based Outbound</a></li>
+    <li><a href="#ch11">11. Measure and Run the Weekly Loop</a></li>
+    <li><a href="#ch12">12. Keep the Right 20% Human</a></li>
+    <li><a href="#ch13">13. The 7-Day Build Plan and Troubleshooting</a></li>
+  </ol>
+</nav>
+
+<article class="doc">
+  <h2 id="ch1">1. Set Up the Project and Context Layer</h2>
+  <p class="lede">A generic agent writes generic outreach. The thing that makes Claude Code run GTM like your team is the context you give it. The model is a commodity. The context you feed it is the moat. Build this first, before you wire a single tool.</p>
+  <h3>The project folder</h3>
+  <p>Make one folder for the work. Organize the subfolders the way you actually think about the job. One team keeps separate folders for ideas, tools being built, and agency management. For a lead-gen build, a folder called <code>list-builder</code> is enough to start.</p>
+  <p>Inside it, create the file the agent reads first on every run: <code>CLAUDE.md</code>. This is the brain. It holds your hard rules and points to everything else. Keep it short. It carries a plain business description and the rules the agent must follow.</p>
+  <p>The single most important thing to put in <code>CLAUDE.md</code> is proof, not adjectives. Closed deals carry more weight than descriptions. Put real examples of who bought from you and why in there. That is what the agent uses to recognize fit later. Do not write "we help fast-growing SaaS companies." Write who actually signed and what problem they had.</p>
+  <h3>The five reference layers</h3>
+  <p>Around the brain, feed the agent five layers of context:</p>
+  <ol class="numlist">
+    <li><strong>Brain.</strong> The root <code>CLAUDE.md</code> with hard rules that point to everything else.</li>
+    <li><strong>Strategy files.</strong> The written version of the calls you make in your head: your real ICP and the criteria you score on (company size, industry, funding, web traffic).</li>
+    <li><strong>Frameworks.</strong> The copy that has worked, the angles that book meetings, the sequence structure you trust:</li>
+  </ol>
+  <div class="codewrap">
+    <p class="code-title">Copy frameworks</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># Copy frameworks
+
+## First touch
+- Open on the signal, not on us: the funding round, the new hire
+- One specific observation about their business
+- A single, low-friction ask
+
+## What we never send
+- "I hope this finds you well"
+- A three-paragraph pitch before the ask
+- Feature lists
+
+## Proven openers (paste your real winners here)
+- "Saw you just brought on a VP of Sales..."
+- "Noticed [competitor tool] in your stack..."</code></pre>
+  </div>
+  <ol class="numlist">
+    <li><strong>Benchmarks.</strong> The numbers that tell the agent what good looks like. This doubles as a quality gate: any list or draft that comes in under the bar gets reworked before it is sent.</li>
+  </ol>
+  <div class="codewrap">
+    <p class="code-title">Benchmarks</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># Benchmarks
+
+- Deliverable emails on a list: 90% or higher
+- Reply rate on a real buying signal: 15 to 25%
+- Win rate on qualified opportunities: around 28%
+- A cold, signal-free list: around 91% get zero replies, average reply rate near 3.43%. That is the floor</code></pre>
+  </div>
+  <ol class="numlist">
+    <li><strong>Examples.</strong> Real past outputs (lists and messages you personally signed off) in an examples folder. This locks format, tone, and structure, and stops the agent from drifting.</li>
+  </ol>
+  <p>Build these in order: brain and ICP first, then copy frameworks, then benchmarks, then examples. Then keep stacking so it compounds. Every winning email goes back into frameworks. Every result sharpens the benchmarks.</p>
+  <p><strong>Which context to keep:</strong> specific and current. Real ICP, winning copy, this quarter's benchmarks. Cut anything vague (things the model already knows) and anything stale. Outdated rules pull the agent wrong with confidence, so refresh on a schedule or cut them.</p>
+  <h3>Never let the model guess</h3>
+  <p>Most AI outbound reads like a robot wrote it because someone ran a good prompt on no data. The model fills the gap with something plausible, and the reply rate shows it a week later. So one rule runs on every prompt in this guide: never let the model guess. Before any research or writing step, paste the raw data in first. Their actual website copy, their LinkedIn profile, the jobs they have open. It is the least exciting step in the build, and it is the one most teams skip.</p>
+  <h3>The .env file and the ICP file</h3>
+  <p>Create a <code>.env</code> file in the folder and put your API keys inside it. The dot prefix keeps it out of casual shares and out of version control. Add a rule in <code>CLAUDE.md</code>: the agent reads a key only when it needs to make a call, and never prints a key back into chat.</p>
+  <p>Then have the agent turn your business into a written ICP. Ask it to write the ICP in its own words and save an <code>icp.md</code> file (title, industry, size band, geography, and so on). Read it once and fix anything off. Every later step leans on this file, so a wrong line here spreads everywhere.</p>
+  <h3>Split the work into six roles</h3>
+  <p>Do not try to run the whole motion from one prompt. People type "write cold emails to find clients," paste the output, and get no replies. You would never hire one person to be strategist, data researcher, copywriter, and LinkedIn manager at once. Split the work into six jobs, each with its own knowledge file (a skill is just a plain text file, like an onboarding doc for a new hire):</p>
+  <ol class="numlist">
+    <li><strong>Strategy.</strong> Who to go after. Scans your site, defines the ICP, scores every account out of 100. The judgment layer that decides which accounts get the motion's time.</li>
+    <li><strong>Signals.</strong> When to reach out. Watches triggers that mean "in market now": a funding round, a new CRO, an SDR hire, a competitor's tool in their stack.</li>
+    <li><strong>Data.</strong> Who to contact. Pulls verified contacts, but only on accounts that already cleared Strategy and Signals. Enrich late.</li>
+    <li><strong>Copy.</strong> What to say. Writes off the exact signal that fired.</li>
+    <li><strong>Execution.</strong> Running it. Sends emails, LinkedIn messages, and follow-ups in sequence across channels.</li>
+    <li><strong>System.</strong> Keeping it one motion. The orchestrator that connects the other five so one conversation runs end to end: signal fires, contact pulled, copy written off the signal, sequence sends, reply routes back.</li>
+  </ol>
+  <p>Under the six roles sits a library of sub-skills grouped by job. A reference build runs an orchestrator on top plus 52 sub-skills in these categories: Clay (9 skills for automating work inside Clay), Signals (9 covering the most common signals and how to track each), Cold email, LinkedIn ads, LinkedIn content, List building, n8n automation, Email copywriting, Sales triggers, and SDR tool setup. Start with one skill, add the next once the first is pulling its weight, and keep stacking until the whole motion runs from one conversation.</p>
+  <h3>Two layers plus governance</h3>
+  <p>Wire these six as two layers. On top sit the master skills that route each request to the right specialist ("build a campaign" hands to Strategy, then Signals, then Data, in order). Underneath sit the reference files that hold what your company knows: ICP, scoring rules, tracked signals, templates. That reference layer is where your edge lives. The same six specialists with a different reference layer produce different results.</p>
+  <p>Keep the rules separate from the executing part so the agent cannot rewrite its own instructions mid-run. When it spots a change worth making, have it file a proposal you approve before it goes live. Change the system by editing one file: if your ICP shifts, edit the strategy file; a new signal, add a line to the signals file. The working primitives: rules that load based on what you are working on, skills that fire only when a task matches, subagents that each handle one job in their own context, and a memory file that carries learnings from session to session.</p>
+  <p>One client ran this file-based system for 10 months and produced 7.83M dollars in qualified pipeline and 1.52M dollars closed-won across 164 deals, with no new hires. The obvious alternative is hiring a GTM engineer. Postings for the role jumped 205 percent last year, and most of those hires become six-figure list-builders for the SDR team. A file does not ramp for a quarter, need a manager, or quit and take the playbook with it. It also forces the one number teams avoid: pipeline produced against cost to run, readable every day by campaign.</p>
+  <h2 id="ch2">2. Audit and Collapse Your Tool Stack</h2>
+  <p class="lede">Before you wire anything, cut what you do not need. Most GTM stacks are a pile of overlapping subscriptions billed per seat. Almost every one of those jobs is data an API can return per lookup.</p>
+  <h3>Inventory every tool</h3>
+  <p>One sheet, every GTM tool you pay for, four columns plus a last-used column. That last column surfaces most of the savings.</p>
+  <div class="codewrap">
+    <p class="code-title">stack-audit.csv</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># stack-audit.csv
+tool,job,monthly_cost,seats,last_used
+Apollo,find contacts,$99,3,this week
+Prospeo,find emails,$49,1,this week
+Hunter,find emails,$49,2,two months ago
+Wiza,phone numbers,$83,1,this week
+PredictLeads,buying signals,$120,1,last week
+Trigify,social signals,$65,1,never</code></pre>
+  </div>
+  <h3>Group by job</h3>
+  <p>Every stack reduces to about six GTM jobs. Group your tools under them:</p>
+  <ul class="bullets">
+    <li>Find company and contact: Apollo, Clay, big databases</li>
+    <li>Find the email: Prospeo, FullEnrich, Hunter</li>
+    <li>Find the phone: Wiza, Cognism, mobile finders</li>
+    <li>Read buying intent: PredictLeads, Common Room, Trigify</li>
+    <li>De-anonymize site visitors: RB2B, Vector</li>
+    <li>Send and sequence: Instantly, Lemlist, Smartlead</li>
+  </ul>
+  <h3>Decide keep, cut, or replace</h3>
+  <ul class="bullets">
+    <li><strong>Keep</strong> anything that does something no API returns: call-recording analysis, a proprietary dataset.</li>
+    <li><strong>Cut</strong> anything last used more than 60 days ago. Cancel it the same day.</li>
+    <li><strong>Replace</strong> anything whose whole job is data an API can return. That is every email, phone, and enrichment tool.</li>
+  </ul>
+  <h3>What a database actually sells</h3>
+  <p>When you decide, remember a lead database sells three unbundled things:</p>
+  <ul class="bullets">
+    <li><strong>The scrape.</strong> Mostly public LinkedIn data. You can do this yourself now.</li>
+    <li><strong>The cleanup.</strong> Dedupe, verification, normalizing job titles. This becomes your step if you scrape.</li>
+    <li><strong>The work email.</strong> LinkedIn and Google Maps do not publish it. This is the real thing databases have, so buy it per unit instead of per month.</li>
+  </ul>
+  <h3>Move the data jobs onto one API</h3>
+  <p>Instead of a dozen tools, route your data jobs through one unified API that acts as a switchboard: one request, it picks the provider that can answer, falls through to the next on an empty result, and returns combined coverage. One key in, one invoice out, priced per credit rather than per seat, so a five-person team stops paying five subscriptions.</p>
+  <div class="codewrap">
+    <p class="code-title">one call, one contact</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># one call, one contact
+POST api.gtm-stack.com/v1/contact
+{ "name": "Dana Ruiz", "company": "Northwind" }
+
+-&gt;  { "email": "dana@northwind.io", "phone": "+44...",
+      "status": "verified", "source": "provider pool" }</code></pre>
+  </div>
+  <h3>Cancel old subs in the right order</h3>
+  <ol class="numlist">
+    <li>Export your data first. Access dies with the subscription, and some tools charge to return your records.</li>
+    <li>Run the old tool and the new API side by side for a week. Compare three numbers: contacts found, data freshness, cost per lookup.</li>
+    <li>Cancel only once the new setup matches or beats the old. Watch for annual lock-ins and buried cancel buttons.</li>
+  </ol>
+  <h3>The bill after</h3>
+  <div class="codewrap">
+    <p class="code-title">before  -&gt;  after</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># before  -&gt;  after
+12 tools, per seat        ~$1,400 / month
+one GTM API, per lookup   ~$300 / month</code></pre>
+  </div>
+  <p>Enriching 2,000 contacts a month costs tens of dollars in credits (a few cents per email, a bit more per phone) against a few hundred in seats. The marginal cost of a list drops far enough that list size and experiments stop being rationed.</p>
+  <h2 id="ch3">3. Wire the Tools to the Agent</h2>
+  <p class="lede">Now connect what you kept. The bottleneck that stalls most AI outbound is not the model's intelligence. It is tool access. Fix that here.</p>
+  <h3>Prerequisites</h3>
+  <ol class="numlist">
+    <li>A coding agent that calls APIs and reads local files. Claude Code.</li>
+    <li>An account and API key per tool you kept. The key lives under a settings tab named API or Developers. Most tools give free starter credits.</li>
+    <li>A rough starting list of accounts or people. Rough is fine.</li>
+  </ol>
+  <h3>Keys in one .env</h3>
+  <p>Put one key per tool in the <code>.env</code> file the agent reads on every run:</p>
+  <div class="codewrap">
+    <p class="code-title">.env  (one key per tool the agent can call)</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># .env  (one key per tool the agent can call)
+PROSPEO_API_KEY=xxxx
+FULLENRICH_API_KEY=xxxx
+WIZA_API_KEY=xxxx
+PREDICTLEADS_API_KEY=xxxx
+COMMONROOM_API_KEY=xxxx
+INSTANTLY_API_KEY=xxxx</code></pre>
+  </div>
+  <p>Every tool call follows the same shape: one request, one contact back.</p>
+  <div class="codewrap">
+    <p class="code-title">one tool call, one contact</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># one tool call, one contact
+POST api.prospeo.io/email-finder
+{ "first_name": "Dana", "last_name": "Ruiz", "company": "Northwind" }
+
+-&gt;  { "email": "dana@northwind.io", "status": "verified" }</code></pre>
+  </div>
+  <h3>Two ways the agent talks to a tool</h3>
+  <p>There are two connection styles. A plain REST call (the agent hits the endpoint directly using the key), or an MCP connection (the agent calls the tool in plain language through a bridge). MCP became the standard way tools expose themselves to agents in early 2026, and connecting a new tool went from a week of engineering to a sentence. To add an MCP connector: open connector settings in Claude, add a connector, point it at the tool's MCP. Whichever style you use, run one test lookup before any real work.</p>
+  <p>When you have a tool with dense docs, make the agent read them first. This is the difference between a skill that works and one that fails quietly:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Here is my [TOOL] API key: [KEY]. Research the [TOOL] API docs, build
+a working understanding of the endpoints, and document them locally so
+you do not re-fetch every time.</code></pre>
+  </div>
+  <h3>The routing table</h3>
+  <p>For every job, tell the agent which tool to start with, which to fall back to, and how to break a tie. Keep it in a <code>routing.md</code> file the agent reads before every run. Each row is a job with three lines: <code>first</code> (start tool), <code>then</code> (fallback on empty), <code>pick</code> (the rule when choosing). A <code>#</code> marks a comment the agent ignores.</p>
+  <div class="codewrap">
+    <p class="code-title">routing.md</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># routing.md
+
+## find the email
+first   Prospeo        # verifies as it finds
+then    FullEnrich     # cascades 20+ sources on a miss
+pick    cheapest verified hit wins
+
+## get the phone
+first   Wiza           # turns a LinkedIn profile into contact data
+then    FullEnrich
+pick    quality first, phone data is worth more
+
+## read intent
+first   PredictLeads   # hiring, funding, tech adoption
+then    Common Room    # product and community signals
+pick    run both, keep the stronger read
+
+## write the angle
+first   your own skill # built from messages that have worked
+pick    no fallback, this one is your voice
+
+## send it
+first   Instantly      # cold email and warmup
+then    lemlist        # when a lead needs LinkedIn steps too
+pick    match the channel to the lead tier</code></pre>
+  </div>
+  <p>Add per-row extras only when a job earns the complexity: a <code>verify</code> line (a separate check before keeping a result) or a <code>cap</code> line (a credit limit for that one job).</p>
+  <p>The "write the angle" row points at your own skill: a short instruction file built from subject lines and openers that have worked. A first version:</p>
+  <div class="codewrap">
+    <p class="code-title">skills/angles.md</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># skills/angles.md
+voice     plain and specific, one idea per sentence
+open      with something true about their company
+avoid     generic praise and "I came across your profile"
+proof     we helped a similar team cut ramp time by 40%
+close     a soft question, not a hard meeting ask</code></pre>
+  </div>
+  <p><strong>Cheap versus accurate rule.</strong> For bulk work (emails across a large list), price wins: a basic lookup at a few cents beats an aggregator checking 20 sources at three to four times the cost. For scarce or high-stakes work (a direct dial for a hot account), accuracy wins. Put a spend cap on the whole run either way. On an empty result after all fallbacks, mark that field <code>not found</code>, keep the rest of the row, and continue.</p>
+  <h3>Score a tool before you add it</h3>
+  <p>Rate any candidate 1 to 5. A score below 4 on the first three rows is a no.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Criterion</th><th>Pass bar</th></tr></thead>
+      <tbody>
+        <tr><td>Latency</td><td>Responds in seconds, not minutes</td></tr>
+        <tr><td>Fails gracefully</td><td>Clear error, not a timeout</td></tr>
+        <tr><td>Structured output</td><td>Clean JSON the agent can parse</td></tr>
+        <tr><td>API / MCP access</td><td>Drivable without a dashboard click</td></tr>
+        <tr><td>Has a fallback path</td><td>A backup source or waterfall exists</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Track each tool's latency separately from the model's, so a slow API does not read as a slow agent.</p>
+  <p>Data-layer definition of done: one input (a domain or a persona) returns a complete record, firmographics plus a verified contact, in a single call, with a fallback when it comes back empty. Test any data tool on 20 real domains. If it cannot return a complete record in one call for at least 17 of them, switch tools or add a waterfall.</p>
+  <h3>Keep the stack lean</h3>
+  <p>Each tool call is roughly 85 percent reliable, and many setups block and then error after about seven seconds. Chained calls compound: 4 calls chained is about 52 percent clean, 7 chained about 32 percent, 11 chained about 1 in 6. One good tool per layer beats the best tool per job, because fewer calls means more finished runs. Every dashboard-only tool that needs a human to click is a stall point and a first candidate for replacement.</p>
+  <h3>Put a spend cap on everything</h3>
+  <p>An unmetered agent once ran through 4,200 dollars in API credits before anyone noticed. Set a hard cap per run and a monthly account limit. The agent stops on either. Have it keep a running credit tally during a run and stop at the cap. This is not optional.</p>
+  <h3>Rebuild recurring workflows as prompts</h3>
+  <p>Once tools are wired, keep your repeat workflows as prompts in a file so they run identically each time:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Build a list of B2B SaaS founders in Berlin. Enrich each
+one with a verified email and a phone number, and flag
+anyone showing a recent hiring or funding signal.
+
+Use the GTM API for every lookup, and skip anything that
+comes back unverified.</code></pre>
+  </div>
+  <p>A fuller one-prompt run, using the routing table:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Build a list of software CEOs in London. Find the ones
+showing buying signals right now. Write three angles for
+each, and load the result into my sequencer.
+
+Use routing.md to pick the tool for every job. Verify each
+email before you keep it, and cap the run at my budget.</code></pre>
+  </div>
+  <p>Behind that prompt the agent builds the list, enriches (email row, then phone row), scores intent, writes angles from your own skill, and loads to the sequencer. It runs many contacts in parallel and retries a single slow or rate-limited call. A few hundred contacts finish in minutes.</p>
+  <h3>Keep a run log to tune the tools</h3>
+  <div class="codewrap">
+    <p class="code-title">run-log.csv</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># run-log.csv
+job,tool,result,cost
+find email,Prospeo,verified,$0.03
+get phone,Wiza,found,$0.09
+read intent,PredictLeads,hot,$0.05
+write angle,own skill,3 angles,$0.00
+send,Instantly,queued,$0.00</code></pre>
+  </div>
+  <p>Cost per finished contact runs around 15 to 20 cents on a run like this, so 1,000 ready contacts cost less than one monthly seat. The log surfaces tools that keep losing to their fallback (demote or drop them) and cheaper options beating pricier ones on quality (promote them).</p>
+  <h2 id="ch4">4. The Full Architecture: 7 Layers, 19 APIs</h2>
+  <p>Before you build each stage, here is the whole machine. Claude Code replaces the human integration layer, the person who copies data between tabs. It talks to each API directly and passes data from one layer to the next with no dashboard. Nineteen APIs map onto seven sequential layers, and each layer feeds the one below it.</p>
+  <p><strong>Layer 1, Signal (catch intent before a form is filled).</strong></p>
+  <ul class="bullets">
+    <li><strong>PredictLeads.</strong> Hiring surges, funding rounds, tech adoption across 100M+ companies.</li>
+    <li><strong>Common Room.</strong> Community, product, and GTM signals; warm leads from GitHub, Discord, LinkedIn, G2, and job changes.</li>
+    <li><strong>Attention.</strong> Records every sales call, queried in plain language for competitor mentions and recurring objections.</li>
+    <li><strong>RB2B and Vector.</strong> De-anonymize people already on your website, for example someone reading the pricing page.</li>
+    <li>When several signals fire at once, there is no clever rule. Use triggers that have actually closed for you before, and A/B test the uncertain ones.</li>
+  </ul>
+  <p><strong>Layer 2, Data (name and company into real contact data).</strong></p>
+  <ul class="bullets">
+    <li><strong>Openmart.</strong> 200M+ local business records; search by category and location, enrich to verified emails and phones.</li>
+    <li><strong>Wiza.</strong> A single LinkedIn profile into verified contact data, 50+ data points on one person.</li>
+    <li><strong>Prospeo.</strong> 98 percent-plus email accuracy on a 200M-record database; search by person, company, or domain.</li>
+    <li><strong>FullEnrich.</strong> The waterfall play that saves the most money: one call cascades through 20+ providers until it lands email plus phone, at 80 percent-plus find rates. Replaced three separate enrichment subs for most teams.</li>
+    <li><strong>Apollo.</strong> Underneath all of it for broad B2B firmographic and technographic list-building.</li>
+  </ul>
+  <p><strong>Layer 3, Action (Claude Code builds campaigns and fires sequences, no one in the UI).</strong></p>
+  <ul class="bullets">
+    <li><strong>Instantly.</strong> Programmatic cold email: campaigns, warmup, analytics, reply webhooks that fire the second a reply lands.</li>
+    <li><strong>Lemlist.</strong> Multichannel sequences (email, LinkedIn, calls), routing each lead by its enrichment data.</li>
+    <li><strong>LinkedIn Ads.</strong> Paid acquisition: create campaigns, sync audiences, retarget accounts showing intent.</li>
+  </ul>
+  <p><strong>Layer 4, Automation.</strong></p>
+  <ul class="bullets">
+    <li><strong>n8n.</strong> The glue that chains everything above, with triggers, branches, and loops that run on their own. A Layer 1 signal becomes a Layer 3 sent email overnight.</li>
+  </ul>
+  <p><strong>Layer 5, System of record.</strong></p>
+  <ul class="bullets">
+    <li><strong>Attio.</strong> AI-native CRM: people, companies, deals, custom objects, lists, tasks, real-time webhooks on every change. Everything points back to one record, because two tools disagreeing about an account is what breaks multi-play setups.</li>
+  </ul>
+  <p><strong>Layer 6, Conversion.</strong></p>
+  <ul class="bullets">
+    <li><strong>Cal.com.</strong> Embed booking links in emails, auto-route each meeting, sync every booking back to the CRM.</li>
+  </ul>
+  <p><strong>Layer 7, Revenue.</strong></p>
+  <ul class="bullets">
+    <li><strong>Hyperline.</strong> Billing, subscriptions, usage metering, invoicing, webhooks on every payment, and analytics on ARR, MRR, and churn.</li>
+  </ul>
+  <p>You can also think of the core as four layers to build in order: Data (turn a name into a complete record), Signals (flag accounts with a live trigger), Orchestration (apply your rules and route), Execution (send, read replies, adjust). Concrete tools for a lean four-layer build:</p>
+  <ul class="bullets">
+    <li><strong>Data.</strong> CompanyEnrich returns firmographics, contacts, and lookalikes from a 30M+ company base in a single call. Prospeo does free email and mobile lookup so the agent resolves contacts before you pay to scale. Apollo brings 275M+ contacts, reachable straight from Claude via its MCP server. LeadsFactory runs a LinkedIn waterfall that falls back to adjacent titles when the exact persona is not there, so the agent never lands on an empty list.</li>
+    <li><strong>Signals.</strong> PredictLeads through its API, with Common Room, Sales Navigator, and BuiltWith as common companions.</li>
+    <li><strong>Orchestration.</strong> Clay, whose Builder Agent spins up a workflow from one plain-English sentence and can fire external MCP actions after enrichment. Relevance AI is the programmable multi-agent layer with the governance to run in production, not just a demo.</li>
+    <li><strong>Execution.</strong> Instantly manages inboxes and turns replies into meetings. Lemlist researches before the sequence so the first message carries context. Nooks works across phone, LinkedIn, and email and rewrites the sequence as call and reply outcomes come in.</li>
+  </ul>
+  <p><strong>Do not build the whole diagram at once.</strong> Start at your actual bottleneck, which is usually enrichment or the reply-to-CRM handoff. Wire that one seam clean, then add the next layer. Keep every layer simple enough to debug at 2am. Overbuilding branches and conditions is what kills these systems.</p>
+  <h2 id="ch5">5. Source Your Leads</h2>
+  <p class="lede">With context and tools in place, build lists. Three sourcing methods, from cheapest to most precise: scrape with Apify, search with Exa, or find closed-won lookalikes.</p>
+  <h3>Method A: Scrape on demand with Apify</h3>
+  <p>Apify is a marketplace of scrapers (LinkedIn search, LinkedIn profiles, Google Maps, Instagram, and more). Give it parameters, it returns structured data. The Apify MCP lets Claude Code operate it directly: read which scrapers exist, pick one, fill the parameters, run it, hand back the output. That removes the roughly 20 minutes of reading docs to choose among hundreds of scrapers.</p>
+  <p><strong>Set up the account.</strong> Sign up and stay on the free tier, which gives 5 dollars of store credit. Spend the 5 dollars on a test run in your actual category, not a demo. Move to a paid plan only once a run produces a list you would actually send.</p>
+  <p><strong>Give it your URL, not your targeting brief.</strong> Do not write out your ICP. Point the model at your own site and have it derive the ICP. In a real run, pointing it at the operator's own site and asking it to analyze the offer and work out the best 100 leads to contact, it pulled the offer, the service model, the ICP, the proof points, and the pricing off the page, then chose the targeting itself: founder, co-founder, or CEO, 11 to 200 employees, B2B software, US, verified emails only. It chose company size before job title, the opposite of how most people write an ICP.</p>
+  <p><strong>Fix the emails.</strong> Scraped lists mix work and personal addresses. On that run, 70 of 100 were professional domains and 30 were personal. Convert the personal ones to work addresses through an email-finding API (LeadMagic, or a tool already in your stack). Tell Claude to read the API docs first so it stops guessing field names.</p>
+  <p><strong>Build the list that has no export: your post engagers.</strong> Every post produces people who raised a hand. That is not a database segment you can buy. Pull everyone who engaged with your posts over the last week using the LinkedIn post reaction scraper (an Apify actor), rank the top ones against your ICP, push the survivors through Clay to qualify, and reach them on the channel they came from. One operator's post engagement counts ran 296, then 173, then 479, then 440.</p>
+  <p>The whole run, in order:</p>
+  <ol class="numlist">
+    <li>Sign up for Apify, free tier, 5 dollars credit.</li>
+    <li>Add the Apify MCP to Claude connectors. Once.</li>
+    <li>Hand Claude your URL, not a brief.</li>
+    <li>Read the ICP back. A wrong ICP is a website problem, so fix the site, not the list.</li>
+    <li>Ask for the list. Let the model pick the scraper.</li>
+    <li>Count the work domains.</li>
+    <li>Convert the personal ones through an email API. Docs first.</li>
+    <li>Pull your post engagers from the last week.</li>
+    <li>Rank them against the ICP.</li>
+    <li>Qualify in Clay before outreach.</li>
+    <li>Send.</li>
+  </ol>
+  <p>Steps 3 and 4 are the ones people skip. Keep the ICP the model produces and reuse it downstream. Rewriting it by hand causes targeting drift.</p>
+  <p><strong>Costs.</strong> A 100-lead run is about 0.10 dollars of Apify compute on a 29 dollar per month plan, plus LeadMagic credits for the conversions, with Clay alongside for qualification. Apollo starts at 49 dollars a month before advanced filters. ZoomInfo does not publish a price at all, which tells you how that conversation goes. The marginal cost of a list drops to about 0.10 dollars, so list size stops being rationed.</p>
+  <p><strong>Caveats.</strong> Scraped data is messier than database data, so the dedupe and verification step is on you now. Raw Google Maps output is especially noisy. Some community scrapers charge their own fee on top of Apify credits, so check an actor's pricing before scaling to thousands of rows. LinkedIn scrapers need your session cookies pasted into the actor settings, which takes about 30 seconds and the docs walk you through it.</p>
+  <h3>Method B: A reusable list-builder with Exa</h3>
+  <p>For a cleaner, repeatable project, use a search API built for list work. Exa is built for finding companies rather than general web search, and it is swappable. You need four things: Claude Code, a search API (Exa), an enrichment step, and the project folder from Chapter 1 that holds your context.</p>
+  <ol class="numlist">
+    <li><strong>Turn the business into an ICP.</strong> Have the agent write the ICP in its own words and save <code>icp.md</code>. Read it once, fix anything off.</li>
+    <li><strong>Build and score the list in one pass.</strong> Ask the agent to find companies and rank them at the same time. It checks each against the profile, gives a score of 0 to 10 with a short reason, and groups the output by industry and geography. Ask for 100 companies and usually a couple dozen land at 9 or higher. Those are your first calls of the week. Read a few reasons before trusting the scores. A shaky 9 usually means the ICP needs one more line of detail, so add it and re-run in a minute.</li>
+    <li><strong>Find the right contact.</strong> Ask the agent to find the person, starting with the top accounts so you can check quality first. It returns a clean row: name, title, company, domain, LinkedIn URL. Instruct it to leave a field blank when unsure. A guessed contact is worse than an empty cell. Happy with the first 10, point it at the rest.</li>
+    <li><strong>Enrich and hand off.</strong> The project calls the enrichment API for emails, drops the ones it cannot confirm, and writes a clean file ready for your sending tool.</li>
+  </ol>
+  <p>The second list is one line away, because the ICP and keys are already in place. Point the agent at the folder, ask for more, and get another ranked list in about 10 minutes. What compounds is the judgment encoded in <code>CLAUDE.md</code> and the ICP, not the cheap, swappable search tool.</p>
+  <h3>Method C: Closed-won lookalikes (highest precision)</h3>
+  <p>Feed one company you already sold to, find companies that most resemble it, and lead the email with competitor proof. This is the accuracy play for high-ticket outreach.</p>
+  <p>Why Claude over lookalike tools like Ocean, PredictLeads, or Disco: those score similarity on firmographics and technographics only, so they cannot see the offer or positioning. Claude reads the closed-won company's actual site and offer, and scores others on offer match. Rule of thumb: database tools for volume plays (case-study amplification, TAM builds), Claude reading websites for accuracy plays (closed-won, high-ticket).</p>
+  <p><strong>Stack:</strong> Instantly (send, enrichment, and verification in one), Claude Code (use the desktop app for your first campaigns so you get the visual UI and per-step approval), and a closed-won CSV exported from your CRM, one row per company, which must include the primary contact's job title. Open Claude Code in the Claude app's Code tab, and use Whisper Flow to talk instead of type so you are not writing the whole plan by hand.</p>
+  <p>The email is a fixed three-line framework where only the variables are editable:</p>
+  <ol class="numlist">
+    <li>Acknowledgment: "I saw you offer {their_offer}."</li>
+    <li>Proof: "We set up {what_you_did} for {their_competitor} and it generated {result}." This line is load-bearing. If it is not specific, kill the campaign.</li>
+    <li>Resource ask: "Want the strategy we used?" Not "hop on a call."</li>
+  </ol>
+  <p>Run eight prompts. Phase 1 runs once. Phases 2 through 5 run every campaign.</p>
+  <p>Phase 1, connect Instantly:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Prompt 1: "Here is my Instantly API key: [KEY]. Research the Instantly API docs, build a working understanding of the endpoints, and document them locally so you do not re-fetch every time."
+
+Prompt 2: "Now build up the API calls for what we are planning to do: create a campaign, add a sequence, find emails, and push leads. List the calls you will use for each. Do not run anything yet, just show me the plan."</code></pre>
+  </div>
+  <p>Phase 2, find lookalikes:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Prompt 3: "Here is my closed-won CSV. Tell me your understanding of the data before we do anything with it."
+
+Prompt 4: "Find companies that look like [CLOSED-WON COMPANY]. Look at [your own tools directory or blog], G2, and other comparison sites on the web. For each candidate, analyze their positioning and their offer, not just their industry. Give each a similarity score from 1 to 10 so I can filter to the closest matches."</code></pre>
+  </div>
+  <p>The "analyze positioning and offer, not just industry" line is non-negotiable. Without it, Claude returns adjacent-but-wrong matches. In a live run, that one line was the whole difference. Without it, Claude saw the closed-won company played in the outbound-tools space and handed back anything adjacent: Clay came back as a top match, a peer tool with a completely different offer. With the line in, the same run returned Smartlead, Woodpecker, Lemlist, Overloop, Reply, and Apollo. Every one a direct positioning-and-offer match, every one a company where "we work with your competitor" lands clean. Checkpoint: skim the top 5. If they are genuine competitors, the scoring worked. If not, re-run Prompt 4 with a tighter offer description.</p>
+  <p>Phase 3, find people. Target the same title you already closed.</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Prompt 5: "For each company on the lookalike list, find the [VP of Sales / Head of Growth / your closed PC title]. Only include contacts based in [US, UK, EU]. Return name, company, title, and the offer each company runs."</code></pre>
+  </div>
+  <p>Claude self-routes to a connected Clay connector if present, otherwise native web search, which is fine for a handful of specific people. Post-filter geography and seniority, since Sales Navigator itself admits 70 to 80 percent search accuracy.</p>
+  <p>Phase 4, copy:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Prompt 6: "Using this framework [paste the 3 lines above], write email one for the campaign. You may only edit the variables {their_offer}, {their_competitor}, {what_you_did}, and {result}. Keep the structure and the resource ask fixed. Pull {their_offer} from each company's site."</code></pre>
+  </div>
+  <p>Phase 5, deploy and subject line:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Prompt 7: "Create a campaign in Instantly named 'Instantly Lookalike'. Add the copy above as email one. Find the work emails of these prospects using Instantly, then push them into the campaign once they are enriched. Leave the campaign in draft."
+
+Prompt 8: "Give me 10 subject line variants for this campaign and set up an A/B split across the first send so we can let open rate pick the winner."</code></pre>
+  </div>
+  <p>One judgment call on Prompt 8: Claude will usually propose "quick question" as a subject line. Do not ship it blind. The line is over-run, roughly half of ESPs treat it as a soft spam signal, and trained buyers filter it on sight. The counter-case is real too: Nick Abraham, who has run cold email agencies for years, still champions it with data behind him, so a generic subject does work in some ICPs. That is why Prompt 8 settles it with an A/B test instead of a guess.</p>
+  <p>Then eyeball the preview in Instantly and flip the campaign from draft to active. The eight prompts back to back take about 15 minutes on a 20 dollar per month Claude plan.</p>
+  <p>Three ways to extend this into a system: point Claude at your last 50 call transcripts in a vertical, catalog recurring pain, and when 12 of 15 say the same thing, that line becomes the next campaign's opener verbatim; seed a new lookalike campaign off every new case study (needs Ocean or PredictLeads for volume); surface objections from transcripts and pre-empt them in line one. The moat is closed-won data cleanly tracked, a copy framework tested for months, and the discipline to keep the send list narrow. Complicated campaigns almost never beat simple ones.</p>
+  <h2 id="ch6">6. Run the Enrichment Waterfall</h2>
+  <p>Whatever method sourced your list, you now have names and companies that need verified emails. Chain your email providers cheapest to priciest so the bulk gets found before premium rates hit. Think of the providers as stacked nets: the cheapest and widest at the top, the aggregator last. Coverage rises at each step while the bill stays small, because the cheap provider does most of the finding. Enrich late, only on accounts that already cleared fit and signal.</p>
+  <p><strong>Prerequisites.</strong> An account and API key per provider, a list with at least a name and company (a LinkedIn link or website helps the match and lowers cost), and Claude Code. You can start with just two providers, one cheap and one aggregator.</p>
+  <p><strong>Provider order and why:</strong></p>
+  <ul class="bullets">
+    <li><strong>LeadMagic first.</strong> Cheap, around 3 cents per email found, broad B2B, clears most of a list.</li>
+    <li><strong>Prospeo second.</strong> Good at deriving the address from a company website domain.</li>
+    <li><strong>Wiza third.</strong> LinkedIn-based, can pull a phone alongside the email, costs more.</li>
+    <li><strong>FullEnrich last.</strong> The aggregator that checks 20+ sources in one call. Best odds and highest price, so it only sees the last stubborn names.</li>
+  </ul>
+  <p>Build a <code>waterfall/</code> folder with four things: the <code>.env</code>, the rules file, the input CSV, and an empty <code>output/</code> folder.</p>
+  <div class="codewrap">
+    <p class="code-title">.env</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># .env
+LEADMAGIC_API_KEY=xxxx
+PROSPEO_API_KEY=xxxx
+WIZA_API_KEY=xxxx
+FULLENRICH_API_KEY=xxxx</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">waterfall.md</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># waterfall.md
+
+## Order (cheapest first)
+1. LeadMagic
+2. Prospeo
+3. Wiza
+4. FullEnrich
+
+## Rules
+- For each person, try the sources in order.
+- Stop at the first source that returns a valid, checked email.
+- Check every email before keeping it. Drop the risky ones.
+- Cap spend at 2,000 credits per run.
+- Save one row per person: name, company, email, source, status.</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">contacts.csv</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># contacts.csv
+name,company,linkedin
+Dana Ruiz,Northwind,linkedin.com/in/danaruiz
+Sam Okafor,Brightloop,linkedin.com/in/samokafor</code></pre>
+  </div>
+  <p>The run prompt:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Read contacts.csv. For each person, find a work email using
+the sources in waterfall.md, in order. Try the next source
+only when the current one comes up empty. Check every email
+before you keep it, and drop anything that will bounce. Cap
+spend at 2,000 credits. Save the results to
+output/verified.csv with the source and status for each row.</code></pre>
+  </div>
+  <p>The agent handles rate-limit waits and retries, and keeps a running credit tally to stop at the cap.</p>
+  <p><strong>Verification looks at three things:</strong> the address is syntactically correct, the company mail server exists, and the server accepts mail for this specific person. It drops catch-all addresses (where the server says yes to everyone) and anything risky or unknown. Statuses are verified, risky, or not found. Only send to verified. Bounces wreck your sender reputation, and Gmail and Outlook will route you to junk. Reputation takes weeks to build and one blast to dent.</p>
+  <p>A typical 100-contact result: LeadMagic finds 60, Prospeo adds 20 (80), Wiza adds 7 (87), FullEnrich adds 5 (92), with 8 unfindable, for 92 verified of 100.</p>
+  <div class="codewrap">
+    <p class="code-title">output/verified.csv</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># output/verified.csv
+name,company,email,source,status
+Dana Ruiz,Northwind,dana@northwind.io,LeadMagic,verified
+Sam Okafor,Brightloop,sam@brightloop.ai,Prospeo,verified</code></pre>
+  </div>
+  <p>The waterfall costs about 4 dollars per 100 contacts against roughly 10 dollars for a single premium provider, a 58 percent saving. Of the 8 unfound, some have a Wiza phone you can call or text, others you reach on LinkedIn, and re-running the same list in a month clears a couple more as jobs change.</p>
+  <p>Hand off only the verified rows:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Take output/verified.csv and upload only the verified rows to
+the campaign in Instantly. Skip anything marked risky.</code></pre>
+  </div>
+  <p><strong>Tuning.</strong> Reorder providers per market: for LinkedIn-heavy prospects, move Wiza up; for tiny companies, lean on the domain-based finder. Tighten the cap while testing, loosen it for a real send. Add any provider that covers a gap. The rule never changes: cheapest and broadest first, most expensive last.</p>
+  <h2 id="ch7">7. Score, Tier, and Match Effort to Account Worth</h2>
+  <p>A verified list still needs to be ranked, because you cannot give every account the same effort. The key move is to split judgment from arithmetic. The model reads, researches, and writes. A Python script does every number that decides who gets contacted. Zero AI in the math. This fixes AI scoring drift, where the same account scores 8 on Monday and 6 on Thursday on identical data.</p>
+  <h3>Build the list, then score it (three passes)</h3>
+  <ol class="numlist">
+    <li>Start with the segments most likely to convert. Three groups jump the queue: accounts already engaging with your brand (site visits or email opens), lookalikes of your five best current clients, and accounts throwing off live buying signals. Clay sits at the center, with Apollo, PredictLeads, and Common Room feeding the signal and firmographic data.</li>
+    <li>Map the full addressable market around those segments. Filter by company size, geography, industry, revenue, and tech stack, and pull contacts through Clay, Wiza, and Prospeo. Deduplicate so no account lands in two campaigns at once, and enrich every lead with 8 to 12 real data points before anyone writes a word of copy.</li>
+    <li>Score and sort. Grade each account against your five best customers and run that grading at volume, dropping every account in your TAM into one of three tiers.</li>
+  </ol>
+  <h3>Set up the scoring project</h3>
+  <p>Put a <code>CLAUDE.md</code> at the center of the scoring folder:</p>
+  <div class="codewrap">
+    <p class="code-title">CLAUDE.md</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># CLAUDE.md
+
+You run lead qualification for our company. Follow these rules on every run.
+
+## Hard rules
+- Never assign a score yourself. Run score.py and use its output.
+- Read company_list.csv and scoring_criteria.md before scoring anything.
+- Process the list in batches of 100 to 200 rows for quality.
+- Default to plan mode. Show me the plan before you execute it.
+- Exclude existing customers from any output.
+
+## Where things live
+- scoring_criteria.md   the rubric
+- company_list.csv      the enriched data, one row per account
+- score.py              the deterministic scoring
+- templates/            the shape of every output
+- .env                  API keys (Apollo, Instantly)</code></pre>
+  </div>
+  <h3>Turn enrichment into real numbers</h3>
+  <p>Enrich each account into hard numbers before scoring: headcount, funding, revenue signals, tools in the stack, and monthly web traffic (a demand proxy). If a field cannot be a number or a hard fact, it belongs in the context the model reads, not in the scoring data. Score blanks as zero. No disclosed funding is a 0, never a flattering middle estimate. Enrich every lead with 8 to 12 real data points before any copy is written.</p>
+  <h3>Write the rubric</h3>
+  <p>Every rule points at a real column and hands back a fixed number. Include disqualifiers.</p>
+  <div class="codewrap">
+    <p class="code-title">Scoring criteria</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># Scoring criteria
+
+## Disqualifiers (drop before scoring)
+- Already a customer
+- Fewer than 5 employees
+- No work email found
+
+## Headcount (employees)
+- 200 or more ........ +30
+- 50 to 199 .......... +20
+- 10 to 49 ........... +10
+
+## Funding raised (USD)
+- 10M or more ........ +25
+- 1M to 10M .......... +15
+
+## Tech stack
+- Runs a CRM we integrate with ........ +20
+
+## Monthly web traffic
+- 50,000 or more ..... +15
+- 10,000 to 49,999 ... +8
+
+## Tiers
+- Tier 1: 70 and above
+- Tier 2: 40 to 69
+- Tier 3: below 40</code></pre>
+  </div>
+  <p>Let Claude write the <code>score.py</code> from the rubric, then read the script once. That read is the cheapest insurance you will buy. Keep the script in version control next to the rubric. Score in batches of 100 to 200 rows. The script is exact at any size, but the model's surrounding work (context gathering, contact finding, copy) degrades when it juggles 10,000 rows at once.</p>
+  <p>If you prefer a weighted model, the same idea in one block, where Clay's AI grades and Claude Code runs it at volume:</p>
+  <div class="codewrap">
+    <p class="code-title">Account scoring rubric. Clay AI grades, Claude Code runs it at volume.</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># Account scoring rubric. Clay AI grades, Claude Code runs it at volume.
+weights = {
+    "firmographic_match": 40,   # size, industry, geography, revenue
+    "tech_stack_match":   20,   # runs the tools your buyers run
+    "buying_signal":      30,   # funding, hiring, tool change, site visit
+    "brand_engagement":   10,   # opened an email, visited, follows you
+}
+
+score = weighted_score(account, weights)   # 0 to 100
+
+if   score &gt;= 75: tier = 1   # dream      -&gt; manual, multichannel
+elif score &gt;= 45: tier = 2   # good       -&gt; automated, value-first
+else:             tier = 3   # plausible  -&gt; email at scale</code></pre>
+  </div>
+  <p>A worked account: 320 employees (+30), 14M raised (+25), HubSpot (+20), 60,000 visits (+15), not a customer with an email found, scores 90, Tier 1, high-touch. Against a 12-person company with no funding, no CRM, and 3,000 visits, which is +10, Tier 3, light nurture. One run of 100 companies returned 26 tier-one, 7 tier-two, and 67 excluded.</p>
+  <h3>Match the effort to the tier</h3>
+  <p>The tiers are not just labels. Each one gets a different motion.</p>
+  <p><strong>Tier 1, by hand.</strong> Write the first 25 to 50 messages entirely by hand, no templates. This books meetings and produces the exact lines that become your templates. Run three channels at once: phone (via Nooks), LinkedIn (comment and conversation before any pitch), and email (only messages you would be happy to have read aloud in their leadership meeting). Warm the Tier 1 list with LinkedIn ads for weeks before you reach out.</p>
+  <p><strong>Tier 2, automate but keep the value.</strong> Automated and multichannel, where every message is useful whether or not they reply. Lead with a resource matched to the signal: a hiring spike gets a teardown of that role's struggles, a funding round gets a benchmark, a new tool gets a read on what breaks next. Clay assembles the personalization and the resource, Lemlist runs email plus LinkedIn.</p>
+  <p><strong>Tier 3, volume finds signal.</strong> The widest and cheapest tier, whose job is to collect information. Email at scale via Instantly with 4 to 5 copy variations in one campaign to learn which angle, subject, or offer pulls, in days. Winners travel up to Tier 2 and Tier 1.</p>
+  <p>Then route by tier automatically: Tier 1 is high-touch and human, Tier 2 is a warm automated sequence, Tier 3 is light nurture until signals change.</p>
+  <p><strong>Failure modes to avoid:</strong> the model filling missing data instead of scoring it zero; a 20-rule rubric nobody can read; skipping the disqualifiers (which burns Tier 2 effort on companies you would never sign); and shipping the generated script unread (a wrong threshold can sit in production for months). The payoff is a system that is auditable (the rubric and script explain any score in about 10 seconds), reproducible, and holds at scale. A generic 10,000-email blast runs around a 0.5 percent response. Signal-based targeting off a scored list runs a 28 percent win rate on qualified opportunities.</p>
+  <p>Refresh your total addressable market at least quarterly, and aim to reach the entire addressable market every three to six months.</p>
+  <h2 id="ch8">8. Run Cold Email Campaigns</h2>
+  <p>Now build and send. The agent can produce an end-to-end campaign (list, copy, and live sequence) from a client folder. Five tools: Claude Code, optional voice input for faster prompts, an enrichment API (LeadMagic), a sending platform (Instantly, Lemlist, or Smartlead), and the client folder.</p>
+  <h3>The client folder</h3>
+  <p>Build it once per account and reuse it:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>client/
+  ICP Context/        who to target, who to skip
+  List Building/      the accounts you go after
+  Context/            voice, positioning, offers
+  Call Recordings/    discovery and sales call notes
+  Onboarding Notes/   what you learned in week one
+  Campaign Briefs/    briefs and event docs to send from</code></pre>
+  </div>
+  <p>Fill it: discovery transcripts go in Call Recordings, how the client talks about itself goes in Context, who they sell to goes in ICP Context.</p>
+  <h3>The five build steps</h3>
+  <p><strong>Step 1, target profile:</strong></p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Open the client folder and read everything in ICP Context.
+Write a short target profile: the titles worth reaching, the
+industries in scope, the company size band, and the accounts
+we should never contact. Save it back in ICP Context.</code></pre>
+  </div>
+  <p>Aim for a target market of 10,000 to 50,000 companies. Smaller leaves no room to test, larger wastes spend.</p>
+  <p><strong>Step 2, build the list:</strong></p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Using the ICP and the account list in List Building, find
+verified emails for people who match the in-scope titles.
+Cap the enrichment at 2,000 credits. Remove anyone already
+in a live campaign, then run the block list. Save the clean
+list with every variable the copy will need.</code></pre>
+  </div>
+  <p>A real run: pulled 105 verified prospects, removed 50 already in campaigns, dropped 9 on the block list, leaving 28 clean and ready to email.</p>
+  <p><strong>Step 3, copy rules (a standing instruction):</strong></p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>You are a senior outbound operator.
+Every email is 60 to 80 words.
+Open with something useful to them, never with our credentials.
+Do not ask for a meeting in the first email.
+Mirror the prospect's language, not the client's.
+Reference a real signal when one exists, and invent nothing.</code></pre>
+  </div>
+  <p>The email anatomy: a give-first opener, 60 to 80 words, no meeting ask, one clear CTA.</p>
+  <p><strong>Step 4, assemble:</strong></p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Take the copy and the clean list and build the campaign in
+Instantly. Upload the leads, set the sequence, and add one
+A/B test on the subject line. Send me the draft link so I can
+review before anything goes out.</code></pre>
+  </div>
+  <p><strong>Step 5, a two-minute review checklist:</strong></p>
+  <ul class="checklist">
+    <li>Subject line leads with the date or hook, not the client's name</li>
+    <li>Hard link CTA swapped for a soft question</li>
+    <li>Follow-ups added on day 4, day 9, day 16</li>
+    <li>Variables spot-checked and filled cleanly</li>
+  </ul>
+  <p>The one-prompt version, once the folder is built:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Open the client folder. We are launching a campaign. There is
+a brief in Campaign Briefs. Take the ICP titles, cross-reference
+the account list, find verified emails (cap at 2,000 credits),
+write the copy from the brief, and build the campaign in
+Instantly. Run it end to end and show me the draft.</code></pre>
+  </div>
+  <p>Copy tied to a real trigger pulls up to 54.7 percent more replies than a generic template. Cross-channel sequences (email, LinkedIn, and ads together) lift response up to 287 percent over a single channel. Hold the deliverability rules below and cap follow-ups at four steps. The machinery is constant. The offer decides results, so spend saved time on the offer.</p>
+  <h3>Deliverability is the non-negotiable floor</h3>
+  <p>Get this wrong and nothing else matters, because your mail lands in spam.</p>
+  <ul class="bullets">
+    <li>Authenticate every domain with SPF, DKIM, and DMARC before you send.</li>
+    <li>Warm every new inbox for 2 to 3 weeks before it carries real volume.</li>
+    <li>Keep each inbox under 30 to 50 sends per day and rotate domains.</li>
+    <li>Run a spam check before shipping.</li>
+  </ul>
+  <p>The DNS records, with DMARC starting at <code>p=none</code> to monitor and then moving to quarantine or reject:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>; SPF
+example.com.                 TXT   "v=spf1 include:_spf.google.com include:smartlead.ai -all"
+; DKIM (published by sending platform)
+sl._domainkey.example.com.   TXT   "v=DKIM1; k=rsa; p=MIGfMA0GCSqG..."
+; DMARC (start p=none to monitor, then quarantine/reject)
+_dmarc.example.com.          TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; pct=100"</code></pre>
+  </div>
+  <p>A fully autonomous agent that hits a deliverability dip at 3am can torch a client's sending reputation, so set the fences (sending limits, a kill switch) before you let it run.</p>
+  <h2 id="ch9">9. Handle Replies</h2>
+  <p class="lede">Replies come back on their own schedule, so let the agent run a reply desk that reads, sorts, drafts in your voice, and routes, leaving only the warm ones for your approval. This takes about two minutes of your time a day.</p>
+  <p>You need four pieces: Claude Code as the operator, your sending platform's API (Instantly, Lemlist, and Smartlead expose the same), a CRM for follow-up tasks and notes, and a rules file with categories, voice, and examples.</p>
+  <p>Connect the inbox and run a read-only test first:</p>
+  <div class="codewrap">
+    <p class="code-title">.env</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># .env
+INSTANTLY_API_KEY=xxxxxxxx-your-key-here-xxxxxxxx</code></pre>
+  </div>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Using the Instantly key in .env, pull every new reply from
+the last 24 hours. Show me the sender, the campaign, and the
+full text of each. Do not respond to anything yet.</code></pre>
+  </div>
+  <h3>Step 1, categories</h3>
+  <div class="codewrap">
+    <p class="code-title">reply-rules.md</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># reply-rules.md
+
+## Categories
+- interested: says yes, asks a question, wants a call
+- not now: good fit, names a later date
+- referral: points to another person or team
+- out of office: automatic away message
+- unsubscribe: asks to be removed, or opts out
+- unsure: does not clearly fit, hand to a human
+
+## How to decide
+- Read the whole reply, not just the first line.
+- A polite brush-off is still a no, not a "not now."
+- When two categories fit, pick the more cautious one.
+- When you cannot tell, mark it unsure and stop.</code></pre>
+  </div>
+  <p>The <code>unsure</code> bucket is the safety net. A wrong guess on a real prospect costs more than reading it yourself.</p>
+  <h3>Step 2, responses, voice, and worked examples</h3>
+  <p>Examples matter more than instructions, because the agent copies tone better than it follows rules.</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>## Responses
+- interested: thank them, answer the question, propose two times.
+- not now: agree, close the loop, set a note for the date they gave.
+- referral: thank them, ask for a warm intro to the new name.
+- out of office: send nothing, reschedule for the return date.
+
+## Voice
+- Keep it short and plain, no corporate filler.
+- Never pushy. A question earns more than a hard ask.
+- Match their tone. If they wrote two lines, write two lines.
+- Never argue, never chase. Make it easy to say yes later.</code></pre>
+  </div>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>## Examples
+INTERESTED -&gt;
+  "Happy to. Does Tuesday 11 or Thursday 2 work? I'll send a
+   short agenda so it's worth the 20 minutes."
+
+NOT NOW -&gt;
+  "Totally fair. I'll close this out and send a quick note
+   early next quarter. Anything you want me to include then?"
+
+REFERRAL -&gt;
+  "Appreciate that. Mind a quick intro to Marco, or should I
+   reach out and mention you pointed me his way?"</code></pre>
+  </div>
+  <h3>Step 3, the daily triage prompt</h3>
+  <p>Run this each morning, and again in the late afternoon if volume is high:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Read every new reply from the last 24 hours. Sort each one
+using reply-rules.md. Draft a response for the interested,
+not-now, and referral replies, using the examples as a guide.
+Set follow-ups where they belong. Leave the interested drafts
+for me to approve, and flag anything you marked unsure.</code></pre>
+  </div>
+  <h3>Step 4, the routing prompt</h3>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>For approved interested replies, send the draft and add the
+booking link. For not-now replies, create a dated task in the
+CRM with the date they named. For referrals, add the new
+contact and start the intro sequence. For unsubscribes, add
+them to the suppression list and confirm they are removed
+from every active campaign.</code></pre>
+  </div>
+  <h3>Edge cases</h3>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>## Edge cases
+- "who is this / how did you get this": answer plainly, flag for me.
+- angry or upset: send nothing, route to me.
+- "we use a competitor": treat as interested, hand to me.
+- "wrong person, try X": treat as a referral.</code></pre>
+  </div>
+  <h3>Wire reply speed for hot leads</h3>
+  <p>For the strongest replies, do not wait for the morning triage. Route a positive reply to Slack and the rep's phone in real time:</p>
+  <div class="codewrap">
+    <p class="code-title">Reply router (n8n or a small webhook).</p>
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code># Reply router (n8n or a small webhook).
+def on_inbound_reply(msg):
+    intent = classify(msg.body)          # positive, neutral, negative
+    if intent != "positive":
+        return
+    slack.post("#replies",
+        f"{msg.sender} replied. Account: {msg.account} (Tier {msg.tier})")
+    sms(account_owner(msg.account).phone,
+        f"Hot reply from {msg.sender}. Call within the hour.")
+    crm.create_task(msg.account, due="in 1 hour")</code></pre>
+  </div>
+  <h3>Three numbers to watch</h3>
+  <ol class="numlist">
+    <li>Positive reply rate. If it is low, fix targeting or offer upstream, not the desk.</li>
+    <li>Time to first response. Push it toward minutes.</li>
+    <li>Meetings booked from replies. This is the number that pays.</li>
+  </ol>
+  <p>Each week, read the <code>unsure</code> pile and your manual re-sorts. Each one is a missing rule, so add it. In week one you correct categories and tone. By the end of week one most sorting is right and the drafts sound like you. By week two you are mostly approving, not editing. A new campaign or client carries over almost for free.</p>
+  <h2 id="ch10">10. Build Signal-Based Outbound</h2>
+  <p>Everything so far can run off a static list. This is the upgrade that produces the 28 percent win rate and 150K euro-plus ACVs. Instead of pulling a list on Monday, wire your sources so a buying signal becomes a personalized response with almost no human time in between. One rep saw a signal fire, sent a single 73-second Loom to one person, and closed a 200K euro-plus annual contract.</p>
+  <p>Four parts: detect, validate, respond, route.</p>
+  <h3>Detect</h3>
+  <p>Use continuous, always-on sources, not a weekly list pull. Common Room and Trigify for engagement and social signals, PredictLeads for hiring and tech-stack changes, RB2B to de-anonymize site visitors. Everything writes into one Clay table, where an account becomes a row with a live event feed. When a high-intent event fires, the account moves itself into a "work now" queue, ranked by what fired overnight.</p>
+  <p>Rank every signal by proximity to purchase, because your response scales with rank. A high-intent signal (a funding event, a pricing-page visit) earns an immediate personal human touch. A low-intent signal (a generic like) earns a light nudge or a watch tag. A signal is only high-intent if it maps to the specific thing you solve. Stack 2 to 3 correlated signals (a funding round plus three job posts for the exact function you serve) and a medium-intent event becomes high-intent. The triggers that mean "ready": a fresh funding round, hiring an SDR or a GTM role, a new CRO or VP of Sales, or a competitor's tool in their stack.</p>
+  <h3>Validate against ICP</h3>
+  <p>Run a fit check before any work: right segment, right size, right shape of problem. This kills inbound noise automatically. Encode your real ICP, size band, technographic fit, and hard-learned disqualifiers, and run it on every event before a human sees it. This protects human attention from proving a signal is junk.</p>
+  <h3>Respond fast and personal</h3>
+  <p>After validation, enrich to 8 to 12 data points, then have a person record the response. For the strongest signals, a short specific Loom. Speed matters, because a signal has a half-life. Loom anatomy: name the signal in the first 10 seconds, spend most of the time on the prospect's situation rather than your product, and end with a small specific ask, not "open to a chat?" Automate everything up to this point so the human has time to make this one touch genuinely good.</p>
+  <p>For the written version, the signal is the hook and the offer sits right behind it. Do not congratulate them on the raise.</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>Subject: {trigger} at {company}
+
+Hi {first_name},
+
+Saw {company} just {specific_trigger, e.g. "hired a VP of Sales"}.
+Teams hitting that stage usually run into {specific_problem}.
+
+We helped {similar_company} fix it by {one-line outcome}.
+Worth a 15-min look at whether the same applies to you?</code></pre>
+  </div>
+  <h3>Route</h3>
+  <p>Send the highest-intent signals straight to a rep for the personal response. Everything below goes to a nurture track, tagged and watched, orbiting until a stronger signal fires. Nothing is discarded and nothing weak gets full human effort. The routing logic:</p>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy code">Copy</button>
+    <pre><code>IF icp_fit = high AND signal = funding/hiring/install
+   then send now (priority queue)
+
+IF icp_fit = high AND signal = none
+   then nurture track (warm with content, recheck weekly)
+
+IF icp_fit = borderline AND signal = strong
+   then human review before send
+
+IF icp_fit = low
+   then drop (do not enrich further)</code></pre>
+  </div>
+  <p>Cap sends at 30 to 50 per inbox per day with a hard credit ceiling per run. Every layer needs an answer to "what happens when this call fails?"</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Layer</th><th>Fallback</th></tr></thead>
+      <tbody>
+        <tr><td>Data</td><td>Reroute to backup source or waterfall</td></tr>
+        <tr><td>Signals</td><td>Drop into nurture, don't block the queue</td></tr>
+        <tr><td>Orchestration</td><td>Send to human review, not to send</td></tr>
+        <tr><td>Execution</td><td>Pause that inbox, rotate, keep the rest running</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Add spend limits, approval gates (the agent proposes, a human commits anything customer-facing), and versioned rules.</p>
+  <p>The numbers behind this: around 91 percent of cold emails get zero replies, and the average reply rate sits near 3.43 percent. Writing off a real signal moves that to 15 to 25 percent, roughly a 5 to 7x lift, with elite teams clearing 30 percent. On the same 1,000 emails, a blast produces roughly 20 replies, 5 calls, and 1 deal, while a signal-driven approach produces 30 to 50 leads, 10-plus calls, and 3 deals. Intent-qualified accounts convert about 47 percent better and close about 43 percent bigger. Only about 25 percent of companies use intent tools, so this is still an edge.</p>
+  <p>Every acted-on signal plus its outcome teaches the system which triggers convert. A funding-plus-hiring combo that closed two deals gets weighted higher, and a content-like that never became pipeline gets demoted. Over months the queue becomes a model of your specific buyers.</p>
+  <h2 id="ch11">11. Measure and Run the Weekly Loop</h2>
+  <p class="lede">A system that works is not the same as a system that compounds. Run a weekly five-move loop: instrument, build, measure, kill, repeat.</p>
+  <h3>Instrument before you build</h3>
+  <p>Set up measurement before anything ships. Two pieces. Every lead should carry 8 to 12 data points before you write a word of copy. And the signals that matter (a funding round, a new VP, a competitor's tool in the stack, someone on your pricing page) each need a trigger wired into Common Room or Trigify so it reaches you on its own. Before the next campaign, write down the three numbers that would tell you it is working, and make sure something captures each one without you.</p>
+  <h3>Build the system, not the campaign</h3>
+  <p>Build the thing that produces, scores, and routes the list before anyone opens it. One engineer can sit under 80-plus client campaigns out of a single Clay workspace. Moving list-building off manual research onto a wired pipeline took one team from about 30 minutes to about 30 seconds per list. Take something you did three separate times last week, spend an afternoon turning it into a system, then stop doing it by hand.</p>
+  <h3>Measure pipeline per dollar, ignore the rest</h3>
+  <p>The wrong metrics are all activity: emails sent, lists built, enrichments run. The right metric is qualified pipeline per dollar spent on people and tooling, read daily, by campaign. That catches a sliding reply rate while you can still act.</p>
+  <h3>Kill what is not clearing the bar</h3>
+  <p>Cut up to 40 percent of the addressable market on purpose. One team barely cold calls anymore, because one booked meeting per 37 dials could not earn its place. Do not pull a play before it has had a fair run and enough volume, then decide on the numbers, not on how much work it was. In one example a broad-market campaign looked great on surface metrics, but the wired numbers showed thin replies on accounts with nothing going on. They shut it down and rebuilt around one intent signal. When that trigger fired on a Fortune-500 subsidiary, the system pulled it out of the automated flow and handed it to a person for a 73-second Loom, which became a 200K euro-plus annual contract.</p>
+  <h3>Repeat and let it stack</h3>
+  <p>Version what you built and run it again, so each pass starts higher. Six weeks later a play has been through a dozen revisions, handles more volume for less money per lead, and feeds data that sharpens targeting. Working and compounding are not the same thing.</p>
+  <h3>Find your one distribution channel</h3>
+  <p>The trap in 2026 is that AI inflates top-of-funnel metrics (impressions, likes), so every channel looks half-working and none gets cut. Roughly 54 percent of LinkedIn long-form posts are estimated AI-generated, about 48 percent of business social content is expected to be AI-produced by 2026 (up from 39 percent in 2024), and 87 percent of marketers used generative AI in at least one recurring workflow in Q1 2026, up from 51 percent a year earlier. Judge channels on bottom-of-funnel data the AI cannot inflate.</p>
+  <ul class="bullets">
+    <li><strong>Define the fair test before betting.</strong> One channel, one owner, a fixed cadence, 90 days, written down. A content channel means a daily post. Cold email means defined small lists in the low hundreds with 8 to 12 enrichment points per lead, not a blast.</li>
+    <li><strong>Build one scorecard that reads the bottom of the funnel.</strong> A single source of truth every channel writes into. Run it as a Clay table where every account is a row. The first channel to make contact stamps itself as first-touch, every later touch is appended to the same row, and outcome data joins from the CRM: meeting booked, pipeline created, closed-won. The four columns that matter are first-touch accounts, influenced deals, pipeline created in dollars, and cost to run (time plus spend over 90 days). Avoid last-touch attribution, because the last click is usually a booking link or branded search. Protect the first-touch field from downstream overwrites. The B2B benchmark: 100,000 impressions produces roughly 3 opportunities at the bottom, so judge on that number.</li>
+    <li><strong>Refuse to diversify into noise.</strong> Once one channel works, the other nine drag on it. If one channel owns most first-touch accounts and the others sit within measurement noise, the data made the allocation call.</li>
+    <li><strong>Set a kill line and a commit line on day one.</strong> 90 days with zero first-touch accounts reaching a real conversation means cut it without debate. A repeatable bottom-funnel signal, even a small one, means take it out of the experiment and commit fully.</li>
+  </ul>
+  <h3>Build the allbound loop on the winner</h3>
+  <p>Once one channel wins, run content, ads, and outbound off one shared, scored account list so each channel feeds the others. All three read from the same file and write back to it, rather than keeping their own copies. Keep it in a spreadsheet or simple table with, at minimum, these columns: company, website domain, score, signals seen, current stage.</p>
+  <p>Scoring is rough on purpose: plus points for the right industry, size, and role, plus more for a fresh signal like new funding or a key hire, minus points for accounts gone quiet. Hot, warm, and cool tiers are enough to route treatment. The signals column records every noticed action (opened an email, visited the site, clicked an ad, announced a raise) and the score moves with it.</p>
+  <p>Each engine has one job. Content makes your name familiar before outreach, so a target account's engagement gets written back to the list. Ads cover the days you are not posting, and you build the audience from the scored list so you never pay to reach strangers. Outbound moves on a signal, not a calendar, so when a fitting account visits the pricing page, bursts ad clicks, raises funding, or hires a key role, it jumps to the top of the outreach queue.</p>
+  <p>The content itself comes off the same machine. Pick a content pillar and one idea, have the agent research it with a search tool like Exa or Linkup, and draft a post backed by real numbers. Call an infographic skill for the visual, add your own photo, and the post is near-ready. One optional last step: when someone replies to a campaign, add them on LinkedIn so they start seeing that content.</p>
+  <p>The compounding: content lowers ad cost (a warm audience clicks more and cheaper), ads lower outbound cost (a familiar name replies more), and outbound feeds the whole system (every reply and objection teaches which accounts and messages work). Cold email that lands on prospects who have seen the content three or four times gets measured 2 to 3 times the reply rate of cold-cold on the same copy. Layering LinkedIn content on top of cold email took one team from about 8,000 to 40,000 dollars a month.</p>
+  <p>Measure by account, not by channel. Group accounts by how many engines touched them (content-only, content plus ads, all three) and compare reply rate and win rate as coverage rises.</p>
+  <h2 id="ch12">12. Keep the Right 20% Human</h2>
+  <p class="lede">The machine runs the middle. You own the two ends. This is the 10-80-10 split.</p>
+  <ul class="bullets">
+    <li><strong>The first 10 percent, you decide.</strong> Who to go after and why now, what a strong-fit account looks like, and the angle and offer you lead with.</li>
+    <li><strong>The middle 80 percent, the machine.</strong> Research, enrichment, first drafts, follow-ups. This went cheap this year (it runs overnight for the cost of API calls) and is now table stakes, because your competitors have the same models.</li>
+    <li><strong>The last 10 percent, you check.</strong> Read the output before any prospect does, and cut what is weak.</li>
+  </ul>
+  <p>Never let an agent run a play start to finish. That last 20 percent is what clients pay for. One client paid 50,000 dollars a year for a data platform nobody logged into.</p>
+  <p>The numbers on each leg. On the front 10 percent, teams cut up to 40 percent of the addressable market on purpose and email fewer people who are ready to buy. Replacing cold dialing with a tiered signal score pulled 5 times the meetings off a smaller list. The list is the strategy. On the middle 80 percent, one team pushes 500,000-plus cold emails a month at peak with about 30 people, because the repetitive layer is fully software: Clay handles most structured work, and anything off the beaten path is scripted once and reused. On the back 10 percent, out of 500 overnight drafts you cut the roughly 12 that missed and send the 488 that landed. A content operation running a grader that scores every draft against a 50-point rubric, where anything under 38 goes back for a rewrite before a human touches it, pushed 581 posts in 87 days and drove 153K dollars in new MRR, with a human reading the last stretch.</p>
+  <p>Three artifacts you can build this week:</p>
+  <ol class="numlist">
+    <li>A decision doc for the front 10 percent: who you are targeting and why now, what a good-fit account looks like, and the one angle. The brief the machine runs against.</li>
+    <li>A foundation for the middle 80 percent: rules the agent cannot override, hard sending limits, and a kill switch for when deliverability slips.</li>
+    <li>A review gate for the back 10 percent: decide before launch what gets checked and the bar it must clear (a score, a tone pass, a fact pass on anything personalized). Keep it cheap enough to run every batch.</li>
+  </ol>
+  <h3>Before you trust any AI SDR, run four tests</h3>
+  <p>If you are tempted to buy an AI SDR instead of building this, know that every AI SDR is priced on activity (seats, sends, meetings booked), so the product optimizes the invoice line, not your revenue. AI-booked meeting to opportunity conversion runs about 15 percent, against 25 to 35 percent for an experienced human or hybrid team (Prospeo and DigitalApplied AI SDR benchmark reports). A tool can book double the meetings and leave less pipeline. AI meetings skew to smaller deals, they no-show more (outbound meetings already no-show around a third of the time, and a prospect who agreed to a link inside an automated thread with no real exchange pushes that higher), and conversion lags 30 to 45 days behind the meeting count, often landing in a different system owned by someone else, so by the time the number shows hollow the contract has renewed.</p>
+  <p>Run these four tests inside a 45-day paid pilot, not a demo. Write the pass line for each before you start, and let any test end the evaluation.</p>
+  <ol class="numlist">
+    <li><strong>Meeting-to-opportunity conversion.</strong> This decides the rest, so it goes first. Track every booked meeting and measure how many become qualified opportunities within 45 days. The metric is opportunities created, not meetings booked. Set the pass line against your own current number. Work the break-even before the pilot: a tool booking 300 meetings at 12 percent is 36 opportunities, and your team booking 120 at 30 percent is also 36, from a quarter of the activity with fewer no-shows. Make the vendor show conversion against that, and treat a refusal as the answer.</li>
+    <li><strong>Signal-triggered or ICP match.</strong> Ask what fires a sequence at a given account. If the answer is "they match the ICP filters you set," you are buying a faster spray. If it is a buying signal (a funding event, a relevant new hire, a tool added to the stack, a pricing-page visit), it is closer to real targeting. One team will not put a list into a sequence without at least one intent signal, pulled through Clay, PredictLeads, Common Room, and BuiltWith. During the pilot, tag which meetings came from a signal versus a plain match and compare their Test 1 conversion.</li>
+    <li><strong>Can a human own the handoff.</strong> The 60 seconds between "meeting requested" and "meeting confirmed" is the weakest part, where most no-shows are made. Ask whether the tool lets a human step in before the calendar invite goes out. The move is that a rep reads the triggering signal, scans the thread, and sends two sentences: what they saw, why they reached out, what they want to cover. It works as a sorting function, because no-shows ignore it and real ones come back with an agenda.</li>
+    <li><strong>Pipeline reported by source.</strong> If the dashboard sums meetings and stops, you cannot run the eval past month one. The practical bar: can the tool push meetings into HubSpot or Salesforce with enough structure that three months later you can ask which sequences and signals produced opportunities that closed? A tool hiding source-level pipeline does not want you running Test 1.</li>
+  </ol>
+  <p>What AI does better than humans: list building, enrichment, signal detection, sequencing, follow-up timing, and deliverability throttling across domains. What it does not automate: the judgment layer, the 60 seconds before a meeting, the read on whether a buyer is real, and the offer built for a specific signal. Hybrid teams report 30 to 60 percent lower cost per meeting while holding conversion near human levels. The right split is to let AI own everything up to the moment a human read changes the outcome, put a person exactly there, and automate the 8 hours around it.</p>
+  <h2 id="ch13">13. The 7-Day Build Plan and Troubleshooting</h2>
+  <p class="lede">You do not need to build all of this at once. Wire the seam where your week actually goes first, usually enrichment or the reply-to-CRM handoff. A one-week runbook to stand up a working signal-led motion:</p>
+  <ul class="checklist">
+    <li><strong>Day 1, map.</strong> List every tool the agent will touch and mark which it can drive via API or MCP versus which needs a human to click. Pick one tool per layer using the scorecard from Chapter 3.</li>
+    <li><strong>Day 2, data.</strong> Test your enrichment on 20 real domains. You need at least 17 complete in one call, or add a waterfall.</li>
+    <li><strong>Day 3, signals.</strong> Connect one signal source and filter to live triggers only.</li>
+    <li><strong>Day 4, orchestration.</strong> Write three routing rules, set 30 to 50 sends per inbox per day, and set spend caps.</li>
+    <li><strong>Day 5, execution.</strong> Connect the sender, load the signal-led template, and turn on reply classification.</li>
+    <li><strong>Day 6, dry run.</strong> Run 20 accounts end to end and check every handoff by hand.</li>
+    <li><strong>Day 7, review.</strong> Fix the seam where the data broke before you add any volume.</li>
+  </ul>
+  <p><strong>Definition of done (first pass):</strong></p>
+  <ul class="checklist">
+    <li>One tool per layer, each drivable via API or MCP</li>
+    <li>A fallback on all four layers</li>
+    <li>Send and spend caps live in the orchestration layer</li>
+    <li>Reply classification routing interested leads</li>
+    <li>An approval gate on anything customer-facing</li>
+    <li>20 accounts run clean, end to end</li>
+  </ul>
+  <p>Common failures and their cause:</p>
+  <ul class="bullets">
+    <li><strong>Runs die partway through.</strong> Too many chained calls. Cut to one tool per layer.</li>
+    <li><strong>Replies read generic.</strong> Weak signals or data. Require a trigger before any send.</li>
+    <li><strong>Credits drained overnight.</strong> No spend cap. Set hard limits in the orchestration layer.</li>
+    <li><strong>Domains in spam.</strong> Over-sending. Hold 30 to 50 per inbox per day and keep new inboxes warming through their first 30 days.</li>
+    <li><strong>The agent stalls silently.</strong> A slow API is hanging. Track per-tool latency, set timeouts, and add a fallback.</li>
+  </ul>
+  <p>Start with the brain and the ICP, wire your one worst bottleneck, prove it on 20 accounts, then add the next layer. The offer decides the results. The system just makes sure the offer reaches the right person at the right moment, at a marginal cost close to zero.</p>
+  <p>Sources: workflows compiled from multiple public operator breakdowns and Muditek implementation research.</p>
+
+  <section class="cta">
+    <h2>We wire the whole motion for you</h2>
+    <p>This guide is the build. <strong>Muditek stands up the running system.</strong> We write the context layer, collapse your tool stack onto one API, wire sourcing, the enrichment waterfall, deterministic scoring, cold email with deliverability, the reply desk, and signal-based outbound, then keep the right 20 percent in human hands.</p>
+    <p>If your outbound reads like a robot wrote it, the fix is not a better prompt. It is the context and the wiring underneath it.</p>
+    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+  </section>
+</article>
+
+<footer class="footer">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <p>Built by Muditek. We build the agent systems that run the work, on infrastructure you control. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      if(!pre) return;
+      var text = pre.innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 1500);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+        done();
+      }
+    });
+  });
+  var ok = !window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  root.classList.add('js');
+  if(!ok) return;
+  root.classList.add('motion');
+  var els = document.querySelectorAll('.doc h2, .doc .tw, .doc .codewrap, .doc .callout, .doc .cta');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var revealAll = function(){ els.forEach(function(el){ el.classList.add('in'); }); };
+  window.addEventListener('beforeprint', revealAll);
+  setTimeout(revealAll, 2200);
+  if(!('IntersectionObserver' in window)){ revealAll(); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {rootMargin:'0px 0px -7% 0px', threshold:.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

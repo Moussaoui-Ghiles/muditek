@@ -1,0 +1,19 @@
+import { neon } from "@neondatabase/serverless";
+const sql = neon(process.env.DATABASE_URL!);
+const issueId = "4634edd2-0ce7-47d4-aefa-9ba3b747024e";
+
+const today = await sql`SELECT COUNT(*)::int AS n FROM newsletter_events WHERE issue_id = ${issueId} AND event_type = 'sent' AND created_at >= NOW() - INTERVAL '24 hours'`;
+const last48 = await sql`SELECT DATE_TRUNC('day', created_at AT TIME ZONE 'UTC') AS day, COUNT(*)::int AS n FROM newsletter_events WHERE issue_id = ${issueId} AND event_type = 'sent' GROUP BY 1 ORDER BY 1 DESC LIMIT 7`;
+const totalSent = await sql`SELECT COUNT(DISTINCT recipient_email)::int AS n FROM newsletter_events WHERE issue_id = ${issueId} AND event_type = 'sent'`;
+const remaining = await sql`
+  WITH hot AS (SELECT email FROM newsletter_subscribers WHERE status = 'active' AND audience_filter @> '["HOT"]'::jsonb)
+  SELECT COUNT(*)::int AS n FROM hot WHERE email NOT IN (SELECT recipient_email FROM newsletter_events WHERE issue_id = ${issueId} AND event_type = 'sent')`;
+const lastSendTs = await sql`SELECT MAX(created_at) AS ts FROM newsletter_events WHERE issue_id = ${issueId} AND event_type = 'sent'`;
+
+console.log("UTC now:", new Date().toISOString());
+console.log("last 24h sent events:", today[0]?.n);
+console.log("unique recipients sent (true):", totalSent[0]?.n);
+console.log("remaining HOT not yet sent:", remaining[0]?.n);
+console.log("last 'sent' event:", lastSendTs[0]?.ts);
+console.log("\nDaily breakdown (sent events, last 7d):");
+for (const r of last48) console.log(" ", r.day, "→", r.n);

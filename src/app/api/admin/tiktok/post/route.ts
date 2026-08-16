@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
+import { verifyTikTokPosterApiKey } from "@/lib/tiktok-api-keys";
 import {
   ensureFreshTikTokAccount,
   sendTikTokPhotoDraft,
@@ -15,11 +16,32 @@ export const maxDuration = 300;
 
 const MAX_INPUT_BYTES = 30 * 1024 * 1024;
 
+function bearerToken(request: Request) {
+  const authHeader = request.headers.get("authorization") || "";
+  const [scheme, ...rest] = authHeader.trim().split(/\s+/);
+  if (scheme?.toLowerCase() !== "bearer") return "";
+  return rest.join(" ").trim();
+}
+
 async function requireTikTokPosterAccess(request: Request) {
-  const apiKey = process.env.TIKTOK_POSTER_API_KEY?.trim();
-  const authHeader = request.headers.get("authorization");
-  if (apiKey && authHeader === `Bearer ${apiKey}`) {
+  const token = bearerToken(request);
+  const envApiKey = process.env.TIKTOK_POSTER_API_KEY?.trim();
+  if (envApiKey && token && token === envApiKey) {
     return { authorized: true as const, method: "api-key" as const };
+  }
+
+  if (token) {
+    const sql = getDb();
+    await ensureTikTokSchema(sql);
+    const key = await verifyTikTokPosterApiKey(sql, token);
+    if (key) {
+      return {
+        authorized: true as const,
+        method: "api-key" as const,
+        keyId: key.id,
+        keyName: key.name,
+      };
+    }
   }
 
   const admin = await requireAdmin(request);

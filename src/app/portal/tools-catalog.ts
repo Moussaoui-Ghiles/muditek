@@ -49,6 +49,60 @@ export const PORTAL_TOOLS: PortalTool[] = [
     access: "free",
   },
   {
+    slug: "serp-news-search",
+    title: "SerpAPI News Search",
+    short: "Monitor live headlines for a company, sector, or keyword query.",
+    description:
+      "Run real-time Google News queries through SerpAPI and get ranked headlines with source, date, snippet, and direct links.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "serp-autocomplete-suggestions",
+    title: "SerpAPI Autocomplete",
+    short: "Turn partial keywords into real search intents.",
+    description:
+      "Type a partial query and receive live Google-style autocomplete suggestions to help you find better lead terms.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "serp-flight-search",
+    title: "SerpAPI Flight Search",
+    short: "Build itinerary candidates with live flight engines.",
+    description:
+      "Search for flights between origin and destination with outbound (and optional return) date and guest details.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "serp-hotel-search",
+    title: "SerpAPI Hotel Search",
+    short: "Find candidate hotel options for trip planning.",
+    description:
+      "Run live hotel lookup by location and dates, then capture nightly pricing and booking contact points.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "tavily-web-research",
+    title: "Tavily Web Research",
+    short: "Pull answer-first web intelligence with sources.",
+    description:
+      "Search web snippets with Tavily and get answer summaries plus source links for fast research and prep work.",
+    category: "Research",
+    access: "free",
+  },
+  {
+    slug: "open-meteo-forecast",
+    title: "Open-Meteo Forecast",
+    short: "Check live forecast and daily weather by city.",
+    description:
+      "Get current and daily forecast metrics from free weather data by city name (no key needed).",
+    category: "Research",
+    access: "free",
+  },
+  {
     slug: "apollo-lead-finder",
     title: "Apollo Lead Finder",
     short: "Enrich LinkedIn lead pages with public contact and profile fields.",

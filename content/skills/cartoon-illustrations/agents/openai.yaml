@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cartoon Illustrations"
+  short_description: "Write weird clean English-only illustration prompts with a deadpan black creature."
+  default_prompt: "Use $cartoon-illustrations to turn this English content into a 16:9 hand-drawn illustration prompt."
+policy:
+  allow_implicit_invocation: true

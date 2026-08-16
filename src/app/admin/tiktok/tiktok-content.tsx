@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clipboard,
   Clock,
+  Code2,
   FileImage,
   FolderInput,
   KeyRound,
@@ -17,6 +18,7 @@ import {
   Send,
   ShieldCheck,
   TerminalSquare,
+  Trash2,
   UserPlus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -70,9 +72,21 @@ type EnvState = {
   blob: boolean;
 };
 
+type ApiKey = {
+  id: string;
+  name: string;
+  keyPrefix: string;
+  createdBy: string | null;
+  lastUsedAt: string | null;
+  revokedAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
 type Props = {
   accounts: Account[];
   attempts: Attempt[];
+  apiKeys: ApiKey[];
   env: EnvState;
   baseUrl: string;
   databaseError: string | null;
@@ -107,9 +121,9 @@ function tokenState(account: Account) {
 
 function statusTone(status: string) {
   const value = status.toLowerCase();
-  if (value === "send_to_user_inbox" || value === "publish_complete") return "good";
-  if (value === "failed") return "bad";
-  if (value.includes("processing") || value === "uploading" || value === "created") return "warn";
+  if (value === "send_to_user_inbox" || value === "publish_complete" || value === "connected") return "good";
+  if (value === "failed" || value === "expired") return "bad";
+  if (value.includes("processing") || value === "uploading" || value === "created" || value === "refresh soon") return "warn";
   return "muted";
 }
 
@@ -120,11 +134,11 @@ function readableError(value: string) {
     .trim();
 }
 
-function requiredAction(accounts: Account[], env: EnvState) {
+function requiredAction(accounts: Account[], env: EnvState, automationKeyReady: boolean) {
   if (!env.clientKey || !env.clientSecret) return "TikTok app credentials are not set.";
   if (!env.blob) return "Image hosting is not configured.";
   if (accounts.length === 0) return "Connect the TikTok account once.";
-  if (!env.posterApiKey) return "Browser uploads work. Folder automation needs the poster key.";
+  if (!automationKeyReady) return "Browser uploads work. Create an automation key for API sends.";
   return "Ready to send drafts.";
 }
 
@@ -188,6 +202,7 @@ function EnvItem({ label, ok }: { label: string; ok: boolean }) {
 export default function TikTokContent({
   accounts,
   attempts,
+  apiKeys,
   env,
   baseUrl,
   databaseError,
@@ -197,17 +212,25 @@ export default function TikTokContent({
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts[0]?.id ? String(accounts[0].id) : "",
   );
-  const [copied, setCopied] = useState(false);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
   const [manualFiles, setManualFiles] = useState<File[]>([]);
   const [manualCaption, setManualCaption] = useState("");
   const [manualTitle, setManualTitle] = useState("");
   const [manualSource, setManualSource] = useState("");
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
+  const [apiKeysState, setApiKeysState] = useState(apiKeys);
+  const [newKeyName, setNewKeyName] = useState("Agent folder sender");
+  const [newApiKey, setNewApiKey] = useState<string | null>(null);
+  const [creatingKey, setCreatingKey] = useState(false);
+  const [revokingKeyId, setRevokingKeyId] = useState<string | null>(null);
+  const [keyError, setKeyError] = useState<string | null>(null);
 
   const connectHref = `/api/admin/tiktok/connect?handle=${encodeURIComponent(handle.replace(/^@/, ""))}`;
   const selectedAccount = accounts.find((account) => String(account.id) === selectedAccountId) ?? accounts[0] ?? null;
-  const readyToSend = Boolean(accounts.length > 0 && env.posterApiKey && env.blob);
+  const activeApiKeys = apiKeysState.filter((apiKey) => !apiKey.revokedAt);
+  const automationKeyReady = Boolean(env.posterApiKey || activeApiKeys.length > 0);
+  const readyToSend = Boolean(accounts.length > 0 && automationKeyReady && env.blob);
   const browserReady = Boolean(accounts.length > 0 && env.blob);
   const setupReady = Boolean(env.clientKey && env.clientSecret && env.blob && accounts.length > 0);
   const lastAttempt = attempts[0] ?? null;
@@ -217,11 +240,64 @@ export default function TikTokContent({
       : " --account muditek.ai";
     return `TIKTOK_POSTER_API_KEY=... npx tsx marketing/tiktok/scripts/post-to-admin-tiktok.mts marketing/tiktok/niches/ai-tools/content/YYYY-MM-DD/post-folder${accountArg} --base-url ${baseUrl}`;
   }, [baseUrl, selectedAccount]);
+  const apiCurl = useMemo(() => {
+    const accountLine = selectedAccount ? `  -F "accountId=${selectedAccount.id}" \\` : `  -F "account=muditek.ai" \\`;
+    return `curl -X POST "${baseUrl}/api/admin/tiktok/post" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+${accountLine}
+  -F "title=Post title" \\
+  -F "caption=Caption text" \\
+  -F "sourceLabel=folder-name" \\
+  -F "slides=@slide-01.png" \\
+  -F "slides=@slide-02.png"`;
+  }, [baseUrl, selectedAccount]);
 
-  async function copyCommand() {
-    await navigator.clipboard.writeText(command);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1600);
+  async function copyText(value: string, copiedKey: string) {
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(copiedKey);
+    window.setTimeout(() => setCopiedValue(null), 1600);
+  }
+
+  async function createApiKey() {
+    setCreatingKey(true);
+    setKeyError(null);
+    setNewApiKey(null);
+    try {
+      const response = await fetch("/api/admin/tiktok/keys", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: newKeyName }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setKeyError(payload.error || "API key could not be created.");
+        return;
+      }
+      setApiKeysState((current) => [payload.key as ApiKey, ...current]);
+      setNewApiKey(String(payload.apiKey));
+    } finally {
+      setCreatingKey(false);
+    }
+  }
+
+  async function revokeApiKey(id: string) {
+    setRevokingKeyId(id);
+    setKeyError(null);
+    try {
+      const response = await fetch(`/api/admin/tiktok/keys/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setKeyError(payload.error || "API key could not be revoked.");
+        return;
+      }
+      setApiKeysState((current) =>
+        current.map((apiKey) => (apiKey.id === id ? (payload.key as ApiKey) : apiKey)),
+      );
+    } finally {
+      setRevokingKeyId(null);
+    }
   }
 
   async function sendManualDraft() {
@@ -319,7 +395,7 @@ export default function TikTokContent({
                 variant="outline"
                 className={browserReady ? "rounded-md border-emerald-500/25 text-emerald-200" : "rounded-md"}
               >
-                {browserReady ? "Ready" : requiredAction(accounts, env)}
+                {browserReady ? "Ready" : requiredAction(accounts, env, automationKeyReady)}
               </Badge>
             </div>
           </div>
@@ -426,7 +502,7 @@ export default function TikTokContent({
                   <h2 className="text-base font-semibold">Connection</h2>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {setupReady ? "TikTok is connected for draft uploads." : requiredAction(accounts, env)}
+                  {setupReady ? "TikTok is connected for draft uploads." : requiredAction(accounts, env, automationKeyReady)}
                 </p>
               </div>
               <HealthDot tone={setupReady ? "good" : "warn"} />
@@ -454,6 +530,19 @@ export default function TikTokContent({
                       <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                         <span>Access: {formatDate(account.accessExpires)}</span>
                         <span>Refresh: {formatDate(account.refreshExpires)}</span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-border/50 bg-background/40 px-3 py-2">
+                        <span className="font-mono text-xs text-muted-foreground">
+                          accountId: {account.id}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyText(String(account.id), `account-${account.id}`)}
+                        >
+                          {copiedValue === `account-${account.id}` ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                          {copiedValue === `account-${account.id}` ? "Copied" : "Copy"}
+                        </Button>
                       </div>
                     </div>
                   );
@@ -490,6 +579,116 @@ export default function TikTokContent({
               <WorkflowStep index="3" text="You open TikTok, add sound/native edits, then publish." />
             </div>
           </Card>
+
+          <Card className="bg-card/45 p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <KeyRound className="size-4 text-muted-foreground" />
+                  <h2 className="text-base font-semibold">Automation API keys</h2>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Use these only for scripts or agents that send finished slide folders to TikTok drafts.
+                </p>
+              </div>
+              <Badge variant="outline" className="rounded-md">
+                {activeApiKeys.length} active
+              </Badge>
+            </div>
+
+            <div className="mt-4 space-y-3 rounded-xl border border-border/60 bg-background/30 p-4">
+              <div>
+                <Label htmlFor="api-key-name">Key name</Label>
+                <Input
+                  id="api-key-name"
+                  value={newKeyName}
+                  onChange={(event) => setNewKeyName(event.target.value)}
+                  className="mt-2"
+                  placeholder="Agent folder sender"
+                />
+              </div>
+              <Button
+                onClick={createApiKey}
+                disabled={creatingKey || newKeyName.trim().length === 0}
+                className="w-full"
+              >
+                {creatingKey ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
+                {creatingKey ? "Creating key..." : "Create API key"}
+              </Button>
+            </div>
+
+            {newApiKey && (
+              <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-100">Copy this key now</p>
+                    <p className="mt-1 text-xs leading-5 text-emerald-100/75">
+                      It will not be shown again after you leave this page.
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => copyText(newApiKey, "new-api-key")}>
+                    {copiedValue === "new-api-key" ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                    {copiedValue === "new-api-key" ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+                <pre className="mt-3 overflow-auto rounded-lg border border-emerald-500/20 bg-background/70 p-3 text-xs leading-5 text-emerald-100">
+                  {newApiKey}
+                </pre>
+              </div>
+            )}
+
+            {keyError && (
+              <p className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-100">
+                {keyError}
+              </p>
+            )}
+
+            <div className="mt-4 space-y-2">
+              {env.posterApiKey && (
+                <div className="rounded-lg border border-border/60 bg-background/30 p-3 text-sm text-muted-foreground">
+                  Legacy Vercel env key is active.
+                </div>
+              )}
+              {apiKeysState.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border/70 bg-background/30 p-3 text-sm text-muted-foreground">
+                  No managed keys yet.
+                </div>
+              ) : (
+                apiKeysState.map((apiKey) => {
+                  const revoked = Boolean(apiKey.revokedAt);
+                  return (
+                    <div key={apiKey.id} className="rounded-lg border border-border/60 bg-background/30 p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{apiKey.name}</p>
+                          <p className="mt-1 font-mono text-xs text-muted-foreground">{apiKey.keyPrefix}</p>
+                        </div>
+                        <Badge variant="outline" className="rounded-md">
+                          {revoked ? "Revoked" : "Active"}
+                        </Badge>
+                      </div>
+                      <div className="mt-3 grid gap-1 text-xs text-muted-foreground">
+                        <span>Created: {formatDate(apiKey.createdAt)}</span>
+                        <span>Last used: {formatDate(apiKey.lastUsedAt)}</span>
+                      </div>
+                      {!revoked && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-3 w-full"
+                          onClick={() => revokeApiKey(apiKey.id)}
+                          disabled={revokingKeyId === apiKey.id}
+                        >
+                          {revokingKeyId === apiKey.id ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                          {revokingKeyId === apiKey.id ? "Revoking..." : "Revoke"}
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </Card>
         </aside>
       </section>
 
@@ -514,7 +713,56 @@ export default function TikTokContent({
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="space-y-3 p-4 md:hidden">
+              {attempts.map((attempt) => (
+                <div key={attempt.id} className="rounded-xl border border-border/60 bg-background/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {attempt.title || attempt.sourceLabel || "Untitled draft"}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        @{attempt.accountHandle || "unknown"} · {attempt.imageCount} slides · {formatDate(attempt.createdAt)}
+                      </p>
+                    </div>
+                    <StatusBadge value={attempt.status} />
+                  </div>
+                  {(attempt.failReason || attempt.errorMessage) && (
+                    <div className="mt-3 rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+                      <p className="text-xs leading-5 text-red-100">
+                        {attempt.failReason || attempt.errorMessage}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-2"
+                        onClick={() => copyText(attempt.failReason || attempt.errorMessage || "", `error-${attempt.id}`)}
+                      >
+                        {copiedValue === `error-${attempt.id}` ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                        {copiedValue === `error-${attempt.id}` ? "Copied" : "Copy error"}
+                      </Button>
+                    </div>
+                  )}
+                  {attempt.publishId && (
+                    <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-border/50 bg-background/40 p-3">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {shortId(attempt.publishId)}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyText(attempt.publishId || "", `publish-${attempt.id}`)}
+                      >
+                        {copiedValue === `publish-${attempt.id}` ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                        {copiedValue === `publish-${attempt.id}` ? "Copied" : "Copy ID"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -551,6 +799,7 @@ export default function TikTokContent({
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
         </Card>
 
@@ -565,17 +814,53 @@ export default function TikTokContent({
                 Only red/yellow rows need action.
               </p>
             </div>
-            <HealthDot tone={setupReady && env.posterApiKey ? "good" : "warn"} />
+            <HealthDot tone={setupReady && automationKeyReady ? "good" : "warn"} />
           </div>
           <div className="mt-4">
             <EnvItem label="TikTok client key" ok={env.clientKey} />
             <EnvItem label="TikTok client secret" ok={env.clientSecret} />
             <EnvItem label="Image hosting" ok={env.blob} />
-            <EnvItem label="Folder sender key" ok={env.posterApiKey} />
+            <EnvItem label="Automation API key" ok={automationKeyReady} />
           </div>
           <p className="mt-4 break-all rounded-lg border border-border/50 bg-background/35 p-3 text-xs leading-5 text-muted-foreground">
             Callback URL: {env.redirectUri}
           </p>
+
+          <details className="mt-4 rounded-xl border border-border/60 bg-background/30 p-4" open>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
+              <span className="flex items-center gap-2">
+                <Code2 className="size-4 text-muted-foreground" />
+                Poster API endpoint
+              </span>
+              <Badge variant="outline" className="rounded-md">
+                POST
+              </Badge>
+            </summary>
+            <div className="mt-3 space-y-3 text-sm text-muted-foreground">
+              <div className="rounded-lg border border-border/50 bg-background/45 p-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">URL</p>
+                <p className="mt-1 break-all font-mono text-xs text-foreground">
+                  {baseUrl}/api/admin/tiktok/post
+                </p>
+              </div>
+              <div className="grid gap-2 text-xs leading-5 sm:grid-cols-2">
+                <span><b className="text-foreground">Auth:</b> Authorization: Bearer API_KEY</span>
+                <span><b className="text-foreground">Slides:</b> slides or slides[] files</span>
+                <span><b className="text-foreground">Account:</b> accountId or account</span>
+                <span><b className="text-foreground">Optional:</b> title, caption, sourceLabel</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs">Copy this and replace YOUR_API_KEY.</span>
+                <Button size="sm" variant="outline" onClick={() => copyText(apiCurl, "api-curl")}>
+                  {copiedValue === "api-curl" ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                  {copiedValue === "api-curl" ? "Copied" : "Copy curl"}
+                </Button>
+              </div>
+              <pre className="max-h-56 overflow-auto rounded-lg border border-border/50 bg-background/60 p-3 text-xs leading-5 text-muted-foreground">
+                {apiCurl}
+              </pre>
+            </div>
+          </details>
 
           <details className="mt-4 rounded-xl border border-border/60 bg-background/30 p-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
@@ -594,11 +879,11 @@ export default function TikTokContent({
               <span className="text-xs text-muted-foreground">
                 {readyToSend
                   ? `Targets ${selectedAccount ? `@${selectedAccount.handle}` : "the selected account"}.`
-                  : "Needs connected account, Blob, and folder sender key."}
+                  : "Needs connected account, Blob, and automation API key."}
               </span>
-              <Button size="sm" variant="outline" onClick={copyCommand}>
-                {copied ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
-                {copied ? "Copied" : "Copy"}
+              <Button size="sm" variant="outline" onClick={() => copyText(command, "command")}>
+                {copiedValue === "command" ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                {copiedValue === "command" ? "Copied" : "Copy"}
               </Button>
             </div>
             <pre className="mt-3 max-h-40 overflow-auto rounded-lg border border-border/50 bg-background/60 p-3 text-xs leading-5 text-muted-foreground">

@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Local AI Build Guide · Muditek</title>
+<meta name="description" content="Run open-weight models on hardware you control: which model to pick, what machine you need, which inference engine to run, the quantization that fits, how to benchmark it, and the command to start.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07111F;
+  --ink-2:#102033;
+  --navy:#0B2F66;
+  --blue:#1458B8;
+  --red:#B7192A;
+  --yellow:#FFB000;
+  --green:#087A50;
+  --paper:#FFFFFF;
+  --surface:#F3F8FF;
+  --surface-2:#E7F0FC;
+  --line:#8FA9C8;
+  --line-hard:#0B2F66;
+  --maxw:890px;
+  --measure:62ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:1.25rem;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+@media (max-width:620px){body{font-size:1.16rem;line-height:1.58}}
+a{color:var(--navy);text-decoration-thickness:2px;text-underline-offset:3px}
+strong{color:var(--navy);font-weight:700}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .4em;border-radius:6px;font-size:.9em;font-weight:600}
+.letterhead{
+  width:min(var(--maxw),92vw);
+  margin:0 auto;
+  padding:3.5rem 0 2.4rem;
+  border-bottom:3px solid var(--navy);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.4rem;
+}
+.letterhead img{height:64px;width:auto;display:block}
+.letterhead__meta{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--navy);
+  font-size:1rem;
+  font-weight:700;
+  text-transform:uppercase;
+  text-align:right;
+}
+@media (max-width:620px){
+  .letterhead{align-items:flex-start;flex-direction:column;padding-top:2.2rem}
+  .letterhead__meta{text-align:left}
+}
+.hero,.toc,.doc{
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+}
+.hero{padding:3.2rem 0 1.4rem}
+h1,h2,h3,h4{
+  color:var(--navy);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:0;
+  text-wrap:balance;
+}
+.hero h1{
+  font-size:4.45rem;
+  line-height:.98;
+  margin:0 0 1.6rem;
+  max-width:13ch;
+}
+@media (max-width:760px){.hero h1{font-size:3.4rem}}
+@media (max-width:460px){.hero h1{font-size:2.7rem}}
+.hero__lead{
+  margin:0 0 2rem;
+  color:var(--ink);
+  font-size:1.75rem;
+  line-height:1.35;
+  font-weight:700;
+  max-width:30ch;
+}
+@media (max-width:620px){.hero__lead{font-size:1.38rem}}
+.hero p:not(.hero__lead){max-width:var(--measure);margin:0 0 1.2rem}
+.proofline{
+  margin:2.2rem 0;
+  padding:1.1rem 0;
+  border-top:2px solid var(--line-hard);
+  border-bottom:2px solid var(--line-hard);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.7rem;
+}
+.proofline .stack-label{
+  color:var(--navy);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:1.02rem;
+  width:100%;
+  margin-bottom:.2rem;
+}
+.logo-tile{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  min-height:52px;
+  border:2px solid var(--navy);
+  background:#fff;
+  padding:.6rem .8rem;
+}
+.logo-tile b{
+  color:var(--ink);
+  font-size:1.02rem;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.proofline img{height:28px;width:28px;object-fit:contain;display:block}
+.system-map{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:.75rem;
+  margin:2rem 0 .7rem;
+}
+.map-node{
+  min-height:118px;
+  border:2px solid var(--navy);
+  background:var(--surface);
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.map-node.is-hot{background:var(--navy);color:#fff}
+.map-node.is-warn{background:var(--yellow)}
+.map-node.is-stop{background:var(--red);color:#fff}
+.map-node b{display:block;color:inherit;font-size:1.18rem;line-height:1.1}
+.map-node span{display:block;color:inherit;font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:700;line-height:1.25}
+@media (max-width:820px){.system-map{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:430px){.system-map{grid-template-columns:repeat(2,1fr)}}
+.caption{
+  color:var(--navy);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1rem;
+  font-weight:700;
+  margin:0 0 2.2rem;
+}
+.toc{
+  margin-top:2.5rem;
+  padding:1.7rem 0 .7rem;
+  border-top:4px solid var(--navy);
+  border-bottom:1px solid var(--line);
+}
+.toc h2{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:1.05rem;
+  text-transform:uppercase;
+  margin:0 0 1.2rem;
+  color:var(--red);
+}
+.toc ol{
+  list-style:none;
+  padding:0;
+  margin:0;
+  columns:2;
+  column-gap:3rem;
+}
+.toc li{break-inside:avoid;margin:0 0 .8rem}
+.toc a{color:var(--navy);font-weight:700;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+@media (max-width:680px){.toc ol{columns:1}}
+.doc{padding:1.8rem 0 5rem}
+.doc p,.doc li{max-width:var(--measure)}
+.doc p{margin:0 0 1.2rem}
+h2{
+  font-size:2.6rem;
+  margin:4.8rem 0 1.4rem;
+  padding-bottom:.55rem;
+  border-bottom:3px solid var(--line-hard);
+}
+@media (max-width:620px){h2{font-size:2.15rem;margin-top:3.8rem}}
+h3{
+  font-size:1.62rem;
+  margin:2.6rem 0 .8rem;
+}
+.lede{
+  color:var(--navy);
+  font-size:1.55rem;
+  line-height:1.35;
+  font-weight:700;
+  max-width:30ch;
+  margin:0 0 1.5rem;
+}
+.callout{
+  margin:2rem 0;
+  background:var(--surface);
+  border:2px solid var(--navy);
+  border-left:10px solid var(--red);
+  padding:1.5rem 1.6rem;
+}
+.callout p{max-width:none;margin:0;color:var(--ink);font-weight:600}
+.ruler{margin:2.2rem 0;border:0;height:3px;background:var(--navy)}
+.model-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1rem;
+  margin:1.7rem 0 2.2rem;
+}
+.model-card{
+  border:2px solid var(--navy);
+  background:#fff;
+  padding:1.2rem 1.25rem;
+  display:flex;
+  flex-direction:column;
+  gap:.7rem;
+}
+.model-card:nth-child(3n+2){background:var(--surface)}
+.model-card .mc-head{display:flex;align-items:center;gap:.7rem}
+.model-card img{height:32px;width:32px;object-fit:contain;display:block}
+.model-card b{color:var(--navy);font-size:1.3rem;line-height:1}
+.model-card p{margin:0;font-size:1.04rem;line-height:1.45;color:var(--ink);max-width:none}
+@media (max-width:720px){.model-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:430px){.model-grid{grid-template-columns:1fr}}
+.tw{overflow-x:auto;margin:1.6rem 0 2.2rem;border:2px solid var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:1.05rem}
+th{background:var(--navy);color:#fff;padding:1rem 1.1rem;text-align:left;font-weight:700}
+td{border-top:1px solid var(--line);padding:.95rem 1.1rem;vertical-align:top;color:var(--ink)}
+tr:nth-child(even) td{background:var(--surface)}
+td code{white-space:nowrap}
+.codewrap{position:relative;margin:1.7rem 0 2.2rem}
+.code-title{
+  margin:0 0 .55rem;
+  color:var(--red);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:1.02rem;
+  text-transform:uppercase;
+}
+pre{
+  margin:0;
+  background:var(--ink);
+  color:#fff;
+  border:2px solid var(--ink);
+  padding:3.35rem 1.45rem 1.35rem;
+  overflow-x:auto;
+  line-height:1.7;
+  font-size:1rem;
+}
+pre code{color:#fff;background:none;border-radius:0;padding:0;font-size:1em;white-space:pre-wrap;overflow-wrap:anywhere}
+.copy{
+  position:absolute;
+  top:2.95rem;
+  right:.8rem;
+  border:2px solid #fff;
+  background:#fff;
+  color:var(--ink);
+  font-family:"IBM Plex Mono",monospace;
+  font-weight:700;
+  font-size:.92rem;
+  padding:.5rem .75rem;
+  cursor:pointer;
+}
+.copy:hover{background:var(--yellow);color:var(--ink)}
+.copy.ok{background:var(--green);border-color:var(--green);color:#fff}
+.checklist{list-style:none;padding:0;margin:1.3rem 0 2rem;display:grid;gap:.95rem}
+.checklist li{position:relative;padding-left:2rem;margin:0;font-weight:600}
+.checklist li:before{content:"";position:absolute;left:0;top:.55rem;width:.8rem;height:.8rem;background:var(--red);border:2px solid var(--ink)}
+.cta{margin:5rem 0 1rem;background:var(--navy);color:#fff;border:4px solid var(--navy);padding:3rem}
+.cta h2{color:#fff;border:0;margin:0 0 1.2rem;padding:0;font-size:2.55rem}
+.cta p{color:#fff;max-width:58ch}
+.cta strong{color:#fff}
+.cta a{display:inline-block;margin-top:.8rem;background:#fff;color:var(--navy);border:3px solid #fff;text-decoration:none;font-weight:700;padding:.95rem 1.35rem;font-size:1.18rem}
+.cta a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+@media (max-width:620px){.cta{padding:2rem 1.35rem}.cta h2{font-size:2.05rem}}
+.footer{
+  border-top:3px solid var(--navy);
+  width:min(var(--maxw),92vw);
+  margin:3.5rem auto 0;
+  padding:2rem 0 3rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+}
+.footer img{height:38px;width:auto}
+.footer p{margin:0;color:var(--ink);font-size:1rem;font-weight:600;max-width:52ch}
+@media (max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+.js.motion .reveal:not(.in){transform:translateY(12px)}
+.js.motion .reveal.in{transform:none;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+@media print{
+  body{font-size:11pt;color:#000}
+  .copy{display:none}
+  pre{background:#07111F !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,.model-grid,.callout,.codewrap,.tw,.cta{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img src="/media/local-ai-build-guide/muditek-logo.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/muditek-logo.svg';" alt="Muditek">
+  <span class="letterhead__meta">Local AI Build Guide</span>
+</header>
+
+<header class="hero">
+  <h1>Run Frontier AI On Hardware You Control.</h1>
+  <p class="hero__lead">A closed model is an off switch you don't hold. Open weights run on your machine and answer to no one's policy.</p>
+  <div class="proofline" role="img" aria-label="Open-weight models covered: Qwen, DeepSeek, GLM, Kimi, MiniMax, Mistral">
+    <span class="stack-label">Open weights covered</span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/qwen.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/qwen.svg';" alt="Qwen" loading="lazy"><b>Qwen</b></span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/deepseek.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/deepseek.svg';" alt="DeepSeek" loading="lazy"><b>DeepSeek</b></span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/glm.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/glm.svg';" alt="GLM" loading="lazy"><b>GLM</b></span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/kimi.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/kimi.svg';" alt="Kimi" loading="lazy"><b>Kimi</b></span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/minimax.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/minimax.svg';" alt="MiniMax" loading="lazy"><b>MiniMax</b></span>
+    <span class="logo-tile"><img src="/media/local-ai-build-guide/logos/mistral.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/mistral.svg';" alt="Mistral" loading="lazy"><b>Mistral</b></span>
+  </div>
+  <p>In June 2026, the two strongest closed models went dark in three weeks. Anthropic Fable 5 and Mythos 5 were pulled globally by a US export-control order. OpenAI GPT-5.6 shipped to government-approved partners first.</p>
+  <p>If your AI only writes drafts, a lockout is annoying. If your agents read customer notes, private code, SOPs, and internal files, a lockout stops work.</p>
+  <p>This guide is the build, not the opinion. Which model to consider, what machine you actually need, which engine to run, the quantization that fits, how to benchmark it honestly, and the command to start.</p>
+  <div class="system-map" role="img" aria-label="Build path: Workload, Model, Hardware, Engine, Quantization, Serve">
+    <div class="map-node"><span>01</span><b>Workload</b></div>
+    <div class="map-node"><span>02</span><b>Model</b></div>
+    <div class="map-node is-hot"><span>03</span><b>Hardware</b></div>
+    <div class="map-node"><span>04</span><b>Engine</b></div>
+    <div class="map-node is-warn"><span>05</span><b>Quantize</b></div>
+    <div class="map-node is-stop"><span>06</span><b>Serve</b></div>
+  </div>
+  <p class="caption">You don't pick an engine first. You pick a workload, a hardware budget, and a serving shape. The engine follows.</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#why">1. Why Run It Local</a></li>
+    <li><a href="#asymmetry">2. The Asymmetry Nobody Mentions</a></li>
+    <li><a href="#split">3. Split The Work First</a></li>
+    <li><a href="#models">4. Choose Your Model</a></li>
+    <li><a href="#engine">5. Match The Engine To Your Hardware</a></li>
+    <li><a href="#bottlenecks">6. Prefill, Decode, And The Real Bottlenecks</a></li>
+    <li><a href="#quant">7. Quantization, Decoded</a></li>
+    <li><a href="#measure">8. Measure It Right</a></li>
+    <li><a href="#start">9. Start In One Command</a></li>
+    <li><a href="#tiers">10. Pick Your Hardware Tier</a></li>
+    <li><a href="#limits">11. The Honest Limits</a></li>
+  </ol>
+</nav>
+
+<article class="doc">
+  <h2 id="why">Why Run It Local</h2>
+  <p class="lede">A closed model is a rented permission layer. The owner can pull it, gate it, slow it, or change it without you.</p>
+  <p>The point is not that closed models are bad. The best closed model is still the right tool when the work is safe to send out.</p>
+  <p>The point is dependency. When an agent that runs your operation depends on one model you do not control, a single policy change, price move, or government order becomes your outage. June 2026 was the live demonstration.</p>
+  <p>Owning the weights buys three things a subscription never will:</p>
+  <ul class="checklist">
+    <li><strong>Operational control.</strong> The model runs on your machines, at your latency, with your privacy and security rules. No begging a vendor for access or capacity.</li>
+    <li><strong>Inspection.</strong> When a local model refuses or degrades, you can open the stack and change it. With a closed model the only answer is "trust us."</li>
+    <li><strong>Market leverage.</strong> A working local option keeps your closed provider honest on price and quality. Without an exit, every provider eventually throttles, raises prices, or quietly ships a smaller model and calls it strategy.</li>
+  </ul>
+  <div class="callout">
+    <p>Own the part you cannot afford to lose. Download open weights, run them on hardware you control, and keep the work that touches customers, code, and SOPs inside your own walls.</p>
+  </div>
+
+  <h2 id="asymmetry">The Asymmetry Nobody Mentions</h2>
+  <p class="lede">Learning flows up. Independence does not flow back down.</p>
+  <p>This is the part the pricing page never shows you, and it is the strongest business reason to run private work locally.</p>
+  <p>When you route proprietary work through a closed model, your prompts, your code, your debugging sessions, and your agent traces become signal the provider can learn from. Opting into training can extend how long that data is retained to a span measured in years.</p>
+  <p>Now read the other half of the terms. You typically may not use that provider's outputs to build a system that competes with them. Coding assistants, writing tools, chatbots, translation, open-ended generation: the very categories you might build.</p>
+  <div class="callout">
+    <p>So your crown jewels strengthen the platform you depend on, and you are barred from using what comes back to build your own. Your proprietary work is strategic data, not exhaust. Local inference keeps that signal inside your walls.</p>
+  </div>
+  <p>Use closed models for work that is safe to give away. Keep anything that is your actual edge on a model you own.</p>
+
+  <h2 id="split">Split The Work First</h2>
+  <p>Before you buy a GPU, decide what is even allowed to leave the building. Most teams should run both: closed for reach, local for control.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Work</th><th>Where it runs</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Public research, rough drafts, brainstorming</td><td><strong>Closed model</strong> (use the best one available)</td><td>Nothing private leaves. You want peak capability.</td></tr>
+        <tr><td>Customer data, private code, SOPs, prompts, logs, agent memory</td><td><strong>Local model</strong></td><td>This is the work you cannot lose access to, and cannot let train someone else's model.</td></tr>
+        <tr><td>Anything an always-on agent depends on</td><td><strong>Local model</strong></td><td>A scheduled loop must not break because a vendor changed a policy overnight.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Put one router in front of both. Because every engine below speaks an OpenAI-style API, the same agent code can point at local or closed with a single config line, and you can swap models without rebuilding the workflow. The split is the architecture. The hardware is just how you honor it.</p>
+
+  <h2 id="models">Choose Your Model</h2>
+  <p class="lede">Open weights now sit at or near the closed frontier. Pick a family, then pick the size your hardware can hold.</p>
+  <p>Through 2025 and 2026 the open releases stopped trailing and went frontier. Sizes matter more than brand loyalty: the same family ships small variants that run on a laptop and large mixture-of-experts variants that need a server. Match the size to your memory before anything else.</p>
+  <div class="model-grid">
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/qwen.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/qwen.svg';" alt="Qwen"><b>Qwen</b></div><p>The widest size range, from tiny laptop models to large flagships. A safe default when you want one family that covers every machine.</p></div>
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/deepseek.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/deepseek.svg';" alt="DeepSeek"><b>DeepSeek</b></div><p>Strong reasoning and coding on an efficient mixture-of-experts design. A favorite for self-hosted coding agents.</p></div>
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/glm.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/glm.svg';" alt="GLM"><b>GLM (Zhipu)</b></div><p>A capable general and agentic open model that the local community consistently rates near the top of the open frontier.</p></div>
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/kimi.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/kimi.svg';" alt="Kimi"><b>Kimi</b></div><p>Large mixture-of-experts with long context. Built for agents that read a lot before they act.</p></div>
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/minimax.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/minimax.svg';" alt="MiniMax"><b>MiniMax</b></div><p>Long-context mixture-of-experts tuned for throughput. Strong when many documents or many users hit it at once.</p></div>
+    <div class="model-card"><div class="mc-head"><img src="/media/local-ai-build-guide/logos/mistral.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/logos/mistral.svg';" alt="Mistral"><b>Mistral</b></div><p>Efficient European open weights with excellent small and mid models. Easy to run, easy to fine-tune.</p></div>
+  </div>
+  <p>Pick the current release of one of these, in the largest size your memory holds at a sane quantization. Do not chase the leaderboard weekly. Chase the model your hardware can actually serve.</p>
+
+  <h2 id="engine">Match The Engine To Your Hardware</h2>
+  <p class="lede">The engine is the last choice, not the first. Your hardware and workload decide it for you.</p>
+  <p>An inference engine is the runtime that loads the weights and generates tokens. It is also the scheduler, the memory manager, the cache accountant, and the API surface. The right one depends entirely on what you run it on and how many people use it.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Your setup</th><th>Engine</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Laptop, edge box, or mixed CPU and GPU</td><td><strong>llama.cpp</strong></td><td>Runs almost anywhere, splits work across CPU and GPU, uses the GGUF format. A single-box hero, not a multi-GPU production server.</td></tr>
+        <tr><td>Mac with Apple silicon</td><td><strong>MLX / MLX-LM</strong></td><td>Built for Metal and unified memory. The native path on a Mac.</td></tr>
+        <tr><td>One NVIDIA GPU (3090 / 4090 / 5090 class)</td><td><strong>ExLlamaV2</strong></td><td>Fast quantized inference tuned for a single consumer card.</td></tr>
+        <tr><td>Two to four consumer NVIDIA GPUs, or a local MoE</td><td><strong>ExLlamaV3</strong></td><td>Modern low-bit quantization across multiple cards.</td></tr>
+        <tr><td>Production serving for many users</td><td><strong>vLLM</strong></td><td>The first production server most teams should evaluate. High-throughput batched serving, broad quant support, OpenAI-style API.</td></tr>
+        <tr><td>Long context, MoE, or request routing</td><td><strong>SGLang</strong></td><td>Separates prefill from decode so a long prompt does not spike everyone's latency.</td></tr>
+        <tr><td>Maximum NVIDIA performance</td><td><strong>TensorRT-LLM</strong></td><td>Compiled kernels for the lowest latency on H100 / B200 class hardware.</td></tr>
+        <tr><td>A fleet across multiple machines</td><td><strong>NVIDIA Dynamo</strong></td><td>Orchestrates the engines above across nodes once one box is not enough.</td></tr>
+        <tr><td>AMD GPUs (MI300 class)</td><td><strong>vLLM / SGLang on ROCm</strong></td><td>The serving engines run on AMD, not only NVIDIA.</td></tr>
+        <tr><td>Intel (Xeon, Arc, Core Ultra)</td><td><strong>OpenVINO GenAI</strong></td><td>The Intel-native path, including CPU-only and NPU.</td></tr>
+        <tr><td>Browser, mobile, or in-app</td><td><strong>MLC LLM / ONNX Runtime</strong></td><td>Compile-to-target runtimes for on-device inference.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>If you only remember one path: start with <strong>Ollama</strong> or <strong>llama.cpp</strong> to prove it works on the machine you already own, then graduate to <strong>vLLM</strong> or <strong>SGLang</strong> the moment real users or agents depend on it.</p>
+
+  <h2 id="bottlenecks">Prefill, Decode, And The Real Bottlenecks</h2>
+  <p class="lede">Fitting the weights is step one. Feeding the chip fast enough is the real game.</p>
+  <p>Every response runs in two phases, and they stress different parts of the machine.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Phase</th><th>What happens</th><th>What it stresses</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Prefill</strong></td><td>The model reads your whole prompt and builds the initial cache.</td><td>Raw compute. Dominates when prompts are long.</td></tr>
+        <tr><td><strong>Decode</strong></td><td>The model writes one token at a time, re-reading the weights and cache for each.</td><td>Memory bandwidth. Dominates when answers are long. This is what you feel as tokens per second.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>That is why memory bandwidth, not just memory size, sets your speed. As a concrete example, a Mac Studio M3 Ultra has roughly 819 GB/s of unified memory bandwidth, while an H100 has roughly 3.35 TB/s. The Mac can fit a big model cheaply. The H100 serves it several times faster. Fit is not speed.</p>
+  <p>The four things that actually slow a local stack down:</p>
+  <ul class="checklist">
+    <li><strong>Memory bandwidth.</strong> Sets decode speed. Capacity only decides whether the model loads at all.</li>
+    <li><strong>KV cache growth.</strong> Long context and many concurrent users inflate the cache fast, and it often runs you out of memory before the weights do.</li>
+    <li><strong>Interconnect between GPUs.</strong> On multi-card rigs the link between cards becomes the limit. Without a fast link, splitting the model in a pipeline can beat splitting it tensor-wise.</li>
+    <li><strong>Scheduler quality.</strong> Under real load, how the engine batches and routes requests matters as much as raw hardware.</li>
+  </ul>
+  <p>Quick read on your own workload: short prompt with a long answer leans on decode and bandwidth; long prompt with a short answer leans on prefill; many users at once leans on the scheduler; very long context leans on the KV cache; a mixture-of-experts model leans on routing and interconnect.</p>
+
+  <h2 id="quant">Quantization, Decoded</h2>
+  <p class="lede">Quantization shrinks a model so it fits your memory. The formats are not interchangeable. Match the format to your engine.</p>
+  <p>A model at full precision is large. Quantizing it to fewer bits per weight cuts the memory it needs, with a small and usually acceptable quality cost. Four-bit is the common sweet spot. The catch: each engine reads its own format.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Format</th><th>Runs on</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><td><code>GGUF</code></td><td>llama.cpp, Ollama</td><td>You want the widest hardware support, CPU included.</td></tr>
+        <tr><td><code>EXL2 / EXL3</code></td><td>ExLlamaV2 / V3</td><td>You run on one or several consumer NVIDIA GPUs.</td></tr>
+        <tr><td><code>AWQ / GPTQ</code></td><td>vLLM and others</td><td>You serve four-bit weights on GPU at scale.</td></tr>
+        <tr><td><code>FP8 / FP4</code></td><td>vLLM, TensorRT-LLM</td><td>You have newer NVIDIA cards and want speed with low precision loss.</td></tr>
+        <tr><td><code>MLX</code></td><td>MLX / MLX-LM</td><td>You are on a Mac.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <p>Rule of thumb: drop to four-bit first. If quality on your task holds, keep the saved memory. If it slips on something that matters, step up the precision rather than buying a bigger card. Never assume a file built for one engine runs on another.</p>
+  </div>
+
+  <h2 id="measure">Measure It Right</h2>
+  <p class="lede">"I got 180 tokens per second" is not a benchmark. It is a vibe.</p>
+  <p>A single-user token count tells you almost nothing about how the stack behaves when real work hits it. Before you trust any number, including your own, measure the things that move under load.</p>
+  <ul class="checklist">
+    <li><strong>Test at your real concurrency.</strong> One user is the easy case. Benchmark the number of simultaneous requests you actually expect.</li>
+    <li><strong>Use your real prompt and answer lengths.</strong> Prefill-heavy and decode-heavy workloads behave nothing alike.</li>
+    <li><strong>Track time to first token and decode speed separately.</strong> One is the wait before it starts, the other is how fast it writes.</li>
+    <li><strong>Watch the tail, not the average.</strong> The p95 and p99 latency are what your users feel on a bad request.</li>
+    <li><strong>Convert to cost per million tokens.</strong> That is the number you compare against a closed API.</li>
+  </ul>
+  <p>Record the full setup with every result: model, quantization, engine version, hardware, and workload shape. Re-test after any engine or driver upgrade. A number without that context is marketing, not measurement.</p>
+
+  <h2 id="start">Start In One Command</h2>
+  <p class="lede">Prove it on the machine in front of you today. Optimize later.</p>
+  <p>The fastest on-ramp is Ollama. Install it, pull a model sized for your memory, and you have a local endpoint.</p>
+  <div class="codewrap">
+    <p class="code-title">Fastest start (any machine)</p>
+    <button class="copy" type="button" aria-label="Copy Ollama quickstart">Copy</button>
+    <pre><code>curl -fsSL https://ollama.com/install.sh | sh
+ollama run qwen
+# swap "qwen" for the family and size your memory allows
+# then call it at http://localhost:11434</code></pre>
+  </div>
+  <p>When you want full control over context length and GGUF files, run llama.cpp directly.</p>
+  <div class="codewrap">
+    <p class="code-title">Direct control (llama.cpp)</p>
+    <button class="copy" type="button" aria-label="Copy llama.cpp server command">Copy</button>
+    <pre><code>llama-server \
+  -m ./models/your-model.gguf \
+  -c 8192 \
+  --host 0.0.0.0 --port 8080
+# OpenAI-compatible endpoint at http://localhost:8080/v1</code></pre>
+  </div>
+  <p>On a Mac, use the native path.</p>
+  <div class="codewrap">
+    <p class="code-title">On a Mac (MLX)</p>
+    <button class="copy" type="button" aria-label="Copy MLX server command">Copy</button>
+    <pre><code>pip install mlx-lm
+mlx_lm.server --model your-org/your-model
+# serves an OpenAI-compatible API on localhost</code></pre>
+  </div>
+  <p>When agents or teammates depend on it, move to a real serving engine.</p>
+  <div class="codewrap">
+    <p class="code-title">Production serving (vLLM)</p>
+    <button class="copy" type="button" aria-label="Copy vLLM serve command">Copy</button>
+    <pre><code>pip install vllm
+vllm serve your-org/your-model
+# high-throughput, OpenAI-compatible, ready for many users</code></pre>
+  </div>
+  <p>Every one of these exposes an OpenAI-style API. That is what lets the same router and the same agent code point at local or closed with one config line.</p>
+
+  <h2 id="tiers">Pick Your Hardware Tier</h2>
+  <p class="lede">You do not need a server to start. You need to match the tier to the job.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Tier</th><th>Hardware</th><th>What it runs</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Try it</strong></td><td>Any recent laptop, 16GB RAM</td><td>Small models at four-bit through Ollama. Good for drafting, classification, and learning the stack.</td></tr>
+        <tr><td><strong>Daily driver</strong></td><td>Mac with 32 to 64GB unified memory, or one 24 to 32GB NVIDIA GPU</td><td>Mid-size models, quantized. Real coding help and private document work for one person.</td></tr>
+        <tr><td><strong>Team server</strong></td><td>Two to four GPUs, or a workstation card plus large system RAM</td><td>Large mixture-of-experts, long context, and many users or always-on agents.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <p>The cheat code for huge models is mixture-of-experts offload. Tools like KTransformers, a fork of SGLang, keep the active experts on the GPU and push the rest to system RAM. That is how a real reported build runs DeepSeek V4 at a one-million-token context on two RTX Pro 6000 cards plus 256GB of RAM, instead of needing a rack of datacenter GPUs. Expect interactive, not blazing, speed. For private work that is usually the right trade.</p>
+  </div>
+  <p>Buy for the workload you are honoring from the split, not for the biggest model on the leaderboard. The person who buys exactly enough hardware to run the work that must stay private has already won the argument.</p>
+
+  <h2 id="limits">The Honest Limits</h2>
+  <p>Local is sovereignty, not magic. Know what you are taking on.</p>
+  <ul class="checklist">
+    <li><strong>You own the operations.</strong> Updates, security, and uptime are now yours. That is the price of control.</li>
+    <li><strong>Closed can still lead on the hardest tasks.</strong> Keep using it for the work that is safe to send out. This is a split, not a boycott.</li>
+    <li><strong>A laptop runtime is not a production server.</strong> Ollama, llama.cpp, and the MLX server are for proving it works and single-user use. Graduate to vLLM or SGLang before real users arrive.</li>
+    <li><strong>Quantization trades quality for memory.</strong> Test on your real task, not a benchmark, before you trust a heavily compressed model.</li>
+    <li><strong>Match size to memory, not to hype.</strong> A model you can actually serve beats a bigger one that swaps and crawls.</li>
+  </ul>
+  <p class="lede">The move is simple. Split the work, download the weights, run them on a machine you own, and put a router in front so nothing can be switched off on you again.</p>
+
+  <section class="cta">
+    <h2>We stand up the local stack for you</h2>
+    <p>This guide is the map. <strong>Muditek builds the running system.</strong> We decide which work must stay local, pick the model and engine for your exact hardware, set up the serving stack with quantization that fits, benchmark it against your real workload, and wire it into agents with verification instead of vibes.</p>
+    <p>If your business runs on an AI that someone else can switch off, the fix is not a better vendor. It is an architecture you own.</p>
+    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+  </section>
+</article>
+
+<footer class="footer">
+  <img src="/media/local-ai-build-guide/muditek-logo.svg" onerror="this.onerror=null;this.src='/media/local-ai-build-guide/muditek-logo.svg';" alt="Muditek">
+  <p>Built by Muditek. We build the agent systems that run the work, on infrastructure you control. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      if(!pre) return;
+      var text = pre.innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 1500);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+        done();
+      }
+    });
+  });
+  var ok = !window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  root.classList.add('js');
+  if(!ok) return;
+  root.classList.add('motion');
+  var els = document.querySelectorAll('.doc h2, .doc .tw, .doc .codewrap, .doc .callout, .doc .model-grid, .doc .cta');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var revealAll = function(){ els.forEach(function(el){ el.classList.add('in'); }); };
+  window.addEventListener('beforeprint', revealAll);
+  setTimeout(revealAll, 2200);
+  if(!('IntersectionObserver' in window)){ revealAll(); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {rootMargin:'0px 0px -7% 0px', threshold:.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -7,12 +7,15 @@ import {
   ArrowUpRight,
   Calculator,
   Filter,
+  Cloud,
   FileSearch,
   Lock,
   MapPinned,
   Globe,
   Link2,
   Search,
+  Hotel,
+  Plane,
   UserSearch,
   Wrench,
 } from "lucide-react";
@@ -32,6 +35,10 @@ function ToolIcon({ slug, className }: { slug: string; className?: string }) {
   if (slug.includes("maps")) return <MapPinned className={className} />;
   if (slug.includes("linkedin")) return <UserSearch className={className} />;
   if (slug.includes("apollo")) return <Search className={className} />;
+  if (slug.includes("flight")) return <Plane className={className} />;
+  if (slug.includes("hotel")) return <Hotel className={className} />;
+  if (slug.includes("forecast") || slug.includes("weather")) return <Cloud className={className} />;
+  if (slug.includes("news") || slug.includes("autocomplete") || slug.includes("tavily")) return <Search className={className} />;
   if (slug.includes("website")) return <Globe className={className} />;
   if (slug.includes("url") || slug.includes("text")) return <Link2 className={className} />;
   if (slug.includes("scraper")) return <FileSearch className={className} />;

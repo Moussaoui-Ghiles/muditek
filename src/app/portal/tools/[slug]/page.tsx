@@ -9,6 +9,12 @@ import { LinkedInSerperLeadWorkbench } from "@/components/portal/linkedin-serper
 import { ApolloLeadWorkbench } from "@/components/portal/apollo-lead-workbench";
 import { WebsiteTextContactExtractorWorkbench } from "@/components/portal/website-text-contact-extractor-workbench";
 import { WebsiteUrlScraperWorkbench } from "@/components/portal/website-url-scraper-workbench";
+import { SerpAutocompleteWorkbench } from "@/components/portal/serp-autocomplete-workbench";
+import { SerpFlightSearchWorkbench } from "@/components/portal/serp-flight-search-workbench";
+import { SerpHotelSearchWorkbench } from "@/components/portal/serp-hotel-search-workbench";
+import { SerpNewsSearchWorkbench } from "@/components/portal/serp-news-search-workbench";
+import { TavilyWebResearchWorkbench } from "@/components/portal/tavily-web-research-workbench";
+import { OpenMeteoForecastWorkbench } from "@/components/portal/open-meteo-forecast-workbench";
 import { RevenueLeakWorkbench } from "@/components/portal/revenue-leak-workbench";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
 import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
@@ -29,6 +35,12 @@ function ToolWorkbench({
   if (slug === "apollo-lead-finder") return <ApolloLeadWorkbench />;
   if (slug === "website-url-scraper") return <WebsiteUrlScraperWorkbench />;
   if (slug === "website-text-contact-extractor") return <WebsiteTextContactExtractorWorkbench />;
+  if (slug === "serp-news-search") return <SerpNewsSearchWorkbench />;
+  if (slug === "serp-autocomplete-suggestions") return <SerpAutocompleteWorkbench />;
+  if (slug === "serp-flight-search") return <SerpFlightSearchWorkbench />;
+  if (slug === "serp-hotel-search") return <SerpHotelSearchWorkbench />;
+  if (slug === "tavily-web-research") return <TavilyWebResearchWorkbench />;
+  if (slug === "open-meteo-forecast") return <OpenMeteoForecastWorkbench />;
   return null;
 }
 
@@ -91,6 +103,12 @@ function toolTrustLabel(slug: string): string {
   if (slug === "google-maps-lead-finder") return "Apify backed";
   if (slug === "linkedin-serper-lead-finder") return "Serper backed";
   if (slug === "google-maps-company-finder") return "SerpAPI backed";
+  if (slug === "serp-news-search") return "SerpAPI backed";
+  if (slug === "serp-autocomplete-suggestions") return "SerpAPI backed";
+  if (slug === "serp-flight-search") return "SerpAPI backed";
+  if (slug === "serp-hotel-search") return "SerpAPI backed";
+  if (slug === "tavily-web-research") return "Tavily backed";
+  if (slug === "open-meteo-forecast") return "Open-Meteo backed";
   if (slug === "apollo-lead-finder") return "Apify Apollo backed";
   if (slug.includes("website")) return "Fetch backed";
   return "Portal workbench";

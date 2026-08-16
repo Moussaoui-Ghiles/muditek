@@ -75,6 +75,19 @@ function fileIcon(kind: SkillFileKind, className: string) {
   return <FileIcon className={className} />;
 }
 
+const PREVIEWABLE_IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "webp", "gif", "svg"]);
+
+function isPreviewableImage(file: PortalSkillFileEntry | undefined): boolean {
+  return !!file && file.kind === "binary" && PREVIEWABLE_IMAGE_EXTENSIONS.has(file.ext);
+}
+
+function skillFileHref(slug: string, path: string): string {
+  return `/api/portal/skills/${encodeURIComponent(slug)}/files/${path
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")}`;
+}
+
 /* ---------- file tree model ---------- */
 
 type TreeFile = { type: "file"; name: string; path: string; entry: PortalSkillFileEntry };
@@ -300,6 +313,7 @@ export function SkillMarkdownDetailContent({
   const showRawToggle = current?.kind === "markdown" && !!current.raw;
   const effectiveView: "rendered" | "raw" =
     current?.kind === "markdown" ? viewMode : "raw";
+  const imagePreviewHref = isPreviewableImage(current) ? skillFileHref(item.slug, current.path) : null;
 
   return (
     <>
@@ -452,6 +466,31 @@ export function SkillMarkdownDetailContent({
               <div className="overflow-auto">
                 {!current ? (
                   <div className="p-10 text-[13.5px] text-white/55">No files in this skill.</div>
+                ) : imagePreviewHref ? (
+                  <div className="bg-black/20 p-4 sm:p-6">
+                    <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- authenticated skill files are served by an internal dynamic route */}
+                      <img
+                        src={imagePreviewHref}
+                        alt={current.name}
+                        className="block h-auto w-full"
+                        loading="eager"
+                      />
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">
+                        Image preview · {formatBytes(current.size)}
+                      </p>
+                      <a
+                        href={imagePreviewHref}
+                        download={current.name}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.02] px-4 py-2 text-[12.5px] font-semibold text-white/85 transition-colors hover:border-white/[0.22] hover:bg-white/[0.05]"
+                      >
+                        <Download className="size-3.5" />
+                        Download image
+                      </a>
+                    </div>
+                  </div>
                 ) : current.kind === "binary" || current.raw === null ? (
                   <div className="flex flex-col items-start gap-4 p-10">
                     <span className="flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/55">

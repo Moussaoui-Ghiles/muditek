@@ -1,5 +1,9 @@
 import TikTokContent from "./tiktok-content";
 import { getDb } from "@/lib/db";
+import {
+  serializeTikTokPosterApiKey,
+  type TikTokPosterApiKeyRow,
+} from "@/lib/tiktok-api-keys";
 import { ensureTikTokSchema } from "@/lib/tiktok-schema";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +30,7 @@ export default async function AdminTikTokPage({ searchParams }: PageProps) {
   const sql = getDb();
   let accounts: Array<Record<string, unknown>> = [];
   let attempts: Array<Record<string, unknown>> = [];
+  let apiKeys: Array<Record<string, unknown>> = [];
   let databaseError: string | null = null;
 
   try {
@@ -64,6 +69,20 @@ export default async function AdminTikTokPage({ searchParams }: PageProps) {
       LEFT JOIN tiktok_accounts a ON a.id = p.account_id
       ORDER BY p.created_at DESC
       LIMIT 40
+    `;
+    apiKeys = await sql`
+      SELECT
+        id,
+        name,
+        key_prefix,
+        created_by,
+        last_used_at,
+        revoked_at,
+        created_at,
+        updated_at
+      FROM tiktok_poster_api_keys
+      ORDER BY created_at DESC
+      LIMIT 50
     `;
   } catch (err) {
     databaseError = err instanceof Error ? err.message : "TikTok data could not load.";
@@ -114,6 +133,9 @@ export default async function AdminTikTokPage({ searchParams }: PageProps) {
             createdAt: dateString(attempt.created_at),
             updatedAt: dateString(attempt.updated_at),
           }))}
+          apiKeys={apiKeys.map((apiKey) =>
+            serializeTikTokPosterApiKey(apiKey as TikTokPosterApiKeyRow),
+          )}
           env={{
             clientKey: Boolean(process.env.TIKTOK_CLIENT_KEY),
             clientSecret: Boolean(process.env.TIKTOK_CLIENT_SECRET),

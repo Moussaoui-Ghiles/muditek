@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Build a Full Outbound GTM Agent With Hermes · Muditek</title>
+<meta name="description" content="Build a Hermes outbound agent that finds qualified accounts, waits for a real buying signal, prepares evidence-backed outreach, routes approvals, stops every channel on reply, and keeps HubSpot current.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07111F;--navy:#0B2F66;--blue:#1458B8;--red:#B7192A;--yellow:#FFB000;
+  --green:#087A50;--paper:#FFFFFF;--surface:#F3F8FF;--surface-2:#E7F0FC;
+  --line:#8FA9C8;--maxw:890px;--measure:62ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:1.25rem;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+@media (max-width:620px){body{font-size:1.16rem;line-height:1.58}}
+a{color:var(--navy);text-decoration-thickness:2px;text-underline-offset:3px}
+strong{color:var(--navy);font-weight:700}
+code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .4em;border-radius:6px;font-size:.9em;font-weight:600}
+.letterhead{width:min(var(--maxw),92vw);margin:0 auto;padding:3.5rem 0 2.4rem;border-bottom:3px solid var(--navy);display:flex;align-items:center;justify-content:space-between;gap:1.4rem}
+.letterhead img{height:64px;width:auto;display:block}
+.letterhead__meta{font-family:"IBM Plex Mono",monospace;color:var(--navy);font-size:1rem;font-weight:700;text-transform:uppercase;text-align:right}
+@media (max-width:620px){.letterhead{align-items:flex-start;flex-direction:column;padding-top:2.2rem}.letterhead__meta{text-align:left}}
+.hero,.toc,.doc{width:min(var(--maxw),92vw);margin-inline:auto}
+.hero{padding:3.2rem 0 1.4rem}
+h1,h2,h3,h4{color:var(--navy);font-family:"IBM Plex Sans",system-ui,sans-serif;font-weight:700;line-height:1.08;letter-spacing:0;text-wrap:balance}
+.hero h1{font-size:4.05rem;line-height:1;margin:0 0 1.6rem;max-width:18ch}
+@media (max-width:760px){.hero h1{font-size:3.1rem}}
+@media (max-width:460px){.hero h1{font-size:2.5rem}}
+.hero__lead{margin:0 0 2rem;color:var(--ink);font-size:1.72rem;line-height:1.35;font-weight:700;max-width:35ch}
+@media (max-width:620px){.hero__lead{font-size:1.36rem}}
+.hero p:not(.hero__lead){max-width:var(--measure);margin:0 0 1.2rem}
+.hero__thesis{font-weight:600}
+.kicker{color:var(--red);font-family:"IBM Plex Mono",monospace;font-size:1rem;font-weight:700;text-transform:uppercase;margin:0 0 .8rem}
+.system-map{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin:2.2rem 0 .7rem}
+.map-node{min-height:118px;border:2px solid var(--navy);background:var(--surface);padding:1rem;display:flex;flex-direction:column;justify-content:space-between}
+.map-node.is-hot{background:var(--navy);color:#fff}.map-node.is-warn{background:var(--yellow)}.map-node.is-stop{background:var(--red);color:#fff}
+.map-node b{display:block;color:inherit;font-size:1.12rem;line-height:1.05}.map-node span{display:block;color:inherit;font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:700;line-height:1.25}
+@media (max-width:820px){.system-map{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:430px){.system-map{grid-template-columns:repeat(2,1fr)}}
+.caption{color:var(--navy);font-family:"IBM Plex Mono",monospace;font-size:1rem;font-weight:700;margin:0 0 2.2rem;max-width:var(--measure)}
+.toc{margin-top:2.5rem;padding:1.7rem 0 .7rem;border-top:4px solid var(--navy);border-bottom:1px solid var(--line)}
+.toc h2{font-family:"IBM Plex Mono",monospace;font-size:1.05rem;text-transform:uppercase;margin:0 0 1.2rem;color:var(--red);border:0;padding:0}
+.toc ol{list-style:none;padding:0;margin:0;columns:2;column-gap:3rem}.toc li{break-inside:avoid;margin:0 0 .8rem}.toc a{color:var(--navy);font-weight:700;text-decoration:none}.toc a:hover{text-decoration:underline}
+@media (max-width:680px){.toc ol{columns:1}}
+.doc{padding:1.8rem 0 5rem}.doc p,.doc li{max-width:var(--measure)}.doc p{margin:0 0 1.2rem}
+h2{font-size:2.6rem;margin:4.8rem 0 1.4rem;padding-bottom:.55rem;border-bottom:3px solid var(--navy)}
+@media (max-width:620px){h2{font-size:2.15rem;margin-top:3.8rem}}
+h3{font-size:1.62rem;margin:2.6rem 0 .8rem}h4{font-size:1.28rem;margin:2rem 0 .6rem}
+.lede{color:var(--navy);font-size:1.5rem;line-height:1.36;font-weight:700;max-width:36ch!important;margin:0 0 1.5rem}
+.bullets,.numlist{margin:1.2rem 0 1.6rem;padding-left:1.4rem}.bullets li,.numlist li{margin:0 0 .6rem;padding-left:.2rem}.bullets li::marker{color:var(--red)}.numlist li::marker{color:var(--navy);font-weight:700}
+.callout{margin:2rem 0;background:var(--surface);border:2px solid var(--navy);border-left:10px solid var(--red);padding:1.5rem 1.6rem}.callout p{max-width:none;margin:0;color:var(--ink);font-weight:600}
+.callout.is-yellow{background:#FFF7DB;border-left-color:var(--yellow)}
+.tw{overflow-x:auto;margin:1.6rem 0 2.2rem;border:2px solid var(--navy)}table{width:100%;border-collapse:collapse;font-size:1.05rem}th{background:var(--navy);color:#fff;padding:1rem 1.1rem;text-align:left;font-weight:700}td{border-top:1px solid var(--line);padding:.95rem 1.1rem;vertical-align:top;color:var(--ink)}tr:nth-child(even) td{background:var(--surface)}td code{white-space:nowrap}
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.6rem 0 2rem}.score__item{border:2px solid var(--navy);padding:1rem;background:var(--surface)}.score__item b{display:block;color:var(--navy);font-size:1.75rem;line-height:1}.score__item span{display:block;margin-top:.5rem;font-family:"IBM Plex Mono",monospace;font-size:.9rem;font-weight:700;line-height:1.25}
+@media (max-width:620px){.score{grid-template-columns:repeat(2,1fr)}}
+.codewrap{position:relative;margin:1.7rem 0 2.2rem}.code-title{margin:0 0 .55rem;color:var(--red);font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:1.02rem;text-transform:uppercase;max-width:none}
+pre{margin:0;background:var(--ink);color:#fff;border:2px solid var(--ink);padding:3.35rem 1.45rem 1.35rem;overflow-x:auto;line-height:1.7;font-size:1rem}pre code{color:#fff;background:none;border-radius:0;padding:0;font-size:1em;white-space:pre;font-family:"IBM Plex Mono",monospace}
+.copy{position:absolute;top:2.95rem;right:.8rem;border:2px solid #fff;background:#fff;color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.92rem;padding:.5rem .75rem;cursor:pointer}.codewrap:not(:has(.code-title)) .copy{top:.8rem}.copy:hover{background:var(--yellow);color:var(--ink)}.copy.ok{background:var(--green);border-color:var(--green);color:#fff}
+.checklist{list-style:none;padding:0;margin:1.3rem 0 2rem;display:grid;gap:.95rem}.checklist li{position:relative;padding-left:2rem;margin:0;font-weight:600;max-width:var(--measure)}.checklist li:before{content:"";position:absolute;left:0;top:.55rem;width:.8rem;height:.8rem;background:var(--red);border:2px solid var(--ink)}
+.state{margin:1.8rem 0 2.2rem;padding:1.4rem;border:2px solid var(--navy);background:var(--surface);font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--navy);overflow-wrap:anywhere}
+.cta{margin:5rem 0 1rem;background:var(--navy);color:#fff;border:4px solid var(--navy);padding:3rem}.cta h2{color:#fff;border:0;margin:0 0 1.2rem;padding:0;font-size:2.55rem}.cta p{color:#fff;max-width:58ch}.cta strong{color:#fff}.cta a{display:inline-block;margin-top:.8rem;background:#fff;color:var(--navy);border:3px solid #fff;text-decoration:none;font-weight:700;padding:.95rem 1.35rem;font-size:1.18rem}.cta a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+@media (max-width:620px){.cta{padding:2rem 1.35rem}.cta h2{font-size:2.05rem}}
+.footer{border-top:3px solid var(--navy);width:min(var(--maxw),92vw);margin:3.5rem auto 0;padding:2rem 0 3rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.footer img{height:38px;width:auto}.footer p{margin:0;color:var(--ink);font-size:1rem;font-weight:600;max-width:52ch}
+@media (max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+.js.motion .reveal:not(.in){transform:translateY(12px)}.js.motion .reveal.in{transform:none;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+@media print{body{font-size:11pt;color:#000}.copy{display:none}pre{background:#07111F!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}h2,.callout,.codewrap,.tw,.cta{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <span class="letterhead__meta">Hermes Outbound Playbook</span>
+</header>
+
+<header class="hero">
+  <p class="kicker">Full implementation guide</p>
+  <h1>How to Build a Full Outbound GTM Agent With Hermes</h1>
+  <p class="hero__lead">Turn a defined market into a short queue of qualified accounts, timely signals, evidence-backed outreach, and approved actions across email and LinkedIn.</p>
+  <p class="hero__thesis">The agent does the work between decisions. You still define the market, the offer, the exclusions, the evidence bar, and which actions need approval.</p>
+  <p>I built this workflow with Apollo, Clay, Crustdata, HubSpot, Telegram, Smartlead, and Unipile. The providers are replaceable. The workflow is the system.</p>
+  <p>Instead of starting each day with another raw prospecting list, you open Telegram to accounts Hermes has already researched, scored, and prepared for review. Approve one channel and that channel can run. When a prospect replies anywhere, every active channel stops before Hermes classifies the response.</p>
+  <div class="system-map" role="img" aria-label="Hermes outbound workflow: Define, Research, Wait, Approve, Act and stop">
+    <div class="map-node"><span>01</span><b>Define</b></div>
+    <div class="map-node"><span>02</span><b>Research</b></div>
+    <div class="map-node is-warn"><span>03</span><b>Wait for Signal</b></div>
+    <div class="map-node is-hot"><span>04</span><b>Approve</b></div>
+    <div class="map-node is-stop"><span>05</span><b>Act + Stop</b></div>
+  </div>
+  <p class="caption">Market → research → signal → message → approval → action → CRM</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#principle">The agent is not the sales process</a></li>
+    <li><a href="#ch1">1. Connect the stack you already use</a></li>
+    <li><a href="#ch2">2. Define who can move forward</a></li>
+    <li><a href="#ch3">3. Build a short review queue</a></li>
+    <li><a href="#ch4">4. Wait for a reason to act now</a></li>
+    <li><a href="#ch5">5. Write only from approved evidence</a></li>
+    <li><a href="#ch6">6. Approve each channel separately</a></li>
+    <li><a href="#ch7">7. Make HubSpot control the state</a></li>
+    <li><a href="#ch8">8. Stop every channel on any reply</a></li>
+    <li><a href="#ch9">9. Improve the rules from results</a></li>
+    <li><a href="#ch10">10. Bring the system online</a></li>
+  </ol>
+</nav>
+
+<article class="doc">
+  <h2 id="principle">The agent is not the sales process</h2>
+  <p class="lede">An AI agent does not learn how your company sells from one prompt.</p>
+  <p>A mature sales process contains years of decisions: which companies are worth pursuing, which buyers own the problem, which accounts must be excluded, what qualifies as a real buying signal, which customer examples apply, and which claims the company can defend.</p>
+  <p>If your ICP, offer, exclusions, qualification logic, customer examples, and approved claims only live in your head, Hermes has to recreate the strategy for every account. That is where plausible-looking research and invented pain enter the workflow.</p>
+  <div class="callout is-yellow"><p>Do not ask the agent to invent the sales process. Put the sales process into rules, records, and examples the agent can follow.</p></div>
+  <p>This playbook does exactly that. It gives Hermes a defined market, a fixed evidence bar, a 100-point scoring model, explicit approvals, and a CRM state that every tool must obey.</p>
+
+  <h2 id="ch1">1. Connect the stack you already use</h2>
+  <p class="lede">Hermes does not replace your sales tools. It moves the work between them and makes the decision required at each handoff.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Tool</th><th>One job in the workflow</th></tr></thead>
+      <tbody>
+        <tr><td>Apollo</td><td>Find accounts and buyers that match the market definition.</td></tr>
+        <tr><td>Clay</td><td>Enrich records and run providers in a controlled order.</td></tr>
+        <tr><td>Crustdata</td><td>Retrieve current company, hiring, job, web, and social evidence.</td></tr>
+        <tr><td>Hermes</td><td>Research, qualify, score, choose the next state, and prepare the message.</td></tr>
+        <tr><td>Telegram</td><td>Show one approval queue with the account, evidence, score, signal, and proposed actions.</td></tr>
+        <tr><td>Smartlead</td><td>Execute approved email sequences.</td></tr>
+        <tr><td>Unipile</td><td>Execute approved LinkedIn actions.</td></tr>
+        <tr><td>HubSpot</td><td>Hold the current state and record every outcome.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>You can replace any provider. The pattern remains:</p>
+  <div class="state">market → research → signal → message → approval → action → CRM</div>
+  <p>The manual handoffs disappear. Your judgment about the market, the offer, and which actions require permission does not.</p>
+  <div class="callout"><p>For the first version, keep Smartlead and Unipile off. Build the research and approval queue first. No prospect should be contacted while you are still checking whether the system chooses the right accounts, buyers, signals, and evidence.</p></div>
+
+  <h2 id="ch2">2. Define who can move forward</h2>
+  <p class="lede">“Find growing SaaS companies that need more pipeline” is not an instruction. It pushes every important decision onto the agent.</p>
+  <p>Hermes would still have to decide what “growing” means, which companies count as SaaS, who owns pipeline, which countries are allowed, and what evidence proves a need. Define those decisions before discovery begins.</p>
+  <p>Write four things:</p>
+  <ol class="numlist">
+    <li>The companies you want.</li>
+    <li>The buyers you want inside those companies.</li>
+    <li>The accounts and contacts Hermes must exclude.</li>
+    <li>The fields that must be present before outreach can be proposed.</li>
+  </ol>
+  <div class="codewrap">
+    <p class="code-title">Market and buyer rules</p>
+    <button class="copy" type="button" aria-label="Copy rules">Copy</button>
+    <pre><code>account:
+  industries: [b2b_saas, developer_tools]
+  employee_range: [50, 500]
+  countries: [United States, United Kingdom, Ireland,
+              Norway, Sweden, Denmark]
+  funding_stages: [series_a, series_b, series_c,
+                   bootstrapped_profitable]
+
+buyer:
+  functions: [sales, revenue_operations, growth]
+  titles: [VP Sales, Head of Sales, Chief Revenue Officer,
+           VP Revenue Operations]
+
+exclude:
+  [existing_customer, active_opportunity, direct_competitor,
+   agency, suppressed_contact]
+
+required_before_outreach:
+  [company_domain, named_buyer, current_signal,
+   source, retrieval_date]</code></pre>
+  </div>
+  <p><strong>Run exclusions first.</strong> An existing customer or active opportunity must not re-enter cold outbound because the rest of the account looks attractive. The same rule applies to competitors, suppressed contacts, agencies, and excluded markets.</p>
+  <p>Email adds one more gate: a verified address. An account can qualify for research or LinkedIn without one. It cannot enter an email sequence.</p>
+  <h3>Worked example: Linear</h3>
+  <p>Public company information tells us what Linear does and identifies a senior sales buyer. That supports the company-fit and buyer fields. It does not give us a reason to contact the company now. The account still needs a current signal.</p>
+
+  <h2 id="ch3">3. Turn a large market into a short review queue</h2>
+  <p class="lede">The first real job is not “send outreach.” It is “reduce a large market to the few accounts worth reviewing.”</p>
+  <ol class="numlist">
+    <li><strong>Apollo discovers the market.</strong> Apply the company size, industry, location, technology, job title, and seniority filters from the rules.</li>
+    <li><strong>Clay fills the gaps.</strong> Run cheaper checks first and skip expensive enrichment when an account already fails.</li>
+    <li><strong>Crustdata checks what is current.</strong> Retrieve fresh company, hiring, job, web, and social evidence instead of relying on a stale company profile.</li>
+    <li><strong>Hermes researches and scores.</strong> Turn the inputs into one review record.</li>
+    <li><strong>HubSpot stores the result.</strong> The record now has one state and one next action.</li>
+  </ol>
+  <p>Keep discovery separate from contactability. Finding the right Head of Sales does not mean you have a verified email address for that person.</p>
+  <h3>Five questions every account must answer</h3>
+  <ul class="checklist">
+    <li>Why does this company fit?</li>
+    <li>Who is the likely buyer?</li>
+    <li>What changed recently?</li>
+    <li>Which claims can we support?</li>
+    <li>What should Hermes do next?</li>
+  </ul>
+  <p>If any answer is missing, the account stays out of outreach.</p>
+  <h3>The 100-point decision</h3>
+  <div class="score" aria-label="100 point outbound account score">
+    <div class="score__item"><b>25</b><span>Company fit</span></div>
+    <div class="score__item"><b>20</b><span>Observable problem</span></div>
+    <div class="score__item"><b>20</b><span>Recent signal</span></div>
+    <div class="score__item"><b>15</b><span>Correct buyer</span></div>
+    <div class="score__item"><b>10</b><span>Offer relevance</span></div>
+    <div class="score__item"><b>10</b><span>Evidence quality</span></div>
+  </div>
+  <p>Every point needs a reason. Every reason needs a source and retrieval date.</p>
+  <div class="codewrap">
+    <p class="code-title">Evidence record</p>
+    <button class="copy" type="button" aria-label="Copy evidence record">Copy</button>
+    <pre><code>claim: Linear launched Loops for Business and Enterprise customers.
+source: company product announcement
+retrieved_at: 2026-08-09
+confidence: high</code></pre>
+  </div>
+  <p>Before the timing signal counts, Linear scores <strong>64 out of 100</strong>. The company fits, the buyer fits, and the source is strong. The observable-problem score stays low because a public product launch does not prove a private pipeline problem.</p>
+  <div class="callout"><p>“We do not know” is a valid research result. A public event can explain timing. It does not automatically prove pain.</p></div>
+
+  <h2 id="ch4">4. Wait for a reason to act now</h2>
+  <p class="lede">A company can fit your ICP and still give you no reason to contact it this week.</p>
+  <p>Qualified accounts enter monitoring. They move forward only when a current event makes the offer relevant.</p>
+  <p>Useful signals include:</p>
+  <ul class="bullets">
+    <li>a funding round;</li>
+    <li>a new executive in the buying function;</li>
+    <li>a product or segment launch;</li>
+    <li>geographic expansion;</li>
+    <li>relevant hiring or a technology change;</li>
+    <li>a public company priority or competitor change;</li>
+    <li>a new compliance requirement or relevant integration.</li>
+  </ul>
+  <p>Every signal needs five fields:</p>
+  <div class="codewrap">
+    <p class="code-title">Signal record</p>
+    <button class="copy" type="button" aria-label="Copy signal record">Copy</button>
+    <pre><code>event: what happened
+date: when it happened
+relevance: why it matters to this offer
+source: where the information came from
+expiry: when the reason becomes stale</code></pre>
+  </div>
+  <p>For Linear, the signal is the Loops launch. It is recent, relevant to the example offer, and tied to Business and Enterprise customers. It adds the 20 timing points and moves Linear from <strong>64 to 84</strong>.</p>
+  <p>Hermes checks monitored accounts on a schedule. If it finds an approved signal, the account moves forward. If nothing has changed, the account waits.</p>
+  <div class="state">find → qualify → monitor → signal → research → review</div>
+  <p>Signals expire. A launch from last month may still justify outreach. The same announcement next year probably does not.</p>
+
+  <h2 id="ch5">5. Write only from approved evidence</h2>
+  <p class="lede">Give the writing step the approved account record—not every scrap collected during enrichment.</p>
+  <p>Every sentence must be one of four types:</p>
+  <ol class="numlist">
+    <li><strong>Fact.</strong> A source directly supports it.</li>
+    <li><strong>Inference.</strong> A cautious interpretation using language such as “may” or “might.”</li>
+    <li><strong>Offer claim.</strong> Something your company can genuinely support.</li>
+    <li><strong>Question.</strong> A simple next step that does not assume interest.</li>
+  </ol>
+  <h3>The sentence to reject</h3>
+  <div class="callout"><p>“Your sales team is probably scrambling to turn Loops into enterprise pipeline.”</p></div>
+  <p>The source says Linear launched Loops. It does not say the sales team is scrambling, pipeline is the problem, or the company wants outside help.</p>
+  <h3>The evidence-bound version</h3>
+  <div class="codewrap">
+    <p class="code-title">Linear outreach draft</p>
+    <button class="copy" type="button" aria-label="Copy outreach draft">Copy</button>
+    <pre><code>Subject: 10 accounts for the Loops launch
+
+Casey, the Loops launch creates a pretty specific outbound angle:
+enterprise teams already talking publicly about governed or
+scheduled agent workflows.
+
+I've been building a system that finds those accounts, maps the
+right buyer, and prepares outreach around the signal.
+
+Would it be useful if I mapped the first 10 for Linear?</code></pre>
+  </div>
+  <p>The first sentence is fact plus cautious relevance. The second is the supported offer. The last is the question. If Hermes cannot classify a sentence into one of the four types, remove it.</p>
+
+  <h2 id="ch6">6. Approve each channel separately</h2>
+  <p class="lede">Telegram is not a feed of everything Hermes found. It is a short queue of accounts that cleared the rules and now need a decision.</p>
+  <p>Each review card shows:</p>
+  <ul class="checklist">
+    <li>company, buyer, score, and current signal;</li>
+    <li>the sources and retrieval dates behind the research;</li>
+    <li>the email draft and verified destination, if one exists;</li>
+    <li>the LinkedIn draft and profile;</li>
+    <li>a separate approval control for each channel.</li>
+  </ul>
+  <p><strong>Email and LinkedIn are two separate switches.</strong> Approving email unlocks Smartlead. Approving LinkedIn unlocks Unipile. If the draft changes, that channel locks until the new version is approved.</p>
+  <p>In the Linear example, email remains unavailable because there is no verified address. LinkedIn receives a simulated approval. Only LinkedIn can move.</p>
+  <h3>Increase autonomy one proven decision at a time</h3>
+  <ul class="bullets">
+    <li>Automate research after account selection stays reliable.</li>
+    <li>Automate monitoring after stale signals expire correctly.</li>
+    <li>Automate low-risk actions only after the review rules survive enough real examples.</li>
+    <li>Keep high-risk external actions behind explicit permission.</li>
+  </ul>
+  <div class="callout"><p>Increase autonomy or volume. Never increase both in the same change.</p></div>
+
+  <h2 id="ch7">7. Make HubSpot control the state</h2>
+  <p class="lede">Smartlead and Unipile execute actions. HubSpot decides whether those actions are still allowed.</p>
+  <div class="state">discovered → qualified → monitoring → signal found → researched → pending review → approved → active → replied → resolved</div>
+  <p>Every provider event has one outcome:</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Event</th><th>System response</th></tr></thead>
+      <tbody>
+        <tr><td>Approved sequence starts</td><td>Mark only that channel active.</td></tr>
+        <tr><td>Any reply arrives</td><td>Pause every active channel before classification.</td></tr>
+        <tr><td>Unsubscribe arrives</td><td>Suppress the contact globally.</td></tr>
+        <tr><td>Duplicate event arrives</td><td>Ignore it.</td></tr>
+        <tr><td>Provider keeps failing</td><td>Create a task and leave the current state unchanged.</td></tr>
+        <tr><td>Provider and HubSpot disagree</td><td>Stop. The CRM state wins until a person resolves the conflict.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>If Smartlead says active while HubSpot says replied, stop. If Unipile says connected while HubSpot says suppressed, stop. One sending tool must never revive a lead the CRM has already stopped.</p>
+  <p>Before live execution, add daily caps, destination checks, duplicate prevention, signal expiry, webhook deduplication, and global unsubscribe handling.</p>
+  <p>LinkedIn carries platform and account risk. An integration does not remove LinkedIn’s rules. Review the current terms before enabling automated actions.</p>
+
+  <h2 id="ch8">8. Stop every channel on any reply</h2>
+  <p class="lede">Pause first. Classify second.</p>
+  <p>Do not ask a model whether a reply is important enough to stop the sequence while another tool keeps sending. Any reply pauses every active channel immediately.</p>
+  <p>Once outreach is paused, Hermes can classify the response:</p>
+  <ul class="bullets">
+    <li>positive, objection, referral, or not now;</li>
+    <li>not interested or unsubscribe;</li>
+    <li>automatic reply, wrong person, or ambiguous.</li>
+  </ul>
+  <p>Hermes then records the classification in HubSpot, alerts the owner, creates the appropriate task, and prepares a suggested response. It does not send the substantive sales reply.</p>
+  <p>In the Linear simulation, a positive response pauses LinkedIn, confirms email never started, moves HubSpot to <code>replied</code>, and creates a task for the account owner.</p>
+  <div class="callout"><p>Once a prospect engages, the outbound workflow has completed its job. A person owns the sales conversation from that point.</p></div>
+
+  <h2 id="ch9">9. Improve the rules from results</h2>
+  <p class="lede">Hermes can surface the pattern. It cannot change the playbook without a reviewable case.</p>
+  <p>Each week, break results down by segment, signal, buyer, channel, and message angle. Show which accounts were approved, which messages were rewritten, and which signals produced real conversations.</p>
+  <p>Track the protection metrics too: bounces, unsubscribes, duplicate contacts, provider failures, and sequences stopped after replies. Every rate needs its denominator. Every recommendation needs the accounts and messages behind it.</p>
+  <p>Hermes can propose a change to a signal window, score weight, exclusion, buyer, message angle, or experiment. Every proposal must include:</p>
+  <ol class="numlist">
+    <li>what happened;</li>
+    <li>which records support the change;</li>
+    <li>the expected effect;</li>
+    <li>what could go wrong;</li>
+    <li>how the change will be tested;</li>
+    <li>the condition that triggers rollback.</li>
+  </ol>
+  <p>A person reviews that case and decides whether the playbook changes.</p>
+  <div class="state">results → proposal → test → approval → new rule</div>
+
+  <h2 id="ch10">10. Bring the system online</h2>
+  <p class="lede">Prove the decisions on one narrow segment before you add volume.</p>
+  <ul class="checklist">
+    <li>Install the Hermes skill and keep every execution tool in test mode.</li>
+    <li>Write the ICP, buyer roles, exclusions, required fields before outreach, and approved offer claims.</li>
+    <li>Connect account discovery, enrichment, and current-signal sources.</li>
+    <li>Create the 100-point scoring rules and the list of approved signals.</li>
+    <li>Create HubSpot fields for research, approval, sequence, reply, and suppression.</li>
+    <li>Connect Telegram or another review interface.</li>
+    <li>Generate a review queue for one narrow market.</li>
+    <li>Review every account, buyer, score, signal, source, and message in the first batch.</li>
+    <li>Add monitoring and confirm old events expire.</li>
+    <li>Connect email and LinkedIn in test mode.</li>
+    <li>Trigger reply, bounce, unsubscribe, duplicate, stale-signal, and provider-failure scenarios.</li>
+    <li>Go live with a small daily cap and keep the approval queue in place.</li>
+  </ul>
+  <p>Start with <strong>20 to 25 accounts from one segment</strong>.</p>
+  <p>Do not judge the system by the number of messages it produces. Judge it by how often you agree with five decisions: the account, buyer, timing, evidence, and proposed action.</p>
+  <p>When those decisions stay reliable, increase autonomy or volume. Do not change both at once.</p>
+  <div class="state">target → find → research → wait → write → approve → send → stop → learn</div>
+  <p>That is what turns Hermes from a writing assistant into an outbound operator: it keeps the pipeline moving between decisions, preserves the evidence behind every action, and hands the conversation to a person the moment the prospect engages.</p>
+
+  <section class="cta">
+    <h2>Build the workflow around your sales process</h2>
+    <p><strong>Muditek builds agent systems around the rules, tools, and evidence your team already trusts.</strong> We connect the research, signal monitoring, approvals, execution, reply controls, and CRM state without asking an agent to invent your GTM strategy.</p>
+    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+  </section>
+</article>
+
+<footer class="footer">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <p>Built by Muditek. Agent systems that run the work on infrastructure you control. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.parentElement.querySelector('pre');if(!pre)return;
+      var done=function(){btn.textContent='Copied';btn.classList.add('ok');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('ok')},1500)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(pre.innerText).then(done).catch(done)}
+      else{var ta=document.createElement('textarea');ta.value=pre.innerText;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}
+    });
+  });
+  var ok=!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches;var root=document.documentElement;root.classList.add('js');if(!ok)return;root.classList.add('motion');
+  var els=document.querySelectorAll('.doc h2,.doc .tw,.doc .codewrap,.doc .callout,.doc .cta');els.forEach(function(el){el.classList.add('reveal')});
+  var revealAll=function(){els.forEach(function(el){el.classList.add('in')})};window.addEventListener('beforeprint',revealAll);setTimeout(revealAll,2200);
+  if(!('IntersectionObserver' in window)){revealAll();return}var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target)}})},{rootMargin:'0px 0px -7% 0px',threshold:.05});els.forEach(function(el){io.observe(el)});
+})();
+</script>
+</body>
+</html>

@@ -25,6 +25,7 @@ const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
   "cold-email-claude-code-blueprint",
   "geo-playbook",
   "google-maps-outbound",
+  "hermes-outbound-gtm-agent",
   "judgment-moat",
   "loop-design-playbook",
   "mudiagent-operator-guide",

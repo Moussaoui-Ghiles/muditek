@@ -49,22 +49,15 @@ export function wrapIssueHtml(
   bodyHtml: string,
   footer: { unsubUrl: string; prefsUrl: string; confirmUrl?: string },
 ): string {
-  const logoUrl = "https://muditek.com/brand/muditek-logo-dark.png";
   const personalizedBody = personalizeNewsletterHtml(bodyHtml, {
     confirmUrl: footer.confirmUrl ?? "#confirm-subscription",
   });
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;padding:40px 20px;background:#ffffff;color:#1a1a1a;">
-      <div style="margin-bottom:28px;">
-        <a href="https://muditek.com" style="text-decoration:none;display:inline-block;">
-          <img src="${logoUrl}" alt="Muditek" width="120" height="28" style="display:block;border:0;outline:none;text-decoration:none;height:28px;" />
-        </a>
-      </div>
-
       ${styleIssueHtmlForEmail(personalizedBody)}
 
       <p style="margin:48px 0 0;font-size:12px;color:#8a8a8a;line-height:1.7;">
-        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:ghiles@muditek.com" style="color:#8a8a8a;text-decoration:underline;">ghiles@muditek.com</a><br/>
+        Muditek &middot; Ghiles Moussaoui &middot; <a href="mailto:biz@ghiless.com" style="color:#8a8a8a;text-decoration:underline;">biz@ghiless.com</a><br/>
         <a href="${footer.prefsUrl}" style="color:#8a8a8a;text-decoration:underline;">Manage preferences</a> &middot; <a href="${footer.unsubUrl}" style="color:#8a8a8a;text-decoration:underline;">Unsubscribe</a>
       </p>
     </div>

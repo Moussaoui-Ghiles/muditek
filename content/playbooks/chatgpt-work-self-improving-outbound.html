@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Build a Self-Improving Outbound System With ChatGPT Work · Muditek</title>
+<meta name="description" content="Build a controlled weekly review system that turns outbound outcomes into tested changes to company scoring and message instructions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#07111F;--navy:#0B2F66;--blue:#1458B8;--red:#B7192A;--yellow:#FFB000;--green:#087A50;--paper:#FFF;--surface:#F3F8FF;--surface-2:#E7F0FC;--line:#8FA9C8;--maxw:890px;--measure:64ch}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:1.22rem;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+@media(max-width:620px){body{font-size:1.12rem;line-height:1.56}}
+a{color:var(--navy);text-decoration-thickness:2px;text-underline-offset:3px}strong{color:var(--navy);font-weight:700}code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--navy);padding:.12em .4em;border-radius:6px;font-size:.88em;font-weight:600}
+.letterhead{width:min(var(--maxw),92vw);margin:0 auto;padding:3.5rem 0 2.4rem;border-bottom:3px solid var(--navy);display:flex;align-items:center;justify-content:space-between;gap:1.4rem}.letterhead img{height:64px;width:auto;display:block}.letterhead__meta{font-family:"IBM Plex Mono",monospace;color:var(--navy);font-size:1rem;font-weight:700;text-transform:uppercase;text-align:right}@media(max-width:620px){.letterhead{align-items:flex-start;flex-direction:column;padding-top:2.2rem}.letterhead__meta{text-align:left}}
+.hero,.toc,.doc{width:min(var(--maxw),92vw);margin-inline:auto}.hero{padding:3.2rem 0 1.4rem}h1,h2,h3,h4{color:var(--navy);font-family:"IBM Plex Sans",system-ui,sans-serif;font-weight:700;line-height:1.08;text-wrap:balance}.hero h1{font-size:4rem;line-height:1;margin:0 0 1.6rem;max-width:18ch}@media(max-width:760px){.hero h1{font-size:3.05rem}}@media(max-width:460px){.hero h1{font-size:2.45rem}}.hero__lead{margin:0 0 1.6rem;color:var(--ink);font-size:1.68rem;line-height:1.35;font-weight:700;max-width:36ch}@media(max-width:620px){.hero__lead{font-size:1.34rem}}.hero p:not(.hero__lead){max-width:var(--measure);margin:0 0 1.2rem}.hero__thesis{font-weight:600}.kicker{color:var(--red);font-family:"IBM Plex Mono",monospace;font-size:1rem;font-weight:700;text-transform:uppercase;margin:0 0 .8rem}
+.system-map{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin:2.2rem 0 .7rem}.map-node{min-height:118px;border:2px solid var(--navy);background:var(--surface);padding:1rem;display:flex;flex-direction:column;justify-content:space-between}.map-node.is-hot{background:var(--navy);color:#fff}.map-node.is-warn{background:var(--yellow)}.map-node.is-stop{background:var(--red);color:#fff}.map-node b{display:block;color:inherit;font-size:1.08rem;line-height:1.05}.map-node span{display:block;color:inherit;font-family:"IBM Plex Mono",monospace;font-size:.93rem;font-weight:700;line-height:1.25}@media(max-width:820px){.system-map{grid-template-columns:repeat(3,1fr)}}@media(max-width:430px){.system-map{grid-template-columns:repeat(2,1fr)}}.caption{color:var(--navy);font-family:"IBM Plex Mono",monospace;font-size:1rem;font-weight:700;margin:0 0 2.2rem;max-width:var(--measure)}
+.toc{margin-top:2.5rem;padding:1.7rem 0 .7rem;border-top:4px solid var(--navy);border-bottom:1px solid var(--line)}.toc h2{font-family:"IBM Plex Mono",monospace;font-size:1.05rem;text-transform:uppercase;margin:0 0 1.2rem;color:var(--red);border:0;padding:0}.toc ol{list-style:none;padding:0;margin:0;columns:2;column-gap:3rem}.toc li{break-inside:avoid;margin:0 0 .8rem}.toc a{color:var(--navy);font-weight:700;text-decoration:none}.toc a:hover{text-decoration:underline}@media(max-width:680px){.toc ol{columns:1}}
+.doc{padding:1.8rem 0 5rem}.doc p,.doc li{max-width:var(--measure)}.doc p{margin:0 0 1.2rem}h2{font-size:2.55rem;margin:4.8rem 0 1.4rem;padding-bottom:.55rem;border-bottom:3px solid var(--navy)}@media(max-width:620px){h2{font-size:2.1rem;margin-top:3.8rem}}h3{font-size:1.58rem;margin:2.6rem 0 .8rem}h4{font-size:1.25rem;margin:2rem 0 .6rem}.lede{color:var(--navy);font-size:1.48rem;line-height:1.36;font-weight:700;max-width:38ch!important;margin:0 0 1.5rem}.bullets,.numlist{margin:1.2rem 0 1.6rem;padding-left:1.4rem}.bullets li,.numlist li{margin:0 0 .6rem;padding-left:.2rem}.bullets li::marker{color:var(--red)}.numlist li::marker{color:var(--navy);font-weight:700}
+.callout{margin:2rem 0;background:var(--surface);border:2px solid var(--navy);border-left:10px solid var(--red);padding:1.5rem 1.6rem}.callout p{max-width:none;margin:0;color:var(--ink);font-weight:600}.callout.is-yellow{background:#FFF7DB;border-left-color:var(--yellow)}.callout.is-green{background:#EAF8F2;border-left-color:var(--green)}
+.tw{overflow-x:auto;margin:1.6rem 0 2.2rem;border:2px solid var(--navy)}table{width:100%;border-collapse:collapse;font-size:1.02rem}th{background:var(--navy);color:#fff;padding:1rem 1.1rem;text-align:left;font-weight:700}td{border-top:1px solid var(--line);padding:.95rem 1.1rem;vertical-align:top;color:var(--ink)}tr:nth-child(even) td{background:var(--surface)}td code{white-space:nowrap}
+.codewrap{position:relative;margin:1.7rem 0 2.2rem}.code-title{margin:0 0 .55rem;color:var(--red);font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:1rem;text-transform:uppercase;max-width:none}pre{margin:0;background:var(--ink);color:#fff;border:2px solid var(--ink);padding:3.35rem 1.45rem 1.35rem;overflow-x:auto;line-height:1.7;font-size:.96rem}pre code{color:#fff;background:none;border-radius:0;padding:0;font-size:1em;white-space:pre;font-family:"IBM Plex Mono",monospace}.copy{position:absolute;top:2.95rem;right:.8rem;border:2px solid #fff;background:#fff;color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.9rem;padding:.5rem .75rem;cursor:pointer}.codewrap:not(:has(.code-title)) .copy{top:.8rem}.copy:hover{background:var(--yellow);color:var(--ink)}.copy.ok{background:var(--green);border-color:var(--green);color:#fff}
+.checklist{list-style:none;padding:0;margin:1.3rem 0 2rem;display:grid;gap:.95rem}.checklist li{position:relative;padding-left:2rem;margin:0;font-weight:600;max-width:var(--measure)}.checklist li:before{content:"";position:absolute;left:0;top:.55rem;width:.8rem;height:.8rem;background:var(--red);border:2px solid var(--ink)}.state{margin:1.8rem 0 2.2rem;padding:1.4rem;border:2px solid var(--navy);background:var(--surface);font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--navy);overflow-wrap:anywhere}.split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.6rem 0 2rem}.split>div{border:2px solid var(--navy);padding:1.2rem;background:var(--surface)}.split h3{margin:0 0 .7rem;font-size:1.25rem}.split p{margin:0;font-size:1.03rem}@media(max-width:650px){.split{grid-template-columns:1fr}}
+.cta{margin:5rem 0 1rem;background:var(--navy);color:#fff;border:4px solid var(--navy);padding:3rem}.cta h2{color:#fff;border:0;margin:0 0 1.2rem;padding:0;font-size:2.5rem}.cta p{color:#fff;max-width:58ch}.cta strong{color:#fff}.cta a{display:inline-block;margin-top:.8rem;background:#fff;color:var(--navy);border:3px solid #fff;text-decoration:none;font-weight:700;padding:.95rem 1.35rem;font-size:1.15rem}.cta a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}@media(max-width:620px){.cta{padding:2rem 1.35rem}.cta h2{font-size:2rem}}
+.footer{border-top:3px solid var(--navy);width:min(var(--maxw),92vw);margin:3.5rem auto 0;padding:2rem 0 3rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.footer img{height:38px;width:auto}.footer p{margin:0;color:var(--ink);font-size:1rem;font-weight:600;max-width:52ch}@media(max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+.js.motion .reveal:not(.in){transform:translateY(12px)}.js.motion .reveal.in{transform:none;transition:transform .45s cubic-bezier(.16,1,.3,1)}@media print{body{font-size:11pt;color:#000}.copy{display:none}pre{background:#07111F!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}h2,.callout,.codewrap,.tw,.cta{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <span class="letterhead__meta">Self-Improving Outbound Guide</span>
+</header>
+
+<header class="hero">
+  <p class="kicker">Full implementation guide</p>
+  <h1>Build a Self-Improving Outbound System With ChatGPT Work</h1>
+  <p class="hero__lead">Turn each week of outbound outcomes into one tested change to account scoring or message instructions.</p>
+  <p class="hero__thesis">The outbound system runs the work. This review system improves the rules behind that work. It cannot send, scrape people, approve its own change, or put anything live.</p>
+  <p>Everything starts offline. GPT reads plain files, proposes one edit, tests it on known cases, and prepares a review page. You decide whether the change becomes part of the next outbound run.</p>
+  <div class="system-map" role="img" aria-label="Self-improving outbound loop: outcomes, propose, test, review, approve">
+    <div class="map-node"><span>01</span><b>Outcomes</b></div>
+    <div class="map-node"><span>02</span><b>Propose</b></div>
+    <div class="map-node is-warn"><span>03</span><b>Test</b></div>
+    <div class="map-node is-hot"><span>04</span><b>Review</b></div>
+    <div class="map-node is-stop"><span>05</span><b>Approve</b></div>
+  </div>
+  <p class="caption">One week of evidence → one proposed change → one test → one human decision</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#architecture">The two-system model</a></li>
+    <li><a href="#files">Create the project files</a></li>
+    <li><a href="#step1">1. Set the operating limits</a></li>
+    <li><a href="#step2">2. Put scoring in one file</a></li>
+    <li><a href="#step3">3. Record every outcome</a></li>
+    <li><a href="#step4">4. Build the scoring test</a></li>
+    <li><a href="#step5">5. Test one signal weight</a></li>
+    <li><a href="#step6">6. Improve messages separately</a></li>
+    <li><a href="#step7">7. Review every proposal</a></li>
+    <li><a href="#step8">8. Run the weekly review</a></li>
+    <li><a href="#run">Clone and run</a></li>
+  </ol>
+</nav>
+
+<article class="doc">
+  <h2 id="architecture">The two-system model</h2>
+  <p class="lede">Do not give the review system access to delivery.</p>
+  <div class="split">
+    <div><h3>System 1 runs outbound</h3><p>It senses the market, scores the account, writes from the buying signal, checks the message, records the outcome, and learns from the reply.</p></div>
+    <div><h3>System 2 improves System 1</h3><p>It reads saved outcomes, proposes one scoring or message change, tests that change, and prepares it for your approval.</p></div>
+  </div>
+  <p>Keep System 2 offline until the files and tests work. Do not connect a CRM, enrichment provider, or sending tool. The first job is to prove that GPT can make one controlled improvement without touching a real prospect.</p>
+  <div class="callout is-yellow"><p>Sending and approval stay outside the loop. GPT proposes. You decide what becomes live.</p></div>
+
+  <h2 id="files">Create the project files</h2>
+  <p class="lede">GPT can only improve decisions it can read.</p>
+  <p>The setup uses plain files. One file sets the limits. One holds company scoring. One holds message rules. One stores outcomes. A fixed test set checks whether a proposed scoring change helped.</p>
+  <div class="codewrap">
+    <p class="code-title">Project structure</p>
+    <button class="copy" type="button" aria-label="Copy project structure">Copy</button>
+    <pre><code>chatgpt-self-improving-outbound/
+  AGENTS.md
+  README.md
+  config/
+    scoring.yaml
+    plays.yaml
+  prompts/
+    improve_scoring.md
+    improve_prompt.md
+    pr_summary.md
+  memory/
+    outcomes.jsonl
+  evals/
+    fixtures.yaml
+    score.py
+  scripts/
+    append_outcome.py
+    run_codex_step.sh
+    propose_improvement.py
+    open_pr.sh
+    weekly_tune.sh
+  examples/
+    outcomes.sample.jsonl
+    weekly-pr.md</code></pre>
+  </div>
+  <div class="tw"><table><thead><tr><th>File</th><th>Business job</th></tr></thead><tbody>
+    <tr><td><code>AGENTS.md</code></td><td>Limits what GPT can read, change, and produce.</td></tr>
+    <tr><td><code>config/scoring.yaml</code></td><td>Defines signal weights and the score needed for each action.</td></tr>
+    <tr><td><code>config/plays.yaml</code></td><td>Connects each buying signal to its message instructions.</td></tr>
+    <tr><td><code>memory/outcomes.jsonl</code></td><td>Stores what happened after each outbound touch and why.</td></tr>
+    <tr><td><code>evals/fixtures.yaml</code></td><td>Stores accounts where the correct decision is already known.</td></tr>
+    <tr><td><code>evals/score.py</code></td><td>Checks a proposed scoring change against those known cases.</td></tr>
+    <tr><td><code>prompts/*.md</code></td><td>Tells GPT how to propose one controlled change.</td></tr>
+  </tbody></table></div>
+  <p>The runner keeps its source filename, <code>run_codex_step.sh</code>, so the technical blocks stay compatible with the original implementation. Rename it only if you also update every command that calls it.</p>
+
+  <h2 id="step1">1. Set the operating limits</h2>
+  <p class="lede">Define what GPT may do before you give it anything to edit.</p>
+  <p>The limits must be short enough to inspect. GPT may change one scoring weight or one message instruction. It must cite the outcome rows behind the proposal. It must run the correct test and stop when the result does not improve.</p>
+  <div class="codewrap">
+    <p class="code-title">AGENTS.md</p>
+    <button class="copy" type="button" aria-label="Copy AGENTS file">Copy</button>
+    <pre><code># Self-Improving Outbound Rules
+
+You improve an outbound system from outcomes.
+
+Hard rules:
+- Never send messages.
+- Never scrape or enrich real people.
+- Never self-merge.
+- Edit only files in this repo.
+- Change one concept at a time.
+- Cite outcomes from memory/outcomes.jsonl for every proposed change.
+- Improve evals/score.py before a change can become a PR.
+- If the eval does not improve, revert your edit and stop.
+
+Allowed edits:
+- config/scoring.yaml
+- config/plays.yaml
+- prompts/*.md
+
+Required output:
+- changed files
+- reason for each change
+- before score
+- after score
+- pull request summary</code></pre>
+  </div>
+  <div class="callout"><p>The output of this step is a hard boundary: read outcomes, propose one file change, prove it helped, and wait.</p></div>
+
+  <h2 id="step2">2. Put company scoring in one file</h2>
+  <p class="lede">A model cannot improve qualification logic that only lives in someone’s head.</p>
+  <p>Each buying signal receives a weight. Negative signals receive a penalty. Add the weights to produce the company score. Two score limits route the account to ignore, draft, or human review.</p>
+  <div class="codewrap">
+    <p class="code-title">config/scoring.yaml</p>
+    <button class="copy" type="button" aria-label="Copy scoring configuration">Copy</button>
+    <pre><code>signals:
+  competitor_comparison:
+    weight: 8
+    reason: "buyer is comparing alternatives"
+  implementation_page_visit:
+    weight: 6
+    reason: "buyer is checking whether this can be installed"
+  job_repost:
+    weight: 5
+    reason: "role is still open and urgent"
+  funding_event:
+    weight: 5
+    reason: "budget or mandate may have changed"
+  generic_download:
+    weight: 1
+    reason: "content interest, weak buying intent"
+
+thresholds:
+  draft: 6
+  human_review: 10
+
+negative_signals:
+  student_research: -8
+  vendor_pitch: -6
+  competitor: -10</code></pre>
+  </div>
+  <div class="tw"><table><thead><tr><th>Total company score</th><th>Action</th></tr></thead><tbody>
+    <tr><td>Below 6</td><td>Ignore the account.</td></tr>
+    <tr><td>6 to 9</td><td>Prepare a message draft.</td></tr>
+    <tr><td>10 or more</td><td>Send the account for human review.</td></tr>
+  </tbody></table></div>
+  <p>Keep the first version small. The file is a visible business hypothesis, not a permanent truth. A reviewer must be able to point to one line and explain why it should change.</p>
+  <div class="callout is-yellow"><p>Do not add a new exception for every unusual account. Too many weights and special cases will make the system fit old examples instead of future buyers.</p></div>
+
+  <h2 id="step3">3. Record every outcome with a reason</h2>
+  <p class="lede">A reply label tells you what happened. The reason tells you what to change.</p>
+  <p>Write one row when the outcome becomes known. Save the account, signal, message play, company score, outcome, and reason. Do not fill the file from memory at the end of the week.</p>
+  <div class="codewrap">
+    <p class="code-title">memory/outcomes.jsonl</p>
+    <button class="copy" type="button" aria-label="Copy outcome examples">Copy</button>
+    <pre><code>{"date":"2026-07-01","account":"Northwind Finance","signal":"competitor_comparison","play":"migration_note","score":8,"outcome":"reply","reason":"asked for migration notes"}
+{"date":"2026-07-01","account":"Bluepeak Studio","signal":"generic_download","play":"resource_followup","score":1,"outcome":"no_reply","reason":"content-only intent"}
+{"date":"2026-07-02","account":"KiteOps","signal":"implementation_page_visit","play":"implementation_angle","score":6,"outcome":"reply","reason":"asked about implementation timeline"}
+{"date":"2026-07-02","account":"Atlas Recruiting","signal":"job_repost","play":"hiring_angle","score":5,"outcome":"bad_fit","reason":"student research request"}</code></pre>
+  </div>
+  <p><code>no_reply</code> alone says little. <code>content-only intent</code> explains why a generic download may not deserve a message draft. <code>bad_fit</code> becomes useful only when the reason explains the mismatch.</p>
+  <h3>Validate every outcome before saving it</h3>
+  <div class="codewrap">
+    <p class="code-title">Build scripts/append_outcome.py</p>
+    <button class="copy" type="button" aria-label="Copy outcome validator prompt">Copy</button>
+    <pre><code>Build scripts/append_outcome.py.
+
+It accepts:
+- date
+- account
+- signal
+- play
+- score
+- outcome: reply | meeting | no_reply | bad_fit | bounced
+- reason
+
+It rejects:
+- missing fields
+- unknown outcomes
+- empty reason
+- dates in the future
+
+Append valid rows to memory/outcomes.jsonl.
+Print the appended row.</code></pre>
+  </div>
+  <div class="callout"><p>The output of this step is a clean outcome log that shows which signals and messages produced replies, bad fits, or silence.</p></div>
+
+  <h2 id="step4">4. Build the scoring test</h2>
+  <p class="lede">A proposed score change must beat a fixed set of known decisions.</p>
+  <p>Create a small test set with strong signals, weak intent, bad fits, and accounts the current scoring routes incorrectly. For every account, record the expected action before GPT proposes a change.</p>
+  <div class="codewrap">
+    <p class="code-title">evals/fixtures.yaml</p>
+    <button class="copy" type="button" aria-label="Copy evaluation fixtures">Copy</button>
+    <pre><code>cases:
+  - account: Northwind Finance
+    signals: [competitor_comparison, implementation_page_visit]
+    expected: human_review
+    note: "two strong signals on one account"
+
+  - account: Bluepeak Studio
+    signals: [generic_download]
+    expected: ignore
+    note: "content-only intent"
+
+  - account: KiteOps
+    signals: [implementation_page_visit]
+    expected: draft
+    note: "implementation intent should clear draft threshold"
+
+  - account: Atlas Recruiting
+    signals: [job_repost, student_research]
+    expected: ignore
+    note: "bad-fit marker cancels the signal"</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">Build evals/score.py</p>
+    <button class="copy" type="button" aria-label="Copy scoring test prompt">Copy</button>
+    <pre><code>Build evals/score.py.
+
+Read config/scoring.yaml and evals/fixtures.yaml.
+
+For each case:
+1. Sum weights for every signal.
+2. Add negative signal penalties.
+3. Route the account:
+   - score >= thresholds.human_review => human_review
+   - score >= thresholds.draft => draft
+   - otherwise => ignore
+4. Compare route to expected.
+
+Print each prediction.
+Print final accuracy as score=0.00 to score=1.00.
+Exit 0 only when accuracy is 1.00.</code></pre>
+  </div>
+  <h3>Baseline result</h3>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy baseline output">Copy</button>
+    <pre><code>Northwind Finance: predicted=human_review expected=human_review
+Bluepeak Studio: predicted=ignore expected=ignore
+KiteOps: predicted=ignore expected=draft
+Atlas Recruiting: predicted=ignore expected=ignore
+score=0.75</code></pre>
+  </div>
+  <p>The baseline makes three correct decisions out of four. It routes KiteOps to ignore even though the expected action is draft. That known miss becomes the problem a useful score change must fix.</p>
+  <div class="callout is-yellow"><p>Do not fill the test set with obvious wins. A weak test will approve a bad change.</p></div>
+
+  <h2 id="step5">5. Test one signal weight</h2>
+  <p class="lede">Change one number, for one reason, and run the same test again.</p>
+  <p>GPT reads the operating limits, scoring file, outcome log, and fixed test cases. It may change only one signal weight. It must cite the exact outcome rows that support the proposal.</p>
+  <div class="codewrap">
+    <p class="code-title">prompts/improve_scoring.md</p>
+    <button class="copy" type="button" aria-label="Copy scoring improvement prompt">Copy</button>
+    <pre><code>You improve the outbound scoring system.
+
+Read:
+- AGENTS.md
+- config/scoring.yaml
+- memory/outcomes.jsonl
+- evals/fixtures.yaml
+
+Your job:
+1. Find one scoring rule that should change.
+2. The reason must cite memory/outcomes.jsonl.
+3. Change only config/scoring.yaml.
+4. Run python3 evals/score.py.
+5. If the score improves, keep the change.
+6. If the score stays flat or drops, revert your change and stop.
+
+Output:
+- the exact line changed
+- the outcome rows that caused it
+- before score
+- after score
+- whether the change should become a PR
+
+Do not edit prompts.
+Do not add new signals.
+Do not touch delivery.</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">Run the scoring review</p>
+    <button class="copy" type="button" aria-label="Copy scoring review command">Copy</button>
+    <pre><code>scripts/run_codex_step.sh improve_scoring</code></pre>
+  </div>
+  <p>The first proposal increased the weight for <code>competitor_comparison</code> because it had the strongest reply rate in the small outcome log. The test stayed at <code>0.75</code>, so the change was rejected.</p>
+  <p>The next proposal fixed the known miss:</p>
+  <div class="codewrap">
+    <p class="code-title">Accepted scoring change</p>
+    <button class="copy" type="button" aria-label="Copy accepted scoring change">Copy</button>
+    <pre><code>- implementation_page_visit: 4
++ implementation_page_visit: 6</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">New test result</p>
+    <button class="copy" type="button" aria-label="Copy new test result">Copy</button>
+    <pre><code>Northwind Finance: predicted=human_review expected=human_review
+Bluepeak Studio: predicted=ignore expected=ignore
+KiteOps: predicted=draft expected=draft
+Atlas Recruiting: predicted=ignore expected=ignore
+score=1.00</code></pre>
+  </div>
+  <div class="callout is-green"><p>The accepted proposal changes one signal weight, moves the missed account from ignore to draft, and raises the fixed test from 75% to 100%.</p></div>
+
+  <h2 id="step6">6. Improve message instructions separately</h2>
+  <p class="lede">Do not change company scoring and message instructions in the same proposal.</p>
+  <p>A score change answers, “Which accounts should move?” A message change answers, “What should we say when they do?” Keeping the reviews separate makes the cause of any improvement clear.</p>
+  <div class="codewrap">
+    <p class="code-title">config/plays.yaml</p>
+    <button class="copy" type="button" aria-label="Copy message plays">Copy</button>
+    <pre><code>plays:
+  migration_note:
+    prompt_file: prompts/plays/migration_note.md
+    use_when:
+      - competitor_comparison
+    banned_lines:
+      - "thought this might be relevant"
+      - "quick question"
+
+  implementation_angle:
+    prompt_file: prompts/plays/implementation_angle.md
+    use_when:
+      - implementation_page_visit
+    banned_lines:
+      - "checking out our solution"
+      - "would love to chat"</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">prompts/improve_prompt.md</p>
+    <button class="copy" type="button" aria-label="Copy message improvement prompt">Copy</button>
+    <pre><code>You improve one outbound play.
+
+Read:
+- AGENTS.md
+- config/plays.yaml
+- memory/outcomes.jsonl
+- the prompt file for the chosen play
+
+Pick one play with at least 10 outcomes.
+
+Find:
+- lines or structures that appear in positive outcomes
+- lines or structures that appear in no_reply or bad_fit outcomes
+- any phrase that should be banned
+
+Make one small edit to that play's prompt.
+
+Rules:
+- Do not change scoring.
+- Do not create a new play.
+- Do not add a new channel.
+- Cite outcome rows.
+- Write the before and after instruction.
+
+Then run the copy eval if present.
+If no copy eval exists, open the PR as review_required.</code></pre>
+  </div>
+  <p>A message play needs at least 10 outcomes before this review starts. GPT compares lines and structures from positive outcomes with those found in no replies and bad-fit outcomes. It proposes one small instruction change.</p>
+  <div class="callout"><p>If there is no test for message quality, the proposal must say <code>review_required</code>. It cannot claim the new message is proven.</p></div>
+
+  <h2 id="step7">7. Review every proposal before it becomes live</h2>
+  <p class="lede">GPT prepares the evidence. You make the decision.</p>
+  <p>Every proposed change arrives as a pull request. This is a review page that shows the exact edit, the outcome evidence, accuracy before and after, the risk, and what the reviewer should check.</p>
+  <div class="codewrap">
+    <p class="code-title">prompts/pr_summary.md</p>
+    <button class="copy" type="button" aria-label="Copy pull request prompt">Copy</button>
+    <pre><code>Write a pull request summary for this outbound improvement.
+
+Include:
+1. What changed.
+2. Why it changed, citing outcome rows.
+3. Before score.
+4. After score.
+5. Files changed.
+6. Risk.
+7. What the human reviewer should check.
+
+Keep it short.
+Do not claim the change is live.</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">scripts/open_pr.sh</p>
+    <button class="copy" type="button" aria-label="Copy pull request script">Copy</button>
+    <pre><code>#!/usr/bin/env bash
+set -euo pipefail
+
+branch="codex/weekly-tune-$(date +%Y-%m-%d)"
+
+git checkout -b "$branch"
+git add config prompts evals memory
+git commit -m "Codex weekly outbound tune"
+
+body="$(cat outputs/pr-summary.md)"
+
+python3 scripts/create_pr.py \
+  "$branch" \
+  "Codex weekly outbound tune" \
+  "$body"</code></pre>
+  </div>
+  <h3>What the review should show</h3>
+  <div class="codewrap">
+    <button class="copy" type="button" aria-label="Copy review example">Copy</button>
+    <pre><code>Changed:
+- Raised implementation_page_visit from 4 to 6.
+
+Why:
+- KiteOps had implementation-page intent and replied with implementation timing.
+- The previous score routed this account to ignore.
+
+Before:
+- eval score 0.75
+
+After:
+- eval score 1.00
+
+Reviewer check:
+- Make sure implementation intent is specific enough.
+- Keep generic downloads low.
+- Merge only if this matches actual sales judgment.</code></pre>
+  </div>
+  <p>You can accept, edit, or reject the proposal. GPT cannot merge it or make it live.</p>
+
+  <h2 id="step8">8. Run one review each week</h2>
+  <p class="lede">Let outcomes collect before you change the system.</p>
+  <p>Do not run the review after every reply. One loud account can push the system toward a bad exception. Collect a full week of outcomes, then create one small proposal.</p>
+  <div class="codewrap">
+    <p class="code-title">scripts/weekly_tune.sh</p>
+    <button class="copy" type="button" aria-label="Copy weekly tune script">Copy</button>
+    <pre><code>#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+python3 evals/score.py || true
+scripts/run_codex_step.sh improve_scoring
+python3 evals/score.py
+scripts/run_codex_step.sh pr_summary > outputs/pr-summary.md
+scripts/open_pr.sh</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">Run every Monday at 08:00</p>
+    <button class="copy" type="button" aria-label="Copy cron schedule">Copy</button>
+    <pre><code>0 8 * * MON cd ~/chatgpt-self-improving-outbound &amp;&amp; scripts/weekly_tune.sh</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">.github/workflows/weekly-outbound-tune.yml</p>
+    <button class="copy" type="button" aria-label="Copy GitHub workflow">Copy</button>
+    <pre><code>name: weekly-outbound-tune
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  tune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python3 evals/score.py || true
+      - run: scripts/weekly_tune.sh</code></pre>
+  </div>
+  <p>Run the first two weekly reviews by hand. Read every changed line. Schedule the job only after each proposal becomes small, clear, and easy to check.</p>
+  <div class="state">outcomes collect → one proposal → fixed test → review page → your decision</div>
+
+  <h2 id="run">Clone and run the first version</h2>
+  <p class="lede">Prove the file contracts before connecting real outbound systems.</p>
+  <div class="codewrap">
+    <p class="code-title">First run</p>
+    <button class="copy" type="button" aria-label="Copy first run commands">Copy</button>
+    <pre><code>git clone &lt;repo&gt;
+cd chatgpt-self-improving-outbound
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 evals/score.py
+python3 scripts/propose_improvement.py</code></pre>
+  </div>
+  <div class="codewrap">
+    <p class="code-title">Expected first result</p>
+    <button class="copy" type="button" aria-label="Copy expected result">Copy</button>
+    <pre><code>score=0.75
+changed config/scoring.yaml
+implementation_page_visit: 4 -&gt; 6
+score=1.00
+open PR for human review</code></pre>
+  </div>
+  <h3>Before you replace the sample data</h3>
+  <ul class="checklist">
+    <li>The operating limits prevent sending, scraping real people, and self-approval.</li>
+    <li>The scoring file contains only the signals and score limits you can explain.</li>
+    <li>Every outcome row has a real reason, not only a reply label.</li>
+    <li>The fixed test includes weak intent, stale signals, bad fits, and known misses.</li>
+    <li>A scoring proposal changes only one signal weight.</li>
+    <li>A message proposal changes only one message instruction.</li>
+    <li>A failed test restores the previous file.</li>
+    <li>Every accepted proposal still waits for your approval.</li>
+  </ul>
+  <p>After the offline version works, replace the sample outcomes with your own results, rename the buying signals, add your message plays, and build test cases from accounts you wish the system had routed differently.</p>
+  <div class="callout is-green"><p>The finished system produces one small, evidence-backed proposal. It never sends outreach or changes live outbound rules by itself.</p></div>
+
+  <section class="cta">
+    <h2>Build the review loop before you automate delivery</h2>
+    <p><strong>Muditek builds agent systems around business rules, test gates, and human approval.</strong> The machine handles the repeated review work. You keep control of what reaches the market.</p>
+    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+  </section>
+</article>
+
+<footer class="footer">
+  <img src="/media/claude-code-lead-gen-guide/muditek-logo.svg" alt="Muditek">
+  <p>Built by Muditek. Agent systems that run the work on infrastructure you control. <a href="https://muditek.com">muditek.com</a></p>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.parentElement.querySelector('pre');if(!pre)return;
+      var done=function(){btn.textContent='Copied';btn.classList.add('ok');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('ok')},1500)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(pre.innerText).then(done).catch(done)}
+      else{var ta=document.createElement('textarea');ta.value=pre.innerText;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}
+    });
+  });
+  var ok=!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches;var root=document.documentElement;root.classList.add('js');if(!ok)return;root.classList.add('motion');
+  var els=document.querySelectorAll('.doc h2,.doc .tw,.doc .codewrap,.doc .callout,.doc .cta');els.forEach(function(el){el.classList.add('reveal')});
+  var revealAll=function(){els.forEach(function(el){el.classList.add('in')})};window.addEventListener('beforeprint',revealAll);setTimeout(revealAll,2200);
+  if(!('IntersectionObserver' in window)){revealAll();return}var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target)}})},{rootMargin:'0px 0px -7% 0px',threshold:.05});els.forEach(function(el){io.observe(el)});
+})();
+</script>
+</body>
+</html>

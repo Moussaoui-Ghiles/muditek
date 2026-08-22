@@ -18,6 +18,7 @@ export type HtmlContent = {
 const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
   "ai-marketing-team-playbook",
   "claude-code-self-evolving",
+  "chatgpt-work-self-improving-outbound",
   "claude-code-tips",
   "clawchief-blueprint",
   "claude-code-lead-gen-guide",

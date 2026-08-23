@@ -18,6 +18,8 @@ const isPublicRoute = createRouteMatcher([
   "/case-studies",
   "/case-studies/(.*)",
   "/revenue-leak-audit",
+  "/appointment-setting",
+  "/appointment-setting-pricing",
   "/newsletter",
   "/newsletter/(.*)",
   "/tools",

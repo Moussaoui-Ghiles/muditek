@@ -43,10 +43,12 @@ export function Footer() {
               <Link href="/mudiagent" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Operational Infrastructure</Link>
+              <Link href="/appointment-setting" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Appointment Setting</Link>
               {SHOW_MUDIKIT_ON_WEBSITE ? (
                 <Link href="/mudikit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">MudiKit ($47/mo)</Link>
               ) : null}
               <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
+              <Link href="/tools/appointment-setting-quote-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mt-2.5 font-medium">Quote Calculator</Link>
             </div>
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Industries</span>
@@ -61,6 +63,7 @@ export function Footer() {
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Learn</span>
               <Link href="/case-studies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Case Studies</Link>
               <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
+              <Link href="/appointment-setting-pricing" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Provider Pricing Index</Link>
               <Link href="/sign-up" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Portal</Link>
               <Link href="/mudiagent-vs-chatgpt" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">vs ChatGPT</Link>
               <Link href="/pe-ops-vs-juniper-square" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">vs Juniper Square</Link>

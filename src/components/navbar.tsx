@@ -65,6 +65,9 @@ export function Navbar() {
               <Link href="/pe-ops" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Operational Infrastructure
               </Link>
+              <Link href="/appointment-setting" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Appointment Setting
+              </Link>
               <div className="h-px bg-white/[0.04] mx-5 my-2" />
               <Link href="/who-we-help" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Who We Help
@@ -76,6 +79,14 @@ export function Navbar() {
               <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 Revenue Leak Calculator
                 <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
+              </Link>
+              <Link href="/tools/appointment-setting-quote-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Quote Calculator
+                <span className="text-[10px] font-black tracking-[0.15em] text-primary/80 uppercase">New</span>
+              </Link>
+              <Link href="/appointment-setting-pricing" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                Provider Pricing Index
+                <span className="text-[10px] font-black tracking-[0.15em] text-primary/80 uppercase">30</span>
               </Link>
             </div>
           </div>
@@ -175,14 +186,17 @@ export function Navbar() {
               <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-64 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
+          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-[28rem] opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
             <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
               <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>
               <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
+              <Link href="/appointment-setting" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Appointment Setting</Link>
               <Link href="/who-we-help" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Who We Help</Link>
               <Link href="/case-studies" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Case Studies</Link>
               <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
+              <Link href="/tools/appointment-setting-quote-calculator" className="text-sm font-medium text-primary/75 hover:text-primary transition-colors">Quote Calculator</Link>
+              <Link href="/appointment-setting-pricing" className="text-sm font-medium text-primary/75 hover:text-primary transition-colors">Provider Pricing Index</Link>
             </div>
           </div>
 

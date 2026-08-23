@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   }
 
   const root = process.cwd();
-  const target = join(root, item.source);
+  const target = join(/* turbopackIgnore: true */ process.cwd(), item.source);
   const rel = relative(root, target);
   if (!rel || rel.startsWith("..") || rel.includes("..\\")) {
     return NextResponse.json({ error: "Invalid source path." }, { status: 400 });

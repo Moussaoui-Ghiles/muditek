@@ -154,7 +154,7 @@ function readSkill(slug: string): PortalSkillFile | null {
   const item = getLibraryItem("skill", slug);
   if (!item || item.status !== "published") return null;
 
-  const skill = readSkillFromDir(join(process.cwd(), item.source), slug);
+  const skill = readSkillFromDir(join(/* turbopackIgnore: true */ process.cwd(), item.source), slug);
   if (!skill) return null;
 
   return {

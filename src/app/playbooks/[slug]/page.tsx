@@ -39,7 +39,7 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
   let markdownHtml = "";
   if (extension === ".md") {
     try {
-      const raw = readFileSync(join(process.cwd(), item.source), "utf-8");
+      const raw = readFileSync(join(/* turbopackIgnore: true */ process.cwd(), item.source), "utf-8");
       markdownHtml = marked.parse(raw.replace(/^---[\s\S]*?---\s*/, "").trim(), { async: false, gfm: true }) as string;
     } catch {
       notFound();

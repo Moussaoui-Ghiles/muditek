@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-23T00:00:00.000Z",
+  "title": "Design System: Muditek",
+  "extensions": {
+    "colorMeta": {
+      "marketing-background": { "role": "neutral", "displayName": "Night Navy", "canonical": "#050A0F", "tonalRamp": ["#020405", "#050A0F", "#0C1721", "#1B2A38", "#394957", "#687681", "#A6AFB6", "#E8EBEE"] },
+      "amber": { "role": "primary", "displayName": "Signal Amber", "canonical": "#F59E0B", "tonalRamp": ["#2B1A01", "#513102", "#7B4C04", "#A96906", "#D98608", "#F59E0B", "#FFC85D", "#FFF1C7"] },
+      "portal-background": { "role": "neutral", "displayName": "Portal Black", "canonical": "#0C0C0E", "tonalRamp": ["#050506", "#0C0C0E", "#151517", "#232326", "#3A3A3E", "#636366", "#A0A0A6", "#E8E8EC"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Public Display", "purpose": "Public hero headings only." },
+      "body": { "displayName": "Public Body", "purpose": "Marketing, library, and long-form reading." },
+      "portal": { "displayName": "Portal Interface", "purpose": "Dense account and activity screens." }
+    },
+    "shadows": [
+      { "name": "interactive-lift", "value": "0 8px 8px rgba(0, 0, 0, 0.24)", "purpose": "Short hover response on a public interactive surface." },
+      { "name": "overlay-separation", "value": "0 12px 32px rgba(0, 0, 0, 0.45)", "purpose": "Menus and dialogs only." }
+    ],
+    "motion": [
+      { "name": "state", "value": "200ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Portal state changes and controls." },
+      { "name": "public-reveal", "value": "700ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Public content reveal with a reduced-motion fallback." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "390px" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Marketing Primary Button",
+      "kind": "button",
+      "refersTo": "marketing-button-primary",
+      "description": "The single primary action in a public decision area.",
+      "html": "<button class=\"ds-marketing-primary\">Check if you qualify</button>",
+      "css": ".ds-marketing-primary { background: #F59E0B; color: #050A0F; border: 0; border-radius: 2px; padding: 16px 28px; font: 900 14px Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; transition: transform 200ms cubic-bezier(.16,1,.3,1), background 200ms; } .ds-marketing-primary:hover { background: #FFC04A; transform: translateY(-2px); } .ds-marketing-primary:focus-visible { outline: 3px solid #E8EBEE; outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-marketing-primary { transition: none; } .ds-marketing-primary:hover { transform: none; } }"
+    },
+    {
+      "name": "Marketing Secondary Link",
+      "kind": "button",
+      "refersTo": "marketing-button-secondary",
+      "description": "A clear secondary route on a public page.",
+      "html": "<a class=\"ds-marketing-secondary\" href=\"#\">Browse the library</a>",
+      "css": ".ds-marketing-secondary { display: inline-flex; color: #E8EBEE; border: 1px solid #39434D; border-radius: 2px; padding: 15px 27px; font: 700 14px Inter, system-ui, sans-serif; text-decoration: none; } .ds-marketing-secondary:hover { background: #14191F; } .ds-marketing-secondary:focus-visible { outline: 3px solid #F59E0B; outline-offset: 3px; }"
+    },
+    {
+      "name": "Portal Primary Button",
+      "kind": "button",
+      "refersTo": "portal-button-primary",
+      "description": "A compact task action inside the portal.",
+      "html": "<button class=\"ds-portal-primary\">Download bundle</button>",
+      "css": ".ds-portal-primary { background: #F59E0B; color: #0C0C0E; border: 0; border-radius: 10px; padding: 8px 12px; font: 600 14px Geist, system-ui, sans-serif; } .ds-portal-primary:hover { background: #FFC04A; } .ds-portal-primary:focus-visible { outline: 3px solid #E8E8EC; outline-offset: 2px; } .ds-portal-primary:disabled { opacity: .5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Portal Input",
+      "kind": "input",
+      "refersTo": "portal-input",
+      "description": "A persistent-label field for portal settings.",
+      "html": "<label class=\"ds-field\">Email address<input class=\"ds-input\" type=\"email\" placeholder=\"name@company.com\"></label>",
+      "css": ".ds-field { display: grid; gap: 6px; color: #E8E8EC; font: 600 12px Geist, system-ui, sans-serif; } .ds-input { background: #151517; color: #E8E8EC; border: 1px solid #3A3A3E; border-radius: 10px; padding: 8px 10px; font: 400 14px Geist, system-ui, sans-serif; } .ds-input::placeholder { color: #A0A0A6; } .ds-input:focus-visible { outline: 3px solid rgba(245,158,11,.45); border-color: #F59E0B; }"
+    },
+    {
+      "name": "Library Asset Surface",
+      "kind": "card",
+      "description": "A functional public surface for an asset summary or file manifest.",
+      "html": "<article class=\"ds-asset\"><p class=\"ds-asset-kind\">Skill</p><h3>Cold Offer Review</h3><p>Review an outbound offer before list building begins.</p></article>",
+      "css": ".ds-asset { background: #0C1118; color: #E8EBEE; border: 1px solid #1F262E; border-radius: 12px; padding: 24px; font: 400 16px/1.6 Inter, system-ui, sans-serif; } .ds-asset h3 { margin: 6px 0; font-size: 22px; line-height: 1.2; } .ds-asset-kind { color: #F59E0B; font: 700 12px Geist, system-ui, sans-serif; } .ds-asset:focus-within { outline: 3px solid rgba(245,158,11,.45); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Operator's Control Room",
+    "overview": "Muditek uses a dark, high-contrast visual system that feels like a serious operating environment. Public pages carry visual expression. Authenticated screens stay dense and quiet enough for repeated work.",
+    "keyCharacteristics": ["Dark navy public canvas with a single amber action color.", "Near-black portal surfaces with dense, familiar controls.", "Strong type hierarchy and readable body text.", "Responsive structure and reduced-motion alternatives."],
+    "rules": [
+      { "name": "The Amber Signal Rule", "body": "Amber identifies an action or state. It never becomes background decoration.", "section": "colors" },
+      { "name": "The Two-Register Rule", "body": "Public pages use Inter and broad spacing. Portal screens use Geist and tighter fixed scales.", "section": "typography" },
+      { "name": "The Flat-at-Rest Rule", "body": "Static content surfaces use a tone or a border. A shadow signals elevation or an interaction state.", "section": "elevation" }
+    ],
+    "dos": ["Do preserve the dark navy, amber, high-contrast identity across public routes.", "Do keep public pages expressive and portal pages dense and task-focused.", "Do test every changed layout at 390px, 768px, and 1440px."],
+    "donts": ["Don't use equal-offer layouts that make three unrelated services appear equally important.", "Don't use generic SaaS card grids, gated excerpts, or newsletter popups as a funnel substitute.", "Don't overdecorate portal screens or ship empty beta cards."]
+  }
+}

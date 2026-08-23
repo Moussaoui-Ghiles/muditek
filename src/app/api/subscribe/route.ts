@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sendFreeWelcomeEmail } from "@/lib/email-templates";
+import { newsletterActionForAccountCreation, type NewsletterStatus } from "@/lib/newsletter-consent";
 
 const VALID_TOPICS = new Set(["ai-agents", "gtm-systems", "solo-operator"]);
 
@@ -66,6 +67,13 @@ export async function POST(request: Request) {
     `;
 
     if (existing.length > 0) {
+      const currentStatus = String(existing[0].status ?? "") as NewsletterStatus;
+      if (
+        source === "account-signup-explicit-consent" &&
+        newsletterActionForAccountCreation(true, currentStatus) === "none"
+      ) {
+        return NextResponse.json({ ok: true, resubscribed: false, preservedUnsubscribe: true });
+      }
       await sql`
         UPDATE newsletter_subscribers
         SET status = 'active', topics = ${finalTopics}, unsub_at = NULL

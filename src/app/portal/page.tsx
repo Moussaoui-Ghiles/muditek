@@ -1,246 +1,96 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { readFileSync } from "fs";
-import { redirect } from "next/navigation";
-import { join } from "path";
+import Link from "next/link";
+import { currentUser } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
-import { ensureContentItemsSchema } from "@/lib/content-items-schema";
-import { withDerivedThumbnails } from "@/lib/content-thumbnails";
-import { ensureMudikitMembership } from "@/lib/portal-account";
-import { buildPortalAccess } from "@/lib/portal-access";
-import { listPortalSkills } from "@/lib/portal-skills";
-import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
-import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
-import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
+import { getPublishedLibraryItems } from "@/lib/library-manifest";
+import { ensureUsageAnalyticsSchema } from "@/lib/usage-analytics";
 
-const PORTAL_CONTENT_DIR = join(process.cwd(), "content/portal");
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Workspace · Muditek" };
 
-function readThisWeek(): string {
-  try {
-    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "this-week.md"), "utf-8");
-    return raw.replace(/^---[\s\S]*?---\s*/m, "").trim();
-  } catch {
-    return "";
-  }
-}
-
-function readUpcoming(): UpcomingItem[] {
-  try {
-    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "upcoming.md"), "utf-8");
-    const body = raw.replace(/^---[\s\S]*?---\s*/m, "");
-    return body
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.startsWith("- "))
-      .map((line) => {
-        const parts = line.slice(2).split("|").map((p) => p.trim());
-        if (parts.length < 3) return null;
-        return { date: parts[0], type: parts[1], title: parts.slice(2).join(" | ") };
-      })
-      .filter((item): item is UpcomingItem => item !== null);
-  } catch {
-    return [];
-  }
-}
-
-function readHero(): PortalHero | null {
-  try {
-    const raw = readFileSync(join(PORTAL_CONTENT_DIR, "hero.md"), "utf-8");
-    const fmMatch = raw.match(/^---\s*([\s\S]*?)---\s*([\s\S]*)$/);
-    if (!fmMatch) return null;
-    const frontmatter: Record<string, string> = {};
-    for (const line of fmMatch[1].split("\n")) {
-      const m = line.match(/^([a-z_]+)\s*:\s*(.*)$/i);
-      if (m) frontmatter[m[1].trim()] = m[2].trim();
-    }
-    return {
-      eyebrow: frontmatter.eyebrow || "",
-      title: frontmatter.title || "",
-      body: fmMatch[2].trim(),
-      ctaLabel: frontmatter.cta_label || "",
-      ctaHref: frontmatter.cta_href || "",
-    };
-  } catch {
-    return null;
-  }
-}
-
-interface ContentItem {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  category: string;
-  download_url: string;
-  file_type: string;
-  thumbnail_url: string | null;
-  is_new: boolean;
-  is_free: boolean;
-  created_at: string;
-  updated_at?: string | null;
-}
-
-interface NewsletterIssue {
-  slug: string;
-  subject: string;
-  sent_at: Date | null;
-}
-
-const VALID_VIEWS = new Set([
-  "home",
-  "skills",
-  "playbooks",
-  "tools",
-  "tool",
-  "mudikit",
-  "newsletter",
-  "account",
-  "resource",
-]);
-
-const LEGACY_VIEW_MAP: Record<string, string> = {
-  overview: "home",
-  start: "home",
-  "free-library": "playbooks",
-  client: "home",
+type ActivityRow = {
+  event: string;
+  resource_slug: string | null;
+  created_at: string | Date;
 };
 
-function normalizeView(value: unknown): string {
-  const view = Array.isArray(value) ? value[0] : value;
-  if (typeof view !== "string") return "home";
-  if (VALID_VIEWS.has(view)) return view;
-  return LEGACY_VIEW_MAP[view] ?? "home";
+function eventLabel(event: string) {
+  if (event === "skill_downloaded") return "Downloaded skill";
+  if (event === "skill_viewed") return "Viewed skill";
+  if (event === "resource_downloaded") return "Downloaded resource";
+  return event.replaceAll("_", " ");
 }
 
-function normalizeSlug(value: unknown): string | null {
-  const slug = Array.isArray(value) ? value[0] : value;
-  if (typeof slug !== "string") return null;
-  const normalized = slug.trim();
-  return normalized ? normalized : null;
-}
-
-export default async function PortalPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const { isAuthenticated } = await auth();
-  if (!isAuthenticated) redirect("/sign-in?redirect_url=/portal");
+export default async function PortalHomePage() {
   const user = await currentUser();
-  if (!user) redirect("/sign-in?redirect_url=/portal");
-  const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
-  if (!email) redirect("/sign-in?redirect_url=/portal");
-  const params = searchParams ? await searchParams : {};
-  const activeView = normalizeView(params.view);
-  const activeSlug = normalizeSlug(params.slug);
+  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? "";
+  const advancedSkills = getPublishedLibraryItems("skill").filter((item) => item.access === "account");
+  let activity: ActivityRow[] = [];
 
-  if (activeView === "mudikit") redirect(SHOW_MUDIKIT_IN_PORTAL ? "/portal/mudikit" : "/portal");
-  if (activeView === "newsletter") redirect("/portal/newsletter");
-  if (activeView === "skills") redirect("/portal/skills");
-  if (activeView === "playbooks") redirect("/portal/playbooks");
-
-  const sql = getDb();
-  await ensureContentItemsSchema(sql);
-
-  if (activeView === "resource" && activeSlug) {
-    const legacyRows = (await sql`
-      SELECT slug, category FROM content_items WHERE slug = ${activeSlug} LIMIT 1
-    `) as Array<{ slug: string; category: string }>;
-    if (legacyRows[0]) {
-      const path = categoryPortalPath(legacyRows[0].category);
-      redirect(`/portal/${path}/${encodeURIComponent(legacyRows[0].slug)}`);
+  if (email) {
+    try {
+      const sql = getDb();
+      await ensureUsageAnalyticsSchema(sql);
+      activity = (await sql`
+        SELECT event, resource_slug, created_at
+        FROM portal_usage_events
+        WHERE lower(email) = ${email}
+        ORDER BY created_at DESC
+        LIMIT 5
+      `) as ActivityRow[];
+    } catch (error) {
+      console.error("portal: recent activity unavailable", error);
     }
   }
 
-  const subs = await sql`
-    SELECT id, email, name, status, stripe_customer_id, clerk_user_id, created_at
-    FROM subscribers WHERE email = ${email}
-  `;
-  const paidSub = subs[0];
-
-  if (paidSub && !paidSub.clerk_user_id) {
-    await sql`UPDATE subscribers SET clerk_user_id = ${user.id} WHERE id = ${paidSub.id}`;
-  }
-
-  const isPaid = !!paidSub && paidSub.status === "active";
-
-  if (isPaid) {
-    await ensureMudikitMembership(sql, email);
-  }
-
-  const membershipRows = await sql`
-    SELECT role FROM portal_memberships
-    WHERE email = ${email} AND status = 'active'
-  `;
-
-  const access = buildPortalAccess({
-    email,
-    membershipRoles: membershipRows.map((row) => String(row.role)),
-    hasActiveSubscription: isPaid,
-  });
-
-  const dbFreeItems = withDerivedThumbnails((await sql`
-    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
-    FROM content_items
-    WHERE is_free = true
-    ORDER BY created_at DESC
-  `) as ContentItem[]);
-
-  const dbPaidItems = withDerivedThumbnails((await sql`
-    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
-    FROM content_items
-    WHERE is_free = false
-    ORDER BY created_at DESC
-  `) as ContentItem[]);
-
-  const localSkills = listPortalSkills();
-  const dbSlugs = new Set([...dbFreeItems, ...dbPaidItems].map((item) => item.slug));
-  const localOnlySkills = localSkills.filter((item) => !dbSlugs.has(item.slug));
-  const freeItems = [...dbFreeItems, ...localOnlySkills.filter((item) => item.is_free)];
-  const paidItems = [
-    ...dbPaidItems,
-    ...localOnlySkills.filter((item) => !item.is_free),
-  ];
-
-  const playbookGuideItems = withDerivedThumbnails((await sql`
-    SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
-    FROM content_items
-    WHERE category = ANY(${[...PLAYBOOK_RESOURCE_CATEGORIES]})
-    ORDER BY is_new DESC NULLS LAST, created_at DESC
-  `) as ContentItem[]);
-
-  const issues = (await sql`
-    SELECT slug, subject, sent_at
-    FROM newsletter_issues
-    WHERE status = 'sent'
-      AND slug IS NOT NULL
-      AND html IS NOT NULL
-      AND length(trim(html)) > 0
-      AND (
-        stats->>'portal_article' = 'true'
-        OR stats->>'portalArticle' = 'true'
-      )
-    ORDER BY sent_at DESC NULLS LAST
-    LIMIT 40
-  `) as NewsletterIssue[];
-
-  const displayName = user.firstName || (paidSub?.name as string | undefined) || "";
-
-  const thisWeek = readThisWeek();
-  const upcoming = readUpcoming();
-  const hero = readHero();
-
   return (
-    <PortalContent
-      displayName={displayName}
-      email={email}
-      access={access}
-      freeItems={freeItems}
-      paidItems={paidItems}
-      playbookGuideItems={playbookGuideItems}
-      issues={issues}
-      thisWeek={thisWeek}
-      upcoming={upcoming}
-      hero={hero}
-    />
+    <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 lg:px-10">
+      <header className="border-b border-white/[0.07] pb-7">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Member workspace</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.025em] text-foreground">Your account layer</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/60">Download advanced bundles, check versions, review recent activity, and manage newsletter consent. Public reading and tools remain in the library.</p>
+      </header>
+
+      <section className="grid gap-4 border-b border-white/[0.07] py-7 sm:grid-cols-3" aria-label="Workspace summary">
+        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">{advancedSkills.length}</p><p className="mt-1 text-xs text-foreground/55">Advanced bundles</p></div>
+        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">{activity.filter((row) => row.event.includes("download")).length}</p><p className="mt-1 text-xs text-foreground/55">Recent downloads shown</p></div>
+        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">Free</p><p className="mt-1 text-xs text-foreground/55">Active membership</p></div>
+      </section>
+
+      <div className="grid gap-8 pt-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <section id="advanced-skills" aria-labelledby="advanced-skills-title">
+          <div className="flex items-center justify-between gap-4">
+            <h2 id="advanced-skills-title" className="text-lg font-semibold text-foreground">Advanced Skills</h2>
+            <Link href="/portal/skills" className="text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">View all</Link>
+          </div>
+          <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+            {advancedSkills.slice(0, 6).map((skill) => (
+              <Link key={skill.slug} href={`/skills/${skill.slug}`} className="grid gap-1 py-4 transition-colors hover:bg-white/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center">
+                <span><strong className="block text-sm font-medium text-foreground">{skill.title}</strong><span className="mt-1 block text-xs leading-5 text-foreground/50">{skill.summary}</span></span>
+                <span className="text-[11px] text-foreground/45">v{skill.updatedAt}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section id="recent-activity" aria-labelledby="recent-activity-title">
+          <div className="flex items-center justify-between gap-4">
+            <h2 id="recent-activity-title" className="text-lg font-semibold text-foreground">Recent Activity</h2>
+            <Link href="/portal/activity" className="text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">View all</Link>
+          </div>
+          {activity.length > 0 ? (
+            <ol className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+              {activity.map((row, index) => (
+                <li key={`${row.event}-${String(row.created_at)}-${index}`} className="py-4">
+                  <p className="text-sm font-medium capitalize text-foreground">{eventLabel(row.event)}</p>
+                  <p className="mt-1 text-xs text-foreground/50">{row.resource_slug ?? "Workspace"} · {new Date(row.created_at).toLocaleDateString("en-GB", { dateStyle: "medium" })}</p>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <div className="mt-4 rounded-xl border border-dashed border-white/[0.1] p-5 text-sm leading-6 text-foreground/55">No recorded activity yet. Downloads will appear here after you use an advanced bundle.</div>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

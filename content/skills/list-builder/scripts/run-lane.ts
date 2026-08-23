@@ -95,7 +95,7 @@ function loadState(): State {
   }
   return { config_sha: configSha, run_id: `run_${Date.now().toString(36)}`, created: nowIso(), stages: Object.fromEntries(STAGES.map((s) => [s, { status: "pending" }])) };
 }
-let state = loadState();
+const state = loadState();
 function saveState(): void { atomicWrite(statePath, JSON.stringify(state, null, 2)); }
 function st(stage: Stage): StageState { return state.stages[stage]; }
 

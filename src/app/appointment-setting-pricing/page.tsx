@@ -10,7 +10,7 @@ import { APPOINTMENT_SETTING_PROVIDERS } from "@/lib/appointment-setting-provide
 
 export const metadata: Metadata = {
   title: "Appointment Setting Pricing Index | 30 Providers Compared",
-  description: "Compare public appointment-setting pricing, models, contract terms, channels, and qualification definitions from 30 official provider sources. No rankings or invented ranges.",
+  description: "Compare public appointment-setting prices by billing unit, fixed fee, contract term, channel, and qualification definition across 30 official provider sources.",
   alternates: { canonical: "https://muditek.com/appointment-setting-pricing" },
   openGraph: {
     title: "Appointment Setting Pricing Index",
@@ -25,7 +25,7 @@ export default function AppointmentSettingPricingPage() {
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground selection:bg-primary/25">
-      <AcquisitionPageView asset="appointment-setting-pricing-index" />
+      <AcquisitionPageView asset="appointment-setting-pricing" />
       <JsonLd data={[
         {
           "@context": "https://schema.org",
@@ -49,13 +49,13 @@ export default function AppointmentSettingPricingPage() {
       ]} />
       <Navbar />
 
-      <main>
+      <main id="main-content">
         <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
           <div className="hero-aurora absolute inset-0 opacity-45" />
           <div className="relative z-10 mx-auto max-w-[1450px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Public provider data</p>
-            <h1 className="mt-6 max-w-6xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">Appointment-setting pricing, without the fake ranking.</h1>
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">Thirty providers, sorted alphabetically. Every row points to an official source. Missing facts stay missing.</p>
+            <h1 className="mt-6 max-w-6xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">Compare appointment-setting prices without comparing the wrong thing.</h1>
+            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">A low price means little until you know whether the provider bills a booking, a held meeting, or a qualified meeting held.</p>
             <div className="mt-10 grid max-w-3xl grid-cols-3 gap-px border border-white/[0.08] bg-white/[0.08]">
               {[
                 [String(APPOINTMENT_SETTING_PROVIDERS.length), "Providers checked"],
@@ -67,6 +67,27 @@ export default function AppointmentSettingPricingPage() {
                   <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/45 sm:text-sm">{label}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-white/[0.06] bg-card/[0.18] px-6 py-10 md:px-12 md:py-12">
+          <div className="mx-auto grid max-w-[1450px] gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="border border-white/[0.08] bg-background p-6 md:p-8">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Compare the billing unit first</p>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Ask what must happen before the invoice is valid.</h2>
+              <p className="mt-4 max-w-3xl leading-relaxed text-foreground/58">Check the no-show rule, fixed fee, contract term, included channels, qualification definition, and dispute process. Then compare price.</p>
+              <Link href="/tools/appointment-setting-quote-calculator" className="mt-7 inline-flex min-h-12 items-center gap-2 border border-primary/35 px-6 text-xs font-black uppercase tracking-[0.16em] text-primary hover:bg-primary/10">
+                Model a provider quote <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="border border-primary/25 bg-primary/[0.05] p-6 md:p-8">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Publisher disclosure</p>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Muditek publishes this index.</h2>
+              <p className="mt-4 leading-relaxed text-foreground/58">Our standard model is €500–900 per month for infrastructure and €250–350 per qualified meeting held. No-shows are not billed as meetings. Muditek is shown separately and is not ranked.</p>
+              <Link href="/appointment-setting" className="mt-7 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
+                See Muditek&apos;s full model <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
         </section>
@@ -89,12 +110,12 @@ export default function AppointmentSettingPricingPage() {
           <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-2">
             <Link href="/tools/appointment-setting-quote-calculator" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Run your quote</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Convert the vendor fee into CAC and break-even math.</h2>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Convert the vendor fee into cost per qualified meeting and break-even math.</h2>
               <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">Open calculator <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </Link>
             <Link href="/appointment-setting" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Muditek model</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">See the exact gates, process, and held-meeting pricing.</h2>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">See the risk split, qualification rules, signals, and held-meeting pricing.</h2>
               <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">View the service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </Link>
           </div>

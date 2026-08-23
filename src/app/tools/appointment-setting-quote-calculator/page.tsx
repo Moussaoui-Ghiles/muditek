@@ -8,12 +8,12 @@ import { JsonLd } from "@/components/json-ld";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: "Appointment Setting Quote Calculator | Cost Per Meeting and CAC",
-  description: "Compare an appointment-setting quote using your own setup cost, monthly fee, show rate, qualification rate, close rate, deal value, and gross margin.",
+  title: "Appointment Setting Quote Calculator | Cost Per Qualified Meeting",
+  description: "Calculate provider cost per qualified meeting held, provider cost per expected client, break-even close rate, and contribution after provider cost using your own inputs.",
   alternates: { canonical: "https://muditek.com/tools/appointment-setting-quote-calculator" },
   openGraph: {
     title: "Appointment Setting Quote Calculator",
-    description: "Calculate cost per qualified held meeting, expected CAC, break-even close rate, and expected gross profit with your own inputs.",
+    description: "Calculate provider cost per qualified meeting held, provider cost per expected client, break-even close rate, and contribution after provider cost.",
     url: "https://muditek.com/tools/appointment-setting-quote-calculator",
     type: "website",
   },
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function AppointmentSettingQuoteCalculatorPage() {
   return (
     <div className="min-h-[100dvh] bg-background text-foreground selection:bg-primary/25">
-      <AcquisitionPageView asset="appointment-setting-quote-calculator" />
+      <AcquisitionPageView asset="appointment-setting-quote-calculator" event="library_item_viewed" placement="tool-page" />
       <JsonLd data={[
         {
           "@context": "https://schema.org",
@@ -33,6 +33,8 @@ export default function AppointmentSettingQuoteCalculatorPage() {
           url: "https://muditek.com/tools/appointment-setting-quote-calculator",
           offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
           description: "Calculates appointment-setting unit economics from buyer-supplied inputs without industry defaults.",
+          dateModified: "2026-08-23",
+          author: { "@type": "Person", name: "Ghiles Moussaoui", url: "https://muditek.com/about" },
         },
         {
           "@context": "https://schema.org",
@@ -46,13 +48,14 @@ export default function AppointmentSettingQuoteCalculatorPage() {
       ]} />
       <Navbar />
 
-      <main>
+      <main id="main-content">
         <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
           <div className="hero-aurora absolute inset-0 opacity-50" />
           <div className="relative z-10 mx-auto max-w-[1250px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Free buyer tool</p>
-            <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">Is this appointment-setting quote actually profitable?</h1>
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">Enter the exact quote and your actual funnel economics. The calculator uses no industry defaults and sends none of your financial inputs to Muditek.</p>
+            <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">What does this quote cost after no-shows and bad-fit meetings?</h1>
+            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">Enter the setup fee, monthly fee, fee per qualified meeting held, and expected meetings. Use the provider&apos;s written assumptions for volume, show rate, and qualification rate. Do not guess.</p>
+            <p className="mt-5 text-xs text-foreground/50">By Ghiles Moussaoui · Updated 2026-08-23 · <Link href="/appointment-setting-pricing" className="text-primary hover:underline">Pricing source index</Link></p>
           </div>
         </section>
 
@@ -68,10 +71,11 @@ export default function AppointmentSettingQuoteCalculatorPage() {
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">What the outputs mean</p>
               <dl className="mt-7 space-y-6">
                 {[
-                  ["Cost per qualified held meeting", "Setup cost plus one monthly fee, divided by the meetings that both happen and meet your rules."],
-                  ["Expected CAC", "Setup cost plus one monthly fee, divided by the expected clients from those qualified held meetings."],
+                  ["Total provider cost for the month", "Setup cost plus the monthly fee plus the held-meeting fees produced by your volume, show-rate, and qualification inputs."],
+                  ["Provider cost per qualified meeting held", "Total provider cost divided by the meetings that happen and meet your rules."],
+                  ["Provider cost per expected client", "Total provider cost divided by the expected clients from those qualified meetings."],
                   ["Break-even close rate", "The share of qualified held meetings that must close for gross profit to cover the provider cost."],
-                  ["Expected gross profit", "Expected client revenue multiplied by your gross margin, minus the provider cost for the month."],
+                  ["Estimated contribution after provider cost", "Expected client revenue multiplied by gross margin, minus the provider cost entered for the month."],
                 ].map(([term, definition]) => (
                   <div key={term} className="border-l border-primary/35 pl-5">
                     <dt className="font-bold text-foreground">{term}</dt>
@@ -79,6 +83,7 @@ export default function AppointmentSettingQuoteCalculatorPage() {
                   </div>
                 ))}
               </dl>
+              <p className="mt-8 border border-white/[0.08] bg-background/60 p-5 text-sm leading-relaxed text-foreground/55"><strong className="text-foreground/80">M&amp;A buyers:</strong> this calculator models revenue from new clients. It does not model acquisition returns. Compare fixed exposure and the exact owner-interest threshold separately.</p>
             </div>
             <div className="border border-white/[0.08] bg-background/60 p-7 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Next comparison</p>
@@ -94,11 +99,11 @@ export default function AppointmentSettingQuoteCalculatorPage() {
         <section className="px-6 py-20 md:px-12 md:py-28">
           <div className="mx-auto flex max-w-[1050px] flex-col gap-8 border border-primary/20 bg-primary/[0.04] p-8 md:flex-row md:items-center md:justify-between md:p-12">
             <div>
-              <h2 className="text-3xl font-black tracking-[-0.03em]">The numbers work?</h2>
-              <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground/58">Muditek can check your market size, qualification rules, and delivery fit before you commit.</p>
+              <h2 className="text-3xl font-black tracking-[-0.03em]">The calculation uses your assumptions. Can the market support them?</h2>
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground/58">Muditek checks reachable market size, qualification rules, deal economics, and closer capacity before recommending a launch.</p>
             </div>
             <TrackedBookingLink asset="appointment-setting-quote-calculator" placement="bottom-cta" className="btn-press inline-flex shrink-0 items-center justify-center gap-3 bg-primary px-7 py-4 text-sm font-black uppercase tracking-[0.17em] text-background">
-              Check delivery fit <ArrowRight className="h-4 w-4" />
+              Check market fit <ArrowRight className="h-4 w-4" />
             </TrackedBookingLink>
           </div>
         </section>
@@ -108,4 +113,3 @@ export default function AppointmentSettingQuoteCalculatorPage() {
     </div>
   );
 }
-

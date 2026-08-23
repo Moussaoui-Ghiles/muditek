@@ -6,8 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { PostHogProvider } from "@/components/posthog-provider";
-import { WhatsAppBubble } from "@/components/whatsapp-bubble";
-import { ExitIntent } from "@/components/exit-intent";
+import { NewsletterConsentCompletion } from "@/components/newsletter-consent-completion";
 import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
@@ -40,9 +39,9 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://muditek.com"),
-  title: "Muditek | AI Systems That Eliminate Operational Waste",
+  title: "Muditek | Appointment Setting and AI Implementation",
   description:
-    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-premises AI, revenue recovery, and operational infrastructure.",
+    "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
   alternates: { canonical: "https://muditek.com" },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -51,9 +50,9 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
   },
   openGraph: {
-    title: "Muditek | AI Systems That Eliminate Operational Waste",
+    title: "Muditek | Appointment Setting and AI Implementation",
     description:
-      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-prem AI, revenue recovery, ops infrastructure.",
+      "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
     url: "https://muditek.com",
     type: "website",
   },
@@ -95,7 +94,7 @@ export default function RootLayout({
         signUp: {
           start: {
             title: "Create your Muditek account",
-            subtitle: "One email. Portal + newsletter archive. Unsubscribe anytime.",
+            subtitle: "Download advanced skill bundles. Newsletter consent is separate and optional.",
           },
         },
       }}
@@ -120,7 +119,7 @@ export default function RootLayout({
                   height: 512,
                 },
                 description:
-                  "AI systems that eliminate operational waste. We diagnose where companies lose money to manual operations and build AI systems that fix it.",
+                  "Appointment-setting systems, a public operating library, and practical AI implementation.",
                 founder: {
                   "@type": "Person",
                   "@id": "https://muditek.com/#ghiles",
@@ -145,7 +144,7 @@ export default function RootLayout({
                 url: "https://muditek.com",
                 name: "Muditek",
                 description:
-                  "AI systems that eliminate operational waste. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
+                  "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
                 publisher: { "@id": "https://muditek.com/#organization" },
                 inLanguage: "en",
               },
@@ -164,9 +163,11 @@ export default function RootLayout({
               },
             ]}
           />
-          <PostHogProvider apiKey={posthogKey} host={posthogHost}>{children}</PostHogProvider>
-          <WhatsAppBubble />
-          <ExitIntent />
+          <a href="#main-content" className="skip-link">Skip to main content</a>
+          <PostHogProvider apiKey={posthogKey} host={posthogHost}>
+            <NewsletterConsentCompletion />
+            {children}
+          </PostHogProvider>
           <Analytics />
           <SpeedInsights />
           <GoogleAnalytics measurementId={gaMeasurementId} />

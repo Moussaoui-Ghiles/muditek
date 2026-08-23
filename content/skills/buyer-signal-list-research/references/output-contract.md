@@ -59,7 +59,7 @@ State:
 - sources searched and current equivalents used;
 - material contradictions and unknowns.
 
-The evidence ledger must follow `evidence-model.md`. A source reference must include its evidence ID, label, URL or vault note, publication/update date when known, date observed/verified, verifier/owner, limitation, and rule/approval version where relevant.
+The evidence ledger must follow `evidence-model.md`. A source reference must include its evidence ID, label, URL or workspace file, publication/update date when known, date observed/verified, verifier/owner, limitation, and rule/approval version where relevant.
 
 ### 2. Account rules
 
@@ -236,7 +236,7 @@ Include only fields needed by the approved destination. Preserve nulls rather th
 - `channel`
 - `path_value_or_url`
 - `source_name`
-- `source_url_or_vault_note`
+- `source_url_or_workspace_file`
 - `source_evidence_id`
 - `date_observed`
 - `date_verified`

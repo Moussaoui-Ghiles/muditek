@@ -4,7 +4,7 @@ import SignUpForm from "./sign-up-form";
 
 export const metadata: Metadata = {
   title: "Create account · Muditek",
-  description: "Muditek account. Weekly playbooks, full newsletter archive, direct calendar access.",
+  description: "Create a free Muditek account to download advanced skill bundles.",
 };
 
 export default async function SignUpPage({

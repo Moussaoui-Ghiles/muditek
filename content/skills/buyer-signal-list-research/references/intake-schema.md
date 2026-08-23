@@ -8,15 +8,15 @@ tags:
 
 # Intake Schema
 
-Use progressive intake. Search supplied inputs and the vault first, prefill every supported answer with its evidence label, then ask only questions whose answers change the next rule, filter, source, cost, compliance boundary, or approval decision.
+Use progressive intake. Search supplied inputs and the in-scope workspace first, prefill every supported answer with its evidence label, then ask only questions whose answers change the next rule, filter, source, cost, compliance boundary, or approval decision.
 
 ## Search order
 
 1. User-provided hypothesis, offer, market, files, links, and prior decisions.
-2. Named offer and operational note in `marketing/`.
-3. Current `marketing/outbound-kit/` intake, list-source, enrichment, infrastructure, and campaign notes.
-4. Relevant `marketing/outreach/` and `marketing/pipeline/` artifacts as first-party inputs or schemas only.
-5. Mandatory library sources listed in `evidence-model.md` and other directly relevant library evidence.
+2. Current offer, proposal, and operating notes supplied for this work.
+3. Current intake, list-source, enrichment, infrastructure, and campaign notes in scope.
+4. Relevant outreach and pipeline records as first-party inputs or schemas only.
+5. Directly relevant source material governed by `evidence-model.md`.
 6. External research only when needed, allowed, and sourceable.
 
 Log the search path, useful files, current equivalents found, and gaps. Do not ask the user to repeat facts already present.
@@ -72,7 +72,7 @@ For every proposed signal collect:
 - fit layer, trigger layer, or personalization-only layer;
 - commercial connection to the offer;
 - source class and source reliability;
-- evidence URL or `[[vault source]]`;
+- evidence URL or workspace file reference;
 - date observed;
 - recency window and expiry rule;
 - usability: account selection, prioritization, role selection, timing, or message context;

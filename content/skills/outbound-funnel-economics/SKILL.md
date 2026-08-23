@@ -53,7 +53,7 @@ State the decision the work must inform. Do not substitute a generic “is outbo
 
 ### 2. Search before asking
 
-Inspect user-supplied exports, spreadsheets, campaign reports, CRM records, finance records, offer economics, and relevant vault notes first. Search exact campaign, cohort, offer, and customer names before broader keywords.
+Inspect user-supplied exports, spreadsheets, campaign reports, CRM records, finance records, offer economics, and relevant workspace files first. Search exact campaign, cohort, offer, and customer names before broader keywords.
 
 Record the source, period, extraction date, filters, deduplication key, and inaccessible evidence. Treat an artifact as evidence of what it records, not proof of an unrecorded event.
 

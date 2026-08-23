@@ -1,10 +1,10 @@
 "use client";
 
 import { SignUp, useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
-import { DataCitation } from "@/components/data-citation";
-import { DATA_POINTS } from "@/lib/data-points";
+import { SIGNUP_ORIGIN_KEY, trackFunnelEvent, type FunnelLane } from "@/components/acquisition-tracking";
+import { NEWSLETTER_CONSENT_STORAGE_KEY } from "@/lib/newsletter-consent";
 
 const CLERK_ELEMENTS = {
   rootBox: "w-full!",
@@ -43,20 +43,14 @@ const HERO = (
       <span className="text-primary">Muditek</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Portal access. One deployable AI system in your inbox every week.
-    </p>
-    <p className="reveal reveal-delay-2 mt-8 text-[13px] text-white/55">
-      <DataCitation
-        claim="Read by 5,000+ B2B operators"
-        source={DATA_POINTS.newsletterSubscribers.source}
-        n={DATA_POINTS.newsletterSubscribers.n}
-      />
+      Create a free account to download advanced skill bundles and keep track of their versions.
     </p>
   </div>
 );
 
 export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: string }) {
   const { isSignedIn, isLoaded } = useUser();
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const encodedRedirect = encodeURIComponent(redirectUrl);
 
   useEffect(() => {
@@ -65,7 +59,34 @@ export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: 
       method: "POST",
       headers: { "Content-Type": "application/json" },
     }).catch(() => {});
+
+    if (sessionStorage.getItem("muditek_account_created_tracked") !== "1") {
+      sessionStorage.setItem("muditek_account_created_tracked", "1");
+      let origin: { asset: string; lane: FunnelLane; placement: string } = {
+        asset: "account-signup",
+        lane: "ai-implementation",
+        placement: "signup-complete",
+      };
+      try {
+        const saved = sessionStorage.getItem(SIGNUP_ORIGIN_KEY);
+        if (saved) origin = { ...origin, ...JSON.parse(saved) };
+        sessionStorage.removeItem(SIGNUP_ORIGIN_KEY);
+      } catch {
+        // Use the direct-signup fallback origin.
+      }
+      trackFunnelEvent("account_created", {
+        asset: origin.asset,
+        lane: origin.lane,
+        placement: origin.placement,
+      });
+    }
   }, [isSignedIn, isLoaded]);
+
+  function updateNewsletterConsent(checked: boolean) {
+    setNewsletterConsent(checked);
+    if (checked) sessionStorage.setItem(NEWSLETTER_CONSENT_STORAGE_KEY, "1");
+    else sessionStorage.removeItem(NEWSLETTER_CONSENT_STORAGE_KEY);
+  }
 
   return (
     <AuthShell variant="sign-up" hero={HERO}>
@@ -85,9 +106,15 @@ export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: 
           signInForceRedirectUrl={redirectUrl}
         />
       </div>
-      <p className="reveal reveal-delay-3 mt-5 text-[11.5px] leading-relaxed text-white/35">
-        Subscribes you to the newsletter. Unsubscribe anytime.
-      </p>
+      <label className="reveal reveal-delay-3 mt-5 flex cursor-pointer items-start gap-3 text-[12px] leading-5 text-white/55">
+        <input
+          type="checkbox"
+          checked={newsletterConsent}
+          onChange={(event) => updateNewsletterConsent(event.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-white/20 bg-transparent accent-amber-400"
+        />
+        <span>Also send me the Muditek newsletter. This is optional and unchecked by default.</span>
+      </label>
     </AuthShell>
   );
 }

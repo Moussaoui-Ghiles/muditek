@@ -19,7 +19,7 @@ Run all applicable checks internally in either mode. Do not expose empty or imma
 
 ## Report contract
 
-Lead with the bounded status. Use concise business language. Cite vault evidence with `[[wikilinks]]`; cite external sources with direct links. Include dates and section or line references when available.
+Lead with the bounded status. Use concise business language. Cite workspace evidence with file paths or links. Cite external sources with direct links. Include dates and section or line references when available.
 
 Do not collapse unknowns into a numeric score. Do not average `PASS`, `FAIL`, and `UNPROVEN` into a readiness percentage.
 
@@ -32,7 +32,7 @@ Return only:
 3. **Strongest supported facts:** only the facts that materially shape the decision.
 4. **Top material gaps or contradictions:** no more than three, each with its evidence status.
 5. **Next evidence or test:** the smallest safe step, what it records, and the decision it unlocks.
-6. **Question or routing:** the smallest governing question, or the `$offer-creation` route when rebuilding was explicitly requested.
+6. **Question or routing:** the smallest governing question, or the separately scoped rebuild when it was explicitly requested.
 
 Include compact claim-to-proof or contradiction rows only when they are necessary to substantiate the verdict.
 
@@ -142,4 +142,4 @@ Keep booked, held, qualified, paid, delivered, first value, and business outcome
 
 When key inputs are missing, end with the next small question batch and leave affected conclusions `UNPROVEN`.
 
-When the original request explicitly asks to audit and then redesign or rebuild, complete the audit first and immediately invoke `$offer-creation` in the same turn, carrying forward only evidenced findings. Do not redesign inside this review or ask for a second confirmation unless a new material business decision requires authority.
+When the original request explicitly asks to audit and then redesign or rebuild, complete the audit first and then start the separately scoped rebuild, carrying forward only evidenced findings. Do not redesign inside this review or ask for a second confirmation unless a new material business decision requires authority.

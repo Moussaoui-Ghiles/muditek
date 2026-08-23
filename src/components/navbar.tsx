@@ -1,273 +1,138 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useEffect, useRef, useState } from "react";
+
+const NAV_ITEMS = [
+  { href: "/appointment-setting", label: "Appointment Setting" },
+  { href: "/ai-implementation", label: "AI Implementation" },
+  { href: "/library", label: "Library" },
+  { href: "/about", label: "About" },
+] as const;
+
+function isCurrent(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const { isSignedIn, isLoaded } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
-    setMobileOpen(false);
-    setSolutionsOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMobileOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [mobileOpen]);
+
+  const navLinkClass = (href: string) =>
+    `text-[12px] font-bold uppercase tracking-[0.16em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+      isCurrent(pathname, href) ? "text-foreground" : "text-foreground/65 hover:text-foreground"
+    }`;
 
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-40 flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1800px] mx-auto transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-xl shadow-lg" : ""}`}
-        role="navigation"
         aria-label="Main navigation"
-      >
-        <Link href="/" className="group flex items-center gap-3 relative z-50" aria-label="Muditek homepage">
-          <Image src="/icon.svg" alt="" width={36} height={36} aria-hidden="true" />
-          <span className="text-base font-black tracking-[0.2em] text-foreground uppercase">MUDITEK</span>
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-10">
-          <Link href="/" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Home
-          </Link>
-
-          {/* Solutions dropdown */}
-          <div className="relative group">
-            <button className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
-              Solutions
-              <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity mt-[1px]">
-                <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <div className="absolute top-full left-0 mt-3 w-72 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
-              <Link href="/mudiagent" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                mudiAgent
-              </Link>
-              <Link href="/revenue-leak-audit" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Revenue Leak Audit
-              </Link>
-              <Link href="/pe-ops" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Operational Infrastructure
-              </Link>
-              <Link href="/appointment-setting" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Appointment Setting
-              </Link>
-              <div className="h-px bg-white/[0.04] mx-5 my-2" />
-              <Link href="/who-we-help" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Who We Help
-              </Link>
-              <Link href="/case-studies" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Case Studies
-              </Link>
-              <div className="h-px bg-white/[0.04] mx-5 my-2" />
-              <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Revenue Leak Calculator
-                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
-              </Link>
-              <Link href="/tools/appointment-setting-quote-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Quote Calculator
-                <span className="text-[10px] font-black tracking-[0.15em] text-primary/80 uppercase">New</span>
-              </Link>
-              <Link href="/appointment-setting-pricing" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Provider Pricing Index
-                <span className="text-[10px] font-black tracking-[0.15em] text-primary/80 uppercase">30</span>
-              </Link>
-            </div>
-          </div>
-
-          <Link href="/about" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            About
-          </Link>
-          <Link href="/newsletter" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Newsletter
-          </Link>
-
-          {isLoaded && isSignedIn && (
-            <>
-              <Link href="/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-                Portal
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Desktop CTA + user */}
-        <div className="hidden md:flex items-center gap-3">
-          {isLoaded && isSignedIn && (
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8 ring-1 ring-white/[0.08]",
-                },
-              }}
-            />
-          )}
-          {isLoaded && !isSignedIn && (
-            <Link
-              href="/sign-in?redirect_url=/portal"
-              className="px-4 py-2.5 text-sm uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground transition-colors font-bold"
-            >
-              Sign in
-            </Link>
-          )}
-          {isLoaded && !isSignedIn && (
-            <Link
-              href="/sign-up"
-              className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-primary text-background hover:scale-[1.03] transition-transform btn-press"
-            >
-              Join Portal
-            </Link>
-          )}
-          <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
-          >
-            Book a Call
-          </a>
-        </div>
-
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden relative z-50 w-10 h-10 flex flex-col items-center justify-center gap-[5px]"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-        >
-          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "rotate-45 translate-y-[6.5px]" : ""}`} />
-          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0" : "opacity-100"}`} />
-          <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "-rotate-45 -translate-y-[6.5px]" : ""}`} />
-        </button>
-      </nav>
-
-      {/* Mobile overlay */}
-      <div
-        className={`fixed inset-0 z-40 bg-background/95 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
-          mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+          scrolled ? "border-white/[0.06] bg-background/90 backdrop-blur-xl" : "border-transparent bg-transparent"
         }`}
       >
-        <div className="flex flex-col items-start justify-center h-full px-10 gap-1">
-          <Link
-            href="/"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "60ms" : "0ms" }}
-          >
-            Home
+        <div className="mx-auto flex min-h-20 w-full max-w-[1500px] items-center justify-between gap-6 px-6 md:px-12">
+          <Link href="/" className="flex shrink-0 items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Muditek homepage">
+            <Image src="/icon.svg" alt="" width={32} height={32} aria-hidden="true" />
+            <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground">Muditek</span>
           </Link>
 
-          <button
-            onClick={() => setSolutionsOpen(!solutionsOpen)}
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex items-center gap-3 ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "120ms" : "0ms" }}
-          >
-            Solutions
-            <svg width="14" height="14" viewBox="0 0 8 8" fill="none" className={`transition-transform duration-300 ${solutionsOpen ? "rotate-180" : ""}`}>
-              <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-[28rem] opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
-            <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
-              <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
-              <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>
-              <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
-              <Link href="/appointment-setting" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Appointment Setting</Link>
-              <Link href="/who-we-help" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Who We Help</Link>
-              <Link href="/case-studies" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Case Studies</Link>
-              <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
-              <Link href="/tools/appointment-setting-quote-calculator" className="text-sm font-medium text-primary/75 hover:text-primary transition-colors">Quote Calculator</Link>
-              <Link href="/appointment-setting-pricing" className="text-sm font-medium text-primary/75 hover:text-primary transition-colors">Provider Pricing Index</Link>
-            </div>
+          <div className="hidden items-center gap-7 lg:flex">
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.href} href={item.href} className={navLinkClass(item.href)} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
+                {item.label}
+              </Link>
+            ))}
           </div>
 
-          <Link
-            href="/about"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "200ms" : "0ms" }}
-          >
-            About
-          </Link>
+          <div className="hidden items-center gap-3 lg:flex">
+            <Link
+              href="/appointment-setting#qualify"
+              className="inline-flex min-h-11 items-center rounded-[2px] bg-primary px-5 text-[11px] font-black uppercase tracking-[0.16em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground motion-reduce:transform-none"
+            >
+              Check if you qualify
+            </Link>
+            {isLoaded && isSignedIn ? (
+              <div className="flex items-center gap-3">
+                <Link href="/portal" className={navLinkClass("/portal")}>Workspace</Link>
+                <UserButton appearance={{ elements: { avatarBox: "h-8 w-8 ring-1 ring-white/15" } }} />
+              </div>
+            ) : (
+              <Link href="/sign-in?redirect_url=/portal" className={navLinkClass("/portal")}>Account</Link>
+            )}
+          </div>
 
-          <Link
-            href="/newsletter"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "260ms" : "0ms" }}
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="relative z-50 flex h-11 w-11 items-center justify-center border border-white/10 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setMobileOpen((open) => !open)}
           >
-            Newsletter
-          </Link>
-
-          {isLoaded && !isSignedIn && (
-            <>
-              <Link
-                href="/sign-up"
-                className={`text-2xl font-black uppercase tracking-[0.05em] text-primary hover:text-primary/80 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
-              >
-                Join Portal
-              </Link>
-              <Link
-                href="/sign-in?redirect_url=/portal"
-                className={`text-xl font-bold uppercase tracking-[0.05em] text-foreground/60 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "360ms" : "0ms" }}
-              >
-                Sign in
-              </Link>
-            </>
-          )}
-          {isLoaded && isSignedIn && (
-            <>
-              <Link
-                href="/portal"
-                className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
-              >
-                Portal
-              </Link>
-            </>
-          )}
-
-          <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "500ms" : "0ms" }}
-          >
-            Book a Call
-          </a>
+            <span aria-hidden="true" className="relative h-4 w-5">
+              <span className={`absolute left-0 top-0 h-px w-5 bg-current transition-transform ${mobileOpen ? "translate-y-[7px] rotate-45" : ""}`} />
+              <span className={`absolute left-0 top-[7px] h-px w-5 bg-current transition-opacity ${mobileOpen ? "opacity-0" : ""}`} />
+              <span className={`absolute left-0 top-[14px] h-px w-5 bg-current transition-transform ${mobileOpen ? "-translate-y-[7px] -rotate-45" : ""}`} />
+            </span>
+          </button>
         </div>
+      </nav>
+
+      <div
+        id="mobile-navigation"
+        aria-hidden={!mobileOpen}
+        className={`fixed inset-0 z-40 bg-background px-6 pb-10 pt-28 transition-opacity lg:hidden ${
+          mobileOpen ? "visible opacity-100" : "invisible pointer-events-none opacity-0"
+        }`}
+      >
+        <nav aria-label="Mobile navigation" className="mx-auto flex h-full max-w-xl flex-col">
+          <div className="border-t border-white/[0.08]">
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.href} href={item.href} tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="flex min-h-16 items-center border-b border-white/[0.08] text-2xl font-black tracking-[-0.02em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-auto grid gap-3 sm:grid-cols-2">
+            <Link href="/appointment-setting#qualify" tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
+              Check if you qualify
+            </Link>
+            <Link href={isSignedIn ? "/portal" : "/sign-in?redirect_url=/portal"} tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/15 px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              {isSignedIn ? "Open workspace" : "Account"}
+            </Link>
+          </div>
+        </nav>
       </div>
     </>
   );

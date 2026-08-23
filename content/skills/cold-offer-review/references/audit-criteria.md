@@ -173,16 +173,8 @@ Name the first `FAIL` whose preceding links are not failed. If an earlier link i
 
 ## Source grounding and limits
 
-The framework is synthesized from these vault sources:
+The framework uses documented operator material about offer construction, cold versus warm context, commercial differentiation, risk, first commitment, and outbound motion. These sources provide context, not universal evidence or thresholds.
 
-- [[library/sources/youtube/cole-gordon/2026-07-18-building-a-10-million-dollar-offer|Cole Gordon: offer construction]] — offer includes product, positioning, and terms; trust can mask cold weakness; buyer/problem/method specificity; mechanism as explanation; proof, risk, and delivery uncertainty.
-- [[library/sources/youtube/cole-gordon/2026-07-18-eight-best-offers-from-5000-studied|Cole Gordon: cold offer examples]] — cold versus warm distinction, buying context, customer economics, bounded front-end offers, commercial differentiation, and generic AI-consulting limits.
-- [[library/sources/youtube/cole-gordon/2026-07-18-outbound-setting-team-75m-playbook|Cole Gordon: outbound motion boundary]] — SDR, MDR, and BDR separation; cold-motion spectrum; opportunity context; first-party baselines; complete handoff economics. Use only for context boundaries.
-- [[library/sources/youtube/daniel-fazio/2026-03-31-only-offer-id-sell|Daniel Fazio: cold-traffic offer]] — distinction between what the buyer purchases and how it is delivered; outcome framing, front-end scope, risk allocation, and addressable-market concerns.
-- [[library/sources/youtube/daniel-fazio/2026-07-18-how-we-close-18000-deals-step-by-step|Daniel Fazio: high-ticket cold sales]] — operator emphasis on done-for-you framing, de-risking, low commitment, authority, proof, ROI visibility, and fulfillment.
-- [[marketing/content-operating-system|BizOps Content Operating System]] — current truth hierarchy, evidence labels, no fabrication, claim boundaries, hypothesis versus validation, exact status and date discipline.
-- [[.agents/skills/offer-creation/SKILL|Offer Creation]] — broader building, repositioning, pricing, guarantee, tiering, research, and fulfillment work belongs in `$offer-creation` after the audit when explicitly requested.
+Treat all operator numbers, conversion claims, case-study counts, channel claims, pricing examples, guarantees, and offer preferences as operator assertions or self-reported examples. Do not convert them into pass criteria, thresholds, buyer facts, legal advice, or proof of likely performance.
 
-Treat all Cole Gordon and Daniel Fazio numbers, conversion claims, case-study counts, channel claims, pricing examples, guarantees, and offer preferences as operator assertions or self-reported examples. Do not convert them into pass criteria, thresholds, buyer facts, legal advice, or proof of likely performance.
-
-Current Muditek offer and intake documents supplied reusable input categories such as buyer, current state, trigger, desired outcome, systems, process, price, sales cycle, access, concerns, failure definition, and constraints. They are not public proof and are not validation standards.
+Offer and intake documents can supply reusable input categories such as buyer, current state, trigger, desired outcome, systems, process, price, sales cycle, access, concerns, failure definition, and constraints. They remain inputs, not public proof or validation standards.

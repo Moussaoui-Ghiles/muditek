@@ -7,6 +7,7 @@ import { calculateAppointmentSettingQuote, type AppointmentSettingQuoteInputs } 
 const EMPTY_INPUTS: AppointmentSettingQuoteInputs = {
   setupCost: "",
   monthlyFee: "",
+  perQualifiedHeldMeetingFee: "",
   bookedMeetings: "",
   showRate: "",
   qualificationRate: "",
@@ -86,7 +87,7 @@ export function AppointmentSettingCalculator() {
     event.preventDefault();
     const nextResults = calculateAppointmentSettingQuote(inputs);
     if (!nextResults) {
-      setError("Enter positive numbers. Rates must be between 0 and 100.");
+      setError("Enter valid numbers. Setup, monthly, and held-meeting fees may be 0. Meetings and rates must be above 0. Rates cannot exceed 100.");
       setResults(null);
       return;
     }
@@ -117,11 +118,12 @@ export function AppointmentSettingCalculator() {
         </div>
 
         <div className="grid gap-x-6 gap-y-7 sm:grid-cols-2">
-          <Field id="setupCost" label="Setup cost" hint="One-time amount paid before launch." value={inputs.setupCost} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
-          <Field id="monthlyFee" label="Monthly fee" hint="Recurring agency or provider fee." value={inputs.monthlyFee} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
-          <Field id="bookedMeetings" label="Booked meetings" hint="Meetings expected in the same month." value={inputs.bookedMeetings} onChange={updateInput} />
-          <Field id="showRate" label="Show rate" hint="Share of booked meetings that happen." value={inputs.showRate} suffix="%" onChange={updateInput} />
-          <Field id="qualificationRate" label="Qualification rate" hint="Share of held meetings that meet your written rules." value={inputs.qualificationRate} suffix="%" onChange={updateInput} />
+          <Field id="setupCost" label="Setup cost" hint="One-time amount paid before launch. Enter 0 if there is none." value={inputs.setupCost} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
+          <Field id="monthlyFee" label="Monthly fee" hint="Fixed provider fee for the month. Enter 0 if there is none." value={inputs.monthlyFee} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
+          <Field id="perQualifiedHeldMeetingFee" label="Fee per qualified meeting held" hint="Amount billed after each qualified meeting happens. Enter 0 if there is none." value={inputs.perQualifiedHeldMeetingFee} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
+          <Field id="bookedMeetings" label="Booked meetings" hint="Use the provider's written monthly forecast. Do not guess." value={inputs.bookedMeetings} onChange={updateInput} />
+          <Field id="showRate" label="Show rate" hint="Use the provider's forecast or your own measured rate." value={inputs.showRate} suffix="%" onChange={updateInput} />
+          <Field id="qualificationRate" label="Qualification rate" hint="Use the provider's written definition and forecast." value={inputs.qualificationRate} suffix="%" onChange={updateInput} />
           <Field id="closeRate" label="Close rate" hint="Share of qualified held meetings that become clients." value={inputs.closeRate} suffix="%" onChange={updateInput} />
           <Field id="dealValue" label="Deal value" hint="Revenue from one new client for the period you evaluate." value={inputs.dealValue} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
           <Field id="grossMargin" label="Gross margin" hint="Gross profit as a share of deal value." value={inputs.grossMargin} suffix="%" onChange={updateInput} />
@@ -154,10 +156,11 @@ export function AppointmentSettingCalculator() {
           ) : (
             <div className="mt-7 space-y-3">
               {[
-                ["Cost per qualified held meeting", moneyFormatter.format(results.costPerQualifiedHeldMeeting)],
-                ["Expected CAC", moneyFormatter.format(results.expectedCac)],
+                ["Total provider cost for the month", moneyFormatter.format(results.totalProviderCost)],
+                ["Provider cost per qualified meeting held", moneyFormatter.format(results.costPerQualifiedHeldMeeting)],
+                ["Provider cost per expected client", moneyFormatter.format(results.expectedCac)],
                 ["Break-even close rate", `${(results.breakEvenCloseRate * 100).toFixed(1)}%`],
-                ["Expected gross profit after provider cost", moneyFormatter.format(results.expectedGrossProfit)],
+                ["Estimated contribution after provider cost", moneyFormatter.format(results.expectedGrossProfit)],
               ].map(([label, value]) => (
                 <div key={label} className="border border-white/[0.07] bg-background/50 p-5">
                   <p className="text-sm leading-relaxed text-foreground/50">{label}</p>
@@ -175,6 +178,7 @@ export function AppointmentSettingCalculator() {
                   <p className="mt-1 font-mono text-lg font-bold tnum">{results.expectedClients.toFixed(2)}</p>
                 </div>
               </div>
+              <p className="border-t border-white/[0.07] pt-5 text-sm leading-relaxed text-foreground/42">These estimates use only the numbers you entered. They are not a delivery forecast.</p>
             </div>
           )}
         </div>

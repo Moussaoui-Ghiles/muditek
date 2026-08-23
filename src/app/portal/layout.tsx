@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
-import { ensureMudikitMembership, ensurePortalAccount } from "@/lib/portal-account";
+import { ensurePortalAccount } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { PortalShell } from "@/components/portal/portal-shell";
 import { PortalUsageTracker } from "@/components/portal/portal-usage-tracker";
@@ -22,23 +22,7 @@ export default async function PortalLayout({ children }: { children: React.React
     sql,
     email,
     clerkUserId: user.id,
-    name: user.firstName || null,
   });
-
-  const subs = await sql`
-    SELECT id, email, name, status, stripe_customer_id, clerk_user_id
-    FROM subscribers WHERE email = ${email}
-  `;
-  const paidSub = subs[0];
-  const isPaid = !!paidSub && paidSub.status === "active";
-
-  if (paidSub && !paidSub.clerk_user_id) {
-    await sql`UPDATE subscribers SET clerk_user_id = ${user.id} WHERE id = ${paidSub.id}`;
-  }
-
-  if (isPaid) {
-    await ensureMudikitMembership(sql, email);
-  }
 
   const membershipRows = await sql`
     SELECT role FROM portal_memberships
@@ -48,10 +32,10 @@ export default async function PortalLayout({ children }: { children: React.React
   const access = buildPortalAccess({
     email,
     membershipRoles: membershipRows.map((row) => String(row.role)),
-    hasActiveSubscription: isPaid,
+    hasActiveSubscription: false,
   });
 
-  const displayName = user.firstName || (paidSub?.name as string | undefined) || email.split("@")[0];
+  const displayName = user.firstName || email.split("@")[0];
 
   return (
     <PortalShell email={email} displayName={displayName} access={access}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/client-analytics";
+import { trackFunnelEvent } from "@/components/acquisition-tracking";
 
 const VALID_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"] as const;
 type Topic = (typeof VALID_TOPICS)[number];
@@ -109,9 +109,10 @@ export function EmailCapture({
       }
 
       setStatus("success");
-      trackEvent("newsletter_signup", {
-        source: derivedSource,
-        topics: derivedTopics.join(","),
+      trackFunnelEvent("newsletter_opted_in", {
+        asset: "newsletter",
+        lane: "ai-implementation",
+        placement: derivedSource,
       });
       onSuccess?.();
     } catch (err) {

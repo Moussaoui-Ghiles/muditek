@@ -5,16 +5,13 @@ import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
 import { FaqBlock } from "@/components/faq-block";
-import { MudikitCta } from "@/components/mudikit-cta";
-import { DataCitation } from "@/components/data-citation";
-import { DATA_POINTS } from "@/lib/data-points";
 import { getDb } from "@/lib/db";
 import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 
 const NEWSLETTER_FAQ = [
   {
     q: "What does the Muditek newsletter cover?",
-    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype. Only systems that have run in production.",
+    a: "Practical AI systems, outbound operations, and implementation breakdowns. Issues can include prompts, workflows, research methods, lead-generation systems, and controlled agent setups.",
   },
   {
     q: "How often does it send?",
@@ -26,19 +23,19 @@ const NEWSLETTER_FAQ = [
   },
   {
     q: "Who reads it?",
-    a: "5,000+ B2B operators, AI builders, and founders across telecom, SaaS, agencies, and finance. Most subscribers run their own ops or sales teams and ship what they read here.",
+    a: "Operators, builders, and founders who want practical material they can inspect and adapt.",
   },
 ];
 
 export const metadata: Metadata = {
   title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
   description:
-    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Unsubscribe anytime.",
+    "Read and subscribe to the Muditek newsletter for practical AI systems, outbound operations, and implementation breakdowns.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
     title: "B2B Agents Newsletter | Muditek",
     description:
-      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy.",
+      "Practical AI systems, outbound operations, and implementation breakdowns.",
     url: "https://muditek.com/newsletter",
     type: "website",
   },
@@ -144,6 +141,7 @@ export default async function NewsletterPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <Navbar />
+      <main id="main-content" className="w-full">
 
       {/* HERO */}
       <section className="pt-32 md:pt-44 pb-20 md:pb-28 w-full flex justify-center relative overflow-hidden">
@@ -167,21 +165,7 @@ export default async function NewsletterPage() {
             <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
               Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
             </p>
-            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12 italic">
-              Read by{" "}
-              <DataCitation
-                claim="5,000+ B2B operators"
-                source={DATA_POINTS.newsletterSubscribers.source}
-                n={DATA_POINTS.newsletterSubscribers.n}
-              />
-              {" "}across telecom, SaaS, agencies, and finance.{" "}
-              <DataCitation
-                claim="29 issues shipped"
-                source={DATA_POINTS.issuesShipped.source}
-                n={DATA_POINTS.issuesShipped.n}
-              />
-              {" "}in 2026.
-            </p>
+            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12">Subscription is explicit. You can unsubscribe at any time. A portal account does not subscribe or reactivate you.</p>
           </ScrollReveal>
 
           <ScrollReveal delay={240}>
@@ -258,11 +242,13 @@ export default async function NewsletterPage() {
       {/* FAQ */}
       <FaqBlock items={NEWSLETTER_FAQ} accentColor="primary" />
 
-      {/* MUDIKIT CTA */}
-      <MudikitCta
-        headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
-        body="The newsletter is the public layer. MudiKit is the paid portal layer: Claude Code skills, resource drops, and tools in one account."
-      />
+      <section className="w-full border-y border-white/[0.06] py-20">
+        <div className="mx-auto flex w-full max-w-[1000px] flex-col gap-7 px-6 text-center md:px-12">
+          <h2 className="text-3xl font-black tracking-[-0.03em] md:text-5xl">The full library is public.</h2>
+          <p className="mx-auto max-w-2xl text-base leading-7 text-foreground/65">Read skills and playbooks or use the browser-only tools without joining the newsletter.</p>
+          <Link href="/library" className="mx-auto inline-flex min-h-12 items-center justify-center rounded-[2px] border border-white/15 px-6 text-xs font-black uppercase tracking-[0.17em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Open the library</Link>
+        </div>
+      </section>
 
       {/* BOTTOM CTA */}
       <section className="py-32 w-full flex justify-center relative border-t border-white/[0.04] bg-card/[0.15] mesh-subtle">
@@ -272,7 +258,7 @@ export default async function NewsletterPage() {
               Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
             <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              Every issue points back to the portal so readers can open the resource, save it, and keep the system tied to one account.
+              Every issue points to a relevant public asset. Newsletter consent stays separate from library and account access.
             </p>
             <div className="max-w-md mx-auto">
               <EmailCapture
@@ -286,6 +272,7 @@ export default async function NewsletterPage() {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );

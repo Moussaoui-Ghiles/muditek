@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/admin-auth";
 import { countArchive, listArchive, type ArchiveFormat, type ArchiveQuery, type UseCaseId } from "@/lib/workflow-archive";
 
 export const dynamic = "force-dynamic";
@@ -9,8 +9,8 @@ const VALID_USE_CASES = new Set([
 ]);
 
 export async function GET(req: Request) {
-  const { isAuthenticated } = await auth();
-  if (!isAuthenticated) return NextResponse.json({ items: [], total: 0 }, { status: 401 });
+  const admin = await requireAdmin(req);
+  if (!admin.authorized) return admin.response;
 
   const u = new URL(req.url);
   const formatsParam = u.searchParams.getAll("format").filter((f) => f === "n8n" || f === "make") as ArchiveFormat[];

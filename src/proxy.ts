@@ -1,10 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { LIBRARY_MANIFEST } from "@/lib/library-manifest";
 
 const isPublicRoute = createRouteMatcher([
   // Marketing
   "/",
   "/about",
+  "/ai-implementation",
   "/mudiagent",
   "/mudiagent-vs-chatgpt",
   "/pe-ops",
@@ -20,6 +22,11 @@ const isPublicRoute = createRouteMatcher([
   "/revenue-leak-audit",
   "/appointment-setting",
   "/appointment-setting-pricing",
+  "/library",
+  "/skills",
+  "/skills/(.*)",
+  "/playbooks",
+  "/playbooks/(.*)",
   "/newsletter",
   "/newsletter/(.*)",
   "/tools",
@@ -62,6 +69,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/portal/covers/(.*)",
   "/api/portal/newsletter-covers/(.*)",
   "/api/portal/billing",
+  "/api/portal/skills/(.*)/download",
+  "/api/library/(.*)",
   "/api/indexnow",
 ]);
 
@@ -92,11 +101,53 @@ function legacyPlaybookRedirect(req: Request) {
 
   const fileSlug = decodeURIComponent(match[1]).trim().toLowerCase();
   const resourceSlug = LEGACY_PLAYBOOK_FILE_SLUGS[fileSlug] ?? fileSlug;
-  const destination = new URL(`/r/${encodeURIComponent(resourceSlug)}`, req.url);
+  const destination = new URL(`/playbooks/${encodeURIComponent(resourceSlug)}`, req.url);
   return NextResponse.redirect(destination);
 }
 
+const REMOVED_TOOL_SLUGS = new Set([
+  "revenue-leak-calculator",
+  "google-maps-lead-finder",
+  "google-maps-company-finder",
+  "linkedin-serper-lead-finder",
+  "apollo-lead-finder",
+  "website-url-scraper",
+  "website-text-contact-extractor",
+  "serp-news-search",
+  "serp-autocomplete-suggestions",
+  "serp-flight-search",
+  "serp-hotel-search",
+  "tavily-web-research",
+  "open-meteo-forecast",
+]);
+
 export default clerkMiddleware(async (auth, req) => {
+  if (req.nextUrl.pathname.startsWith("/api/portal/tools/")) {
+    return NextResponse.json(
+      { error: "Public provider-backed tools are disabled." },
+      { status: 410 },
+    );
+  }
+
+  const removedTool = req.nextUrl.pathname.match(/^\/tools\/([^/]+)\/?$/);
+  if (removedTool && REMOVED_TOOL_SLUGS.has(decodeURIComponent(removedTool[1]))) {
+    return new NextResponse(null, { status: 410 });
+  }
+
+  const legacyResource = req.nextUrl.pathname.match(/^\/(?:r|resources)\/([^/]+)\/?$/);
+  if (legacyResource) {
+    const slug = decodeURIComponent(legacyResource[1]);
+    const item = LIBRARY_MANIFEST.find((candidate) => candidate.slug === slug);
+    if (!item || item.status === "archived" || item.status === "removed") {
+      return new NextResponse(null, { status: 410 });
+    }
+    const target = item.status === "redirected"
+      ? item.redirectTarget
+      : `/${item.kind}s/${encodeURIComponent(item.slug)}`;
+    if (!target) return new NextResponse(null, { status: 410 });
+    return NextResponse.redirect(new URL(target, req.url), 308);
+  }
+
   const redirectToUnlock = legacyPlaybookRedirect(req);
   if (redirectToUnlock) return redirectToUnlock;
 

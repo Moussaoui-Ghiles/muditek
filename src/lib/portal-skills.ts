@@ -1,11 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join, relative } from "path";
 import type { ContentItem } from "@/lib/content-item";
-
-// Portal skills come ONLY from content/skills — the shipped, customer-facing set.
-// (Previously this also pulled .claude/.agents/.codex skill dirs in dev, which
-// leaked internal tooling skills like manim/codex-loop into the local portal.)
-const SKILL_DIRS = [join(process.cwd(), "content/skills")];
+import { getLibraryItem, getPublishedLibraryItems } from "./library-manifest";
 
 export interface PortalSkillFile {
   slug: string;
@@ -134,8 +130,7 @@ function resolveSkillFreeFlag(meta: Record<string, string>): boolean {
   return true;
 }
 
-function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null {
-  const dir = join(baseDir, slug);
+function readSkillFromDir(dir: string, slug: string): PortalSkillFile | null {
   const file = join(dir, "SKILL.md");
   if (!existsSync(file)) return null;
 
@@ -156,38 +151,30 @@ function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null
 }
 
 function readSkill(slug: string): PortalSkillFile | null {
-  for (const baseDir of SKILL_DIRS) {
-    const skill = readSkillFromDir(baseDir, slug);
-    if (skill) return skill;
-  }
-  return null;
+  const item = getLibraryItem("skill", slug);
+  if (!item || item.status !== "published") return null;
+
+  const skill = readSkillFromDir(join(process.cwd(), item.source), slug);
+  if (!skill) return null;
+
+  return {
+    ...skill,
+    name: item.title,
+    description: item.summary,
+    is_free: item.access === "public",
+    updatedAt: new Date(`${item.updatedAt}T00:00:00.000Z`).toISOString(),
+  };
 }
 
 export function listPortalSkills(): ContentItem[] {
-  return listPortalSkillsFromDirs(SKILL_DIRS);
+  return listShippedPortalSkills();
 }
 
 export function listShippedPortalSkills(): ContentItem[] {
-  return listPortalSkillsFromDirs([join(process.cwd(), "content/skills")]);
-}
-
-function listPortalSkillsFromDirs(skillDirs: string[]): ContentItem[] {
-  const bySlug = new Map<string, PortalSkillFile>();
-
-  for (const baseDir of skillDirs) {
-    if (!existsSync(baseDir)) continue;
-    try {
-      for (const entry of readdirSync(baseDir, { withFileTypes: true })) {
-        if (!entry.isDirectory() || bySlug.has(entry.name)) continue;
-        const skill = readSkillFromDir(baseDir, entry.name);
-        if (skill) bySlug.set(skill.slug, skill);
-      }
-    } catch {
-      continue;
-    }
-  }
-
-  return Array.from(bySlug.values()).map(portalSkillToContentItem);
+  return getPublishedLibraryItems("skill")
+    .map((item) => readSkill(item.slug))
+    .filter((skill): skill is PortalSkillFile => Boolean(skill))
+    .map(portalSkillToContentItem);
 }
 
 export function mergePortalSkills(dbSkills: ContentItem[]): ContentItem[] {
@@ -207,9 +194,22 @@ export function getPortalSkill(slug: string): PortalSkillFile | null {
   return readSkill(slug);
 }
 
+const EXCLUDED_BUNDLE_NAMES = new Set([
+  ".DS_Store",
+  ".env",
+  ".git",
+  "__pycache__",
+  "node_modules",
+]);
+
+function isExcludedBundleEntry(name: string): boolean {
+  return EXCLUDED_BUNDLE_NAMES.has(name) || name.endsWith(".pyc") || name.startsWith(".env.");
+}
+
 function listFilesRecursive(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (isExcludedBundleEntry(entry.name)) continue;
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...listFilesRecursive(path));

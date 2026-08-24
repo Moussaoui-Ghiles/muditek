@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Archivo, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/next";
@@ -10,11 +10,11 @@ import { NewsletterConsentCompletion } from "@/components/newsletter-consent-com
 import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
-const inter = Inter({
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-archivo",
   display: "swap",
-  weight: ["400", "500", "600", "900"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const geist = Geist({
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://muditek.com"),
   title: "Muditek | Appointment Setting and AI Implementation",
   description:
-    "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
+    "Signal-based B2B appointment setting with payment tied to qualified meetings held, plus AI implementation for repeated business workflows.",
   alternates: { canonical: "https://muditek.com" },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Muditek | Appointment Setting and AI Implementation",
     description:
-      "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
+      "Signal-based B2B appointment setting and AI implementation for repeated business workflows.",
     url: "https://muditek.com",
     type: "website",
   },
@@ -101,9 +101,9 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`scroll-smooth ${inter.variable} ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+        className={`${archivo.variable} ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
       >
-        <body className="font-sans noise">
+        <body className="font-sans">
           <JsonLd
             data={[
               {
@@ -119,7 +119,7 @@ export default function RootLayout({
                   height: 512,
                 },
                 description:
-                  "Appointment-setting systems, a public operating library, and practical AI implementation.",
+                  "Signal-based B2B appointment setting and AI implementation for repeated business workflows.",
                 founder: {
                   "@type": "Person",
                   "@id": "https://muditek.com/#ghiles",
@@ -144,7 +144,7 @@ export default function RootLayout({
                 url: "https://muditek.com",
                 name: "Muditek",
                 description:
-                  "Useful public systems, a focused appointment-setting offer, and deeper AI implementation.",
+                  "Signal-based B2B appointment setting and AI implementation for repeated business workflows.",
                 publisher: { "@id": "https://muditek.com/#organization" },
                 inLanguage: "en",
               },

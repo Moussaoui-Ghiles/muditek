@@ -9,115 +9,65 @@ import { Navbar } from "@/components/navbar";
 import { APPOINTMENT_SETTING_PROVIDERS } from "@/lib/appointment-setting-providers";
 
 export const metadata: Metadata = {
-  title: "Appointment Setting Pricing Index | 30 Providers Compared",
-  description: "Compare public appointment-setting prices by billing unit, fixed fee, contract term, channel, and qualification definition across 30 official provider sources.",
+  title: "Appointment Setting Pricing Index | 30 Providers",
+  description: "Compare sourced appointment-setting pricing, billing units, no-show terms, contracts, channels, and qualification definitions across 30 providers.",
   alternates: { canonical: "https://muditek.com/appointment-setting-pricing" },
-  openGraph: {
-    title: "Appointment Setting Pricing Index",
-    description: "A source-linked, alphabetic comparison of 30 appointment-setting providers.",
-    url: "https://muditek.com/appointment-setting-pricing",
-    type: "website",
-  },
 };
 
 export default function AppointmentSettingPricingPage() {
-  const publicPriceCount = APPOINTMENT_SETTING_PROVIDERS.filter((provider) => provider.hasPublicPrice).length;
-
   return (
-    <div className="min-h-[100dvh] bg-background text-foreground selection:bg-primary/25">
+    <div className="min-h-[100dvh] bg-background text-foreground">
       <AcquisitionPageView asset="appointment-setting-pricing" />
-      <JsonLd data={[
-        {
-          "@context": "https://schema.org",
-          "@type": "Dataset",
-          name: "Appointment Setting Pricing Index",
-          description: "Provider-specific public pricing, pricing models, contract terms, outreach channels, qualification definitions, source links, and last-checked dates for 30 appointment-setting providers.",
-          url: "https://muditek.com/appointment-setting-pricing",
-          creator: { "@id": "https://muditek.com/#organization" },
-          dateModified: "2026-08-23",
-          isAccessibleForFree: true,
-          distribution: { "@type": "DataDownload", encodingFormat: "text/html", contentUrl: "https://muditek.com/appointment-setting-pricing" },
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://muditek.com" },
-            { "@type": "ListItem", position: 2, name: "Appointment Setting Pricing", item: "https://muditek.com/appointment-setting-pricing" },
-          ],
-        },
-      ]} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        name: "Appointment Setting Pricing Index",
+        description: "Provider-specific public pricing, billing units, no-show terms, contract terms, outreach channels, qualification definitions, source links, and last-checked dates for 30 appointment-setting providers.",
+        url: "https://muditek.com/appointment-setting-pricing",
+        creator: { "@id": "https://muditek.com/#organization" },
+        dateModified: "2026-08-24",
+        isAccessibleForFree: true,
+      }} />
       <Navbar />
 
       <main id="main-content">
-        <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
-          <div className="hero-aurora absolute inset-0 opacity-45" />
-          <div className="relative z-10 mx-auto max-w-[1450px]">
-            <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Public provider data</p>
-            <h1 className="mt-6 max-w-6xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">Compare appointment-setting prices without comparing the wrong thing.</h1>
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">A low price means little until you know whether the provider bills a booking, a held meeting, or a qualified meeting held.</p>
-            <div className="mt-10 grid max-w-3xl grid-cols-3 gap-px border border-white/[0.08] bg-white/[0.08]">
-              {[
-                [String(APPOINTMENT_SETTING_PROVIDERS.length), "Providers checked"],
-                [String(publicPriceCount), "Publish a price"],
-                ["2026-08-23", "Last checked"],
-              ].map(([value, label]) => (
-                <div key={label} className="bg-background/85 p-4 sm:p-6">
-                  <p className="font-mono text-lg font-black text-primary sm:text-2xl">{value}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/45 sm:text-sm">{label}</p>
-                </div>
-              ))}
+        <section className="border-b border-white/8 px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
+          <div className="mx-auto max-w-[1450px]">
+            <p className="text-base font-semibold text-primary">Public pricing index</p>
+            <h1 className="mt-5 max-w-[1100px] text-balance text-[clamp(3rem,7vw,6rem)] font-black leading-[0.94] tracking-[-0.035em]">Compare the billing rule before the price.</h1>
+            <p className="mt-8 max-w-[800px] text-pretty text-lg leading-8 text-foreground/72 md:text-xl md:leading-9">A booking, a held meeting, and a qualified meeting held are different products. This index keeps the public price next to the unit, no-show rule, contract, channels, qualification language, source, and check date.</p>
+          </div>
+        </section>
+
+        <section className="border-b border-white/8 bg-[#071017] px-6 py-16 md:px-12 md:py-20">
+          <div className="mx-auto grid max-w-[1450px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
+            <div>
+              <h2 className="max-w-[15ch] text-balance text-3xl font-black leading-tight tracking-[-0.025em] md:text-5xl">What the index does and does not claim.</h2>
+            </div>
+            <div className="border-t border-white/16">
+              <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">Only provider-specific statements from the linked official source are recorded. Generic industry ranges are excluded.</p>
+              <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">&quot;Not publicly stated&quot; means the fact was not found on the checked source. It does not claim the term is absent from a private proposal.</p>
+              <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">Providers are alphabetical. This is not a ranking or an endorsement.</p>
+              <p className="py-5 text-sm leading-6 text-foreground/58">Muditek publishes this index. Its standard operating cost is €500–€900 monthly, paid upfront and non-refundable. The delivery fee is €250–€350 per qualified meeting held. No-shows do not bill as meetings.</p>
             </div>
           </div>
         </section>
 
-        <section className="border-b border-white/[0.06] bg-card/[0.18] px-6 py-10 md:px-12 md:py-12">
-          <div className="mx-auto grid max-w-[1450px] gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="border border-white/[0.08] bg-background p-6 md:p-8">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Compare the billing unit first</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Ask what must happen before the invoice is valid.</h2>
-              <p className="mt-4 max-w-3xl leading-relaxed text-foreground/58">Check the no-show rule, fixed fee, contract term, included channels, qualification definition, and dispute process. Then compare price.</p>
-              <Link href="/tools/appointment-setting-quote-calculator" className="mt-7 inline-flex min-h-12 items-center gap-2 border border-primary/35 px-6 text-xs font-black uppercase tracking-[0.16em] text-primary hover:bg-primary/10">
-                Model a provider quote <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="border border-primary/25 bg-primary/[0.05] p-6 md:p-8">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Publisher disclosure</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Muditek publishes this index.</h2>
-              <p className="mt-4 leading-relaxed text-foreground/58">Our standard model is €500–900 per month for infrastructure and €250–350 per qualified meeting held. No-shows are not billed as meetings. Muditek is shown separately and is not ranked.</p>
-              <Link href="/appointment-setting" className="mt-7 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
-                See Muditek&apos;s full model <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-white/[0.06] px-6 py-8 md:px-12">
-          <div className="mx-auto grid max-w-[1450px] gap-6 text-sm leading-relaxed text-foreground/55 md:grid-cols-3">
-            <p><strong className="text-foreground/80">Provider-specific facts only.</strong> Generic industry ranges published in provider blogs are not treated as that provider&apos;s price.</p>
-            <p><strong className="text-foreground/80">Not publicly stated.</strong> The fact was not found on the checked official source. This does not prove it is absent from every page or private proposal.</p>
-            <p><strong className="text-foreground/80">No ranking.</strong> Alphabetical order prevents an unsupported “best agency” claim. Buyers still need to validate delivery and contract terms.</p>
-          </div>
-        </section>
-
-        <section className="px-4 py-10 sm:px-6 md:px-12 md:py-16">
-          <div className="mx-auto max-w-[1600px]">
+        <section className="px-4 py-12 sm:px-6 md:px-12 md:py-20">
+          <div className="mx-auto max-w-[1700px]">
             <AppointmentSettingPricingIndex providers={APPOINTMENT_SETTING_PROVIDERS} />
           </div>
         </section>
 
-        <section className="border-t border-white/[0.06] bg-card/[0.18] px-6 py-20 md:px-12">
-          <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-2">
-            <Link href="/tools/appointment-setting-quote-calculator" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
-              <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Run your quote</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Convert the vendor fee into cost per qualified meeting and break-even math.</h2>
-              <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">Open calculator <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
-            </Link>
-            <Link href="/appointment-setting" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
-              <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Muditek model</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">See the risk split, qualification rules, signals, and held-meeting pricing.</h2>
-              <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">View the service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
-            </Link>
+        <section className="border-t border-white/8 bg-[#081721] px-6 py-20 md:px-12 md:py-24">
+          <div className="mx-auto grid max-w-[1320px] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
+            <h2 className="max-w-[13ch] text-balance text-3xl font-black leading-tight tracking-[-0.025em] md:text-5xl">Turn a public price into your unit economics.</h2>
+            <div>
+              <p className="max-w-[700px] leading-7 text-foreground/68">Use the setup cost, monthly fee, billing unit, show rate, qualification rate, close rate, deal value, and margin from your own deal.</p>
+              <Link href="/tools/appointment-setting-quote-calculator" className="mt-7 inline-flex min-h-12 items-center gap-3 border-b border-primary text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary">
+                Run the quote calculator <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         </section>
       </main>

@@ -15,6 +15,11 @@ export type FunnelEventName =
   | "skill_downloaded"
   | "newsletter_opted_in"
   | "commercial_offer_viewed"
+  | "organic_landing_viewed"
+  | "provider_compared"
+  | "source_link_clicked"
+  | "template_downloaded"
+  | "tool_started"
   | "booking_clicked";
 
 export type FunnelLane = "outbound" | "ai-implementation";
@@ -100,13 +105,26 @@ export function trackFunnelEvent(
     asset,
     lane,
     placement,
-  }: { asset: string; lane: FunnelLane; placement: string },
+    pageFamily,
+    queryCluster,
+    releaseWave,
+  }: {
+    asset: string;
+    lane: FunnelLane;
+    placement: string;
+    pageFamily?: string;
+    queryCluster?: string;
+    releaseWave?: number;
+  },
 ) {
   const attribution = readAttribution();
   trackEvent(event, {
     asset_slug: asset,
     lane,
     placement,
+    page_family: safeText(pageFamily),
+    query_cluster: safeText(queryCluster),
+    release_wave: typeof releaseWave === "number" ? releaseWave : undefined,
     path: typeof window === "undefined" ? "" : window.location.pathname,
     ...attribution,
   });
@@ -117,15 +135,21 @@ export function AcquisitionPageView({
   lane = "outbound",
   event = "commercial_offer_viewed",
   placement = "page",
+  pageFamily,
+  queryCluster,
+  releaseWave,
 }: {
   asset: string;
   lane?: FunnelLane;
-  event?: Extract<FunnelEventName, "library_item_viewed" | "commercial_offer_viewed">;
+  event?: Extract<FunnelEventName, "library_item_viewed" | "commercial_offer_viewed" | "organic_landing_viewed">;
   placement?: string;
+  pageFamily?: string;
+  queryCluster?: string;
+  releaseWave?: number;
 }) {
   useEffect(() => {
-    trackFunnelEvent(event, { asset, lane, placement });
-  }, [asset, event, lane, placement]);
+    trackFunnelEvent(event, { asset, lane, placement, pageFamily, queryCluster, releaseWave });
+  }, [asset, event, lane, pageFamily, placement, queryCluster, releaseWave]);
 
   return null;
 }
@@ -154,12 +178,16 @@ export function TrackedBookingLink({
   placement,
   className,
   children,
+  tabIndex,
+  onClick,
 }: {
   asset: string;
   lane?: FunnelLane;
   placement: string;
   className?: string;
   children: ReactNode;
+  tabIndex?: number;
+  onClick?: () => void;
 }) {
   return (
     <a
@@ -167,8 +195,10 @@ export function TrackedBookingLink({
       target="_blank"
       rel="noopener noreferrer"
       className={className}
+      tabIndex={tabIndex}
       onClick={() => {
         trackFunnelEvent("booking_clicked", { asset, lane, placement });
+        onClick?.();
       }}
     >
       {children}
@@ -240,6 +270,62 @@ export function trackToolCompletion(
   placement = "tool-result",
 ) {
   trackFunnelEvent("tool_completed", { asset, lane, placement });
+}
+
+export function trackToolStart(asset: string, placement = "tool-form") {
+  trackFunnelEvent("tool_started", { asset, lane: "outbound", placement });
+}
+
+export function TrackedSourceLink({
+  href,
+  asset,
+  placement,
+  className,
+  children,
+}: {
+  href: string;
+  asset: string;
+  placement: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  const external = href.startsWith("http://") || href.startsWith("https://");
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      className={className}
+      onClick={() => trackFunnelEvent("source_link_clicked", { asset, lane: "outbound", placement })}
+    >
+      {children}
+    </a>
+  );
+}
+
+export function TrackedTemplateDownload({
+  href,
+  asset,
+  placement = "template-download",
+  className,
+  children,
+}: {
+  href: string;
+  asset: string;
+  placement?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      download
+      className={className}
+      onClick={() => trackFunnelEvent("template_downloaded", { asset, lane: "outbound", placement })}
+    >
+      {children}
+    </a>
+  );
 }
 
 export function trackCalculatorCompletion(currency: string) {

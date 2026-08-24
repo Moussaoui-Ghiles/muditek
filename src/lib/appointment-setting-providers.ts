@@ -3,6 +3,8 @@ export type AppointmentSettingProvider = {
   price: string;
   hasPublicPrice: boolean;
   model: string;
+  billingUnit?: string;
+  noShowPolicy?: string;
   contractTerm: string;
   channels: string[];
   qualification: string;
@@ -11,19 +13,20 @@ export type AppointmentSettingProvider = {
   lastChecked: string;
 };
 
-const LAST_CHECKED = "2026-08-23";
+const LAST_CHECKED = "2026-08-24";
 
 export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
   {
     name: "Abstrakt Marketing Group",
-    price: "Starter $5,250; Standard $7,250; Advanced $9,250. The checked page does not state the billing period.",
+    price: "Starter $5,250/month; Standard $7,250/month; Advanced $9,250/month.",
     hasPublicPrice: true,
     model: "Tiered package",
+    billingUnit: "Month",
     contractTerm: "Not publicly stated",
     channels: ["Phone", "Email", "LinkedIn", "Direct mail"],
     qualification: "Company fit, decision authority, current vendor, contract timing, readiness, and clear agreement to meet.",
-    sourceUrl: "https://www.abstraktmg.com/b2b-appointment-setting/",
-    sourceLabel: "Appointment setting service page",
+    sourceUrl: "https://www.abstraktmg.com/outbound-pricing-packages/",
+    sourceLabel: "Official pricing page",
     lastChecked: LAST_CHECKED,
   },
   {
@@ -32,7 +35,7 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     hasPublicPrice: true,
     model: "Custom package",
     contractTerm: "Not publicly stated",
-    channels: ["Three channels; names not stated on checked page"],
+    channels: ["Email", "LinkedIn", "Cold calling"],
     qualification: "Manual lead validation against the buyer's qualification criteria, plus appointment booking and no-show recovery.",
     sourceUrl: "https://belkins.io/appointment-setting",
     sourceLabel: "Appointment setting service page",
@@ -151,18 +154,19 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     price: "$3,500 per month for cold-call-only; $4,000-$5,000 per month for multichannel.",
     hasPublicPrice: true,
     model: "Flat monthly retainer",
-    contractTerm: "Month-to-month",
+    contractTerm: "Not publicly stated on the checked source",
     channels: ["Phone", "Email", "LinkedIn"],
-    qualification: "The pricing page says a prospect is qualified when they agree to connect on a sales call.",
-    sourceUrl: "https://www.leadium.com/pricing",
-    sourceLabel: "Official pricing page",
+    qualification: "The checked source does not publish a complete meeting acceptance rule.",
+    sourceUrl: "https://www.leadium.com/blog/sales-outsourcing",
+    sourceLabel: "Official sales outsourcing guide",
     lastChecked: LAST_CHECKED,
   },
   {
     name: "Leadriver",
-    price: "$300-$600 per qualified meeting at steady state, depending on target seniority and industry complexity.",
+    price: "Most clients reach a $300-$600 steady-state cost per qualified meeting. The checked source does not state that this is the billing unit.",
     hasPublicPrice: true,
     model: "Custom managed multichannel program",
+    billingUnit: "Not publicly stated on the checked source",
     contractTerm: "Not publicly stated",
     channels: ["Email", "LinkedIn", "Phone"],
     qualification: "Research-first targeting with strict criteria; the complete acceptance rules are set per client and not published.",
@@ -211,7 +215,8 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     price: "OS [25] $6,200/month; OS [50] $10,200/month; OS [100] custom plus $300 per qualified meeting.",
     hasPublicPrice: true,
     model: "Monthly coverage tier; performance fee on OS [100]",
-    contractTerm: "Month-to-month; 60-day delivery cycles",
+    billingUnit: "Month and qualified meeting",
+    contractTerm: "60-day delivery cycles; the minimum commitment is not stated in the checked rendered source.",
     channels: ["Email", "LinkedIn", "Warm phone follow-up"],
     qualification: "Campaigns use buyer-approved leads. The public page does not publish the complete qualified-meeting definition.",
     sourceUrl: "https://oneaway.io/services/done-for-you",
@@ -255,15 +260,16 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     lastChecked: LAST_CHECKED,
   },
   {
-    name: "RevBoss",
-    price: "$3,500 per month for Core; $4,500+ per month for Full Stack.",
+    name: "Upcall",
+    price: "$3.50-$5.00 per lead for SMB and $3.50-$7.50 per lead for Standard. The checked page states a 1,000-lead minimum.",
     hasPublicPrice: true,
-    model: "Monthly per-seat program",
-    contractTerm: "Month-to-month; discounts for 6 or 12 months",
-    channels: ["LinkedIn", "Email", "Content", "Events"],
-    qualification: "Measures leads and conversations rather than a published billable-meeting definition.",
-    sourceUrl: "https://revboss.com/blog/80-20-sales-rule",
-    sourceLabel: "Official service and pricing page",
+    model: "Per-project, volume-based calling program",
+    billingUnit: "Lead supplied to the calling project",
+    contractTerm: "No long-term commitment stated on the checked page",
+    channels: ["Phone"],
+    qualification: "Appointment setting is included. The checked page does not publish a complete qualified-meeting acceptance rule.",
+    sourceUrl: "https://www.upcall.com/pricing",
+    sourceLabel: "Official pricing page",
     lastChecked: LAST_CHECKED,
   },
   {
@@ -280,10 +286,11 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
   },
   {
     name: "SalesBread",
-    price: "$3,000 per month plus a one-time setup fee; setup amount not published.",
-    hasPublicPrice: true,
+    price: "Not publicly stated on the checked source.",
+    hasPublicPrice: false,
     model: "Monthly done-for-you service",
-    contractTerm: "No locked contract",
+    billingUnit: "Not publicly stated on the checked source",
+    contractTerm: "Not publicly stated on the checked source",
     channels: ["LinkedIn", "Email"],
     qualification: "Public fit gate: active LinkedIn prospects, more than 200 target companies, and a four-figure product or service.",
     sourceUrl: "https://salesbread.com/done-for-you-lead-generation/",
@@ -310,6 +317,7 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     contractTerm: "No long-term contracts",
     channels: ["Phone", "Email", "Follow-up cadences"],
     qualification: "Only qualified prospects reach the calendar. The checked service page does not publish the complete rules.",
+    noShowPolicy: "The checked page states that no-shows receive immediate automatic outreach to rebook.",
     sourceUrl: "https://saleshive.com/appointment-setting",
     sourceLabel: "Appointment setting service page",
     lastChecked: LAST_CHECKED,
@@ -375,4 +383,3 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     lastChecked: LAST_CHECKED,
   },
 ].sort((a, b) => a.name.localeCompare(b.name));
-

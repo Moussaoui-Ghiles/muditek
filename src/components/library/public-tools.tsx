@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { trackToolCompletion } from "@/components/acquisition-tracking";
+import { trackToolCompletion, trackToolStart } from "@/components/acquisition-tracking";
 import { calculateOutboundFunnel, type OutboundFunnelInputs, type OutboundFunnelResult } from "@/lib/outbound-funnel-calculator";
 import { auditCsvList, type CsvListQualityAudit } from "@/lib/csv-list-quality";
 import { buildOutboundBrief, type OutboundBriefExport, type OutboundBriefInputs } from "@/lib/outbound-brief";
@@ -70,6 +70,7 @@ export function OutboundFunnelCalculator() {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackToolStart("outbound-funnel-economics-calculator");
     const inputs = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, Number(value)])) as unknown as OutboundFunnelInputs;
     const next = calculateOutboundFunnel(inputs);
     if (!next) {
@@ -140,6 +141,7 @@ export function CsvListQualityAuditor() {
     setError("");
     setFileName(file?.name ?? "");
     if (!file) return;
+    trackToolStart("csv-list-quality-auditor", "file-selected");
     if (file.size > 10 * 1024 * 1024) {
       setError("Use a CSV smaller than 10 MB so the browser can review it safely.");
       return;
@@ -229,6 +231,7 @@ export function OutboundBriefBuilder() {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackToolStart("outbound-brief-builder");
     const next = buildOutboundBrief(values);
     if (!next) {
       setError("Decision, offer, and company fit are required.");

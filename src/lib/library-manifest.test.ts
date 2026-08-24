@@ -41,6 +41,7 @@ const APPROVED_PLAYBOOKS = [
   "loop-design-playbook",
   "mudiagent-operator-guide",
   "outbound-failure-diagnostic",
+  "reddit-client-acquisition-hermes",
   "slack-outbound-agent-playbook",
 ];
 

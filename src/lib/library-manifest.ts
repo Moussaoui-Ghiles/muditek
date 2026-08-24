@@ -22,6 +22,17 @@ export interface LibraryItem {
 const OUTBOUND_TARGET = "/appointment-setting" as const;
 const AI_TARGET = "/ai-implementation" as const;
 
+export function formatLibraryDate(value: string): string {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export const LIBRARY_MANIFEST: readonly LibraryItem[] = [
   {
     slug: "cold-offer-review",
@@ -230,6 +241,21 @@ export const LIBRARY_MANIFEST: readonly LibraryItem[] = [
     updatedAt: "2026-08-23",
     source: "content/playbooks/outbound-failure-diagnostic.md",
     relatedAssets: ["/skills/cold-offer-review", "/skills/buyer-signal-list-research", "/skills/outbound-funnel-economics", "/tools/outbound-funnel-economics-calculator"],
+    commercialTarget: OUTBOUND_TARGET,
+    redirectTarget: null,
+  },
+  {
+    slug: "reddit-client-acquisition-hermes",
+    title: "13 Steps to Turn Reddit Into a Client Acquisition Channel With One Hermes Agent",
+    summary: "Run one Hermes agent on Reddit's public RSS feeds: profile each community, match live problem threads to your offer, and queue replies you post yourself.",
+    kind: "playbook",
+    lane: "outbound",
+    topic: "demand-capture",
+    access: "public",
+    status: "published",
+    updatedAt: "2026-08-24",
+    source: "content/playbooks/reddit-client-acquisition-hermes.md",
+    relatedAssets: ["/playbooks/hermes-outbound-gtm-agent", "/playbooks/slack-outbound-agent-playbook", "/skills/buyer-signal-list-research"],
     commercialTarget: OUTBOUND_TARGET,
     redirectTarget: null,
   },

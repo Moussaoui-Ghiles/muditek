@@ -17,6 +17,7 @@ export function ogImage(args: {
   eyebrow?: string;
   subtitle?: string;
   accent?: Accent;
+  titleFontSize?: number;
 }): ImageResponse {
   const accent = ACCENTS[args.accent ?? "neutral"];
   return new ImageResponse(
@@ -91,7 +92,7 @@ export function ogImage(args: {
           />
           <div
             style={{
-              fontSize: 76,
+              fontSize: args.titleFontSize ?? 76,
               fontWeight: 900,
               lineHeight: 1.05,
               letterSpacing: -2,

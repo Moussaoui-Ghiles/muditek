@@ -24,7 +24,7 @@ export const APPOINTMENT_SETTING_PROVIDERS: AppointmentSettingProvider[] = [
     billingUnit: "Month",
     contractTerm: "Not publicly stated",
     channels: ["Phone", "Email", "LinkedIn", "Direct mail"],
-    qualification: "Company fit, decision authority, current vendor, contract timing, readiness, and clear agreement to meet.",
+    qualification: "The checked pricing page states qualified appointments but does not publish the complete acceptance rules.",
     sourceUrl: "https://www.abstraktmg.com/outbound-pricing-packages/",
     sourceLabel: "Official pricing page",
     lastChecked: LAST_CHECKED,

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Qualified sales meetings. No agency retainer.",
     description:
-      "Done-for-you targeting, outreach, reply handling, and qualification with payment tied to qualified meetings held.",
+      "You pay the operating stack upfront. The delivery fee is invoiced Net 7 for each qualified meeting held.",
     url: "https://muditek.com",
     type: "website",
   },
@@ -103,7 +103,7 @@ export default function HomePage() {
               </div>
               <div className="border-b border-white/20 px-4 py-4 sm:border-b-0 sm:border-r">
                 <dt className="text-xs font-bold text-white/62">General B2B, after delivery</dt>
-                <dd className="mt-1 text-sm font-bold text-white">€250–€350 per qualified meeting held</dd>
+                <dd className="mt-1 text-sm font-bold text-white">€250–€350 per qualified meeting held, invoiced Net 7</dd>
               </div>
               <div className="px-4 py-4">
                 <dt className="text-xs font-bold text-white/62">Billable meeting</dt>
@@ -131,7 +131,7 @@ export default function HomePage() {
               </div>
               <div className="grid gap-3 border-b border-white/18 py-7 sm:grid-cols-[190px_1fr]">
                 <dt className="text-lg font-bold text-white">€250–€350 each</dt>
-                <dd className="text-base leading-7 text-foreground/68">Charged after a qualified meeting is held. A no-show does not bill.</dd>
+                <dd className="text-base leading-7 text-foreground/68">Invoiced Net 7 after a qualified meeting is held. A no-show does not bill.</dd>
               </div>
               <div className="grid gap-3 border-b border-white/18 py-7 sm:grid-cols-[190px_1fr]">
                 <dt className="text-lg font-bold text-white">Written before launch</dt>

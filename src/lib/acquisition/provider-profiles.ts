@@ -1,4 +1,5 @@
 import { APPOINTMENT_SETTING_PROVIDERS } from "../appointment-setting-providers";
+import { isAcquisitionPreviewEnvironment } from "./publication";
 
 export type ProviderProfileStatus = "draft" | "review" | "published" | "retired";
 
@@ -54,7 +55,7 @@ export const PROVIDER_PROFILES: ProviderProfileDefinition[] = REVIEWED_PROVIDERS
 );
 
 export function isAcquisitionPreview() {
-  return process.env.VERCEL_ENV !== "production";
+  return isAcquisitionPreviewEnvironment();
 }
 
 export function getVisibleProviderProfiles() {

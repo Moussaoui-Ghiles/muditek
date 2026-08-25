@@ -3,7 +3,7 @@ import { AppointmentSettingIndustryPage } from "@/components/appointment-setting
 
 export const metadata: Metadata = {
   title: "Freight Broker Appointment Setting | Muditek",
-  description: "Shipper meetings matched to your modes, lanes, and geography. €500–€900 monthly operating cost plus €250–€350 per qualified meeting held.",
+  description: "Shipper meetings matched to your modes, lanes, and geography. €500–€900 monthly upfront plus €250–€350 per qualified meeting held, invoiced Net 7.",
   alternates: { canonical: "https://muditek.com/appointment-setting/freight" },
 };
 
@@ -30,7 +30,7 @@ export default function FreightAppointmentSettingPage() {
         "Existing accounts, active opportunities, vendors, and recent duplicates are excluded.",
       ]}
       operatingCost="€500–€900 per month"
-      meetingFee="€250–€350 per qualified meeting held"
+      meetingFee="€250–€350 per qualified meeting held, invoiced Net 7"
       pricingNote="The operating cost is set after the lanes, shipper profile, data requirements, and sending infrastructure are defined."
     />
   );

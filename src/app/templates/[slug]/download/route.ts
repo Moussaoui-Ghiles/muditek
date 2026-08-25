@@ -1,5 +1,16 @@
 import { notFound } from "next/navigation";
-import { getRenderableAcquisitionPage, readAcquisitionMarkdown } from "@/lib/acquisition/content-registry";
+import {
+  getRenderableAcquisitionPage,
+  getRenderableAcquisitionPages,
+  readAcquisitionMarkdown,
+} from "../../../../lib/acquisition/content-registry";
+
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getRenderableAcquisitionPages(["template"]).map((page) => ({ slug: page.slug }));
+}
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

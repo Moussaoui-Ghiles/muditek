@@ -24,16 +24,16 @@ const BASE_GROUPS = [
       ["Skills", "/skills"],
       ["Playbooks", "/playbooks"],
       ["Tools", "/tools"],
+      ["Outbound Guides", "/outbound"],
+      ["Templates", "/templates"],
+      ["Provider Profiles", "/appointment-setting/providers"],
       ["Newsletter", "/newsletter"],
     ],
   },
 ] as const;
 
 export function Footer() {
-  const preview = process.env.VERCEL_ENV !== "production";
-  const groups = BASE_GROUPS.map((group) => group.title === "Use" && preview
-    ? { ...group, links: [...group.links, ["Outbound Guides", "/outbound"], ["Templates", "/templates"], ["Provider Profiles", "/appointment-setting/providers"]] as const }
-    : group);
+  const groups = BASE_GROUPS;
   return (
     <footer className="border-t border-white/[0.06] bg-background" role="contentinfo">
       <div className="mx-auto grid w-full max-w-[1500px] gap-14 px-6 py-16 md:grid-cols-[1fr_1.4fr] md:px-12 md:py-20">

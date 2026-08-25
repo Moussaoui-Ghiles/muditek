@@ -48,7 +48,7 @@ export default function AppointmentSettingPricingPage() {
               <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">Only provider-specific statements from the linked official source are recorded. Generic industry ranges are excluded.</p>
               <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">&quot;Not publicly stated&quot; means the fact was not found on the checked source. It does not claim the term is absent from a private proposal.</p>
               <p className="border-b border-white/16 py-5 leading-7 text-foreground/70">Providers are alphabetical. This is not a ranking or an endorsement.</p>
-              <p className="py-5 text-sm leading-6 text-foreground/58">Muditek publishes this index. Its standard operating cost is €500–€900 monthly, paid upfront and non-refundable. The delivery fee is €250–€350 per qualified meeting held. No-shows do not bill as meetings.</p>
+              <p className="py-5 text-sm leading-6 text-foreground/58">Muditek publishes this index. Its standard operating cost is €500–€900 monthly, paid upfront and non-refundable. The €250–€350 delivery fee is invoiced Net 7 per qualified meeting held. No-shows do not bill as meetings.</p>
             </div>
           </div>
         </section>

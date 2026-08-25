@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { isAcquisitionPreviewEnvironment } from "./publication";
 
 export type AcquisitionFamily =
   | "commercial-decision"
@@ -261,7 +262,7 @@ function assertRegistry(pages: readonly AcquisitionPageDefinition[]): void {
 assertRegistry(ACQUISITION_PAGES);
 
 export function isAcquisitionPreview(): boolean {
-  return process.env.VERCEL_ENV !== "production";
+  return isAcquisitionPreviewEnvironment();
 }
 
 export function getAcquisitionPage(family: AcquisitionFamily, slug: string): AcquisitionPageDefinition | undefined {

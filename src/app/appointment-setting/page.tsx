@@ -9,11 +9,11 @@ import { Navbar } from "@/components/navbar";
 export const metadata: Metadata = {
   title: "B2B Appointment Setting | Pay Per Qualified Meeting Held | Muditek",
   description:
-    "Muditek runs the outbound system. You fund the tools and data, then pay the delivery fee only after a qualified prospect attends.",
+    "Muditek runs the outbound system. You pay the operating stack upfront, then the delivery fee Net 7 after a qualified prospect attends.",
   alternates: { canonical: "https://muditek.com/appointment-setting" },
   openGraph: {
     title: "B2B Appointment Setting | Muditek",
-    description: "A monthly operating cost and a delivery fee paid only after a qualified meeting is held.",
+    description: "Pay the operating stack upfront. The delivery fee is invoiced Net 7 after a qualified meeting is held.",
     url: "https://muditek.com/appointment-setting",
     type: "website",
   },
@@ -37,7 +37,7 @@ const PROCESS = [
   ["Agree the rules", "Define the market, exclusions, buyer roles, and the exact billable-meeting standard."],
   ["Build the operating stack", "Set up the domains, inboxes, data, enrichment, verification, sending, and reporting."],
   ["Prioritize and contact", "Use market-specific public signals to order the account list, then run approved outreach and follow-up."],
-  ["Screen, book, and bill", "Check replies against the written rules. The delivery fee applies only after a qualified meeting is held."],
+  ["Screen, book, and bill", "Check replies against the written rules. The delivery fee is invoiced Net 7 only after a qualified meeting is held."],
 ] as const;
 
 const MARKETS = [
@@ -105,7 +105,7 @@ export default function AppointmentSettingPage() {
               </div>
               <div className="border-b border-white/18 py-8">
                 <dt className="text-3xl font-black tracking-[-0.025em] text-white md:text-4xl">€250–€350 per qualified meeting held</dt>
-                <dd className="mt-3 max-w-[680px] text-base leading-7 text-foreground/68">Billed after the meeting happens and clears the written rule. No-show meetings do not bill.</dd>
+                <dd className="mt-3 max-w-[680px] text-base leading-7 text-foreground/68">Invoiced Net 7 after the meeting happens and clears the written rule. No-show meetings do not bill.</dd>
               </div>
               <div className="pt-8">
                 <Link href="/appointment-setting-pricing" className="inline-flex min-h-12 items-center gap-3 border-b border-primary text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary">

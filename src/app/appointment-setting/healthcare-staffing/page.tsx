@@ -3,7 +3,7 @@ import { AppointmentSettingIndustryPage } from "@/components/appointment-setting
 
 export const metadata: Metadata = {
   title: "Healthcare Staffing Appointment Setting | Muditek",
-  description: "Direct facility meetings for healthcare staffing agencies. €500–€900 monthly operating cost plus €250–€350 per qualified meeting held.",
+  description: "Direct facility meetings for healthcare staffing agencies. €500–€900 monthly upfront plus €250–€350 per qualified meeting held, invoiced Net 7.",
   alternates: { canonical: "https://muditek.com/appointment-setting/healthcare-staffing" },
 };
 
@@ -30,7 +30,7 @@ export default function HealthcareStaffingAppointmentSettingPage() {
         "Existing relationships, MSP-only accounts, vendors, and recent duplicates are excluded.",
       ]}
       operatingCost="€500–€900 per month"
-      meetingFee="€250–€350 per qualified meeting held"
+      meetingFee="€250–€350 per qualified meeting held, invoiced Net 7"
       pricingNote="The operating cost is set after the target geography, specialties, data requirements, and sending infrastructure are defined."
     />
   );

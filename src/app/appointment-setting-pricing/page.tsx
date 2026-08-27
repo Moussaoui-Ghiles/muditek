@@ -9,12 +9,12 @@ import { Navbar } from "@/components/navbar";
 import { APPOINTMENT_SETTING_PROVIDERS } from "@/lib/appointment-setting-providers";
 
 export const metadata: Metadata = {
-  title: "Appointment Setting Pricing Index | 30 Providers Compared",
-  description: "Compare public appointment-setting prices by billing unit, fixed fee, contract term, channel, and qualification definition across 30 official provider sources.",
+  title: "Appointment Setting Pricing Index | Compare 30 Providers",
+  description: "Shortlist and compare public appointment-setting prices, billing models, contract terms, channels, and qualification rules from 30 official provider sources.",
   alternates: { canonical: "https://muditek.com/appointment-setting-pricing" },
   openGraph: {
     title: "Appointment Setting Pricing Index",
-    description: "A source-linked, alphabetic comparison of 30 appointment-setting providers.",
+    description: "A source-linked comparison of 30 appointment-setting providers.",
     url: "https://muditek.com/appointment-setting-pricing",
     type: "website",
   },
@@ -54,9 +54,9 @@ export default function AppointmentSettingPricingPage() {
           <div className="hero-aurora absolute inset-0 opacity-45" />
           <div className="relative z-10 mx-auto max-w-[1450px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Public provider data</p>
-            <h1 className="mt-6 max-w-6xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">Compare the billing unit before you compare the price.</h1>
-            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">A low price means little until you know whether the provider bills a booking, a held meeting, or a qualified meeting held.</p>
-            <div className="mt-10 grid max-w-3xl grid-cols-3 gap-px border border-white/[0.08] bg-white/[0.08]">
+            <h1 className="mt-6 max-w-6xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">Know what the fee actually buys.</h1>
+            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">Use the checked price, billing model, contract, channels, and qualification rules to build a shortlist. Every provider links to the source we checked.</p>
+            <div className="mt-10 grid max-w-3xl grid-cols-1 gap-px border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
               {[
                 [String(APPOINTMENT_SETTING_PROVIDERS.length), "Providers checked"],
                 [String(publicPriceCount), "Publish a price"],
@@ -74,17 +74,17 @@ export default function AppointmentSettingPricingPage() {
         <section className="border-b border-white/[0.06] bg-card/[0.18] px-6 py-10 md:px-12 md:py-12">
           <div className="mx-auto grid max-w-[1450px] gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="border border-white/[0.08] bg-background p-6 md:p-8">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Compare the billing unit first</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Ask what must happen before the invoice is valid.</h2>
-              <p className="mt-4 max-w-3xl leading-relaxed text-foreground/58">Check the no-show rule, fixed fee, contract term, included channels, qualification definition, and dispute process. Then compare price.</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Before you compare</p>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Define what makes a meeting billable.</h2>
+              <p className="mt-4 max-w-3xl leading-relaxed text-foreground/70">Check the no-show rule, fixed fee, contract term, included channels, qualification definition, and dispute process. Then compare the fee.</p>
               <Link href="/tools/appointment-setting-quote-calculator" className="mt-7 inline-flex min-h-12 items-center gap-2 border border-primary/35 px-6 text-xs font-black uppercase tracking-[0.16em] text-primary hover:bg-primary/10">
                 Model a provider quote <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
             <div className="border border-primary/25 bg-primary/[0.05] p-6 md:p-8">
               <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary">Publisher disclosure</p>
-              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Muditek publishes this index.</h2>
-              <p className="mt-4 leading-relaxed text-foreground/58">Our standard model is €500–900 per month for infrastructure and €250–350 per qualified meeting held. No-shows are not billed as meetings. Muditek is shown separately and is not ranked.</p>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Muditek sells appointment setting.</h2>
+              <p className="mt-4 leading-relaxed text-foreground/70">We publish this index. Our standard model is €500–900 per month for infrastructure and €250–350 per qualified meeting held. No-shows are not billed as meetings. Muditek is not included in the provider directory.</p>
               <Link href="/appointment-setting" className="mt-7 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
                 See Muditek&apos;s full model <ArrowRight className="h-4 w-4" />
               </Link>
@@ -96,7 +96,7 @@ export default function AppointmentSettingPricingPage() {
           <div className="mx-auto grid max-w-[1450px] gap-6 text-sm leading-relaxed text-foreground/68 md:grid-cols-3">
             <p><strong className="text-foreground/80">Provider-specific facts only.</strong> Generic industry ranges published in provider blogs are not treated as that provider&apos;s price.</p>
             <p><strong className="text-foreground/80">Not publicly stated.</strong> The fact was not found on the checked official source. This does not prove it is absent from every page or private proposal.</p>
-            <p><strong className="text-foreground">No ranking.</strong> Alphabetical order prevents an unsupported &quot;best agency&quot; claim. Buyers still need to validate delivery and contract terms.</p>
+            <p><strong className="text-foreground">No score or winner.</strong> Sorting only reorders stated facts. Buyers still need to validate delivery and contract terms.</p>
           </div>
         </section>
 

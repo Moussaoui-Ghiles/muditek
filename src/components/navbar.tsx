@@ -24,6 +24,10 @@ export function Navbar() {
   const mobileNavigationRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useUser();
+  const isAiRoute = pathname === "/ai-implementation" || pathname.startsWith("/ai-implementation/");
+  const commercialAction = isAiRoute
+    ? { href: "/ai-implementation#build-review", label: "Discuss an AI build" }
+    : { href: "/appointment-setting#fit-review", label: "Check if you qualify" };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -94,10 +98,10 @@ export function Navbar() {
 
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="/appointment-setting#fit-review"
+              href={commercialAction.href}
               className="inline-flex min-h-11 items-center rounded-[2px] bg-primary px-5 text-[11px] font-black uppercase tracking-[0.16em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground motion-reduce:transform-none"
             >
-              Check if you qualify
+              {commercialAction.label}
             </Link>
             {isLoaded && isSignedIn ? (
               <div className="flex items-center gap-3">
@@ -146,8 +150,8 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-auto grid gap-3 sm:grid-cols-2">
-            <Link href="/appointment-setting#fit-review" tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
-              Check if you qualify
+            <Link href={commercialAction.href} tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
+              {commercialAction.label}
             </Link>
             <Link href={isSignedIn ? "/portal" : "/sign-in?redirect_url=/portal"} tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/15 px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
               {isSignedIn ? "Open workspace" : "Account"}

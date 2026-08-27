@@ -14,12 +14,12 @@ const NEWSLETTER_FAQ = [
     a: "Practical AI systems, outbound operations, and implementation breakdowns. Issues can include prompts, workflows, research methods, lead-generation systems, and controlled agent setups.",
   },
   {
-    q: "How often does it send?",
-    a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
+    q: "When is it sent?",
+    a: "When a complete issue is ready. There is no filler schedule.",
   },
   {
-    q: "Will issues move behind a paywall later?",
-    a: "No. The newsletter is the front door. Audits and custom builds live separately. Selected article-style issues stay readable in the archive.",
+    q: "Does a portal account subscribe me?",
+    a: "No. Newsletter consent is separate, optional, and unchecked when you create an account.",
   },
   {
     q: "Who reads it?",
@@ -28,12 +28,12 @@ const NEWSLETTER_FAQ = [
 ];
 
 export const metadata: Metadata = {
-  title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
+  title: "Muditek Newsletter | Outbound and AI Systems",
   description:
     "Read and subscribe to the Muditek newsletter for practical AI systems, outbound operations, and implementation breakdowns.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
-    title: "B2B Agents Newsletter | Muditek",
+    title: "Muditek Newsletter",
     description:
       "Practical AI systems, outbound operations, and implementation breakdowns.",
     url: "https://muditek.com/newsletter",
@@ -148,22 +148,22 @@ export default async function NewsletterPage() {
         <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-[900px] w-full px-6 md:px-12 relative z-10 text-center">
           <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-8 flex items-center justify-center gap-3">
+            <p className="mb-8 flex items-center justify-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-primary">
               <span className="w-8 h-[1px] bg-primary/50" />
-              B2B Agents Newsletter
+              Muditek Newsletter
               <span className="w-8 h-[1px] bg-primary/50" />
-            </h2>
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
             <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.95] text-foreground mb-8 text-balance">
-              Every edition ships a <span className="text-primary italic font-medium">deployable system.</span>
+              Practical outbound and AI systems, <span className="text-primary italic font-medium">explained clearly.</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
             <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
-              Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
+              Each issue breaks down one problem, the method, and the implementation details. The public library remains available without subscribing.
             </p>
             <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12">Subscription is explicit. You can unsubscribe at any time. A portal account does not subscribe or reactivate you.</p>
           </ScrollReveal>
@@ -186,13 +186,13 @@ export default async function NewsletterPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+            <p className="mb-6 flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-primary">
               <span className="w-8 h-[1px] bg-primary/50" />
               Selected Articles
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
+            </p>
+            <h2 className="mb-16 text-4xl font-black leading-[0.9] tracking-[-0.03em] text-foreground md:text-5xl">
               Article-style issues live <span className="text-primary italic font-medium">here.</span>
-            </h3>
+            </h2>
           </ScrollReveal>
 
           {issues.length > 0 ? (
@@ -201,9 +201,9 @@ export default async function NewsletterPage() {
                 <ScrollReveal key={issue.slug} delay={i * 40}>
                   <Link
                     href={`/newsletter/${issue.slug}`}
-                    className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
+                    className="group flex h-full flex-col overflow-hidden rounded-[4px] border border-white/[0.08] bg-card/[0.2] backdrop-blur-md transition-[background-color,border-color,transform] duration-700 hover:bg-card/[0.5] card-lift"
                   >
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
+                    <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-colors duration-[1.2s] group-hover:via-primary/70" />
                     <NewsletterCardCover issue={issue} index={i} />
                     <div className="p-6 flex flex-col flex-1">
                       <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
@@ -250,24 +250,16 @@ export default async function NewsletterPage() {
         </div>
       </section>
 
-      {/* BOTTOM CTA */}
-      <section className="py-32 w-full flex justify-center relative border-t border-white/[0.04] bg-card/[0.15] mesh-subtle">
-        <div className="max-w-[800px] w-full px-6 text-center">
+      <section className="relative flex w-full justify-center border-t border-white/[0.04] bg-card/[0.15] py-24 mesh-subtle">
+        <div className="w-full max-w-[800px] px-6 text-center">
           <ScrollReveal>
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance">
-              Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
+            <h2 className="mb-8 text-balance text-3xl font-black leading-[1.05] tracking-[-0.03em] md:text-5xl">
+              Read first. Subscribe only if it is useful.
             </h2>
-            <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              Every issue points to a relevant public asset. Newsletter consent stays separate from library and account access.
+            <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-foreground/70">
+              The library contains the complete public skills, playbooks, and browser tools.
             </p>
-            <div className="max-w-md mx-auto">
-              <EmailCapture
-                source="newsletter-footer"
-                buttonText="Subscribe"
-                successMessage="You're in. Check your inbox."
-                accentColor="primary"
-              />
-            </div>
+            <Link href="/library" className="inline-flex min-h-12 items-center justify-center rounded-[2px] border border-white/15 px-6 text-xs font-black uppercase tracking-[0.17em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Open the library</Link>
           </ScrollReveal>
         </div>
       </section>

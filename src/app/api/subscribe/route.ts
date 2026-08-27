@@ -68,18 +68,21 @@ export async function POST(request: Request) {
 
     if (existing.length > 0) {
       const currentStatus = String(existing[0].status ?? "") as NewsletterStatus;
-      if (
-        source === "account-signup-explicit-consent" &&
-        newsletterActionForAccountCreation(true, currentStatus) === "none"
-      ) {
-        return NextResponse.json({ ok: true, resubscribed: false, preservedUnsubscribe: true });
+      if (newsletterActionForAccountCreation(true, currentStatus) === "none") {
+        if (source === "account-signup-explicit-consent") {
+          return NextResponse.json({ ok: true, subscribed: false, preservedUnsubscribe: true });
+        }
+        return NextResponse.json(
+          { error: "This address is unsubscribed. Use the preference link in a previous email to subscribe again." },
+          { status: 409 },
+        );
       }
       await sql`
         UPDATE newsletter_subscribers
         SET status = 'active', topics = ${finalTopics}, unsub_at = NULL
         WHERE email = ${email}
       `;
-      return NextResponse.json({ ok: true, resubscribed: true });
+      return NextResponse.json({ ok: true, subscribed: true, resubscribed: currentStatus !== "active" });
     }
 
     await sql`
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
       console.error("subscribe: welcome email failed", err);
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, subscribed: true });
   } catch (err) {
     console.error("subscribe error", err);
     return NextResponse.json({ error: "Subscribe failed" }, { status: 500 });

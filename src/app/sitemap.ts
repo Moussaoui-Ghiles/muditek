@@ -19,6 +19,7 @@ const STATIC_PAGES: Array<{
   { path: "/playbooks", priority: 0.75, changeFrequency: "weekly" },
   { path: "/tools", priority: 0.75, changeFrequency: "monthly" },
   { path: "/about", priority: 0.6, changeFrequency: "monthly" },
+  { path: "/privacy", priority: 0.3, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.7, changeFrequency: "weekly" },
 ];
 

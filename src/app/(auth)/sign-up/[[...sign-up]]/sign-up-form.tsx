@@ -3,6 +3,7 @@
 import { SignUp, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { useClerkInputPurpose } from "@/components/auth/use-clerk-input-purpose";
 import { SIGNUP_ORIGIN_KEY, trackFunnelEvent, type FunnelLane } from "@/components/acquisition-tracking";
 import { NEWSLETTER_CONSENT_STORAGE_KEY } from "@/lib/newsletter-consent";
 
@@ -13,7 +14,7 @@ const CLERK_ELEMENTS = {
   logoBox: "hidden!",
   header: "hidden!",
   socialButtonsBlockButton:
-    "border border-white/[0.08] bg-transparent hover:bg-white/[0.04] hover:border-white/[0.16] transition-all duration-200 rounded-[8px] h-10 text-[13px] font-medium text-white",
+    "border border-white/[0.08] bg-transparent hover:bg-white/[0.04] hover:border-white/[0.16] transition-colors duration-200 rounded-[8px] h-10 text-[13px] font-medium text-white",
   socialButtonsBlockButtonText: "text-[13px] font-medium text-white",
   socialButtonsProviderIcon: "w-4 h-4",
   dividerLine: "bg-white/[0.06]",
@@ -22,7 +23,7 @@ const CLERK_ELEMENTS = {
   formFieldInput:
     "bg-[#0e0e11] border border-white/[0.07] focus:border-amber-400/40 focus:ring-1 focus:ring-amber-400/20 transition-colors rounded-[8px] h-10 text-[13.5px] text-white placeholder:text-white/30",
   formButtonPrimary:
-    "bg-white text-[#0c0c0e] hover:bg-white/95 active:scale-[0.99] transition-all duration-150 rounded-[8px] h-10 text-[13.5px] font-semibold normal-case tracking-normal",
+    "bg-white text-[#0c0c0e] hover:bg-white/95 active:scale-[0.99] transition-[background-color,transform] duration-150 rounded-[8px] h-10 text-[13.5px] font-semibold normal-case tracking-normal",
   footer: "bg-transparent",
   footerActionText: "text-[12px] text-white/40",
   footerActionLink: "text-[12px] text-white font-semibold hover:underline underline-offset-4",
@@ -36,19 +37,19 @@ const HERO = (
   <div className="max-w-[560px]">
     <p className="reveal mb-5 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-primary">
       <span className="h-px w-8 bg-primary/50" />
-      Portal account
+      Free account
     </p>
     <h1 className="reveal text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white md:text-[64px]">
-      Join{" "}
-      <span className="text-primary">Muditek</span>.
+      Get the complete <span className="text-primary">skill bundle</span>.
     </h1>
     <p className="reveal reveal-delay-1 mt-7 max-w-[480px] text-[15px] leading-relaxed text-white/65 md:text-[16px]">
-      Create a free account to download advanced skill bundles and keep track of their versions.
+      Create a free account to download advanced skill files and see your download history. Public reading and browser tools remain open.
     </p>
   </div>
 );
 
 export default function SignUpForm({ redirectUrl = "/portal" }: { redirectUrl?: string }) {
+  useClerkInputPurpose("sign-up");
   const { isSignedIn, isLoaded } = useUser();
   const [newsletterConsent, setNewsletterConsent] = useState(false);
   const encodedRedirect = encodeURIComponent(redirectUrl);

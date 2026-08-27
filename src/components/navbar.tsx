@@ -21,6 +21,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileNavigationRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useUser();
 
@@ -36,10 +37,27 @@ export function Navbar() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setMobileOpen(false);
-      menuButtonRef.current?.focus();
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const menuItems = Array.from(
+        mobileNavigationRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]') ?? [],
+      );
+      const focusable = [menuButtonRef.current, ...menuItems].filter((item): item is HTMLElement => Boolean(item));
+      if (focusable.length === 0) return;
+      const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+      const nextIndex = event.shiftKey
+        ? (currentIndex <= 0 ? focusable.length - 1 : currentIndex - 1)
+        : (currentIndex === focusable.length - 1 ? 0 : currentIndex + 1);
+      event.preventDefault();
+      focusable[nextIndex]?.focus();
     };
+    requestAnimationFrame(() => {
+      mobileNavigationRef.current?.querySelector<HTMLElement>('a[href]')?.focus();
+    });
     window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -76,7 +94,7 @@ export function Navbar() {
 
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="/appointment-setting#qualify"
+              href="/appointment-setting#fit-review"
               className="inline-flex min-h-11 items-center rounded-[2px] bg-primary px-5 text-[11px] font-black uppercase tracking-[0.16em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground motion-reduce:transform-none"
             >
               Check if you qualify
@@ -110,7 +128,10 @@ export function Navbar() {
       </nav>
 
       <div
+        ref={mobileNavigationRef}
         id="mobile-navigation"
+        role="dialog"
+        aria-modal="true"
         aria-hidden={!mobileOpen}
         className={`fixed inset-0 z-40 bg-background px-6 pb-10 pt-28 transition-opacity lg:hidden ${
           mobileOpen ? "visible opacity-100" : "invisible pointer-events-none opacity-0"
@@ -125,7 +146,7 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-auto grid gap-3 sm:grid-cols-2">
-            <Link href="/appointment-setting#qualify" tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
+            <Link href="/appointment-setting#fit-review" tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
               Check if you qualify
             </Link>
             <Link href={isSignedIn ? "/portal" : "/sign-in?redirect_url=/portal"} tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)} className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/15 px-5 text-center text-xs font-black uppercase tracking-[0.16em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">

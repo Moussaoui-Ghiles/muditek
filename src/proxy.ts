@@ -1,11 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 import { LIBRARY_MANIFEST } from "@/lib/library-manifest";
 
 const isPublicRoute = createRouteMatcher([
   // Marketing
   "/",
   "/about",
+  "/privacy",
   "/ai-implementation",
   "/mudiagent",
   "/mudiagent-vs-chatgpt",
@@ -121,7 +122,7 @@ const REMOVED_TOOL_SLUGS = new Set([
   "open-meteo-forecast",
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
+const handleClerkRequest = clerkMiddleware(async (auth, req) => {
   if (req.nextUrl.pathname.startsWith("/api/portal/tools/")) {
     return NextResponse.json(
       { error: "Public provider-backed tools are disabled." },
@@ -158,6 +159,19 @@ export default clerkMiddleware(async (auth, req) => {
   signInUrl.searchParams.set("redirect_url", req.nextUrl.pathname + req.nextUrl.search);
   return NextResponse.redirect(signInUrl);
 });
+
+export default function proxy(req: NextRequest, event: NextFetchEvent) {
+  const sensitiveNewsletterPath =
+    req.nextUrl.pathname.startsWith("/preferences/") ||
+    req.nextUrl.pathname.startsWith("/newsletter/confirm/");
+  if (sensitiveNewsletterPath) {
+    const response = NextResponse.next();
+    response.headers.set("Referrer-Policy", "no-referrer");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return response;
+  }
+  return handleClerkRequest(req, event);
+}
 
 export const config = {
   matcher: [

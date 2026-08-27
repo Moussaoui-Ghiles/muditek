@@ -7,6 +7,7 @@ const PROTECTED = [
   "/portal/",
   "/welcome",
   "/preferences/",
+  "/newsletter/confirm/",
   "/sign-in",
   "/sign-up",
   "/c/",

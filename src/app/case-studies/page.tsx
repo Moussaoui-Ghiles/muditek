@@ -157,7 +157,7 @@ export default function CaseStudiesIndexPage() {
               Each case starts the same way — a 30-minute diagnostic call. We&apos;ll tell you whether the pattern fits and what your version of the build would look like.
             </p>
             <a
-              href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+              href="https://calendly.com/biz-ghiless/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-press inline-flex items-center gap-3 px-12 py-5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform"

@@ -20,6 +20,12 @@ function eventLabel(event: string) {
   return event.replaceAll("_", " ");
 }
 
+function updatedLabel(updatedAt: string) {
+  const date = new Date(`${updatedAt}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return updatedAt;
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
 export default async function PortalHomePage() {
   const user = await currentUser();
   const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? "";
@@ -45,16 +51,23 @@ export default async function PortalHomePage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 lg:px-10">
       <header className="border-b border-white/[0.07] pb-7">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Member workspace</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.025em] text-foreground">Your account layer</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/60">Download advanced bundles, check versions, review recent activity, and manage newsletter consent. Public reading and tools remain in the library.</p>
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Member workspace</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.025em] text-foreground">Skills, downloads, and account settings.</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/65">Download advanced skill files, check recent activity, and manage your account. Public reading and browser tools remain in the library.</p>
       </header>
 
-      <section className="grid gap-4 border-b border-white/[0.07] py-7 sm:grid-cols-3" aria-label="Workspace summary">
-        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">{advancedSkills.length}</p><p className="mt-1 text-xs text-foreground/55">Advanced bundles</p></div>
-        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">{activity.filter((row) => row.event.includes("download")).length}</p><p className="mt-1 text-xs text-foreground/55">Recent downloads shown</p></div>
-        <div className="rounded-xl bg-white/[0.035] p-5"><p className="text-2xl font-semibold text-foreground">Free</p><p className="mt-1 text-xs text-foreground/55">Active membership</p></div>
-      </section>
+      <nav className="grid gap-px border-b border-white/[0.07] bg-white/[0.07] py-px sm:grid-cols-4" aria-label="Workspace sections">
+        {[
+          ["Downloads", "/portal/downloads"],
+          ["Tools", "/portal/tools"],
+          ["Newsletter", "/portal/newsletter"],
+          ["Account", "/portal/account"],
+        ].map(([label, href]) => (
+          <Link key={href} href={href} className="inline-flex min-h-12 items-center justify-between bg-background px-4 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/[0.025] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
+            {label}<span aria-hidden="true" className="text-primary">→</span>
+          </Link>
+        ))}
+      </nav>
 
       <div className="grid gap-8 pt-8 lg:grid-cols-[1.15fr_0.85fr]">
         <section id="advanced-skills" aria-labelledby="advanced-skills-title">
@@ -66,7 +79,7 @@ export default async function PortalHomePage() {
             {advancedSkills.slice(0, 6).map((skill) => (
               <Link key={skill.slug} href={`/skills/${skill.slug}`} className="grid gap-1 py-4 transition-colors hover:bg-white/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center">
                 <span><strong className="block text-sm font-medium text-foreground">{skill.title}</strong><span className="mt-1 block text-xs leading-5 text-foreground/50">{skill.summary}</span></span>
-                <span className="text-[11px] text-foreground/45">v{skill.updatedAt}</span>
+                <span className="text-xs text-foreground/50">Updated {updatedLabel(skill.updatedAt)}</span>
               </Link>
             ))}
           </div>

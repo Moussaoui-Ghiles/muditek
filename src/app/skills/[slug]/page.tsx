@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { marked } from "marked";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -13,15 +12,9 @@ import {
   TrackedAccountLink,
   TrackedDownloadLink,
 } from "@/components/acquisition-tracking";
-import { getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
+import { formatLibraryDate, getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
+import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
-
-function renderSkillMarkdown(markdown: string): string {
-  return marked.parse(markdown.replace(/^---[\s\S]*?---\s*/, "").trim(), {
-    async: false,
-    gfm: true,
-  }) as string;
-}
 
 export function generateStaticParams() {
   return getPublishedLibraryItems("skill").map((item) => ({ slug: item.slug }));
@@ -52,7 +45,7 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
   if (!bundle) notFound();
   const { isAuthenticated } = await auth();
   const skillFile = bundle.files.find((file) => file.path === "SKILL.md");
-  const html = skillFile?.raw ? renderSkillMarkdown(skillFile.raw) : "";
+  const { html } = skillFile?.raw ? renderLibraryMarkdown(skillFile.raw) : { html: "" };
   const url = `https://muditek.com/skills/${item.slug}`;
   const downloadHref = `/api/portal/skills/${encodeURIComponent(item.slug)}/download`;
 
@@ -87,9 +80,9 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
             <div className="mt-9 flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.16em]">
               <span className="text-primary">{item.topic.replaceAll("-", " ")}</span>
               <span className="text-foreground/30">•</span>
-              <span className="text-foreground/60">Updated {item.updatedAt}</span>
+              <span className="text-foreground/60">Updated {formatLibraryDate(item.updatedAt)}</span>
               <span className="text-foreground/30">•</span>
-              <span className="text-foreground/60">Versioned bundle</span>
+              <span className="text-foreground/60">{bundle.fileCount} working files</span>
             </div>
             <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-6xl md:text-7xl">{item.title}</h1>
             <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/75">{item.summary}</p>
@@ -99,12 +92,12 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
         <section className="border-b border-white/[0.06] py-12 md:py-16">
           <div className="mx-auto grid w-full max-w-[1100px] gap-8 px-6 lg:grid-cols-[minmax(0,1fr)_340px] md:px-12">
             <div>
-              <h2 className="text-2xl font-black tracking-[-0.02em]">What you can inspect</h2>
+              <h2 className="text-2xl font-black tracking-[-0.02em]">What this skill gives you</h2>
               <dl className="mt-7 grid gap-6 sm:grid-cols-2">
                 <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Problem</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">{item.summary}</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Inputs and outputs</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">The complete operating contract is readable below in SKILL.md.</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Prerequisites</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Read the named references and provide the required source material before the skill runs.</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Source</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Version-controlled bundle published from the library manifest.</dd></div>
+                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Inputs and outputs</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">The full instructions below list the information you provide and the result you should receive.</dd></div>
+                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Before you start</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Collect the named source material and read any required reference before you use the workflow.</dd></div>
+                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">What is included</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Instructions, references, examples, and tests are included when the skill needs them.</dd></div>
               </dl>
             </div>
 
@@ -128,7 +121,7 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
                       </TrackedDownloadLink>
                   ) : (
                       <TrackedAccountLink href={`/sign-up?redirect_url=${encodeURIComponent(`/skills/${item.slug}`)}`} asset={item.slug} lane={item.lane} placement="skill-download-gate" className="inline-flex min-h-12 w-full items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
-                        Create free account
+                        Create account to download
                       </TrackedAccountLink>
                   )
                 )}
@@ -138,16 +131,24 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
         </section>
 
         <section className="py-14 md:py-20">
-          <div className="mx-auto grid w-full max-w-[1100px] gap-10 px-6 lg:grid-cols-[230px_minmax(0,1fr)] md:px-12">
-            <aside>
-              <h2 className="text-xs font-black uppercase tracking-[0.18em] text-primary">File manifest</h2>
-              <ul className="mt-5 space-y-2" aria-label="Bundle files">
-                {bundle.files.map((file) => (
-                  <li key={file.path} className="break-all font-mono text-xs leading-5 text-foreground/55">{file.path}</li>
-                ))}
-              </ul>
-            </aside>
-            <article className="library-prose min-w-0" dangerouslySetInnerHTML={{ __html: html }} />
+          <div className="mx-auto w-full max-w-[900px] px-6 md:px-12">
+            <details className="group rounded-xl border border-white/[0.1] bg-card/30 p-5 open:bg-card/45 md:p-8">
+              <summary className="cursor-pointer list-none text-lg font-black tracking-[-0.02em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 [&::-webkit-details-marker]:hidden">
+                <span className="flex min-h-11 items-center justify-between gap-4">
+                  Open the full instructions and file list
+                  <span aria-hidden="true" className="text-primary transition-transform group-open:rotate-45">+</span>
+                </span>
+              </summary>
+              <div className="mt-8 border-t border-white/[0.08] pt-8">
+                <h2 className="text-xs font-black uppercase tracking-[0.18em] text-primary">Included files</h2>
+                <ul className="mt-5 grid gap-2 sm:grid-cols-2" aria-label="Bundle files">
+                  {bundle.files.map((file) => (
+                    <li key={file.path} className="break-all font-mono text-xs leading-5 text-foreground/55">{file.path}</li>
+                  ))}
+                </ul>
+                <article className="library-prose mt-12 min-w-0 border-t border-white/[0.08] pt-10" dangerouslySetInnerHTML={{ __html: html }} />
+              </div>
+            </details>
           </div>
         </section>
 

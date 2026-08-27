@@ -21,8 +21,8 @@ export default function PlaybooksPage() {
       <main id="main-content">
         <section className="mx-auto w-full max-w-[1180px] px-6 pb-16 pt-36 md:px-12 md:pb-24 md:pt-48">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">Playbooks</p>
-          <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-6xl md:text-7xl">The method, in full.</h1>
-          <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/75">No excerpt gate. Each published playbook is readable without an account and links only to the commercial capability that can implement it.</p>
+          <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-6xl md:text-7xl">Read the complete operating method.</h1>
+          <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/75">Each playbook explains the full method and remains readable without an account.</p>
         </section>
         <LibraryCollection items={items.filter((item) => item.lane === "outbound")} heading="Outbound" description="Diagnosis, research, list building, cold email, and agent-assisted SDR operations." />
         <LibraryCollection items={items.filter((item) => item.lane === "ai-implementation")} heading="AI implementation" description="Local AI, data agents, content systems, coding agents, GEO, and judgment-aware loops." />

@@ -7,7 +7,7 @@ import { AcquisitionPageView } from "@/components/acquisition-tracking";
 import { JsonLd } from "@/components/json-ld";
 import { CommercialNextStep } from "@/components/library/library-collection";
 import { CsvListQualityAuditor, OutboundBriefBuilder, OutboundFunnelCalculator } from "@/components/library/public-tools";
-import { getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
+import { formatLibraryDate, getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
 
 const TOOL_COMPONENTS = {
   "outbound-funnel-economics-calculator": OutboundFunnelCalculator,
@@ -57,15 +57,15 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
       }} />
       <main id="main-content">
-        <header className="border-b border-white/[0.06] pb-14 pt-36 md:pb-20 md:pt-44">
+        <header className="border-b border-white/[0.06] pb-12 pt-32 md:pb-16 md:pt-40">
           <div className="mx-auto w-full max-w-[1180px] px-6 md:px-12">
             <Link href="/tools" className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">← All tools</Link>
             <p className="mt-9 text-xs font-black uppercase tracking-[0.2em] text-primary">Runs on this device</p>
-            <h1 className="mt-5 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-6xl md:text-7xl">{item.title}</h1>
+            <h1 className="mt-5 max-w-5xl text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl md:text-6xl">{item.title}</h1>
             <p className="mt-7 max-w-[70ch] text-lg leading-8 text-foreground/75">{item.summary}</p>
-            <p className="mt-5 max-w-[74ch] text-sm leading-6 text-foreground/55">No model or provider request is made. Analytics records only <code className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-primary">tool_completed</code> and this tool&apos;s slug. It does not record inputs or results.</p>
+            <p className="mt-5 max-w-[74ch] text-sm leading-6 text-foreground/60">Your inputs stay in your browser. Muditek records only that the tool was completed, not the values, file contents, or result.</p>
             <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-foreground/55">
-              <span>By Ghiles Moussaoui</span><span aria-hidden="true">•</span><span>Updated {item.updatedAt}</span>
+              <span>By Ghiles Moussaoui</span><span aria-hidden="true">•</span><span>Updated {formatLibraryDate(item.updatedAt)}</span>
               {methodSource ? <><span aria-hidden="true">•</span><Link href={methodSource} className="text-primary hover:underline">Method source</Link></> : null}
             </div>
           </div>

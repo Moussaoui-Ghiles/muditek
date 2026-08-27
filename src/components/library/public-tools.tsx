@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { trackToolCompletion } from "@/components/acquisition-tracking";
 import { calculateOutboundFunnel, type OutboundFunnelInputs, type OutboundFunnelResult } from "@/lib/outbound-funnel-calculator";
 import { auditCsvList, type CsvListQualityAudit } from "@/lib/csv-list-quality";
 import { buildOutboundBrief, type OutboundBriefExport, type OutboundBriefInputs } from "@/lib/outbound-brief";
 
 const FIELD_CLASS = "mt-2 min-h-11 w-full rounded-[10px] border border-white/[0.12] bg-white/[0.035] px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-foreground/50 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/35";
-const LABEL_CLASS = "text-xs font-bold uppercase tracking-[0.14em] text-foreground/75";
+const LABEL_CLASS = "text-[13px] font-bold uppercase tracking-[0.12em] text-foreground/80";
+const HELP_CLASS = "mt-1.5 block text-[13px] font-normal normal-case leading-5 tracking-normal text-foreground/65";
 
 const FUNNEL_FIELDS: Array<{ key: keyof OutboundFunnelInputs; label: string; help: string; step: string }> = [
   { key: "entries", label: "Unique prospects emailed", help: "Original cohort entries", step: "1" },
@@ -82,32 +83,50 @@ export function OutboundFunnelCalculator() {
     trackToolCompletion("outbound-funnel-economics-calculator");
   }
 
+  function updateValue(key: keyof OutboundFunnelInputs, value: string) {
+    setValues((current) => ({ ...current, [key]: value }));
+    setResult(null);
+    setError("");
+  }
+
+  function reset() {
+    setValues(INITIAL_FUNNEL);
+    setResult(null);
+    setError("");
+  }
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-      <form onSubmit={submit} className="rounded-xl border border-white/[0.08] bg-card/55 p-5 md:p-8">
+    <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+      <form onSubmit={submit} className="min-w-0 rounded-xl border border-white/[0.08] bg-card/55 p-5 md:p-8">
         <div className="grid gap-5 sm:grid-cols-2">
           {FUNNEL_FIELDS.map((field) => (
-            <label key={field.key} className={LABEL_CLASS}>
-              {field.label}
+            <div key={field.key}>
+              <label htmlFor={`funnel-${field.key}`} className={LABEL_CLASS}>{field.label}</label>
               <input
+                id={`funnel-${field.key}`}
+                name={field.key}
                 className={FIELD_CLASS}
                 type="number"
                 min="0"
                 step={field.step}
                 inputMode="decimal"
+                autoComplete="off"
                 required
                 value={values[field.key]}
-                onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))}
+                onChange={(event) => updateValue(field.key, event.target.value)}
               />
-              <span className="mt-1.5 block text-[11px] font-normal normal-case leading-4 tracking-normal text-foreground/50">{field.help}</span>
-            </label>
+              <span className={HELP_CLASS}>{field.help}</span>
+            </div>
           ))}
         </div>
-        <button type="submit" className="mt-7 min-h-12 bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4 focus-visible:ring-offset-background">Calculate cohort</button>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <button type="submit" className="min-h-12 bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4 focus-visible:ring-offset-background">Calculate cohort</button>
+          <button type="button" onClick={reset} className="min-h-12 border border-white/[0.14] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-foreground/75 hover:border-primary/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear</button>
+        </div>
         {error ? <p role="alert" className="mt-4 text-sm leading-6 text-red-300">{error}</p> : null}
       </form>
 
-      <section aria-live="polite" aria-atomic="true" className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
+      <section aria-live="polite" aria-atomic="true" className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Cohort result</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">Enter one fixed cold-email cohort. Unknowns remain empty until the relevant denominator exists.</p> : (
           <>
@@ -131,6 +150,7 @@ function isCsvAudit(value: ReturnType<typeof auditCsvList>): value is CsvListQua
 }
 
 export function CsvListQualityAuditor() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("");
   const [result, setResult] = useState<CsvListQualityAudit | null>(null);
   const [error, setError] = useState("");
@@ -156,7 +176,7 @@ export function CsvListQualityAuditor() {
 
   const metrics = result ? [
     ["Rows", result.rowCount],
-    ["Duplicate rows", result.duplicateRows],
+    ["Duplicate emails", result.duplicateRows],
     ["Missing titles", result.missingTitles],
     ["Invalid domains", result.invalidDomains],
     ["Unverified rows", result.unverifiedRows],
@@ -164,21 +184,29 @@ export function CsvListQualityAuditor() {
     ["Rejected by ICP", result.rejectedByIcp],
   ] as const : [];
 
+  function reset() {
+    setFileName("");
+    setResult(null);
+    setError("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-      <section className="rounded-xl border border-white/[0.08] bg-card/55 p-6 md:p-8">
+    <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      <section className="min-w-0 rounded-xl border border-white/[0.08] bg-card/55 p-6 md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Choose a CSV</h2>
         <p className="mt-3 text-sm leading-6 text-foreground/65">Required columns: email, title, domain, verification, and ICP. Common header aliases are accepted.</p>
         <label className="mt-7 block rounded-xl border border-dashed border-white/[0.18] bg-white/[0.025] p-7 text-center focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/35">
           <span className="block text-sm font-black uppercase tracking-[0.14em] text-foreground">Select CSV file</span>
-          <span className="mt-2 block text-xs text-foreground/55">The browser reads it locally. Maximum 10 MB.</span>
-          <input type="file" accept=".csv,text/csv" className="sr-only" onChange={(event) => void selectFile(event.target.files?.[0])} />
+          <span className="mt-2 block text-[13px] text-foreground/65">The browser reads it locally. Maximum 10 MB.</span>
+          <input ref={fileInputRef} id="csv-list-file" name="csv-list-file" type="file" accept=".csv,text/csv" className="sr-only" onChange={(event) => void selectFile(event.target.files?.[0])} />
         </label>
         {fileName ? <p className="mt-4 break-all font-mono text-xs text-foreground/55">{fileName}</p> : null}
         {error ? <p role="alert" className="mt-4 text-sm leading-6 text-red-300">{error}</p> : null}
+        {fileName || result || error ? <button type="button" onClick={reset} className="mt-5 min-h-11 border border-white/[0.14] px-5 text-sm font-bold text-foreground/75 hover:border-primary/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear file</button> : null}
       </section>
 
-      <section aria-live="polite" className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 md:p-8">
+      <section aria-live="polite" className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Quality checks</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">No CSV has been reviewed on this device.</p> : (
           <>
@@ -195,7 +223,7 @@ export function CsvListQualityAuditor() {
 }
 
 const BRIEF_FIELDS: Array<{ key: keyof OutboundBriefInputs; label: string; multiline?: boolean; required?: boolean; help: string }> = [
-  { key: "name", label: "Brief name", required: true, help: "A stable name for this motion" },
+  { key: "name", label: "Brief name (optional)", help: "A stable name for this motion" },
   { key: "decision", label: "Decision this brief must inform", multiline: true, required: true, help: "The specific test or commercial decision" },
   { key: "offer", label: "Offer", multiline: true, required: true, help: "Result, method, terms, and first commitment" },
   { key: "companyFit", label: "Company fit", multiline: true, required: true, help: "Positive fit and operating context" },
@@ -240,27 +268,42 @@ export function OutboundBriefBuilder() {
     trackToolCompletion("outbound-brief-builder");
   }
 
+  function updateValue(key: keyof OutboundBriefInputs, value: string) {
+    setValues((current) => ({ ...current, [key]: value }));
+    setResult(null);
+    setError("");
+  }
+
+  function reset() {
+    setValues(INITIAL_BRIEF);
+    setResult(null);
+    setError("");
+  }
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-      <form onSubmit={submit} className="rounded-xl border border-white/[0.08] bg-card/55 p-5 md:p-8">
+    <div className="grid min-w-0 max-w-full gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+      <form onSubmit={submit} className="min-w-0 max-w-full rounded-xl border border-white/[0.08] bg-card/55 p-5 md:p-8">
         <div className="grid gap-5 sm:grid-cols-2">
           {BRIEF_FIELDS.map((field) => (
-            <label key={field.key} className={`${LABEL_CLASS} ${field.multiline ? "sm:col-span-2" : ""}`}>
-              {field.label}
+            <div key={field.key} className={field.multiline ? "sm:col-span-2" : ""}>
+              <label htmlFor={`brief-${field.key}`} className={LABEL_CLASS}>{field.label}</label>
               {field.multiline ? (
-                <textarea className={`${FIELD_CLASS} min-h-28 resize-y`} required={field.required} value={values[field.key]} onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))} />
+                <textarea id={`brief-${field.key}`} name={field.key} autoComplete="off" className={`${FIELD_CLASS} min-h-28 resize-y`} required={field.required} value={values[field.key]} onChange={(event) => updateValue(field.key, event.target.value)} />
               ) : (
-                <input className={FIELD_CLASS} required={field.required} value={values[field.key]} onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))} />
+                <input id={`brief-${field.key}`} name={field.key} autoComplete="off" className={FIELD_CLASS} required={field.required} value={values[field.key]} onChange={(event) => updateValue(field.key, event.target.value)} />
               )}
-              <span className="mt-1.5 block text-[11px] font-normal normal-case leading-4 tracking-normal text-foreground/50">{field.help}</span>
-            </label>
+              <span className={HELP_CLASS}>{field.help}</span>
+            </div>
           ))}
         </div>
-        <button type="submit" className="mt-7 min-h-12 bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4 focus-visible:ring-offset-background">Build brief</button>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <button type="submit" className="min-h-12 bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4 focus-visible:ring-offset-background">Build brief</button>
+          <button type="button" onClick={reset} className="min-h-12 border border-white/[0.14] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-foreground/75 hover:border-primary/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear</button>
+        </div>
         {error ? <p role="alert" className="mt-4 text-sm text-red-300">{error}</p> : null}
       </form>
 
-      <section aria-live="polite" className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
+      <section aria-live="polite" className="min-w-0 max-w-full rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Portable inputs</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">Build once, then download the same normalized inputs as Markdown or JSON.</p> : (
           <>
@@ -269,7 +312,7 @@ export function OutboundBriefBuilder() {
               <button type="button" onClick={() => downloadExport("outbound-brief.md", result.markdown, "text/markdown;charset=utf-8")} className="min-h-11 border border-white/[0.14] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-foreground hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70">Download Markdown</button>
               <button type="button" onClick={() => downloadExport("outbound-brief.json", result.json, "application/json;charset=utf-8")} className="min-h-11 border border-white/[0.14] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-foreground hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70">Download JSON</button>
             </div>
-            <pre className="mt-6 max-h-[520px] overflow-auto rounded-lg border border-white/[0.08] bg-[#080c11] p-4 text-xs leading-6 text-foreground/70"><code>{result.markdown}</code></pre>
+            <pre className="mt-6 max-h-[520px] w-full max-w-full overflow-auto whitespace-pre-wrap break-words rounded-lg border border-white/[0.08] bg-[#080c11] p-4 text-xs leading-6 text-foreground/75"><code>{result.markdown}</code></pre>
           </>
         )}
       </section>

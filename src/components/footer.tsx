@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const GROUPS = [
   {
-    title: "Start",
+    title: "Appointment setting",
     links: [
       ["Appointment Setting", "/appointment-setting"],
       ["Provider Pricing", "/appointment-setting-pricing"],
@@ -11,15 +11,16 @@ const GROUPS = [
     ],
   },
   {
-    title: "Build",
+    title: "Muditek",
     links: [
       ["AI Implementation", "/ai-implementation"],
       ["Public Library", "/library"],
       ["About", "/about"],
+      ["Data and Privacy", "/privacy"],
     ],
   },
   {
-    title: "Use",
+    title: "Library",
     links: [
       ["Skills", "/skills"],
       ["Playbooks", "/playbooks"],
@@ -39,7 +40,7 @@ export function Footer() {
             <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground">Muditek</span>
           </Link>
           <p className="mt-5 max-w-[36ch] text-sm leading-6 text-foreground/65">
-            Practical AI systems. Appointment setting is the current way to start.
+            Qualified B2B meetings and practical AI implementation.
           </p>
         </div>
         <nav aria-label="Footer navigation" className="grid gap-10 sm:grid-cols-3">
@@ -49,7 +50,7 @@ export function Footer() {
               <ul className="mt-5 space-y-3">
                 {group.links.map(([label, href]) => (
                   <li key={href}>
-                    <Link href={href} className="text-sm text-foreground/65 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">{label}</Link>
+                    <Link href={href} className="inline-flex min-h-11 items-center text-sm text-foreground/70 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">{label}</Link>
                   </li>
                 ))}
               </ul>

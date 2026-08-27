@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
+  "https://calendly.com/biz-ghiless/30min";
 
 const COMPARISON = [
   { category: "Data security", chatgpt: "Data processed on third-party servers. You don't control where it's stored or who accesses it.", mudiagent: "Runs on a device in your office. Your data never touches the internet. Full audit trail." },

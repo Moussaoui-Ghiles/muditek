@@ -1,5 +1,5 @@
 ---
-title: The Hidden Reason Your B2B Outbound Is Not Working, and the Exact Plan, Numbers and AI Agent Skills to Fix It
+title: Outbound Failure Diagnostic
 aliases:
   - B2B Outbound Failure Diagnostic
 status: approved
@@ -12,7 +12,7 @@ tags:
   - content/source-asset
 ---
 
-# The Hidden Reason Your B2B Outbound Is Not Working, and the Exact Plan, Numbers and AI Agent Skills to Fix It
+# Outbound Failure Diagnostic
 
 You tried outbound because you needed more qualified leads.
 
@@ -634,9 +634,9 @@ Review the underlying accounts, responses, meetings and sales outcomes before ch
 
 I packaged the repeatable parts of this framework into three AI agent skills:
 
-- **[Cold Offer Review](https://muditek.com/portal/skills/cold-offer-review):** audit whether a cold buyer can understand, believe, judge and accept an existing B2B offer without claiming market validation.
-- **[Buyer Signal List Research](https://muditek.com/portal/skills/buyer-signal-list-research):** turn an approved market and offer hypothesis into evidence-backed account-fit rules, buyer-role rules, signal criteria, list-source choices, exact pull filters and QA rules.
-- **[Outbound Funnel Economics](https://muditek.com/portal/skills/outbound-funnel-economics):** audit first-party outbound cohorts and calculate channel-correct funnel conversion, leakage and customer economics without inventing benchmarks or causation.
+- **[Cold Offer Review](https://muditek.com/skills/cold-offer-review):** audit whether a cold buyer can understand, believe, judge and accept an existing B2B offer without claiming market validation.
+- **[Buyer Signal List Research](https://muditek.com/skills/buyer-signal-list-research):** turn an approved market and offer hypothesis into evidence-backed account-fit rules, buyer-role rules, signal criteria, list-source choices, exact pull filters and QA rules.
+- **[Outbound Funnel Economics](https://muditek.com/skills/outbound-funnel-economics):** audit first-party outbound cohorts and calculate channel-correct funnel conversion, leakage and customer economics without inventing benchmarks or causation.
 
 AI must not invent benchmarks or autonomously choose the offer, price, channel or contract. It can organize evidence and perform defined work. It cannot replace the commercial judgment required when several explanations still fit the evidence.
 
@@ -658,9 +658,3 @@ Do not use this guide as a reason to delay or abandon outbound.
 Outbound can become a reliable, repeatable acquisition channel when the market, offer, targeting, buyer access, funnel and economics support it. You do not need every formula on day one. Start with one reachable segment, one buyer, one offer, one channel and one cohort tracked from first contact to customer. Add the deeper calculations as volume and complexity grow.
 
 The point is not to make outbound feel heavier. It is to stop another campaign from failing without telling you why.
-
-## P.S.
-
-You now have the framework. If you want me to implement and operate the outbound system for you, email **biz@ghiless.com** or DM me **“outbound.”**
-
-I can take six more clients for August. Once those spots are filled, August onboarding closes.

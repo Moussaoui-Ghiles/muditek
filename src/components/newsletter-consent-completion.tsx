@@ -25,9 +25,11 @@ export function NewsletterConsentCompletion() {
         topics: ["ai-agents", "gtm-systems", "solo-operator"],
       }),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok || cancelled) return;
+        const result = await response.json().catch(() => ({})) as { subscribed?: boolean };
         sessionStorage.removeItem(NEWSLETTER_CONSENT_STORAGE_KEY);
+        if (result.subscribed === false) return;
         trackFunnelEvent("newsletter_opted_in", {
           asset: "account-signup",
           lane: "ai-implementation",

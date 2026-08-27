@@ -5,7 +5,7 @@ import Link from "next/link";
 import { trackEvent } from "@/lib/client-analytics";
 
 export const OUTBOUND_BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
+  "https://calendly.com/biz-ghiless/30min";
 
 export type FunnelEventName =
   | "library_item_viewed"
@@ -39,6 +39,9 @@ function sanitizeReferrer(value: string): string {
   if (!value) return "";
   try {
     const url = new URL(value);
+    if (url.pathname.startsWith("/preferences/") || url.pathname.startsWith("/newsletter/confirm/")) {
+      return "";
+    }
     return `${url.origin}${url.pathname}`.slice(0, 500);
   } catch {
     return "";

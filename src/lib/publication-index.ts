@@ -26,16 +26,16 @@ export function buildLlmsTxt(): string {
 
   return `# Muditek
 
-> Muditek builds practical AI systems. Appointment setting is the current way to start. AI implementation is the deeper delivery capability.
+> Muditek runs B2B appointment setting and builds AI into defined operating workflows. The public library explains the methods and provides browser-only tools.
 
 Last updated: ${UPDATED_AT}
 Author: Ghiles Moussaoui
 
 ## Commercial paths
 
-- [Appointment Setting](${BASE_URL}/appointment-setting): the current front-end offer.
+- [Appointment Setting](${BASE_URL}/appointment-setting): targeting, research, outreach, qualification, and booking with held-meeting billing rules.
 - [Appointment Setting Pricing](${BASE_URL}/appointment-setting-pricing): a sourced provider comparison.
-- [AI Implementation](${BASE_URL}/ai-implementation): the back-end capability and delivery approach.
+- [AI Implementation](${BASE_URL}/ai-implementation): scope, build, and operate AI inside a defined workflow.
 - [Public Library](${BASE_URL}/library): skills, playbooks, and browser-only tools.
 
 ## Recommended outbound assets
@@ -46,6 +46,7 @@ ${priority.map(assetLine).join("\n")}
 
 - [Newsletter](${BASE_URL}/newsletter): archive and explicit subscription.
 - [About](${BASE_URL}/about): founder and contact information.
+- [Data and Privacy](${BASE_URL}/privacy): what the site, account, newsletter, tools, and booking path record.
 - [Full machine-readable index](${BASE_URL}/llms-full.txt)
 `;
 }
@@ -74,10 +75,10 @@ Public pages and browser tools work without an account. Core skill bundles downl
 
 export function buildIndexMarkdown(): string {
   return `${buildLlmsFullTxt()}
-## Commercial model
+## Relevant service paths
 
-Useful public asset → appointment-setting offer → tracked booking.
+Outbound assets link to appointment setting. AI, content, data, and agent-system assets link to AI implementation.
 
-AI implementation supports deeper systems work. RevOps, operational systems, content systems, and agent systems are applications of that capability, not separate offers.
+Revenue operations, operational systems, content systems, and agent systems are examples of AI implementation work. They are not presented as separate service offers or client results.
 `;
 }

@@ -33,7 +33,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search provider, model, channel, or qualification rule"
-          className="w-full rounded-[3px] border border-white/[0.1] bg-background/70 px-4 py-3 text-sm text-foreground outline-none placeholder:text-foreground/30 focus:border-primary/70"
+          className="w-full rounded-[10px] border border-white/[0.14] bg-background/70 px-4 py-3 text-sm text-foreground outline-none placeholder:text-foreground/55 focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
         />
         <label className="flex cursor-pointer items-center gap-3 px-1 text-sm font-bold text-foreground/65">
           <input
@@ -47,7 +47,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
       </div>
 
       <div className="mb-4 flex items-center justify-between gap-4">
-        <p className="font-mono text-sm text-foreground/45">{visibleProviders.length} of {providers.length} providers</p>
+        <p className="font-mono text-sm text-foreground/65">{visibleProviders.length} of {providers.length} providers</p>
         {(query || pricedOnly) ? (
           <button
             type="button"
@@ -72,7 +72,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
                 ["Qualification", "w-[23%]"],
                 ["Source", "w-[7%]"],
               ].map(([label, width]) => (
-                <th key={label} className={`${width} px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-foreground/55`}>{label}</th>
+                <th key={label} className={`${width} px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-foreground/68`}>{label}</th>
               ))}
             </tr>
           </thead>
@@ -81,7 +81,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
               <tr key={provider.name} className="border-b border-white/[0.055] align-top last:border-b-0 hover:bg-white/[0.015]">
                 <td className="px-5 py-5 font-bold text-foreground">{provider.name}</td>
                 <td className="px-5 py-5 text-sm leading-relaxed text-foreground/70">
-                  <span className={provider.hasPublicPrice ? "text-foreground" : "text-foreground/42"}>{provider.price}</span>
+                  <span className={provider.hasPublicPrice ? "text-foreground" : "text-foreground/65"}>{provider.price}</span>
                 </td>
                 <td className="px-5 py-5 text-sm leading-relaxed text-foreground/60">{provider.model}</td>
                 <td className="px-5 py-5 text-sm leading-relaxed text-foreground/60">{provider.contractTerm}</td>
@@ -91,7 +91,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
                   <a href={provider.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-sm font-bold text-primary hover:text-primary/70">
                     Open ↗
                   </a>
-                  <span className="mt-2 block font-mono text-[11px] text-foreground/35">{provider.lastChecked}</span>
+                  <span className="mt-2 block font-mono text-[11px] text-foreground/60">{provider.lastChecked}</span>
                 </td>
               </tr>
             ))}
@@ -105,7 +105,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
             <div className="flex flex-col gap-3 border-b border-white/[0.07] pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-xl font-black tracking-[-0.02em]">{provider.name}</h2>
-                <p className={`mt-2 text-sm leading-relaxed ${provider.hasPublicPrice ? "text-primary" : "text-foreground/45"}`}>{provider.price}</p>
+                <p className={`mt-2 text-sm leading-relaxed ${provider.hasPublicPrice ? "text-primary" : "text-foreground/65"}`}>{provider.price}</p>
               </div>
               <a href={provider.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 font-mono text-sm font-bold text-primary hover:text-primary/70">
                 Source ↗
@@ -119,20 +119,19 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
                 ["Qualification", provider.qualification],
               ].map(([label, value]) => (
                 <div key={label}>
-                  <dt className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-foreground/35">{label}</dt>
+                  <dt className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-foreground/60">{label}</dt>
                   <dd className="mt-2 text-sm leading-relaxed text-foreground/65">{value}</dd>
                 </div>
               ))}
             </dl>
-            <p className="mt-5 border-t border-white/[0.06] pt-4 font-mono text-[11px] text-foreground/35">Last checked {provider.lastChecked} · {provider.sourceLabel}</p>
+            <p className="mt-5 border-t border-white/[0.08] pt-4 font-mono text-[11px] text-foreground/60">Last checked {provider.lastChecked} · {provider.sourceLabel}</p>
           </article>
         ))}
       </div>
 
       {visibleProviders.length === 0 ? (
-        <div className="border border-white/[0.08] py-20 text-center text-foreground/50">No provider matches these filters.</div>
+        <div className="border border-white/[0.1] py-20 text-center text-foreground/68">No provider matches these filters.</div>
       ) : null}
     </div>
   );
 }
-

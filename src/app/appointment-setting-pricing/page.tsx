@@ -54,8 +54,8 @@ export default function AppointmentSettingPricingPage() {
           <div className="hero-aurora absolute inset-0 opacity-45" />
           <div className="relative z-10 mx-auto max-w-[1450px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Public provider data</p>
-            <h1 className="mt-6 max-w-6xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">Compare appointment-setting prices without comparing the wrong thing.</h1>
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">A low price means little until you know whether the provider bills a booking, a held meeting, or a qualified meeting held.</p>
+            <h1 className="mt-6 max-w-6xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">Compare the billing unit before you compare the price.</h1>
+            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">A low price means little until you know whether the provider bills a booking, a held meeting, or a qualified meeting held.</p>
             <div className="mt-10 grid max-w-3xl grid-cols-3 gap-px border border-white/[0.08] bg-white/[0.08]">
               {[
                 [String(APPOINTMENT_SETTING_PROVIDERS.length), "Providers checked"],
@@ -64,7 +64,7 @@ export default function AppointmentSettingPricingPage() {
               ].map(([value, label]) => (
                 <div key={label} className="bg-background/85 p-4 sm:p-6">
                   <p className="font-mono text-lg font-black text-primary sm:text-2xl">{value}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/45 sm:text-sm">{label}</p>
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/65 sm:text-sm">{label}</p>
                 </div>
               ))}
             </div>
@@ -93,10 +93,10 @@ export default function AppointmentSettingPricingPage() {
         </section>
 
         <section className="border-b border-white/[0.06] px-6 py-8 md:px-12">
-          <div className="mx-auto grid max-w-[1450px] gap-6 text-sm leading-relaxed text-foreground/55 md:grid-cols-3">
+          <div className="mx-auto grid max-w-[1450px] gap-6 text-sm leading-relaxed text-foreground/68 md:grid-cols-3">
             <p><strong className="text-foreground/80">Provider-specific facts only.</strong> Generic industry ranges published in provider blogs are not treated as that provider&apos;s price.</p>
             <p><strong className="text-foreground/80">Not publicly stated.</strong> The fact was not found on the checked official source. This does not prove it is absent from every page or private proposal.</p>
-            <p><strong className="text-foreground/80">No ranking.</strong> Alphabetical order prevents an unsupported “best agency” claim. Buyers still need to validate delivery and contract terms.</p>
+            <p><strong className="text-foreground">No ranking.</strong> Alphabetical order prevents an unsupported &quot;best agency&quot; claim. Buyers still need to validate delivery and contract terms.</p>
           </div>
         </section>
 

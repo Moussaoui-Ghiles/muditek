@@ -188,7 +188,7 @@
   /* ─── Button Press Physics ─── */
   .btn-press {
     cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
   .btn-press:hover {
     transform: translateY(-2px);
@@ -199,7 +199,7 @@
 
   /* ─── Card Lift ─── */
   .card-lift {
-    transition: all 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.6s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.2s ease, border-color 0.2s ease;
   }
   .card-lift:hover {
     transform: translateY(-6px);
@@ -208,7 +208,7 @@
 
   /* ─── Stat Row Hover ─── */
   .stat-row {
-    transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: background-color 0.4s cubic-bezier(0.32, 0.72, 0, 1), padding-left 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   }
   .stat-row:hover {
     background: rgba(255, 255, 255, 0.02);
@@ -228,6 +228,9 @@
     filter: none;
   }
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
     .sr {
       animation: none !important;
       opacity: 1;
@@ -543,4 +546,18 @@
   transform: translateY(0);
   outline: 3px solid #e8ebee;
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -7,7 +7,7 @@ describe("account newsletter consent", () => {
   });
 
   it("keeps an unsubscribed address unsubscribed when consent is off", () => {
-    expect(newsletterActionForAccountCreation(false, "unsubscribed")).toBe("none");
+    expect(newsletterActionForAccountCreation(false, "unsub")).toBe("none");
   });
 
   it("subscribes only after explicit consent", () => {
@@ -15,6 +15,6 @@ describe("account newsletter consent", () => {
   });
 
   it("never reactivates an unsubscribed address through account creation", () => {
-    expect(newsletterActionForAccountCreation(true, "unsubscribed")).toBe("none");
+    expect(newsletterActionForAccountCreation(true, "unsub")).toBe("none");
   });
 });

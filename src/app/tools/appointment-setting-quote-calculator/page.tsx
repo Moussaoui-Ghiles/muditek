@@ -53,9 +53,9 @@ export default function AppointmentSettingQuoteCalculatorPage() {
           <div className="hero-aurora absolute inset-0 opacity-50" />
           <div className="relative z-10 mx-auto max-w-[1250px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Free buyer tool</p>
-            <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.9] tracking-[-0.045em] sm:text-7xl lg:text-[84px]">What does this quote cost after no-shows and bad-fit meetings?</h1>
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/65">Enter the setup fee, monthly fee, fee per qualified meeting held, and expected meetings. Use the provider&apos;s written assumptions for volume, show rate, and qualification rate. Do not guess.</p>
-            <p className="mt-5 text-xs text-foreground/50">By Ghiles Moussaoui · Updated 2026-08-23 · <Link href="/appointment-setting-pricing" className="text-primary hover:underline">Pricing source index</Link></p>
+            <h1 className="mt-6 max-w-5xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">What does this quote cost after no-shows and bad-fit meetings?</h1>
+            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">Enter the setup fee, monthly fee, fee per qualified meeting held, and expected meetings. Use the provider&apos;s written assumptions for volume, show rate, and qualification rate. Do not guess.</p>
+            <p className="mt-5 text-xs text-foreground/65">By Ghiles Moussaoui · Updated 2026-08-23 · <Link href="/appointment-setting-pricing" className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Pricing source index</Link></p>
           </div>
         </section>
 
@@ -79,11 +79,11 @@ export default function AppointmentSettingQuoteCalculatorPage() {
                 ].map(([term, definition]) => (
                   <div key={term} className="border-l border-primary/35 pl-5">
                     <dt className="font-bold text-foreground">{term}</dt>
-                    <dd className="mt-2 text-sm leading-relaxed text-foreground/55">{definition}</dd>
+                    <dd className="mt-2 text-sm leading-relaxed text-foreground/68">{definition}</dd>
                   </div>
                 ))}
               </dl>
-              <p className="mt-8 border border-white/[0.08] bg-background/60 p-5 text-sm leading-relaxed text-foreground/55"><strong className="text-foreground/80">M&amp;A buyers:</strong> this calculator models revenue from new clients. It does not model acquisition returns. Compare fixed exposure and the exact owner-interest threshold separately.</p>
+              <p className="mt-8 border border-white/[0.1] bg-background/60 p-5 text-sm leading-relaxed text-foreground/68"><strong className="text-foreground">M&amp;A buyers:</strong> this calculator models revenue from new clients. It does not model acquisition returns. Compare fixed exposure and the exact owner-interest threshold separately.</p>
             </div>
             <div className="border border-white/[0.08] bg-background/60 p-7 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Next comparison</p>

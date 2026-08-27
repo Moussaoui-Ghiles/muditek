@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Confirm newsletter subscription | Muditek",
+  robots: { index: false, follow: false, nocache: true },
+  referrer: "no-referrer",
+};
+
 export default async function NewsletterConfirmationPage({
   params,
 }: {
@@ -12,11 +20,11 @@ export default async function NewsletterConfirmationPage({
           Muditek newsletter
         </p>
         <h1 className="mt-4 text-3xl font-semibold tracking-[-0.03em]">
-          Keep receiving the practical builds?
+          Confirm that you want to stay subscribed.
         </h1>
         <p className="mt-4 leading-7 text-zinc-300">
-          Confirm once and I&apos;ll keep sending the workflows, playbooks, and tools.
-          If you leave this page, nothing changes.
+          Use this button only if you want Muditek newsletter emails to continue.
+          Leaving this page changes nothing.
         </p>
         <form
           action={`/api/newsletter/confirm/${encodeURIComponent(issueId)}/${encodeURIComponent(token)}`}
@@ -27,7 +35,7 @@ export default async function NewsletterConfirmationPage({
             type="submit"
             className="h-11 rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 hover:bg-white"
           >
-            Keep me on the list
+            Confirm subscription
           </button>
         </form>
         <p className="mt-5 text-sm text-zinc-500">

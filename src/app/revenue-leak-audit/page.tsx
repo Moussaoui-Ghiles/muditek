@@ -433,7 +433,7 @@ export default function RevenueMachinePage() {
           <ScrollReveal delay={320}>
             <div className="mt-16 md:mt-20 text-center">
               <a
-                href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+                href="https://calendly.com/biz-ghiless/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-press group relative inline-flex items-center justify-center px-12 md:px-16 py-6 bg-emerald-500 text-background text-base font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_60px_rgba(52,211,153,0.18)]"
@@ -464,7 +464,7 @@ export default function RevenueMachinePage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               In 5 days. If we can&apos;t find €50K, you pay nothing. Do the math on that.
             </p>
-            <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href="https://calendly.com/biz-ghiless/30min" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book Your Diagnostic
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />

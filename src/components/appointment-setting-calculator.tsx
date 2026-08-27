@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { trackCalculatorCompletion } from "@/components/acquisition-tracking";
 import { calculateAppointmentSettingQuote, type AppointmentSettingQuoteInputs } from "@/lib/appointment-setting-calculator";
 
@@ -58,10 +58,10 @@ function Field({
           onChange={(event) => onChange(id, event.target.value)}
           placeholder="Enter your number"
           required
-          className="w-full rounded-[3px] border border-white/[0.1] bg-background/70 px-4 py-4 font-mono text-base text-foreground outline-none transition-colors placeholder:text-foreground/25 focus:border-primary/70"
+          className="w-full rounded-[10px] border border-white/[0.14] bg-background/70 px-4 py-4 font-mono text-base text-foreground outline-none transition-colors placeholder:text-foreground/55 focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
         />
       </span>
-      <span className="mt-2 block text-sm leading-relaxed text-foreground/45">{hint}</span>
+      <span className="mt-2 block text-sm leading-relaxed text-foreground/65">{hint}</span>
     </label>
   );
 }
@@ -71,6 +71,7 @@ export function AppointmentSettingCalculator() {
   const [currency, setCurrency] = useState<Currency>("EUR");
   const [results, setResults] = useState<ReturnType<typeof calculateAppointmentSettingQuote>>(null);
   const [error, setError] = useState("");
+  const hasTrackedCompletion = useRef(false);
 
   const moneyFormatter = useMemo(
     () => new Intl.NumberFormat(CURRENCIES[currency].locale, { style: "currency", currency, maximumFractionDigits: 0 }),
@@ -78,9 +79,15 @@ export function AppointmentSettingCalculator() {
   );
 
   function updateInput(id: keyof AppointmentSettingQuoteInputs, value: string) {
-    setInputs((current) => ({ ...current, [id]: value }));
-    setResults(null);
+    const nextInputs = { ...inputs, [id]: value };
+    const nextResults = calculateAppointmentSettingQuote(nextInputs);
+    setInputs(nextInputs);
+    setResults(nextResults);
     setError("");
+    if (nextResults && !hasTrackedCompletion.current) {
+      trackCalculatorCompletion(currency);
+      hasTrackedCompletion.current = true;
+    }
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -94,23 +101,26 @@ export function AppointmentSettingCalculator() {
 
     setResults(nextResults);
     setError("");
-    trackCalculatorCompletion(currency);
+    if (!hasTrackedCompletion.current) {
+      trackCalculatorCompletion(currency);
+      hasTrackedCompletion.current = true;
+    }
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-      <form onSubmit={submit} className="border border-white/[0.08] bg-card/40 p-6 md:p-9">
+      <form onSubmit={submit} className="rounded-[12px] border border-white/[0.1] bg-card/40 p-6 md:p-9">
         <div className="mb-8 flex flex-col gap-4 border-b border-white/[0.07] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Buyer inputs only</p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.02em]">Enter one month of the quote</h2>
           </div>
-          <label className="text-sm font-bold uppercase tracking-[0.12em] text-foreground/55">
+          <label className="text-sm font-bold uppercase tracking-[0.12em] text-foreground/70">
             Currency
             <select
               value={currency}
               onChange={(event) => setCurrency(event.target.value as Currency)}
-              className="ml-3 rounded-[3px] border border-white/[0.1] bg-background px-3 py-2 font-mono text-foreground outline-none focus:border-primary/70"
+              className="ml-3 rounded-[10px] border border-white/[0.14] bg-background px-3 py-2 font-mono text-foreground outline-none focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
             >
               {Object.keys(CURRENCIES).map((code) => <option key={code}>{code}</option>)}
             </select>
@@ -132,13 +142,13 @@ export function AppointmentSettingCalculator() {
         {error ? <p role="alert" className="mt-6 text-sm font-semibold text-red-300">{error}</p> : null}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button type="submit" className="btn-press bg-primary px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-background">
+          <button type="submit" className="btn-press bg-primary px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
             Calculate the quote
           </button>
           <button
             type="button"
-            onClick={() => { setInputs(EMPTY_INPUTS); setResults(null); setError(""); }}
-            className="btn-press border border-white/[0.1] px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-foreground/65"
+            onClick={() => { setInputs(EMPTY_INPUTS); setResults(null); setError(""); hasTrackedCompletion.current = false; }}
+            className="btn-press border border-white/[0.16] px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             Reset
           </button>
@@ -146,15 +156,16 @@ export function AppointmentSettingCalculator() {
       </form>
 
       <section aria-live="polite" className="lg:sticky lg:top-28">
-        <div className="border border-primary/20 bg-primary/[0.035] p-6 md:p-9">
+        <div className="rounded-[12px] border border-primary/25 bg-primary/[0.035] p-6 md:p-9">
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Quote economics</p>
           {!results ? (
             <div className="flex min-h-[420px] flex-col justify-center py-10">
-              <p className="max-w-md text-3xl font-black tracking-[-0.03em] text-foreground/25">No result until you enter your own numbers.</p>
-              <p className="mt-5 max-w-md text-base leading-relaxed text-foreground/45">There are no industry defaults, assumed close rates, or hidden benchmarks in this calculator.</p>
+              <p className="max-w-md text-3xl font-black tracking-[-0.03em] text-foreground/48">No result until you enter your own numbers.</p>
+              <p className="mt-5 max-w-md text-base leading-relaxed text-foreground/65">There are no industry defaults, assumed close rates, or hidden benchmarks in this calculator.</p>
             </div>
           ) : (
-            <div className="mt-7 space-y-3">
+            <div className="mt-7">
+              <div className="divide-y divide-white/[0.1] border-y border-white/[0.1]">
               {[
                 ["Total provider cost for the month", moneyFormatter.format(results.totalProviderCost)],
                 ["Provider cost per qualified meeting held", moneyFormatter.format(results.costPerQualifiedHeldMeeting)],
@@ -162,23 +173,24 @@ export function AppointmentSettingCalculator() {
                 ["Break-even close rate", `${(results.breakEvenCloseRate * 100).toFixed(1)}%`],
                 ["Estimated contribution after provider cost", moneyFormatter.format(results.expectedGrossProfit)],
               ].map(([label, value]) => (
-                <div key={label} className="border border-white/[0.07] bg-background/50 p-5">
-                  <p className="text-sm leading-relaxed text-foreground/50">{label}</p>
+                <div key={label} className="py-5">
+                  <p className="text-sm leading-relaxed text-foreground/68">{label}</p>
                   <p className="mt-2 break-words font-mono text-2xl font-black text-foreground tnum">{value}</p>
                 </div>
               ))}
+              </div>
 
               <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/[0.07] pt-5">
                 <div>
-                  <p className="text-sm text-foreground/45">Qualified held meetings</p>
+                  <p className="text-sm text-foreground/65">Qualified held meetings</p>
                   <p className="mt-1 font-mono text-lg font-bold tnum">{results.qualifiedHeldMeetings.toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-foreground/45">Expected clients</p>
+                  <p className="text-sm text-foreground/65">Expected clients</p>
                   <p className="mt-1 font-mono text-lg font-bold tnum">{results.expectedClients.toFixed(2)}</p>
                 </div>
               </div>
-              <p className="border-t border-white/[0.07] pt-5 text-sm leading-relaxed text-foreground/42">These estimates use only the numbers you entered. They are not a delivery forecast.</p>
+              <p className="border-t border-white/[0.1] pt-5 text-sm leading-relaxed text-foreground/65">These estimates use only the numbers you entered. They are not a delivery forecast.</p>
             </div>
           )}
         </div>

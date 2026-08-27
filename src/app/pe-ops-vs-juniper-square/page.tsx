@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
+  "https://calendly.com/biz-ghiless/30min";
 
 const COMPARISON = [
   { category: "LP onboarding", juniper: "SaaS template. You configure within their framework.", muditek: "Self-service portal. Jurisdiction-aware document requirements. 3-5 day onboarding." },

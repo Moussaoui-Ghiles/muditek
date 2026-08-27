@@ -8,7 +8,7 @@ import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "About Muditek",
-  description: "Muditek is run by Ghiles Moussaoui. The current commercial focus is appointment setting, supported by practical AI implementation.",
+  description: "Muditek is run by Ghiles Moussaoui and provides B2B appointment setting and practical AI implementation.",
   alternates: { canonical: "https://muditek.com/about" },
   openGraph: {
     title: "About Muditek",
@@ -42,8 +42,8 @@ export default function AboutPage() {
           <div className="relative mx-auto grid w-full max-w-[1300px] gap-12 px-6 md:px-12 lg:grid-cols-[1fr_300px] lg:items-end">
             <div>
               <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.22em] text-primary"><span className="h-px w-8 bg-primary" /> About Muditek</p>
-              <h1 className="mt-7 max-w-[900px] text-5xl font-black leading-[0.93] tracking-[-0.04em] sm:text-6xl md:text-[80px]">One operator. One current offer. One deeper capability.</h1>
-              <p className="mt-8 max-w-[680px] text-base leading-8 text-foreground/72 md:text-lg">Muditek is run by Ghiles Moussaoui. The current commercial focus is appointment setting. AI implementation supports the systems and workflows behind that work.</p>
+              <h1 className="mt-7 max-w-[900px] text-5xl font-black leading-[0.93] tracking-[-0.04em] sm:text-6xl md:text-[80px]">Muditek is run by one operator: Ghiles Moussaoui.</h1>
+              <p className="mt-8 max-w-[680px] text-base leading-8 text-foreground/72 md:text-lg">The commercial focus is B2B appointment setting. AI implementation covers workflows that need a deeper build.</p>
             </div>
             <div className="border-y border-white/[0.12] py-6">
               <Image src="/images/ghiles.jpg" alt="Ghiles Moussaoui" width={72} height={72} className="h-18 w-18 rounded-full border border-white/15 object-cover" />
@@ -56,17 +56,17 @@ export default function AboutPage() {
         <section className="border-b border-white/[0.06] py-24 md:py-32">
           <div className="mx-auto grid w-full max-w-[1300px] gap-12 px-6 md:px-12 lg:grid-cols-[0.7fr_1.3fr]">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">Current focus</p>
-              <h2 className="mt-5 text-4xl font-black leading-none tracking-[-0.035em] md:text-5xl">Commercial clarity before breadth.</h2>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">What Muditek does</p>
+              <h2 className="mt-5 text-4xl font-black leading-none tracking-[-0.035em] md:text-5xl">One clear starting point. Deeper builds where needed.</h2>
             </div>
             <div className="border-t border-white/[0.1]">
               <div className="grid gap-3 border-b border-white/[0.1] py-7 sm:grid-cols-[190px_1fr]">
                 <h3 className="font-semibold">Appointment Setting</h3>
-                <p className="text-sm leading-6 text-foreground/65">The front-end offer. It covers offer review, targeting, research, messaging, reply handling, qualification, and held-meeting handoff.</p>
+                <p className="text-sm leading-6 text-foreground/65">Offer review, targeting, research, messaging, reply handling, qualification, and held-meeting handoff.</p>
               </div>
               <div className="grid gap-3 border-b border-white/[0.1] py-7 sm:grid-cols-[190px_1fr]">
                 <h3 className="font-semibold">AI Implementation</h3>
-                <p className="text-sm leading-6 text-foreground/65">The back-end capability. Revenue operations, operational workflows, content systems, and agents appear as applications of that capability.</p>
+                <p className="text-sm leading-6 text-foreground/65">Revenue operations, operational workflows, content systems, and agent systems that need to be scoped, built, tested, and handed over.</p>
               </div>
             </div>
           </div>

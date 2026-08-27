@@ -29,13 +29,12 @@ export function LibraryCollection({
         </div>
 
         <div className="border-y border-white/[0.08]">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <Link
               key={`${item.kind}:${item.slug}`}
               href={`/${item.kind}s/${item.slug}`}
-              className="group grid gap-4 border-b border-white/[0.06] px-1 py-6 transition-colors last:border-b-0 hover:bg-white/[0.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-4 focus-visible:ring-offset-background md:grid-cols-[72px_minmax(0,0.8fr)_minmax(0,1.2fr)_120px] md:items-center md:px-5"
+              className="group grid gap-4 border-b border-white/[0.06] px-1 py-6 transition-colors last:border-b-0 hover:bg-white/[0.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-4 focus-visible:ring-offset-background md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_120px] md:items-center md:px-5"
             >
-              <span className="font-mono text-xs text-foreground/40">{String(index + 1).padStart(2, "0")}</span>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                   {KIND_LABELS[item.kind]} · {item.topic.replaceAll("-", " ")}
@@ -64,7 +63,7 @@ export function CommercialNextStep({ item }: { item: LibraryItem }) {
     <section className="w-full border-t border-white/[0.06] py-16 md:py-24">
       <div className="mx-auto grid w-full max-w-[1000px] gap-8 px-6 md:grid-cols-[1fr_auto] md:items-center md:px-12">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">Relevant next step</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">If you need implementation</p>
           <h2 className="mt-4 max-w-2xl text-3xl font-black leading-[1.05] tracking-[-0.03em] text-foreground md:text-5xl">
             {outbound
               ? "Need this turned into a working appointment-setting system?"

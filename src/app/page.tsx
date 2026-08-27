@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { AcquisitionPageView, TrackedBookingLink } from "@/components/acquisition-tracking";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Navbar } from "@/components/navbar";
+
+const VIDEO_URL =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260309_042944_4a2205b7-b061-490a-852b-92d9e9955ce9.mp4";
 
 export const metadata: Metadata = {
   title: "Qualified B2B Sales Meetings Without an Agency Retainer | Muditek",
@@ -72,7 +74,9 @@ export default function HomePage() {
 
       <main id="main-content">
         <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden px-6 pb-20 pt-28 text-center md:px-12">
-          <Image src="/images/documents-desk.png" alt="" fill priority sizes="100vw" className="object-cover object-center" aria-hidden="true" />
+          <video autoPlay loop muted playsInline poster="/images/documents-desk.png" className="absolute inset-0 h-full w-full object-cover object-center" aria-hidden="true">
+            <source src={VIDEO_URL} type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,7,12,0.72)_0%,rgba(2,7,12,0.38)_42%,rgba(2,7,12,0.82)_100%)]" aria-hidden="true" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,transparent_0%,rgba(2,7,12,0.12)_52%,rgba(2,7,12,0.68)_100%)]" aria-hidden="true" />
 

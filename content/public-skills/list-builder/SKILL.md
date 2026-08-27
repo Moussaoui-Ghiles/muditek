@@ -68,10 +68,14 @@ Return:
 - unresolved coverage gaps;
 - the exact next approval.
 
+Use `templates/list-build-brief.md` to lock the scope before research. Use
+`templates/output-schema.md` to define the delivered fields before data is
+collected.
+
 ## Completion gate
 
 Complete when the scope and cost were approved, every delivered row has provenance, exclusions were applied, duplicates were reconciled, verification states remain accurate, and the final list passed the user's quality rules.
 
 ## Example
 
-Read `examples/example.md`. It shows the required stage boundaries with fictional counts.
+Read `examples/example.md`. It shows the required stage boundaries with fictional counts. The two files in `templates/` are reusable working documents, not client examples.

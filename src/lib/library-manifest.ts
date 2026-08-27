@@ -3,7 +3,24 @@ export type LibraryLane = "outbound" | "ai-implementation";
 export type LibraryAccess = "public" | "account" | "none";
 export type LibraryStatus = "published" | "archived" | "redirected" | "removed";
 
-export interface LibraryItem {
+export interface LibrarySourceLink {
+  label: string;
+  href: string;
+}
+
+export interface LibraryPresentation {
+  version: string;
+  answer: string;
+  inputs: string[];
+  outputs: string[];
+  prerequisites: string[];
+  bundleFiles: string[];
+  examplePath: string;
+  validationCommand: string | null;
+  sourceLinks: LibrarySourceLink[];
+}
+
+export interface LibraryItem extends LibraryPresentation {
   slug: string;
   title: string;
   summary: string;
@@ -22,6 +39,364 @@ export interface LibraryItem {
 const OUTBOUND_TARGET = "/appointment-setting" as const;
 const AI_TARGET = "/ai-implementation" as const;
 
+const SKILL_BUNDLE_FILES: Record<string, string[]> = {
+  "cold-offer-review": ["SKILL.md", "agents/openai.yaml", "examples/example-review.md", "references/audit-criteria.md", "references/intake.md", "references/output-schema.md"],
+  "buyer-signal-list-research": ["SKILL.md", "agents/openai.yaml", "references/evidence-model.md", "references/examples.md", "references/intake-schema.md", "references/output-contract.md", "references/signal-rubric.md"],
+  "outbound-funnel-economics": ["SKILL.md", "agents/openai.yaml", "references/intake-and-data-contract.md", "references/interpretation-and-audit.md", "references/metric-specification.md", "references/source-boundaries.md", "references/worked-examples.md", "scripts/calculate.py", "scripts/test_calculate.py"],
+  "list-builder": ["SKILL.md", "examples/example.md", "templates/list-build-brief.md", "templates/output-schema.md"],
+  "list-expander": ["SKILL.md", "examples/example.md"],
+  "google-maps-list-builder": ["SKILL.md", "examples/example.md", "examples/raw.csv", "scripts/normalize-export.mjs"],
+  "list-quality-scorecard": ["SKILL.md", "examples/example.md", "examples/leads.csv", "scripts/audit-list.mjs"],
+  "icp-prompt-builder": ["SKILL.md", "examples/example.md", "examples/test-cases.json"],
+  "audience-content-os": ["SKILL.md", "examples/example.md"],
+  "linkedin-content-writer": ["SKILL.md", "examples/example.md"],
+  "x-content-writer": ["SKILL.md", "examples/example.md"],
+  "content-clarity-review": ["SKILL.md", "examples/example.md"],
+  "lead-magnets": ["SKILL.md", "examples/example.md", "references/benchmarks.md", "references/format-guide.md"],
+};
+
+function skillPresentation(
+  slug: string,
+  answer: string,
+  inputs: string[],
+  outputs: string[],
+  prerequisites: string[],
+  source: string,
+  examplePath: string,
+): LibraryPresentation {
+  return {
+    version: "1.0.0",
+    answer,
+    inputs,
+    outputs,
+    prerequisites,
+    bundleFiles: SKILL_BUNDLE_FILES[slug] ?? [],
+    examplePath,
+    validationCommand: `node scripts/validate-library-skill.mjs ${source} ${examplePath}`,
+    sourceLinks: [
+      { label: "Public instructions", href: `/skills/${slug}#instructions` },
+    ],
+  };
+}
+
+function playbookPresentation(
+  slug: string,
+  answer: string,
+  inputs: string[],
+  outputs: string[],
+  prerequisites: string[],
+): LibraryPresentation {
+  return {
+    version: "1.0.0",
+    answer,
+    inputs,
+    outputs,
+    prerequisites,
+    bundleFiles: [],
+    examplePath: `/api/library/playbooks/${slug}`,
+    validationCommand: null,
+    sourceLinks: [
+      { label: "Original playbook", href: `/api/library/playbooks/${slug}` },
+    ],
+  };
+}
+
+function toolPresentation(
+  answer: string,
+  inputs: string[],
+  outputs: string[],
+  prerequisites: string[],
+  methodHref: string,
+): LibraryPresentation {
+  return {
+    version: "1.0.0",
+    answer,
+    inputs,
+    outputs,
+    prerequisites,
+    bundleFiles: [],
+    examplePath: methodHref,
+    validationCommand: null,
+    sourceLinks: [{ label: "Method source", href: methodHref }],
+  };
+}
+
+const PRESENTATION_BY_SLUG: Record<string, LibraryPresentation> = {
+  "cold-offer-review": skillPresentation(
+    "cold-offer-review",
+    "Use this before copy or list work. It separates an offer problem from missing evidence and identifies the first claim, term, or buyer assumption that needs work.",
+    ["Current offer and terms", "Intended buyer", "Available proof", "Sales context and decision"],
+    ["Evidence register", "Seven-part offer review", "Earliest broken link", "Next validation step"],
+    ["An existing offer to review", "Access to the claims and terms being assessed"],
+    "content/skills/cold-offer-review",
+    "examples/example-review.md",
+  ),
+  "buyer-signal-list-research": skillPresentation(
+    "buyer-signal-list-research",
+    "Use this to define who belongs on a list and why now. It keeps company fit, buyer roles, observable signals, and personalization evidence separate.",
+    ["Offer and serviceability rules", "Account fit and exclusions", "Buyer roles", "Approved sources and evidence limits"],
+    ["Sourcing specification", "Signal rubric", "Sample review plan", "Campaign handoff fields"],
+    ["A defined offer", "A human who can approve targeting and sample decisions"],
+    "content/skills/buyer-signal-list-research",
+    "references/examples.md",
+  ),
+  "outbound-funnel-economics": skillPresentation(
+    "outbound-funnel-economics",
+    "Use one fixed cohort and calculate only what its evidence supports. Missing values remain unknown, costs stay inside a stated boundary, and rates never become causal claims.",
+    ["Fixed cohort and dates", "Stage counts and definitions", "Acquisition costs", "Customer value inputs and maturity status"],
+    ["Reconciled funnel table", "Supported unit economics", "Break-even result when valid", "Unknowns and evidence to inspect next"],
+    ["One comparable acquisition motion", "Unique-entity counts", "An explicit cost boundary"],
+    "content/skills/outbound-funnel-economics",
+    "references/worked-examples.md",
+  ),
+  "list-builder": skillPresentation(
+    "list-builder",
+    "Use this to plan a company-first list build with explicit fit rules, exclusions, source limits, deduplication, and a separate approval gate before contact collection.",
+    ["Known-good companies", "Fit rules and exclusions", "Buyer roles", "Approved sources, budget, destination, and suppression files"],
+    ["Company and contact files", "Exclusions with reasons", "Provenance", "Coverage and verification reconciliation"],
+    ["At least one confirmed-fit company", "A reviewer for company and contact samples"],
+    "content/public-skills/list-builder",
+    "examples/example.md",
+  ),
+  "list-expander": skillPresentation(
+    "list-expander",
+    "Use confirmed-fit seed domains to find similar companies. The workflow expands only after the fit fingerprint and disqualifiers are explicit.",
+    ["Confirmed-fit seed domains", "Fit rules and disqualifiers", "Geography and size limits", "Sources, budget, exclusions, and stop condition"],
+    ["Deduplicated candidate set", "Fit evidence and rejection reasons", "Coverage report", "Next approved expansion lane"],
+    ["Several known-good seeds", "A human review step for edge cases"],
+    "content/public-skills/list-expander",
+    "examples/example.md",
+  ),
+  "google-maps-list-builder": skillPresentation(
+    "google-maps-list-builder",
+    "Use a defined category and location contract to turn a user-supplied or approved Maps export into a deduplicated company file with coverage and exclusion evidence.",
+    ["Business categories and synonyms", "Locations", "Fit rules and exclusions", "Approved export or research method"],
+    ["companies.csv", "coverage.md", "excluded.csv", "Human-review sample"],
+    ["Permission to use the selected source", "A fixed research volume or budget"],
+    "content/skills/google-maps-list-builder",
+    "examples/example.md",
+  ),
+  "list-quality-scorecard": skillPresentation(
+    "list-quality-scorecard",
+    "Run this before sending. It reports duplicate, title, domain, verification, and ICP-review problems without uploading the list or inventing a pass threshold.",
+    ["CSV with email", "Job title", "Company domain", "Verification status and ICP decision"],
+    ["Issue counts", "Exact rows to review", "Duplicate and verification findings", "User-supplied threshold decision"],
+    ["A local CSV", "Known column names or a mapping"],
+    "content/skills/list-quality-scorecard",
+    "examples/example.md",
+  ),
+  "icp-prompt-builder": skillPresentation(
+    "icp-prompt-builder",
+    "Turn written fit rules and human-reviewed examples into a strict company-fit prompt. Do not lock it until two reviewed batches need no corrections.",
+    ["Positive fit rules", "Hard disqualifiers", "Available company fields", "Mixed reviewed examples"],
+    ["icp-prompt.md", "test-cases.json", "Change log", "Unresolved edge cases"],
+    ["A reviewer who can decide fit", "Evidence for every sample company"],
+    "content/skills/icp-prompt-builder",
+    "examples/test-cases.json",
+  ),
+  "audience-content-os": skillPresentation(
+    "audience-content-os",
+    "Use one complete source to produce channel-native content without turning examples, outside claims, or third-party results into your own experience.",
+    ["Complete source", "Audience and channel", "Approved claims", "Required format and call to action"],
+    ["Source map", "Channel-native draft", "Claim check", "Approval-ready file"],
+    ["A complete readable source", "Clear approval ownership"],
+    "content/skills/audience-content-os",
+    "examples/example.md",
+  ),
+  "linkedin-content-writer": skillPresentation(
+    "linkedin-content-writer",
+    "Draft a LinkedIn post from the source in front of you. The workflow preserves locked wording, rejected directions, source order, and claim ownership.",
+    ["Complete source or approved brief", "Target format", "Locked language", "Required link or media"],
+    ["Source map", "LinkedIn draft", "Claim trace", "Revision state"],
+    ["An approved source", "Known author and narrator"],
+    "content/skills/linkedin-content-writer",
+    "examples/example.md",
+  ),
+  "x-content-writer": skillPresentation(
+    "x-content-writer",
+    "Choose the X format that fits the material, then write from a factual inventory. Every claim and first-person statement must trace to the source.",
+    ["Complete source or brief", "Topic and factual inventory", "Locked wording", "Required link or media"],
+    ["Format decision", "X draft", "Claim trace", "One requested call to action at most"],
+    ["A source with enough detail for the chosen format", "Clear author ownership"],
+    "content/skills/x-content-writer",
+    "examples/example.md",
+  ),
+  "content-clarity-review": skillPresentation(
+    "content-clarity-review",
+    "Review a draft line by line for comprehension, coherence, register, retention, and source fidelity. The output points to exact lines instead of rewriting by instinct.",
+    ["Draft", "Source", "Audience and channel", "Locked wording and rejected directions"],
+    ["Line-level review", "Reason for each failed pass", "Smallest safe correction", "Unresolved source gaps"],
+    ["A stable draft", "The source used to create it"],
+    "content/skills/content-clarity-review",
+    "examples/example.md",
+  ),
+  "lead-magnets": skillPresentation(
+    "lead-magnets",
+    "Build a useful asset around one evidenced problem and one complete step toward the paid work. The call to action comes after the reader receives the promised value.",
+    ["Evidenced problem", "Audience", "Paid offer", "Available source material and delivery constraints"],
+    ["Problem-to-offer bridge", "Format options", "Consumption plan", "Asset brief and call to action"],
+    ["A defined paid next step", "Source material that can support the asset"],
+    "content/skills/lead-magnets",
+    "examples/example.md",
+  ),
+  "outbound-failure-diagnostic": playbookPresentation(
+    "outbound-failure-diagnostic",
+    "Start at the earliest unsupported condition: market and motion, cold offer, buyer reason, contact path, funnel conversion, or customer economics. Do not change volume or copy until you know which condition failed.",
+    ["Market and account rules", "Offer and proof", "List and contact-path evidence", "Fixed-cohort funnel and cost data"],
+    ["First failure point", "Supported calculations", "Evidence gaps", "Next investigation"],
+    ["One acquisition motion", "Stage definitions", "Access to the underlying campaign records"],
+  ),
+  "claude-code-lead-gen-guide": playbookPresentation(
+    "claude-code-lead-gen-guide",
+    "Use a local project to keep lead research rules, source files, scripts, and review outputs together. Human approval still controls targeting and live actions.",
+    ["Offer and ICP", "Approved research sources", "Output schema", "Review rules"],
+    ["Project structure", "Research workflow", "Reviewable company and contact outputs"],
+    ["A local coding environment", "Permission for each data source"],
+  ),
+  "hermes-outbound-gtm-agent": playbookPresentation(
+    "hermes-outbound-gtm-agent",
+    "Run outbound research and handoffs through one agent only after the offer, targeting rules, tools, and approval stops are explicit.",
+    ["Offer", "Target rules", "Tool permissions", "Review and stop conditions"],
+    ["Agent setup", "Task flow", "Approval points", "Operating checklist"],
+    ["Hermes installed", "Separate authorization for external actions"],
+  ),
+  "chatgpt-work-self-improving-outbound": playbookPresentation(
+    "chatgpt-work-self-improving-outbound",
+    "Improve an outbound workflow by storing evidence from each run, reviewing errors, and changing one controlled part of the process at a time.",
+    ["Current workflow", "Run evidence", "Error and outcome records", "Change boundary"],
+    ["Review loop", "Change log", "Updated operating instructions"],
+    ["Stable stage definitions", "A reviewer for each proposed change"],
+  ),
+  "google-maps-outbound": playbookPresentation(
+    "google-maps-outbound",
+    "Use Google Maps when the market is defined by local presence. Start with category and location coverage, then deduplicate and review fit before contact research.",
+    ["Categories", "Locations", "Fit rules", "Approved Maps source"],
+    ["Coverage plan", "Deduplicated account list", "Fit-review sample"],
+    ["A geographic market", "Permission to use the selected collection method"],
+  ),
+  "cold-email-claude-code-blueprint": playbookPresentation(
+    "cold-email-claude-code-blueprint",
+    "Keep research, message inputs, validation, and handoffs in a local code project. Sending remains a separate approved action.",
+    ["Approved offer", "Target list", "Message evidence", "Sender and review constraints"],
+    ["Project structure", "Research and drafting flow", "Pre-send checks"],
+    ["A local coding environment", "Approved sending infrastructure"],
+  ),
+  "slack-outbound-agent-playbook": playbookPresentation(
+    "slack-outbound-agent-playbook",
+    "Use Slack as the review surface for an outbound agent. Keep source evidence, proposed actions, approval, and execution status visible in the same thread.",
+    ["Outbound workflow", "Slack workspace", "Agent permissions", "Approval rules"],
+    ["Channel structure", "Agent loop", "Review messages", "Failure and escalation states"],
+    ["A Slack app and agent runtime", "Restricted tool permissions"],
+  ),
+  "agentic-sdr-setup-guide": playbookPresentation(
+    "agentic-sdr-setup-guide",
+    "Set up an agent-assisted SDR workflow around a defined offer, approved target rules, source evidence, and human review before live actions.",
+    ["Offer", "ICP", "Research sources", "Review and sending rules"],
+    ["SDR workflow", "Agent roles", "Approval points", "Operating checklist"],
+    ["Approved tools", "A human owner for live outreach"],
+  ),
+  "local-ai-build-guide": playbookPresentation(
+    "local-ai-build-guide",
+    "Choose a local AI setup by working backward from data sensitivity, model needs, hardware limits, and the people who will operate it.",
+    ["Data boundary", "Required tasks", "Hardware and budget", "Operator constraints"],
+    ["Local architecture", "Model and runtime choices", "Installation and operating plan"],
+    ["A supported computer", "A backup and access-control plan"],
+  ),
+  "loop-design-playbook": playbookPresentation(
+    "loop-design-playbook",
+    "An agent loop needs explicit state, available actions, review points, completion rules, and recovery behavior. Without them, repeated work is not a system.",
+    ["Task and owner", "State and evidence", "Allowed actions", "Completion and failure rules"],
+    ["Loop specification", "State transitions", "Review gates", "Recovery path"],
+    ["A bounded workflow", "Known permissions and systems of record"],
+  ),
+  "mudiagent-operator-guide": playbookPresentation(
+    "mudiagent-operator-guide",
+    "Operate MudiAgent as a local knowledge system with controlled sources, explicit maintenance, and human review of sensitive or external actions.",
+    ["Approved knowledge sources", "User roles", "Local runtime", "Maintenance rules"],
+    ["Operator setup", "Source-ingestion process", "Review and maintenance checklist"],
+    ["Local storage", "A named operator and backup plan"],
+  ),
+  "ai-data-agent-guide": playbookPresentation(
+    "ai-data-agent-guide",
+    "Define an AI data agent by naming each source, transformation, validation rule, destination, and review point before automation begins.",
+    ["Source systems", "Field and transformation rules", "Destination", "Validation and permission limits"],
+    ["Data-agent design", "Field mapping", "Validation plan", "Review and failure states"],
+    ["Authorized data access", "A system of record"],
+  ),
+  "ai-marketing-team-playbook": playbookPresentation(
+    "ai-marketing-team-playbook",
+    "Split a marketing workflow by evidence, drafting, review, approval, and publishing responsibilities. Agents can prepare work, but approval stays explicit.",
+    ["Source material", "Channels and formats", "Brand rules", "Approval and publishing ownership"],
+    ["Role map", "Content workflow", "Review gates", "Operating cadence"],
+    ["A source of truth", "Named approvers"],
+  ),
+  "coding-agent-seo-playbook": playbookPresentation(
+    "coding-agent-seo-playbook",
+    "Give a coding agent one defined SEO change, the pages and evidence it may use, a test plan, and a rollback boundary.",
+    ["Current site", "Defined SEO issue", "Affected URLs", "Acceptance tests"],
+    ["Implementation brief", "Code change", "Verification and rollback record"],
+    ["Repository access", "Search-console or crawl evidence for the stated issue"],
+  ),
+  "geo-playbook": playbookPresentation(
+    "geo-playbook",
+    "Make source-backed answers easy to retrieve: answer the question early, expose the evidence, connect related pages, and keep canonical and update data accurate.",
+    ["Real user questions", "Primary sources", "Canonical pages", "Current crawl and retrieval evidence"],
+    ["Answer-first page structure", "Source links", "Internal-link plan", "Indexing checks"],
+    ["Useful original material", "Accurate canonical and update data"],
+  ),
+  "judgment-moat": playbookPresentation(
+    "judgment-moat",
+    "Keep human judgment visible in agent systems by recording the decision rule, evidence, uncertainty, reviewer, and change history.",
+    ["Decision to support", "Evidence sources", "Known uncertainty", "Reviewer roles"],
+    ["Decision record", "Review gate", "Escalation rule", "Change history"],
+    ["A bounded decision", "A human accountable for the outcome"],
+  ),
+  "appointment-setting-quote-calculator": toolPresentation(
+    "Compare a quote using the actual setup, monthly, and held-meeting terms. The result is arithmetic for the values you enter, not a market benchmark.",
+    ["Setup and monthly fees", "Held-meeting fee", "Expected held and qualified meetings", "Average first-year client value"],
+    ["Total monthly cost", "Cost per held meeting", "Cost per qualified meeting", "Break-even client count"],
+    ["A quote with clear fee terms"],
+    "/appointment-setting-pricing",
+  ),
+  "outbound-funnel-economics-calculator": toolPresentation(
+    "Calculate supported rates for one fixed cohort. The tool leaves unavailable values blank and does not replace them with industry assumptions.",
+    ["Unique cohort counts", "Stage definitions", "Acquisition cost", "Optional customer-economics inputs"],
+    ["Stage rates", "Unit costs", "Supported customer economics", "Invalid or missing input flags"],
+    ["One fixed acquisition cohort"],
+    "/skills/outbound-funnel-economics",
+  ),
+  "csv-list-quality-auditor": toolPresentation(
+    "Check a CSV on this device for duplicate, title, domain, verification, and ICP-review issues. No row is uploaded or stored.",
+    ["Local CSV", "Email, title, domain, verification, and ICP columns"],
+    ["Issue counts", "Row-number findings", "Local audit report"],
+    ["A CSV with a header row"],
+    "/skills/list-quality-scorecard",
+  ),
+  "outbound-brief-builder": toolPresentation(
+    "Turn an offer, ICP, exclusions, evidence, and constraints into portable Markdown and JSON inputs for the outbound skills.",
+    ["Offer", "ICP and exclusions", "Evidence and sources", "Operating constraints"],
+    ["Markdown brief", "JSON brief", "Local copy or download"],
+    ["Enough information to state unknowns honestly"],
+    "/skills/cold-offer-review",
+  ),
+};
+
+function presentationFor(item: Omit<LibraryItem, keyof LibraryPresentation>): LibraryPresentation {
+  const presentation = PRESENTATION_BY_SLUG[item.slug];
+  if (presentation) return presentation;
+  return {
+    version: "retired",
+    answer: item.summary,
+    inputs: [],
+    outputs: [],
+    prerequisites: [],
+    bundleFiles: [],
+    examplePath: item.source,
+    validationCommand: null,
+    sourceLinks: [],
+  };
+}
+
 export function formatLibraryDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return value;
@@ -33,7 +408,7 @@ export function formatLibraryDate(value: string): string {
   });
 }
 
-export const LIBRARY_MANIFEST: readonly LibraryItem[] = [
+const LIBRARY_MANIFEST_BASE: readonly Omit<LibraryItem, keyof LibraryPresentation>[] = [
   {
     slug: "cold-offer-review",
     title: "Cold Offer Review",
@@ -251,8 +626,8 @@ export const LIBRARY_MANIFEST: readonly LibraryItem[] = [
     kind: "playbook",
     lane: "outbound",
     topic: "demand-capture",
-    access: "public",
-    status: "published",
+    access: "none",
+    status: "removed",
     updatedAt: "2026-08-24",
     source: "content/playbooks/reddit-client-acquisition-hermes.md",
     relatedAssets: ["/playbooks/hermes-outbound-gtm-agent", "/playbooks/slack-outbound-agent-playbook", "/skills/buyer-signal-list-research"],
@@ -575,6 +950,11 @@ export const LIBRARY_MANIFEST: readonly LibraryItem[] = [
     redirectTarget: null,
   },
 ];
+
+export const LIBRARY_MANIFEST: readonly LibraryItem[] = LIBRARY_MANIFEST_BASE.map((item) => ({
+  ...item,
+  ...presentationFor(item),
+}));
 
 const KIND_SEGMENTS: Record<string, LibraryKind> = {
   skills: "skill",

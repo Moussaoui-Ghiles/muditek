@@ -1,7 +1,7 @@
 import { getPublishedLibraryItems, type LibraryItem } from "./library-manifest";
 
 const BASE_URL = "https://muditek.com";
-const UPDATED_AT = "2026-08-23";
+const UPDATED_AT = "2026-08-28";
 
 export function libraryCanonicalPath(item: LibraryItem): string {
   return `/${item.kind}s/${item.slug}`;
@@ -26,7 +26,7 @@ export function buildLlmsTxt(): string {
 
   return `# Muditek
 
-> Muditek runs B2B appointment setting and builds AI into defined operating workflows. The public library explains the methods and provides browser-only tools.
+> Muditek runs done-for-you B2B outbound around qualified meetings held. Targeting, list building, infrastructure, messaging, outreach, replies, qualification, booking, and attendance follow-up are included. AI implementation is the deeper capability for defined operating workflows. The public library explains the methods and provides browser-only tools.
 
 Last updated: ${UPDATED_AT}
 Author: Ghiles Moussaoui

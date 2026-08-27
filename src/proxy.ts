@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
-import { LIBRARY_MANIFEST } from "@/lib/library-manifest";
+import { LIBRARY_MANIFEST, resolveLibraryPath } from "./lib/library-manifest";
 
 const isPublicRoute = createRouteMatcher([
   // Marketing
@@ -95,6 +95,13 @@ const LEGACY_PLAYBOOK_FILE_SLUGS: Record<string, string> = {
   "skill-creator-blueprint": "skill-creator-blueprint",
 };
 
+function permanentRedirect(target: string | URL, requestUrl: string) {
+  const request = new URL(requestUrl);
+  const destination = new URL(target, request);
+  destination.search = request.search;
+  return NextResponse.redirect(destination, 308);
+}
+
 function legacyPlaybookRedirect(req: Request) {
   const url = new URL(req.url);
   const match = url.pathname.match(/^\/playbooks\/([^/]+)\.(?:html|pdf)$/i);
@@ -103,7 +110,18 @@ function legacyPlaybookRedirect(req: Request) {
   const fileSlug = decodeURIComponent(match[1]).trim().toLowerCase();
   const resourceSlug = LEGACY_PLAYBOOK_FILE_SLUGS[fileSlug] ?? fileSlug;
   const destination = new URL(`/playbooks/${encodeURIComponent(resourceSlug)}`, req.url);
-  return NextResponse.redirect(destination);
+  return permanentRedirect(destination, req.url);
+}
+
+export function canonicalLibraryResponse(req: Request) {
+  const resolution = resolveLibraryPath(new URL(req.url).pathname);
+  if (resolution.status === "gone") {
+    return new NextResponse(null, { status: 410 });
+  }
+  if (resolution.status === "redirect") {
+    return permanentRedirect(resolution.target, req.url);
+  }
+  return null;
 }
 
 const REMOVED_TOOL_SLUGS = new Set([
@@ -135,6 +153,9 @@ const handleClerkRequest = clerkMiddleware(async (auth, req) => {
     return new NextResponse(null, { status: 410 });
   }
 
+  const canonicalLibrary = canonicalLibraryResponse(req);
+  if (canonicalLibrary) return canonicalLibrary;
+
   const legacyResource = req.nextUrl.pathname.match(/^\/(?:r|resources)\/([^/]+)\/?$/);
   if (legacyResource) {
     const slug = decodeURIComponent(legacyResource[1]);
@@ -146,7 +167,7 @@ const handleClerkRequest = clerkMiddleware(async (auth, req) => {
       ? item.redirectTarget
       : `/${item.kind}s/${encodeURIComponent(item.slug)}`;
     if (!target) return new NextResponse(null, { status: 410 });
-    return NextResponse.redirect(new URL(target, req.url), 308);
+    return permanentRedirect(target, req.url);
   }
 
   const redirectToUnlock = legacyPlaybookRedirect(req);
@@ -175,7 +196,7 @@ export default function proxy(req: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|md)).*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|mp4|webm|m4v|mov|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|md)).*)",
     "/playbooks/(.*)",
     "/(api|trpc)(.*)",
   ],

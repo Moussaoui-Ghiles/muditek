@@ -14,7 +14,7 @@ import {
 } from "@/components/acquisition-tracking";
 import { formatLibraryDate, getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
 import { renderLibraryMarkdown } from "@/lib/library-markdown";
-import { getPortalSkillBundle } from "@/lib/portal-skills";
+import { getPortalSkillBundle, isSkillBundleAccountGateEligible } from "@/lib/portal-skills";
 
 export function generateStaticParams() {
   return getPublishedLibraryItems("skill").map((item) => ({ slug: item.slug }));
@@ -43,6 +43,8 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
 
   const bundle = getPortalSkillBundle(item.slug);
   if (!bundle) notFound();
+  const accountGateEligible = isSkillBundleAccountGateEligible(item.slug);
+  const requiresAccount = item.access === "account" && accountGateEligible;
   const { isAuthenticated } = await auth();
   const skillFile = bundle.files.find((file) => file.path === "SKILL.md");
   const { html } = skillFile?.raw ? renderLibraryMarkdown(skillFile.raw) : { html: "" };
@@ -53,7 +55,7 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
     <div className="min-h-[100dvh] bg-background text-foreground">
       <Navbar />
       <AcquisitionPageView asset={item.slug} lane={item.lane} event="library_item_viewed" placement="skill-page" />
-      {item.access === "account" && !isAuthenticated ? (
+      {requiresAccount && !isAuthenticated ? (
         <FunnelEventOnView event="skill_gate_viewed" asset={item.slug} lane={item.lane} placement="download-panel" />
       ) : null}
       <JsonLd
@@ -82,35 +84,56 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
               <span className="text-foreground/30">•</span>
               <span className="text-foreground/60">Updated {formatLibraryDate(item.updatedAt)}</span>
               <span className="text-foreground/30">•</span>
-              <span className="text-foreground/60">{bundle.fileCount} working files</span>
+              <span className="text-foreground/60">Version {item.version}</span>
+              <span className="text-foreground/30">•</span>
+              <span className="text-foreground/60">{bundle.fileCount} {bundle.fileCount === 1 ? "file" : "files"}</span>
             </div>
             <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-6xl md:text-7xl">{item.title}</h1>
-            <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/75">{item.summary}</p>
+            <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/80">{item.answer}</p>
           </div>
         </header>
 
         <section className="border-b border-white/[0.06] py-12 md:py-16">
           <div className="mx-auto grid w-full max-w-[1100px] gap-8 px-6 lg:grid-cols-[minmax(0,1fr)_340px] md:px-12">
             <div>
-              <h2 className="text-2xl font-black tracking-[-0.02em]">What this skill gives you</h2>
-              <dl className="mt-7 grid gap-6 sm:grid-cols-2">
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Problem</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">{item.summary}</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Inputs and outputs</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">The full instructions below list the information you provide and the result you should receive.</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Before you start</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Collect the named source material and read any required reference before you use the workflow.</dd></div>
-                <div><dt className="text-xs font-bold uppercase tracking-[0.16em] text-primary">What is included</dt><dd className="mt-2 text-sm leading-6 text-foreground/70">Instructions, references, examples, and tests are included when the skill needs them.</dd></div>
-              </dl>
+              <h2 className="text-2xl font-black tracking-[-0.02em]">Before you run it</h2>
+              <div className="mt-7 grid gap-8 sm:grid-cols-2">
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Inputs</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground/70">
+                    {item.inputs.map((input) => <li key={input} className="border-l border-white/[0.12] pl-4">{input}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Outputs</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground/70">
+                    {item.outputs.map((output) => <li key={output} className="border-l border-white/[0.12] pl-4">{output}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Prerequisites</h3>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-foreground/70">
+                    {item.prerequisites.map((prerequisite) => <li key={prerequisite} className="border-l border-white/[0.12] pl-4">{prerequisite}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Example and validation</h3>
+                  <p className="mt-4 break-all font-mono text-xs leading-5 text-foreground/65">{item.examplePath}</p>
+                  {item.validationCommand ? <code className="mt-3 block overflow-x-auto rounded-[2px] border border-white/[0.08] bg-background p-3 text-xs leading-5 text-foreground/65">{item.validationCommand}</code> : null}
+                </div>
+              </div>
             </div>
 
             <aside className="rounded-xl border border-white/[0.08] bg-card/60 p-6">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Bundle</p>
               <p className="mt-3 text-3xl font-black">{bundle.fileCount} files</p>
               <p className="mt-3 text-sm leading-6 text-foreground/65">
-                {item.access === "public"
+                {!requiresAccount
                   ? "The complete bundle is public. No account is required."
-                  : "The page and SKILL.md are public. A free account unlocks the complete dependency bundle."}
+                  : "The page and SKILL.md are public. A free account unlocks the tested examples and working files."}
               </p>
               <div className="mt-6">
-                {item.access === "public" ? (
+                {!requiresAccount ? (
                   <TrackedDownloadLink href={downloadHref} asset={item.slug} lane={item.lane} placement="skill-header" className="inline-flex min-h-12 w-full items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
                     Download complete bundle
                   </TrackedDownloadLink>
@@ -126,13 +149,21 @@ export default async function SkillPage({ params }: { params: Promise<{ slug: st
                   )
                 )}
               </div>
+              <div className="mt-6 border-t border-white/[0.08] pt-5">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/50">Source</p>
+                {item.sourceLinks.map((sourceLink) => (
+                  <a key={sourceLink.href} href={sourceLink.href} className="mt-2 inline-flex min-h-11 items-center text-sm font-bold text-foreground/70 underline decoration-white/20 underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">
+                    {sourceLink.label}
+                  </a>
+                ))}
+              </div>
             </aside>
           </div>
         </section>
 
         <section className="py-14 md:py-20">
           <div className="mx-auto w-full max-w-[900px] px-6 md:px-12">
-            <details className="group rounded-xl border border-white/[0.1] bg-card/30 p-5 open:bg-card/45 md:p-8">
+            <details id="instructions" className="group scroll-mt-28 rounded-xl border border-white/[0.1] bg-card/30 p-5 open:bg-card/45 md:p-8">
               <summary className="cursor-pointer list-none text-lg font-black tracking-[-0.02em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 [&::-webkit-details-marker]:hidden">
                 <span className="flex min-h-11 items-center justify-between gap-4">
                   Open the full instructions and file list

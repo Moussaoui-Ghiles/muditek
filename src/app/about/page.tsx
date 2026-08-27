@@ -93,7 +93,7 @@ export default function AboutPage() {
             <p className="mx-auto max-w-[650px] text-base leading-7 text-foreground/68">The public library shows the methods, tools, and technical material. If the appointment-setting offer fits, the qualification criteria are public too.</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/library" className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/15 px-7 text-xs font-black uppercase tracking-[0.17em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Open the library</Link>
-              <TrackedBookingLink asset="about" lane="outbound" placement="about-final" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-7 text-xs font-black uppercase tracking-[0.17em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">Discuss a fit</TrackedBookingLink>
+              <TrackedBookingLink asset="about" lane="outbound" placement="about-final" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-7 text-xs font-black uppercase tracking-[0.17em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">Book a 30-minute fit review</TrackedBookingLink>
             </div>
           </div>
         </section>

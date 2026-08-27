@@ -62,14 +62,33 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             <Link href="/tools" className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">← All tools</Link>
             <p className="mt-9 text-xs font-black uppercase tracking-[0.2em] text-primary">Runs on this device</p>
             <h1 className="mt-5 max-w-5xl text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl md:text-6xl">{item.title}</h1>
-            <p className="mt-7 max-w-[70ch] text-lg leading-8 text-foreground/75">{item.summary}</p>
+            <p className="mt-7 max-w-[70ch] text-lg leading-8 text-foreground/80">{item.answer}</p>
             <p className="mt-5 max-w-[74ch] text-sm leading-6 text-foreground/60">Your inputs stay in your browser. Muditek records only that the tool was completed, not the values, file contents, or result.</p>
             <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-foreground/55">
-              <span>By Ghiles Moussaoui</span><span aria-hidden="true">•</span><span>Updated {formatLibraryDate(item.updatedAt)}</span>
+              <span>By Ghiles Moussaoui</span><span aria-hidden="true">•</span><span>Updated {formatLibraryDate(item.updatedAt)}</span><span aria-hidden="true">•</span><span>Version {item.version}</span>
               {methodSource ? <><span aria-hidden="true">•</span><Link href={methodSource} className="text-primary hover:underline">Method source</Link></> : null}
             </div>
           </div>
         </header>
+        <section aria-labelledby="tool-contract" className="border-b border-white/[0.06] bg-card/25 py-9 md:py-12">
+          <div className="mx-auto w-full max-w-[1180px] px-6 md:px-12">
+            <h2 id="tool-contract" className="sr-only">Tool inputs and outputs</h2>
+            <div className="grid gap-7 md:grid-cols-3">
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Inputs</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.inputs.map((input) => <li key={input}>{input}</li>)}</ul>
+              </div>
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Outputs</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.outputs.map((output) => <li key={output}>{output}</li>)}</ul>
+              </div>
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">You need</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.prerequisites.map((prerequisite) => <li key={prerequisite}>{prerequisite}</li>)}</ul>
+              </div>
+            </div>
+          </div>
+        </section>
         <section className="py-10 md:py-16">
           <div className="mx-auto w-full max-w-[1180px] px-6 md:px-12"><Tool /></div>
         </section>

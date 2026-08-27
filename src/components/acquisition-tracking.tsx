@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { trackEvent } from "@/lib/client-analytics";
+import { completeSkillDownload } from "@/lib/skill-download";
 
 export const OUTBOUND_BOOKING_URL =
   "https://calendly.com/biz-ghiless/30min";
@@ -194,11 +195,36 @@ export function TrackedDownloadLink({
   className?: string;
   children: ReactNode;
 }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function download(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      await completeSkillDownload(href, (payload) => {
+        const objectUrl = URL.createObjectURL(payload.blob);
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = payload.fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(objectUrl);
+        trackFunnelEvent("skill_downloaded", { asset, lane, placement });
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  }
+
   return (
     <a
       href={href}
       className={className}
-      onClick={() => trackFunnelEvent("skill_downloaded", { asset, lane, placement })}
+      aria-busy={isDownloading}
+      onClick={download}
     >
       {children}
     </a>

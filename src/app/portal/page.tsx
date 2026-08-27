@@ -56,11 +56,12 @@ export default async function PortalHomePage() {
         <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/65">Download advanced skill files, check recent activity, and manage your account. Public reading and browser tools remain in the library.</p>
       </header>
 
-      <nav className="grid gap-px border-b border-white/[0.07] bg-white/[0.07] py-px sm:grid-cols-4" aria-label="Workspace sections">
+      <nav className="grid gap-px border-b border-white/[0.07] bg-white/[0.07] py-px sm:grid-cols-2 lg:grid-cols-5" aria-label="Workspace sections">
         {[
-          ["Downloads", "/portal/downloads"],
-          ["Tools", "/portal/tools"],
-          ["Newsletter", "/portal/newsletter"],
+          ["Advanced Skills", "/portal/skills"],
+          ["Recent Activity", "/portal/activity"],
+          ["Downloads and Versions", "/portal/downloads"],
+          ["Newsletter Preferences", "/portal/newsletter"],
           ["Account", "/portal/account"],
         ].map(([label, href]) => (
           <Link key={href} href={href} className="inline-flex min-h-12 items-center justify-between bg-background px-4 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/[0.025] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">

@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
+import { getLibraryItem } from "./library-manifest";
 import {
   getPortalSkillArchiveFiles,
   getPortalSkillBundle,
+  getSkillBundleValidationErrors,
+  isSkillBundleAccountGateEligible,
   listShippedPortalSkills,
+  validatePublishedSkillBundle,
 } from "./portal-skills";
 
 const EXPECTED_SKILL_SLUGS = [
@@ -45,12 +50,44 @@ describe("published skill bundles", () => {
     }
   });
 
+  it("rejects a gated one-file bundle and missing declared files", () => {
+    const item = getLibraryItem("skill", "list-builder");
+    const bundle = getPortalSkillBundle("list-builder");
+    expect(item).not.toBeNull();
+    expect(bundle).not.toBeNull();
+    if (!item || !bundle) return;
+
+    const skillFile = bundle.files.find((file) => file.path === "SKILL.md");
+    expect(skillFile).toBeDefined();
+    if (!skillFile) return;
+
+    const errors = getSkillBundleValidationErrors(
+      { ...item, bundleFiles: ["SKILL.md", "examples/missing.md"], examplePath: "examples/missing.md" },
+      { ...bundle, fileCount: 1, files: [skillFile] },
+    );
+    expect(errors).toContain("A declared bundle file is missing: examples/missing.md.");
+    expect(errors).toContain("The declared example is missing: examples/missing.md.");
+    expect(errors).toContain("An account-gated bundle must provide more than the public SKILL.md.");
+  });
+
   for (const slug of EXPECTED_SKILL_SLUGS) {
     it(`packages a safe, self-contained ${slug} bundle`, () => {
       const bundle = getPortalSkillBundle(slug);
       expect(bundle).not.toBeNull();
       expect(bundle?.files[0]?.path).toBe("SKILL.md");
-      expect(bundle?.files.some((file) => /example|test/i.test(file.path))).toBe(true);
+      const item = getLibraryItem("skill", slug);
+      expect(item).not.toBeNull();
+      expect(bundle?.files.some((file) => file.path === item?.examplePath)).toBe(true);
+      expect(bundle?.files.map((file) => file.path).sort()).toEqual([...(item?.bundleFiles ?? [])].sort());
+      expect(validatePublishedSkillBundle(slug)).toEqual({ valid: true, errors: [] });
+      expect(isSkillBundleAccountGateEligible(slug)).toBe(!CORE_SKILLS.has(slug));
+
+      const validationOutput = execFileSync(
+        process.execPath,
+        ["scripts/validate-library-skill.mjs", item?.source ?? "", item?.examplePath ?? ""],
+        { cwd: process.cwd(), encoding: "utf8" },
+      );
+      expect(validationOutput).toContain(`Validated ${item?.source}`);
 
       const archive = getPortalSkillArchiveFiles(slug);
       expect(archive.length).toBe(bundle?.fileCount);

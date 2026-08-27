@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AcquisitionPageView } from "@/components/acquisition-tracking";
 import { AppointmentSettingPricingIndex } from "@/components/appointment-setting-pricing-index";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
@@ -25,7 +24,6 @@ export default function AppointmentSettingPricingPage() {
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground selection:bg-primary/25">
-      <AcquisitionPageView asset="appointment-setting-pricing" />
       <JsonLd data={[
         {
           "@context": "https://schema.org",
@@ -50,24 +48,29 @@ export default function AppointmentSettingPricingPage() {
       <Navbar />
 
       <main id="main-content">
-        <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
-          <div className="hero-aurora absolute inset-0 opacity-45" />
-          <div className="relative z-10 mx-auto max-w-[1450px]">
+        <section className="border-b border-white/[0.06] px-6 pb-8 pt-28 md:px-12 md:pb-16 md:pt-40">
+          <div className="mx-auto max-w-[1450px]">
             <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Public provider data</p>
-            <h1 className="mt-6 max-w-6xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">Know what the fee actually buys.</h1>
-            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">Use the checked price, billing model, contract, channels, and qualification rules to build a shortlist. Every provider links to the source we checked.</p>
-            <div className="mt-10 grid max-w-3xl grid-cols-1 gap-px border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
+            <h1 className="mt-5 max-w-6xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">Know what the fee actually buys.</h1>
+            <p className="mt-6 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">Use the checked price, billing model, contract, channels, and qualification rules to build a shortlist. Every provider links to the source we checked.</p>
+            <div className="mt-6 grid max-w-3xl grid-cols-3 gap-px border border-white/[0.08] bg-white/[0.08] sm:mt-10">
               {[
                 [String(APPOINTMENT_SETTING_PROVIDERS.length), "Providers checked"],
                 [String(publicPriceCount), "Publish a price"],
                 ["2026-08-23", "Last checked"],
               ].map(([value, label]) => (
-                <div key={label} className="bg-background/85 p-4 sm:p-6">
-                  <p className="font-mono text-lg font-black text-primary sm:text-2xl">{value}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/65 sm:text-sm">{label}</p>
+                <div key={label} className="min-w-0 bg-background/85 p-3 sm:p-6">
+                  <p className="break-words font-mono text-[13px] font-black text-primary sm:text-2xl">{value}</p>
+                  <p className="mt-2 text-[9px] font-bold uppercase leading-4 tracking-[0.1em] text-foreground/65 sm:text-sm">{label}</p>
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="border-b border-white/[0.06] px-4 py-5 sm:px-6 md:px-12 md:py-8">
+          <div className="mx-auto max-w-[1600px]">
+            <AppointmentSettingPricingIndex providers={APPOINTMENT_SETTING_PROVIDERS} />
           </div>
         </section>
 
@@ -100,20 +103,14 @@ export default function AppointmentSettingPricingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-10 sm:px-6 md:px-12 md:py-16">
-          <div className="mx-auto max-w-[1600px]">
-            <AppointmentSettingPricingIndex providers={APPOINTMENT_SETTING_PROVIDERS} />
-          </div>
-        </section>
-
         <section className="border-t border-white/[0.06] bg-card/[0.18] px-6 py-20 md:px-12">
           <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-2">
-            <Link href="/tools/appointment-setting-quote-calculator" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
+            <Link href="/tools/appointment-setting-quote-calculator" className="group min-w-0 break-words border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Run your quote</p>
               <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">Convert the vendor fee into cost per qualified meeting and break-even math.</h2>
               <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">Open calculator <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </Link>
-            <Link href="/appointment-setting" className="group border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
+            <Link href="/appointment-setting" className="group min-w-0 break-words border border-white/[0.08] bg-background/60 p-7 transition-colors hover:border-primary/35 md:p-9">
               <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-primary">Muditek model</p>
               <h2 className="mt-4 text-3xl font-black tracking-[-0.03em]">See the risk split, qualification rules, signals, and held-meeting pricing.</h2>
               <span className="mt-7 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-primary">View the service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>

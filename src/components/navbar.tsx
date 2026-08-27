@@ -24,10 +24,7 @@ export function Navbar() {
   const mobileNavigationRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useUser();
-  const isAiRoute = pathname === "/ai-implementation" || pathname.startsWith("/ai-implementation/");
-  const commercialAction = isAiRoute
-    ? { href: "/ai-implementation#build-review", label: "Discuss an AI build" }
-    : { href: "/appointment-setting#fit-review", label: "Check if you qualify" };
+  const commercialAction = { href: "/appointment-setting#fit-review", label: "Check if you qualify" };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -70,7 +67,7 @@ export function Navbar() {
   }, [mobileOpen]);
 
   const navLinkClass = (href: string) =>
-    `text-[12px] font-bold uppercase tracking-[0.16em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+    `inline-flex min-h-11 items-center text-[12px] font-bold uppercase tracking-[0.16em] transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary ${
       isCurrent(pathname, href) ? "text-foreground" : "text-foreground/65 hover:text-foreground"
     }`;
 
@@ -99,7 +96,7 @@ export function Navbar() {
           <div className="hidden items-center gap-3 lg:flex">
             <Link
               href={commercialAction.href}
-              className="inline-flex min-h-11 items-center rounded-[2px] bg-primary px-5 text-[11px] font-black uppercase tracking-[0.16em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground motion-reduce:transform-none"
+              className="inline-flex min-h-11 items-center rounded-[2px] bg-primary px-5 text-[11px] font-black uppercase tracking-[0.16em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-foreground motion-reduce:transform-none"
             >
               {commercialAction.label}
             </Link>

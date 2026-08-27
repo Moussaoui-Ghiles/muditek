@@ -168,46 +168,39 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
 
   return (
     <div>
-      <section aria-labelledby="directory-controls-title" className="border border-white/[0.1] bg-card/35 p-4 md:p-6">
-        <div className="mb-5 flex flex-col gap-2 border-b border-white/[0.08] pb-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Provider directory</p>
-            <h2 id="directory-controls-title" className="mt-2 text-2xl font-black tracking-[-0.025em]">Find the terms worth comparing.</h2>
-          </div>
-          <p className="max-w-xl text-sm leading-relaxed text-foreground/70">Search the source data, select up to four providers, then compare the same fields side by side.</p>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.34fr)_auto] lg:items-end">
-          <div>
-            <label htmlFor="provider-search" className="mb-2 block font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/75">Search the index</label>
+      <section aria-labelledby="directory-controls-title" className="sticky top-20 z-30 border border-white/[0.14] bg-background/95 p-3 shadow-2xl shadow-black/30 backdrop-blur md:p-4">
+        <h2 id="directory-controls-title" className="sr-only">Search and filter the provider directory</h2>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.34fr)_auto] lg:items-end">
+          <div className="col-span-2 lg:col-span-1">
+            <label htmlFor="provider-search" className="sr-only">Search the pricing index</label>
             <input
               id="provider-search"
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Provider, model, channel, or qualification rule"
-              className="min-h-12 w-full rounded-[8px] border border-white/[0.16] bg-background/80 px-4 py-3 text-sm text-foreground outline-none placeholder:text-foreground/55 focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
+              className="min-h-12 w-full rounded-[8px] border border-white/[0.16] bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-foreground/55 focus:border-primary/70 focus:ring-[3px] focus:ring-primary/20"
             />
           </div>
           <div>
-            <label htmlFor="provider-sort" className="mb-2 block font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/75">Sort</label>
+            <label htmlFor="provider-sort" className="sr-only">Sort providers</label>
             <select
               id="provider-sort"
               value={sort}
               onChange={(event) => setSort(event.target.value as ProviderSort)}
-              className="min-h-12 w-full rounded-[8px] border border-white/[0.16] bg-background/80 px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
+              className="min-h-12 w-full rounded-[8px] border border-white/[0.16] bg-background px-3 py-3 text-sm font-bold text-foreground outline-none focus:border-primary/70 focus:ring-[3px] focus:ring-primary/20"
             >
               <option value="name">Provider name, A to Z</option>
               <option value="public-price">Public price first</option>
               <option value="stated-contract">Stated contract terms first</option>
             </select>
           </div>
-          <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-[8px] border border-white/[0.12] px-4 text-sm font-bold text-foreground/75 hover:border-white/[0.2]">
+          <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-[8px] border border-white/[0.16] px-3 text-sm font-bold text-foreground/75 hover:border-white/[0.24] focus-within:ring-[3px] focus-within:ring-primary/20">
             <input
               type="checkbox"
               checked={pricedOnly}
               onChange={(event) => setPricedOnly(event.target.checked)}
-              className="h-5 w-5 accent-primary"
+              className="h-6 w-6 shrink-0 accent-primary"
             />
             Public price only
           </label>
@@ -277,7 +270,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
       </section>
 
       {selectedProviders.length > 0 ? (
-        <div className="sticky top-20 z-20 mb-5 flex items-center justify-between gap-3 border border-primary/30 bg-background/95 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur md:px-5" aria-live="polite">
+        <div className="mb-5 flex items-center justify-between gap-3 border border-primary/30 bg-background/95 px-4 py-3 md:px-5" aria-live="polite">
           <p className="text-sm font-bold text-foreground">
             {selectedProviders.length} {selectedProviders.length === 1 ? "provider" : "providers"} selected
           </p>
@@ -287,7 +280,7 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
         </div>
       ) : null}
 
-      <div className="hidden overflow-x-auto border border-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:block" role="region" aria-label="Full provider pricing index" tabIndex={0}>
+      <div className="hidden" aria-hidden="true">
         <p className="sticky left-0 border-b border-white/[0.08] bg-card/60 px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/70">
           Full index <span aria-hidden="true" className="ml-3 text-primary">Scroll right →</span>
         </p>
@@ -345,13 +338,13 @@ export function AppointmentSettingPricingIndex({ providers }: { providers: Appoi
         </table>
       </div>
 
-      <div className="divide-y divide-white/[0.08] border-y border-white/[0.1] xl:hidden">
+      <div className="grid gap-3 md:grid-cols-2">
         {visibleProviders.map((provider) => {
           const isSelected = selectedNames.includes(provider.name);
           const comparisonFull = selectedNames.length >= MAX_COMPARISON_PROVIDERS && !isSelected;
 
           return (
-            <article key={provider.name} className="bg-card/20 px-4 py-5 sm:px-5 md:px-7">
+            <article key={provider.name} className="border border-white/[0.1] bg-card/20 px-4 py-5 sm:px-5 md:px-6">
               <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
                 <div>
                   <h2 className="text-xl font-black tracking-[-0.02em]">{provider.name}</h2>

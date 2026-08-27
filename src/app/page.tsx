@@ -1,49 +1,71 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { AcquisitionPageView } from "@/components/acquisition-tracking";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Navbar } from "@/components/navbar";
-import { getLibraryItem } from "@/lib/library-manifest";
+import { PlanetHeroMedia } from "@/components/planet-hero-media";
 
 export const metadata: Metadata = {
-  title: "Muditek | Appointment Setting and AI Implementation",
-  description: "Muditek runs B2B appointment setting and builds practical AI systems around real operating workflows.",
+  title: "Muditek | Done-for-you B2B appointment setting",
+  description: "Muditek runs AI-native outbound around one commercial outcome: qualified B2B meetings held.",
   alternates: { canonical: "https://muditek.com" },
   openGraph: {
-    title: "Muditek | Appointment Setting and AI Implementation",
-    description: "B2B appointment setting, practical AI implementation, and a public operating library.",
+    title: "Muditek | Done-for-you B2B appointment setting",
+    description: "Done-for-you outbound built around qualified B2B meetings held, with deeper AI implementation when the operating system needs work.",
     url: "https://muditek.com",
     type: "website",
   },
 };
 
-const FEATURED_ASSETS = [
-  getLibraryItem("playbook", "outbound-failure-diagnostic"),
-  getLibraryItem("skill", "cold-offer-review"),
-  getLibraryItem("tool", "outbound-funnel-economics-calculator"),
-].filter((item) => item?.status === "published");
+const DELIVERY_PATH = [
+  "Targeting",
+  "List building",
+  "Infrastructure",
+  "Messaging",
+  "Outreach",
+  "Replies",
+  "Qualification",
+  "Attendance follow-up",
+] as const;
 
-const APPLICATIONS = [
-  ["Revenue operations", "Connect research, qualification, routing, reporting, and review."],
-  ["Operational workflows", "Move intake, documents, data, and decisions through a clear process."],
-  ["Content systems", "Keep sources, drafts, approvals, and publishing in one controlled workflow."],
-  ["Agent systems", "Give agents approved tools, clear state, and defined review points."],
+const EVALUATION_PATHS = [
+  {
+    label: "The offer",
+    title: "Review delivery, qualification, and billing rules.",
+    href: "/appointment-setting",
+    action: "Review the offer",
+  },
+  {
+    label: "Provider pricing",
+    title: "Compare public appointment-setting prices and models.",
+    href: "/appointment-setting-pricing",
+    action: "Use the pricing index",
+  },
+  {
+    label: "Quote calculator",
+    title: "Compare cost per held and qualified meeting locally.",
+    href: "/tools/appointment-setting-quote-calculator",
+    action: "Run the calculator",
+  },
+  {
+    label: "Failure diagnostic",
+    title: "Find the constraint before adding more outbound volume.",
+    href: "/playbooks/outbound-failure-diagnostic",
+    action: "Run the diagnostic",
+  },
 ] as const;
 
 export default function HomePage() {
   return (
     <div className="min-h-[100dvh] overflow-hidden bg-background text-foreground">
       <Navbar />
-      <AcquisitionPageView asset="homepage" lane="outbound" event="commercial_offer_viewed" placement="homepage" />
       <JsonLd
         data={{
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
           name: "Muditek",
           url: "https://muditek.com",
-          description: "Appointment-setting systems and practical AI implementation.",
+          description: "Done-for-you B2B appointment setting and practical AI implementation.",
           areaServed: "Remote",
           hasOfferCatalog: {
             "@type": "OfferCatalog",
@@ -57,69 +79,65 @@ export default function HomePage() {
       />
 
       <main id="main-content">
-        <section className="relative flex min-h-[92dvh] items-end overflow-hidden border-b border-white/[0.06] pb-16 pt-36 md:pb-24 md:pt-44">
-          <Image src="/images/documents-desk.png" alt="" fill priority className="object-cover object-center opacity-25" aria-hidden="true" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,10,15,0.98)_0%,rgba(5,10,15,0.82)_52%,rgba(5,10,15,0.45)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent" />
-          <div className="relative mx-auto grid w-full max-w-[1500px] gap-16 px-6 md:px-12 lg:grid-cols-[minmax(0,1fr)_370px] lg:items-end">
-            <div>
-              <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.24em] text-primary">
-                <span className="h-px w-8 bg-primary" /> Appointment setting and AI implementation
+        <section className="relative flex min-h-[92dvh] items-end overflow-hidden border-b border-white/[0.08] pb-14 pt-32 md:pb-20 md:pt-44">
+          <PlanetHeroMedia />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,15,0.6)_0%,rgba(5,10,15,0.72)_48%,rgba(5,10,15,0.98)_100%)] sm:bg-[linear-gradient(90deg,rgba(5,10,15,0.98)_0%,rgba(5,10,15,0.88)_48%,rgba(5,10,15,0.34)_100%)]" />
+          <div className="relative mx-auto w-full max-w-[1500px] px-6 md:px-12">
+            <div className="max-w-[900px]">
+              <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.22em] text-primary">
+                <span className="h-px w-8 bg-primary" /> Appointment setting for sales-led B2B teams
               </p>
-              <h1 className="mt-7 max-w-[980px] text-[44px] font-black leading-[0.94] tracking-[-0.04em] sm:text-6xl md:text-[84px]">
-                Turn outbound into <span className="font-medium italic text-primary">qualified meetings.</span> Fix the systems behind it.
+              <h1 className="mt-7 text-[43px] font-black leading-[0.95] tracking-[-0.04em] text-white sm:text-6xl md:text-[78px] lg:text-[88px]">
+                Done-for-you outbound. Built around qualified meetings held.
               </h1>
-              <p className="mt-8 max-w-[680px] text-base leading-7 text-foreground/75 md:text-lg md:leading-8">
-                Muditek runs targeting, research, outreach, qualification, and booking for sales-led B2B teams. When the bottleneck sits inside the operation, we build the AI workflow around it.
+              <p className="mt-8 max-w-[760px] text-base leading-7 text-white/80 md:text-lg md:leading-8">
+                Muditek handles targeting, list building, infrastructure, messaging, outreach, replies, qualification, booking, and attendance follow-up. You pay the operating stack upfront. The delivery fee applies only after a qualified meeting is held.
               </p>
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <Link href="/appointment-setting" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-7 text-xs font-black uppercase tracking-[0.18em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground motion-reduce:transform-none">
-                  See appointment setting
+                <Link href="/appointment-setting" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-7 text-xs font-black uppercase tracking-[0.18em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-white motion-reduce:transform-none">
+                  Review the offer
                 </Link>
-                <Link href="/library" className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/20 bg-background/40 px-7 text-xs font-black uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                <Link href="/library" className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/25 bg-background/45 px-7 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">
                   Use the public library
                 </Link>
               </div>
             </div>
-
-            <aside className="border-y border-white/15 bg-background/40 py-6 backdrop-blur-sm" aria-label="Muditek commercial path">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">How to evaluate the fit</p>
-              <ol className="mt-5">
-                {[
-                  ["01", "Use the diagnostic or calculator"],
-                  ["02", "Review the delivery and billing rules"],
-                  ["03", "Book a fit review if the numbers work"],
-                ].map(([number, label]) => (
-                  <li key={number} className="grid grid-cols-[42px_1fr] gap-3 border-t border-white/[0.08] py-4 first:border-t-0">
-                    <span className="font-mono text-xs text-primary">{number}</span>
-                    <span className="text-sm leading-6 text-foreground/75">{label}</span>
-                  </li>
-                ))}
-              </ol>
-            </aside>
           </div>
         </section>
 
-        <section className="border-b border-white/[0.06] py-24 md:py-32">
-          <div className="mx-auto grid w-full max-w-[1500px] gap-14 px-6 md:px-12 lg:grid-cols-[0.72fr_1.28fr]">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Appointment setting</p>
-              <h2 className="mt-6 text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-6xl">From target account to qualified meeting held.</h2>
+        <section className="border-b border-white/[0.08] py-16 md:py-20" aria-labelledby="delivery-heading">
+          <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
+            <div className="grid gap-8 lg:grid-cols-[260px_1fr] lg:items-start">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">End-to-end delivery</p>
+                <h2 id="delivery-heading" className="mt-4 text-2xl font-black leading-tight tracking-[-0.025em] text-foreground">One accountable outbound operation.</h2>
+              </div>
+              <ol className="grid border-t border-white/[0.1] sm:grid-cols-2 lg:grid-cols-4">
+                {DELIVERY_PATH.map((step, index) => (
+                  <li key={step} className="flex min-h-20 items-center gap-3 border-b border-white/[0.1] py-4 sm:px-4 sm:odd:border-r lg:border-r lg:odd:border-r">
+                    <span className="font-mono text-[11px] text-primary">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="text-sm font-bold text-foreground/78">{step}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
-            <div className="lg:pt-2">
-              <p className="max-w-[680px] text-lg leading-8 text-foreground/75">
-                Muditek handles the work from offer review and targeting through research, messaging, reply handling, qualification, and booking. The pricing index and calculators let you check the economics before a call.
-              </p>
-              <div className="mt-10 border-t border-white/[0.1]">
-                {[
-                  ["Service", "/appointment-setting", "Delivery, qualification, responsibilities, and billing rules"],
-                  ["Pricing index", "/appointment-setting-pricing", "A sourced comparison of provider models"],
-                  ["Quote calculator", "/tools/appointment-setting-quote-calculator", "Compare cost per held and qualified meeting"],
-                ].map(([label, href, description]) => (
-                  <Link key={href} href={href} className="group grid min-h-24 gap-2 border-b border-white/[0.1] py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[170px_1fr_auto] sm:items-center">
-                    <span className="text-xs font-black uppercase tracking-[0.16em] text-primary">{label}</span>
-                    <span className="text-sm leading-6 text-foreground/65">{description}</span>
-                    <span aria-hidden="true" className="text-xl text-foreground/40 transition-transform group-hover:translate-x-1 motion-reduce:transform-none">→</span>
+          </div>
+        </section>
+
+        <section className="border-b border-white/[0.08] py-24 md:py-32" aria-labelledby="evaluate-heading">
+          <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
+            <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Evaluate before a call</p>
+                <h2 id="evaluate-heading" className="mt-6 max-w-xl text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-6xl">Inspect the offer from four angles.</h2>
+                <p className="mt-7 max-w-[520px] text-base leading-7 text-foreground/70">Check the delivery model, outside prices, your economics, and the constraint in your current funnel.</p>
+              </div>
+              <div className="border-t border-white/[0.1]">
+                {EVALUATION_PATHS.map((path) => (
+                  <Link key={path.href} href={path.href} className="group grid min-h-28 gap-3 border-b border-white/[0.1] py-6 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary sm:grid-cols-[155px_1fr_auto] sm:items-center">
+                    <span className="text-[11px] font-black uppercase tracking-[0.17em] text-primary">{path.label}</span>
+                    <span className="text-base font-bold leading-6 text-foreground">{path.title}</span>
+                    <span className="text-xs font-black uppercase tracking-[0.14em] text-foreground/60 transition-colors group-hover:text-primary">{path.action} →</span>
                   </Link>
                 ))}
               </div>
@@ -127,66 +145,28 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden border-b border-white/[0.06] py-24 md:py-36">
-          <div className="absolute right-0 top-0 h-full w-2/5 bg-[linear-gradient(135deg,transparent,rgba(245,158,11,0.045))]" aria-hidden="true" />
-          <div className="relative mx-auto w-full max-w-[1500px] px-6 md:px-12">
-            <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">AI implementation</p>
-                <h2 className="mt-6 text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-6xl">Build AI into the workflow your team already runs.</h2>
-                <p className="mt-7 max-w-[560px] text-base leading-7 text-foreground/70">
-                  Start with one operating problem, the data it depends on, the people who own it, and the controls it needs. Then build the smallest system that improves that work.
-                </p>
-                <Link href="/ai-implementation" className="mt-9 inline-flex min-h-12 items-center border-b border-primary text-xs font-black uppercase tracking-[0.17em] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                  See the implementation approach →
-                </Link>
-              </div>
-              <div className="border-t border-white/[0.1]">
-                {APPLICATIONS.map(([title, description], index) => (
-                  <div key={title} className="grid gap-3 border-b border-white/[0.1] py-7 sm:grid-cols-[48px_190px_1fr] sm:items-start">
-                    <span className="font-mono text-xs text-primary">0{index + 1}</span>
-                    <h3 className="text-base font-black text-foreground">{title}</h3>
-                    <p className="text-sm leading-6 text-foreground/65">{description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-white/[0.06] py-24 md:py-32">
-          <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
-            <div className="flex flex-col gap-7 border-b border-white/[0.1] pb-10 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Public library</p>
-                <h2 className="mt-6 max-w-3xl text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-6xl">Use the methods before you hire us.</h2>
-              </div>
-              <Link href="/library" className="text-xs font-black uppercase tracking-[0.17em] text-foreground/75 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Browse all assets →</Link>
-            </div>
+        <section className="border-b border-white/[0.08] py-20 md:py-24" aria-labelledby="ai-heading">
+          <div className="mx-auto grid w-full max-w-[1500px] gap-8 px-6 md:px-12 lg:grid-cols-[260px_1fr_auto] lg:items-center">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Deeper capability</p>
             <div>
-              {FEATURED_ASSETS.map((item, index) => item ? (
-                <Link key={item.slug} href={`/${item.kind}s/${item.slug}`} className="group grid gap-3 border-b border-white/[0.1] py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:grid-cols-[70px_210px_1fr_auto] md:items-center">
-                  <span className="font-mono text-xs text-primary">0{index + 1}</span>
-                  <span className="text-[11px] font-black uppercase tracking-[0.16em] text-foreground/55">{item.kind} · {item.topic.replaceAll("-", " ")}</span>
-                  <span>
-                    <strong className="block text-lg text-foreground">{item.title}</strong>
-                    <span className="mt-1 block text-sm leading-6 text-foreground/60">{item.summary}</span>
-                  </span>
-                  <span aria-hidden="true" className="text-xl text-foreground/40 transition-transform group-hover:translate-x-1 motion-reduce:transform-none">→</span>
-                </Link>
-              ) : null)}
+              <h2 id="ai-heading" className="text-3xl font-black leading-tight tracking-[-0.03em] md:text-4xl">AI implementation for the operating system behind the work.</h2>
+              <p className="mt-4 max-w-[760px] text-base leading-7 text-foreground/70">When the constraint is inside research, routing, content, documents, data, or review, Muditek builds the controlled workflow around it. These are applications of the deeper capability, not separate offers.</p>
             </div>
+            <Link href="/ai-implementation" className="inline-flex min-h-12 items-center border-b border-primary text-xs font-black uppercase tracking-[0.17em] text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">
+              Review AI implementation →
+            </Link>
           </div>
         </section>
 
-        <section className="relative overflow-hidden py-28 md:py-40">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(245,158,11,0.09),transparent_50%)]" aria-hidden="true" />
-          <div className="relative mx-auto max-w-[980px] px-6 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Appointment setting</p>
-            <h2 className="mt-7 text-4xl font-black leading-[0.96] tracking-[-0.04em] md:text-7xl">Need qualified meetings? Check the fit.</h2>
-            <p className="mx-auto mt-7 max-w-[620px] text-base leading-7 text-foreground/70">Review the market gates, pricing, and billable-meeting rules before you choose a time.</p>
-            <Link href="/appointment-setting#fit-review" className="mt-10 inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-8 text-xs font-black uppercase tracking-[0.18em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
-              See if your market fits
+        <section className="py-24 md:py-32" aria-labelledby="qualification-heading">
+          <div className="mx-auto grid w-full max-w-[1500px] gap-10 px-6 md:px-12 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Fit review</p>
+              <h2 id="qualification-heading" className="mt-6 max-w-[920px] text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-7xl">Check the market, economics, and qualification rules first.</h2>
+              <p className="mt-7 max-w-[680px] text-base leading-7 text-foreground/70">The offer page shows the eligibility gates and the exact conditions for a billable qualified meeting.</p>
+            </div>
+            <Link href="/appointment-setting#fit-review" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-8 text-xs font-black uppercase tracking-[0.18em] text-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-foreground">
+              Check if you qualify
             </Link>
           </div>
         </section>

@@ -5,10 +5,19 @@ import { trackToolCompletion } from "@/components/acquisition-tracking";
 import { calculateOutboundFunnel, type OutboundFunnelInputs, type OutboundFunnelResult } from "@/lib/outbound-funnel-calculator";
 import { auditCsvList, type CsvListQualityAudit } from "@/lib/csv-list-quality";
 import { buildOutboundBrief, type OutboundBriefExport, type OutboundBriefInputs } from "@/lib/outbound-brief";
+import { buildCsvAuditReport, CSV_ISSUE_LABELS } from "./csv-audit-report";
 
 const FIELD_CLASS = "mt-2 min-h-11 w-full rounded-[10px] border border-white/[0.12] bg-white/[0.035] px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-foreground/50 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/35";
 const LABEL_CLASS = "text-[13px] font-bold uppercase tracking-[0.12em] text-foreground/80";
 const HELP_CLASS = "mt-1.5 block text-[13px] font-normal normal-case leading-5 tracking-normal text-foreground/65";
+
+function focusResult(element: HTMLElement | null) {
+  window.requestAnimationFrame(() => {
+    element?.focus({ preventScroll: true });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    element?.scrollIntoView({ behavior, block: "start" });
+  });
+}
 
 const FUNNEL_FIELDS: Array<{ key: keyof OutboundFunnelInputs; label: string; help: string; step: string }> = [
   { key: "entries", label: "Unique prospects emailed", help: "Original cohort entries", step: "1" },
@@ -65,6 +74,7 @@ function formatNumber(value: number | null): string {
 }
 
 export function OutboundFunnelCalculator() {
+  const resultRef = useRef<HTMLElement>(null);
   const [values, setValues] = useState(INITIAL_FUNNEL);
   const [result, setResult] = useState<OutboundFunnelResult | null>(null);
   const [error, setError] = useState("");
@@ -81,6 +91,7 @@ export function OutboundFunnelCalculator() {
     setError("");
     setResult(next);
     trackToolCompletion("outbound-funnel-economics-calculator");
+    focusResult(resultRef.current);
   }
 
   function updateValue(key: keyof OutboundFunnelInputs, value: string) {
@@ -126,7 +137,7 @@ export function OutboundFunnelCalculator() {
         {error ? <p role="alert" className="mt-4 text-sm leading-6 text-red-300">{error}</p> : null}
       </form>
 
-      <section aria-live="polite" aria-atomic="true" className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
+      <section ref={resultRef} tabIndex={-1} aria-label="Outbound funnel calculation result" aria-live="polite" aria-atomic="true" className="scroll-mt-24 min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 focus:outline-none md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Cohort result</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">Enter one fixed cold-email cohort. Unknowns remain empty until the relevant denominator exists.</p> : (
           <>
@@ -151,6 +162,7 @@ function isCsvAudit(value: ReturnType<typeof auditCsvList>): value is CsvListQua
 
 export function CsvListQualityAuditor() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLElement>(null);
   const [fileName, setFileName] = useState("");
   const [result, setResult] = useState<CsvListQualityAudit | null>(null);
   const [error, setError] = useState("");
@@ -172,6 +184,7 @@ export function CsvListQualityAuditor() {
     }
     setResult(audit);
     trackToolCompletion("csv-list-quality-auditor");
+    focusResult(resultRef.current);
   }
 
   const metrics = result ? [
@@ -206,7 +219,7 @@ export function CsvListQualityAuditor() {
         {fileName || result || error ? <button type="button" onClick={reset} className="mt-5 min-h-11 border border-white/[0.14] px-5 text-sm font-bold text-foreground/75 hover:border-primary/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear file</button> : null}
       </section>
 
-      <section aria-live="polite" className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 md:p-8">
+      <section ref={resultRef} tabIndex={-1} aria-label="CSV list quality result" aria-live="polite" aria-atomic="true" className="scroll-mt-24 min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 focus:outline-none md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Quality checks</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">No CSV has been reviewed on this device.</p> : (
           <>
@@ -214,7 +227,38 @@ export function CsvListQualityAuditor() {
             <dl className="mt-5 grid gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2">
               {metrics.map(([label, value]) => <div key={label} className="bg-[#0b1117] p-4"><dt className="text-xs text-foreground/55">{label}</dt><dd className="mt-1 font-mono text-2xl font-bold text-foreground">{value}</dd></div>)}
             </dl>
-            {result.issues.length > 0 ? <p className="mt-5 text-xs leading-5 text-foreground/55">Flagged row numbers: {Array.from(new Set(result.issues.map((issue) => issue.rowNumber))).join(", ")}. No row content was stored or sent.</p> : null}
+            {result.issues.length > 0 ? (
+              <div className="mt-6">
+                <div className="flex flex-col gap-3 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Rows to review</h3>
+                    <p className="mt-1 text-xs leading-5 text-foreground/55">The report contains row numbers and issue labels only.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => downloadExport("csv-list-quality-audit.csv", buildCsvAuditReport(result), "text/csv;charset=utf-8")}
+                    className="inline-flex min-h-11 items-center justify-center border border-white/[0.14] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-foreground hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary"
+                  >
+                    Download audit report
+                  </button>
+                </div>
+                <div className="max-h-80 overflow-auto" tabIndex={0} aria-label="CSV issues by row">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead className="sticky top-0 bg-[#0b1117] text-[10px] font-black uppercase tracking-[0.14em] text-foreground/50">
+                      <tr><th scope="col" className="px-2 py-3">Row</th><th scope="col" className="px-2 py-3">Issue</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.06]">
+                      {result.issues.map((issue, index) => (
+                        <tr key={`${issue.rowNumber}:${issue.code}:${index}`}>
+                          <td className="px-2 py-3 font-mono text-foreground/75">{issue.rowNumber}</td>
+                          <td className="px-2 py-3 text-foreground/70">{CSV_ISSUE_LABELS[issue.code]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : null}
           </>
         )}
       </section>
@@ -251,6 +295,7 @@ function downloadExport(fileName: string, value: string, type: string) {
 }
 
 export function OutboundBriefBuilder() {
+  const resultRef = useRef<HTMLElement>(null);
   const [values, setValues] = useState(INITIAL_BRIEF);
   const [result, setResult] = useState<OutboundBriefExport | null>(null);
   const [error, setError] = useState("");
@@ -266,6 +311,7 @@ export function OutboundBriefBuilder() {
     setError("");
     setResult(next);
     trackToolCompletion("outbound-brief-builder");
+    focusResult(resultRef.current);
   }
 
   function updateValue(key: keyof OutboundBriefInputs, value: string) {
@@ -303,7 +349,7 @@ export function OutboundBriefBuilder() {
         {error ? <p role="alert" className="mt-4 text-sm text-red-300">{error}</p> : null}
       </form>
 
-      <section aria-live="polite" className="min-w-0 max-w-full rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 md:p-8">
+      <section ref={resultRef} tabIndex={-1} aria-label="Outbound brief result" aria-live="polite" aria-atomic="true" className="scroll-mt-24 min-w-0 max-w-full rounded-xl border border-white/[0.08] bg-white/[0.025] p-5 focus:outline-none md:p-8">
         <h2 className="text-2xl font-black tracking-[-0.02em]">Portable inputs</h2>
         {!result ? <p className="mt-4 text-sm leading-6 text-foreground/60">Build once, then download the same normalized inputs as Markdown or JSON.</p> : (
           <>

@@ -71,11 +71,14 @@ export const LIBRARY_TASKS = [
 export type LibraryTask = (typeof LIBRARY_TASKS)[number]["value"];
 export type LibraryLaneFilter = LibraryLane | "all";
 export type LibraryAccessFilter = Extract<LibraryAccess, "public" | "account"> | "all";
+export type LibraryKindFilter = LibraryItem["kind"] | "all";
 
 export interface LibraryFilters {
   lane: LibraryLaneFilter;
   task: LibraryTask | "all";
   access: LibraryAccessFilter;
+  kind: LibraryKindFilter;
+  topic: string;
   query: string;
 }
 
@@ -89,6 +92,8 @@ export function resolveLibraryFilters(params: Record<string, SearchParamValue>):
   const laneValue = firstParam(params.lane);
   const taskValue = firstParam(params.task);
   const accessValue = firstParam(params.access);
+  const kindValue = firstParam(params.kind);
+  const topicValue = firstParam(params.topic).trim().slice(0, 60);
   const query = firstParam(params.q).trim().slice(0, 100);
 
   return {
@@ -97,6 +102,8 @@ export function resolveLibraryFilters(params: Record<string, SearchParamValue>):
       ? taskValue as LibraryTask
       : "all",
     access: accessValue === "public" || accessValue === "account" ? accessValue : "all",
+    kind: kindValue === "skill" || kindValue === "playbook" || kindValue === "tool" ? kindValue : "all",
+    topic: topicValue || "all",
     query,
   };
 }
@@ -111,12 +118,17 @@ export function filterLibraryItems(
   return items.filter((item) => {
     if (filters.lane !== "all" && item.lane !== filters.lane) return false;
     if (filters.access !== "all" && item.access !== filters.access) return false;
+    if (filters.kind !== "all" && item.kind !== filters.kind) return false;
+    if (filters.topic !== "all" && item.topic !== filters.topic) return false;
     if (selectedTask && (item.lane !== selectedTask.lane || !selectedTask.topics.some((topic) => topic === item.topic))) return false;
 
     if (query) {
       const searchable = [
         item.title,
         item.summary,
+        item.answer,
+        ...item.inputs,
+        ...item.outputs,
         item.topic.replaceAll("-", " "),
         KIND_LABELS[item.kind],
       ].join(" ").toLocaleLowerCase();
@@ -132,6 +144,8 @@ export function buildLibraryHref(filters: Partial<LibraryFilters>): string {
   if (filters.lane && filters.lane !== "all") params.set("lane", filters.lane);
   if (filters.task && filters.task !== "all") params.set("task", filters.task);
   if (filters.access && filters.access !== "all") params.set("access", filters.access);
+  if (filters.kind && filters.kind !== "all") params.set("kind", filters.kind);
+  if (filters.topic && filters.topic !== "all") params.set("topic", filters.topic);
   if (filters.query?.trim()) params.set("q", filters.query.trim());
   const query = params.toString();
   return query ? `/library?${query}` : "/library";

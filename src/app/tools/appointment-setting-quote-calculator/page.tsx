@@ -49,17 +49,16 @@ export default function AppointmentSettingQuoteCalculatorPage() {
       <Navbar />
 
       <main id="main-content">
-        <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-20 pt-36 md:px-12 md:pb-24 md:pt-44">
-          <div className="hero-aurora absolute inset-0 opacity-50" />
-          <div className="relative z-10 mx-auto max-w-[1250px]">
-            <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-primary">Free buyer tool</p>
-            <h1 className="mt-6 max-w-5xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.04em] sm:text-7xl lg:text-[84px]">What does this quote cost after no-shows and bad-fit meetings?</h1>
-            <p className="mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-foreground/70">Enter the setup fee, monthly fee, fee per qualified meeting held, and expected meetings. Use the provider&apos;s written assumptions for volume, show rate, and qualification rate. Do not guess.</p>
-            <p className="mt-5 text-xs text-foreground/65">By Ghiles Moussaoui · Updated 2026-08-23 · <Link href="/appointment-setting-pricing" className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Pricing source index</Link></p>
+        <section className="border-b border-white/[0.06] px-6 pb-8 pt-28 md:px-12 md:pb-12 md:pt-36">
+          <div className="mx-auto max-w-[1250px]">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-primary sm:text-sm">Free buyer tool</p>
+            <h1 className="mt-4 max-w-5xl text-balance text-4xl font-black leading-[0.96] tracking-[-0.04em] sm:text-5xl lg:text-6xl">What does this quote cost after no-shows and bad-fit meetings?</h1>
+            <p className="mt-5 max-w-3xl text-pretty text-base leading-relaxed text-foreground/70 md:text-lg">Use the provider&apos;s written fees and assumptions. The calculator uses only the values you enter.</p>
+            <p className="mt-4 text-xs text-foreground/65">By Ghiles Moussaoui · Updated 2026-08-23 · <Link href="/appointment-setting-pricing" className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">Pricing source index</Link></p>
           </div>
         </section>
 
-        <section className="px-6 py-12 md:px-12 md:py-20">
+        <section className="px-4 py-6 sm:px-6 md:px-12 md:py-12">
           <div className="mx-auto max-w-[1250px]">
             <AppointmentSettingCalculator />
           </div>
@@ -102,8 +101,8 @@ export default function AppointmentSettingQuoteCalculatorPage() {
               <h2 className="text-3xl font-black tracking-[-0.03em]">The calculation uses your assumptions. Can the market support them?</h2>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground/58">Muditek checks reachable market size, qualification rules, deal economics, and closer capacity before recommending a launch.</p>
             </div>
-            <TrackedBookingLink asset="appointment-setting-quote-calculator" placement="bottom-cta" className="btn-press inline-flex shrink-0 items-center justify-center gap-3 bg-primary px-7 py-4 text-sm font-black uppercase tracking-[0.17em] text-background">
-              Check market fit <ArrowRight className="h-4 w-4" />
+            <TrackedBookingLink asset="appointment-setting-quote-calculator" placement="bottom-cta" className="btn-press inline-flex min-h-14 shrink-0 items-center justify-center gap-3 bg-primary px-7 py-4 text-center text-sm font-black uppercase tracking-[0.1em] text-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-foreground">
+              Book a 30-minute fit review <ArrowRight className="h-4 w-4" />
             </TrackedBookingLink>
           </div>
         </section>

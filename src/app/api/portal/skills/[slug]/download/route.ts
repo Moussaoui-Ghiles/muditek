@@ -51,6 +51,8 @@ export async function GET(
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
+  const body = createTar(files);
+
   if (user && email) {
     recordUsageEvent(sql, {
       email,
@@ -62,7 +64,6 @@ export async function GET(
     }).catch(() => {});
   }
 
-  const body = createTar(files);
   return new NextResponse(new Uint8Array(body), {
     headers: {
       "Content-Type": "application/x-tar",

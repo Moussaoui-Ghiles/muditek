@@ -41,7 +41,6 @@ const APPROVED_PLAYBOOKS = [
   "loop-design-playbook",
   "mudiagent-operator-guide",
   "outbound-failure-diagnostic",
-  "reddit-client-acquisition-hermes",
   "slack-outbound-agent-playbook",
 ];
 
@@ -66,9 +65,18 @@ describe("library publication manifest", () => {
     expect(getPublishedLibraryItems("playbook").map((item) => item.slug).sort()).toEqual(APPROVED_PLAYBOOKS);
   });
 
+  it("publishes exactly 13 skills, 16 playbooks, and four tools", () => {
+    expect(getPublishedLibraryItems("skill")).toHaveLength(13);
+    expect(getPublishedLibraryItems("playbook")).toHaveLength(16);
+    expect(getPublishedLibraryItems("tool")).toHaveLength(4);
+    expect(getPublishedLibraryItems()).toHaveLength(33);
+  });
+
   it("keeps archived and redirected assets out of publication", () => {
     expect(getPublishedLibraryItems().some((item) => item.status !== "published")).toBe(false);
     expect(getLibraryItem("playbook", "openclaw-outbound")?.status).toBe("redirected");
+    expect(getLibraryItem("playbook", "reddit-client-acquisition-hermes")?.status).toBe("removed");
+    expect(resolveLibraryPath("/playbooks/reddit-client-acquisition-hermes")).toEqual({ status: "gone" });
     expect(resolveLibraryPath("/playbooks/openclaw-outbound")).toEqual({
       status: "redirect",
       target: "/playbooks/google-maps-outbound",
@@ -84,6 +92,20 @@ describe("library publication manifest", () => {
       expect(item.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(item.source.length).toBeGreaterThan(0);
       expect(item.commercialTarget).toBe(item.lane === "outbound" ? "/appointment-setting" : "/ai-implementation");
+      expect(item.version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(item.answer.length).toBeGreaterThan(40);
+      expect(item.inputs.length).toBeGreaterThan(0);
+      expect(item.outputs.length).toBeGreaterThan(0);
+      expect(item.outputs).not.toEqual(item.inputs);
+      expect(item.prerequisites.length).toBeGreaterThan(0);
+      expect(item.examplePath.length).toBeGreaterThan(0);
+      expect(item.sourceLinks.length).toBeGreaterThan(0);
+      expect(item.sourceLinks.every((link) => link.label.length > 0 && link.href.startsWith("/"))).toBe(true);
+
+      if (item.kind === "skill") {
+        expect(item.validationCommand).toContain("validate-library-skill.mjs");
+        expect(item.bundleFiles.length).toBeGreaterThan(1);
+      }
 
       for (const relatedPath of item.relatedAssets) {
         expect(resolveLibraryPath(relatedPath).status).toBe("published");

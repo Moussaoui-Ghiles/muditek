@@ -16,12 +16,17 @@ describe("machine-readable publication indexes", () => {
 
   it("uses the current positioning without old proof or offer claims", () => {
     for (const output of [buildLlmsTxt(), buildLlmsFullTxt(), buildIndexMarkdown()]) {
-      expect(output).toContain("Muditek runs B2B appointment setting");
+      expect(output).toContain("qualified meetings held");
+      expect(output).toContain("AI implementation is the deeper capability");
       expect(output).not.toMatch(/front-end offer|back-end capability|deeper delivery/i);
       expect(output).not.toMatch(/35\+ systems|\$3M|5,000\+|three service offers|€50K guarantee/i);
       expect(output).not.toContain("/revenue-leak-audit");
       expect(output).not.toMatch(/muditek\.com\/mudiagent(?:\)|\s|$)/);
       expect(output).not.toMatch(/muditek\.com\/pe-ops(?:\)|\s|$)/);
     }
+  });
+
+  it("uses the current publication date", () => {
+    expect(buildLlmsTxt()).toContain("Last updated: 2026-08-28");
   });
 });

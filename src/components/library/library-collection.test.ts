@@ -42,7 +42,7 @@ describe("library acquisition filters", () => {
       access: "paid",
     });
 
-    expect(filters).toEqual({ lane: "all", task: "all", access: "all", query: "" });
+    expect(filters).toEqual({ lane: "all", task: "all", access: "all", kind: "all", topic: "all", query: "" });
     expect(filterLibraryItems(items, filters)).toEqual(items);
   });
 
@@ -51,5 +51,11 @@ describe("library acquisition filters", () => {
       lane: "ai-implementation",
       task: "design-ai-workflow",
     })).toBe("/library?lane=ai-implementation&task=design-ai-workflow");
+  });
+
+  it("combines kind and topic filters", () => {
+    const filters = resolveLibraryFilters({ kind: "tool", topic: "list-quality" });
+    expect(filterLibraryItems(items, filters).map((item) => item.slug)).toEqual(["csv-list-quality-auditor"]);
+    expect(buildLibraryHref({ kind: "tool", topic: "list-quality" })).toBe("/library?kind=tool&topic=list-quality");
   });
 });

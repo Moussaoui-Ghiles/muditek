@@ -14,7 +14,7 @@ import { getPublishedLibraryItems } from "@/lib/library-manifest";
 
 export const metadata: Metadata = {
   title: "Muditek Library | Outbound and AI Implementation",
-  description: "Skills, playbooks, and private browser tools for outbound and AI implementation work.",
+  description: "Skills, playbooks, and browser-side tools for outbound and AI implementation work.",
   alternates: { canonical: "https://muditek.com/library" },
 };
 
@@ -23,11 +23,12 @@ type LibrarySearchParams = Promise<Record<string, string | string[] | undefined>
 export default async function LibraryPage({ searchParams }: { searchParams: LibrarySearchParams }) {
   const filters = resolveLibraryFilters(await searchParams);
   const items = getPublishedLibraryItems();
+  const topics = Array.from(new Set(items.map((item) => item.topic))).sort((a, b) => a.localeCompare(b));
   const filteredItems = filterLibraryItems(items, filters);
   const outbound = filteredItems.filter((item) => item.lane === "outbound");
   const ai = filteredItems.filter((item) => item.lane === "ai-implementation");
   const selectedTask = LIBRARY_TASKS.find((task) => task.value === filters.task);
-  const hasActiveFilter = filters.lane !== "all" || filters.task !== "all" || filters.access !== "all" || Boolean(filters.query);
+  const hasActiveFilter = filters.lane !== "all" || filters.task !== "all" || filters.access !== "all" || filters.kind !== "all" || filters.topic !== "all" || Boolean(filters.query);
   const resultHeading = selectedTask?.label
     ?? (filters.lane === "ai-implementation" ? "AI implementation" : filters.lane === "outbound" ? "Outbound" : "Matching assets");
   const resultDescription = selectedTask?.description
@@ -119,16 +120,74 @@ export default async function LibraryPage({ searchParams }: { searchParams: Libr
           </div>
         </section>
 
+        <section aria-labelledby="recommended-paths-heading" className="border-b border-white/[0.06] py-12 md:py-16">
+          <div className="mx-auto w-full max-w-[1180px] px-6 md:px-12">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Recommended paths</p>
+            <h2 id="recommended-paths-heading" className="mt-3 text-3xl font-black tracking-[-0.03em] text-foreground md:text-4xl">Start with the first unresolved step.</h2>
+            <div className="mt-8 grid gap-px overflow-hidden rounded-[2px] border border-white/[0.08] bg-white/[0.08] lg:grid-cols-2">
+              <div className="bg-background p-6 md:p-8">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Outbound</p>
+                <ol className="mt-5 space-y-1">
+                  {[
+                    ["Diagnose the first failure", "/playbooks/outbound-failure-diagnostic"],
+                    ["Review the offer", "/skills/cold-offer-review"],
+                    ["Check the target list", "/skills/buyer-signal-list-research"],
+                    ["Run the cohort calculator", "/tools/outbound-funnel-economics-calculator"],
+                  ].map(([label, href], index) => (
+                    <li key={href}>
+                      <Link href={href} className="grid min-h-12 grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-white/[0.06] text-sm font-bold text-foreground/75 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-primary">
+                        <span className="font-mono text-[10px] text-primary">{index + 1}</span><span>{label}</span><span aria-hidden="true">→</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="bg-background p-6 md:p-8">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">AI implementation</p>
+                <ol className="mt-5 space-y-1">
+                  {[
+                    ["Set the data and hardware boundary", "/playbooks/local-ai-build-guide"],
+                    ["Design the operating loop", "/playbooks/loop-design-playbook"],
+                    ["Keep human review explicit", "/playbooks/judgment-moat"],
+                  ].map(([label, href], index) => (
+                    <li key={href}>
+                      <Link href={href} className="grid min-h-12 grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-white/[0.06] text-sm font-bold text-foreground/75 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-primary">
+                        <span className="font-mono text-[10px] text-primary">{index + 1}</span><span>{label}</span><span aria-hidden="true">→</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section aria-labelledby="library-filter-heading" className="border-b border-white/[0.06] bg-card/30 py-10">
           <div className="mx-auto w-full max-w-[1180px] px-6 md:px-12">
             <div className="mb-5 flex items-center justify-between gap-4">
               <h2 id="library-filter-heading" className="text-sm font-black uppercase tracking-[0.18em] text-foreground">Filter the library</h2>
               {hasActiveFilter ? <Link href="/library" className="text-xs font-bold text-primary underline decoration-primary/50 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear all</Link> : null}
             </div>
-            <form action="/library" method="get" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1.3fr_auto] lg:items-end">
-              <label className="block text-xs font-bold text-foreground/75">
+            <form action="/library" method="get" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+              <label className="block text-xs font-bold text-foreground/75 lg:col-span-2">
                 Search
                 <input name="q" type="search" defaultValue={filters.query} placeholder="Title, topic, or problem" className="mt-2 min-h-12 w-full rounded-[2px] border border-white/[0.14] bg-background px-4 text-sm text-foreground outline-none placeholder:text-foreground/40 focus:border-primary focus:ring-2 focus:ring-primary/30" />
+              </label>
+              <label className="block text-xs font-bold text-foreground/75">
+                Kind
+                <select name="kind" defaultValue={filters.kind} className="mt-2 min-h-12 w-full rounded-[2px] border border-white/[0.14] bg-background px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/30">
+                  <option value="all">All kinds</option>
+                  <option value="skill">Skills</option>
+                  <option value="playbook">Playbooks</option>
+                  <option value="tool">Tools</option>
+                </select>
+              </label>
+              <label className="block text-xs font-bold text-foreground/75">
+                Topic
+                <select name="topic" defaultValue={filters.topic} className="mt-2 min-h-12 w-full rounded-[2px] border border-white/[0.14] bg-background px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/30">
+                  <option value="all">All topics</option>
+                  {topics.map((topic) => <option key={topic} value={topic}>{topic.replaceAll("-", " ")}</option>)}
+                </select>
               </label>
               <label className="block text-xs font-bold text-foreground/75">
                 Lane
@@ -153,7 +212,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Libr
                   {LIBRARY_TASKS.map((task) => <option key={task.value} value={task.value}>{task.shortLabel}</option>)}
                 </select>
               </label>
-              <button type="submit" className="min-h-12 rounded-[2px] bg-primary px-6 text-xs font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">Show assets</button>
+              <button type="submit" className="min-h-12 rounded-[2px] bg-primary px-6 text-xs font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">Show assets</button>
             </form>
           </div>
         </section>

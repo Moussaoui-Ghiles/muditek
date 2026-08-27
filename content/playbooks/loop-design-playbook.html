@@ -398,10 +398,9 @@ pre code{
     <span class="logo-tile"><img src="/media/loop-design-playbook/logos/hermes-agent.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/logos/hermes-agent.svg';" alt="Hermes Agent" loading="lazy"><b>Hermes Agent</b></span>
     <span class="logo-tile"><img src="/media/loop-design-playbook/logos/openclaw.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/logos/openclaw.svg';" alt="OpenClaw" loading="lazy"><b>OpenClaw</b></span>
   </div>
-  <p>The AI-coding timeline found a six-word sentence and turned it into a slogan: design loops that prompt your agents.</p>
-  <p>Useful sentence. Weak execution, if it stays a sentence.</p>
-  <p>A loop is not a vibe, not a longer prompt, and not a mystical agent swarm. It is a control system: a trigger, a worker, a verifier, state, budget, and a halt condition.</p>
-  <p>This playbook turns the discourse into the actual build.</p>
+  <p>The phrase “design loops that prompt your agents” is useful only when the loop is specified.</p>
+  <p>A loop is a control system: a trigger, a worker, a verifier, state, a budget, and a halt condition.</p>
+  <p>This playbook defines the parts, controls, and rollout sequence.</p>
   <div class="system-map" role="img" aria-label="Loop system map: Trigger, State, Agent, Skills, Verification, Halt">
     <div class="map-node"><span>01</span><b>Trigger</b></div>
     <div class="map-node"><span>02</span><b>State</b></div>
@@ -410,7 +409,7 @@ pre code{
     <div class="map-node is-warn"><span>05</span><b>Verify</b></div>
     <div class="map-node is-stop"><span>06</span><b>Halt</b></div>
   </div>
-  <p class="caption">Cron is the clock. The model is the decision-maker. Verification is the only reason to trust the loop.</p>
+  <p class="caption">The trigger starts the run. The model selects an action. Verification determines whether work can continue.</p>
 </header>
 
 <nav class="toc" aria-label="Table of contents">
@@ -419,7 +418,7 @@ pre code{
     <li><a href="#definition">1. What a Loop Actually Is</a></li>
     <li><a href="#ladder">2. The Five-Level Ladder</a></li>
     <li><a href="#blueprint">3. The Production Blueprint</a></li>
-    <li><a href="#skills">4. Why Skills Beat Prompts</a></li>
+    <li><a href="#skills">4. Skills as Repeatable Procedures</a></li>
     <li><a href="#build">5. Build the Smallest Useful Loop</a></li>
     <li><a href="#guardrails">6. Guardrails That Keep It Alive</a></li>
     <li><a href="#templates">7. Copy-Paste Templates</a></li>
@@ -473,7 +472,7 @@ pre code{
   <p>Most people arguing online are mixing Level 2 and Level 5. The new part is not "run the same prompt again." The new part is durable orchestration: scheduled work, multiple agents, shared state, crash recovery, and verification that survives your laptop closing.</p>
 
   <h2 id="blueprint">The Production Blueprint</h2>
-  <p class="lede">A production loop has six parts. Miss one and you are just burning tokens with confidence.</p>
+  <p class="lede">A production loop has six parts. If one is missing, the system is incomplete.</p>
   <div class="tw">
     <table>
       <thead><tr><th>Part</th><th>What It Owns</th><th>Failure If Missing</th></tr></thead>
@@ -481,26 +480,26 @@ pre code{
         <tr><td><strong>Trigger</strong></td><td>When the loop wakes up: cron, webhook, pull request, Slack message, file change.</td><td>The human has to remember to start it.</td></tr>
         <tr><td><strong>State</strong></td><td>What the loop knows between runs: repo, issues, memory files, queue, decision log.</td><td>Every run starts from amnesia.</td></tr>
         <tr><td><strong>Worker</strong></td><td>The agent that decides and acts. Claude Code, OpenClaw, Hermes Agent, Codex, or another operator.</td><td>The loop cannot choose the next move.</td></tr>
-        <tr><td><strong>Skills</strong></td><td>Named procedures the agent can call instead of re-deriving every workflow.</td><td>The agent reinvents the business every run.</td></tr>
+        <tr><td><strong>Skills</strong></td><td>Named procedures the agent can call instead of re-deriving every workflow.</td><td>The agent re-derives the procedure on every run.</td></tr>
         <tr><td><strong>Verifier</strong></td><td>Checks the output: tests, build, reviewer model, browser screenshot, human approval gate.</td><td>Bad commits compound quietly.</td></tr>
-        <tr><td><strong>Halt</strong></td><td>Max iterations, no-progress detection, token or dollar ceiling, and escalation path.</td><td>The loop becomes an invoice machine.</td></tr>
+        <tr><td><strong>Halt</strong></td><td>Max iterations, no-progress detection, token or dollar ceiling, and escalation path.</td><td>Cost and errors can continue without a stop or escalation.</td></tr>
       </tbody>
     </table>
   </div>
   <p>The model is one cell in the table. The expensive engineering is everything around it.</p>
 
-  <h2 id="skills">Why Skills Beat Prompts</h2>
+  <h2 id="skills">Skills as Repeatable Procedures</h2>
   <p>The loop is plumbing. The asset is the skill it calls.</p>
   <p>A prompt tells an agent what you want this time. A skill teaches the agent how your business does a repeatable job every time.</p>
   <p>If the loop has no skill library, it has to rediscover your standards on every run: how you review a pull request, how you qualify a lead, how you write a CTA, how you decide whether a claim is safe.</p>
-  <p>That is not automation. That is recurring confusion with a model bill attached.</p>
+  <p>Without a stable procedure, output quality changes between runs and becomes harder to audit.</p>
   <div class="callout">
     <p>Loop design compounds only when the loop calls named skills with narrow ownership, explicit inputs, expected outputs, and refusal conditions.</p>
   </div>
-  <p>For Muditek-style AI adoption, this maps directly to the Three Folders: business context, prompt/SOP repository, and data sources. The loop reads the business. The skill performs the job. The verifier checks the result.</p>
+  <p>In a business system, this maps to three inputs: business context, procedures, and approved data sources. The loop reads the context. The skill performs the job. The verifier checks the result.</p>
 
   <h2 id="build">Build the Smallest Useful Loop</h2>
-  <p class="lede">Do not start with "run my company." Start with one annoying recurring surface.</p>
+  <p class="lede">Do not start with a broad company-wide workflow. Start with one bounded recurring process.</p>
   <p>The canonical starter is pull-request babysitting: watch open PRs, fix build failures, address comments, rerun checks, and stop when the PR is clean or blocked.</p>
   <p>It works because the state is concrete, the tools are available, the verifier is obvious, and the blast radius is bounded.</p>
   <div class="codewrap">
@@ -515,7 +514,7 @@ Stop when every PR is green, blocked on human input, or has hit the budget ceili
   <p>That command is not the system. It is the top layer. The system is the contract below it.</p>
 
   <h2 id="guardrails">Guardrails That Keep It Alive</h2>
-  <p>The worst loop is the one that almost works forever.</p>
+  <p>A loop that almost works can continue for too long without a clear failure signal.</p>
   <p>Every serious loop needs three hard stops before it touches live work.</p>
   <ul class="checklist">
     <li><strong>Iteration ceiling.</strong> Decide how many passes it gets before escalation.</li>
@@ -524,7 +523,7 @@ Stop when every PR is green, blocked on human input, or has hit the budget ceili
   </ul>
   <p>Then add the fourth guardrail: permission boundaries. The loop can read broadly, but it should write narrowly. If it needs to cross a boundary, it asks.</p>
   <div class="callout">
-    <p>A loop with no verifier is just a confident generator. A loop with no halt condition is a liability. A loop with no skill library is expensive forgetfulness.</p>
+    <p>A loop without a verifier cannot establish that the work is correct. A loop without a halt condition cannot bound cost or failure. A loop without stable procedures produces inconsistent work.</p>
   </div>
 
   <h2 id="templates">Copy-Paste Templates</h2>
@@ -628,7 +627,7 @@ Refuse when:
   </div>
 
   <h2 id="week-one">The First Week Rollout</h2>
-  <p class="lede">A good first loop is boring on purpose.</p>
+  <p class="lede">A good first loop is bounded and observable.</p>
   <p>You are proving the control system, not chasing the most impressive demo.</p>
   <div class="tw">
     <table>
@@ -660,17 +659,15 @@ Refuse when:
   <p>Write the loop. Give it skills. Force verification. Cap the downside. Then let it run.</p>
 
   <section class="cta">
-    <h2>From one loop to an AI-executable business</h2>
-    <p>This playbook shows one control system.</p>
-    <p><strong>Muditek builds the business version.</strong> We map your workflows, package your business context, turn SOPs into callable skills, connect the data sources, and stand up loops that execute with verification instead of vibes.</p>
-    <p>If your team is still prompting agents by hand, the bottleneck is not model quality. It is missing loop architecture.</p>
-    <p><a href="https://muditek.com">See what Muditek builds</a></p>
+    <h2>Apply the same controls to a business workflow</h2>
+    <p>This playbook covers one bounded control system.</p>
+    <p>A production implementation also needs a named workflow owner, approved data, permission boundaries, operational monitoring, and a testable definition of done.</p>
   </section>
 </article>
 
 <footer class="footer">
   <img src="/media/loop-design-playbook/muditek-logo.svg" onerror="this.onerror=null;this.src='../../public/media/loop-design-playbook/muditek-logo.svg';" alt="Muditek">
-  <p>Built by Muditek. We build the agent systems that run the work, not the tools your team babysits. <a href="https://muditek.com">muditek.com</a></p>
+  <p>Built by Muditek. The current AI implementation scope is available on the parent page.</p>
 </footer>
 
 <script>

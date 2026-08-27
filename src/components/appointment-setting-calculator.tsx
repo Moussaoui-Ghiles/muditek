@@ -16,6 +16,18 @@ const EMPTY_INPUTS: AppointmentSettingQuoteInputs = {
   grossMargin: "",
 };
 
+const ILLUSTRATIVE_INPUTS: AppointmentSettingQuoteInputs = {
+  setupCost: "500",
+  monthlyFee: "700",
+  perQualifiedHeldMeetingFee: "300",
+  bookedMeetings: "12",
+  showRate: "75",
+  qualificationRate: "80",
+  closeRate: "20",
+  dealValue: "12000",
+  grossMargin: "60",
+};
+
 const CURRENCIES = {
   EUR: { symbol: "€", locale: "en-IE" },
   USD: { symbol: "$", locale: "en-US" },
@@ -71,7 +83,9 @@ export function AppointmentSettingCalculator() {
   const [currency, setCurrency] = useState<Currency>("EUR");
   const [results, setResults] = useState<ReturnType<typeof calculateAppointmentSettingQuote>>(null);
   const [error, setError] = useState("");
+  const [copyStatus, setCopyStatus] = useState("");
   const hasTrackedCompletion = useRef(false);
+  const resultRef = useRef<HTMLElement>(null);
 
   const moneyFormatter = useMemo(
     () => new Intl.NumberFormat(CURRENCIES[currency].locale, { style: "currency", currency, maximumFractionDigits: 0 }),
@@ -79,15 +93,10 @@ export function AppointmentSettingCalculator() {
   );
 
   function updateInput(id: keyof AppointmentSettingQuoteInputs, value: string) {
-    const nextInputs = { ...inputs, [id]: value };
-    const nextResults = calculateAppointmentSettingQuote(nextInputs);
-    setInputs(nextInputs);
-    setResults(nextResults);
+    setInputs((current) => ({ ...current, [id]: value }));
+    setResults(null);
     setError("");
-    if (nextResults && !hasTrackedCompletion.current) {
-      trackCalculatorCompletion(currency);
-      hasTrackedCompletion.current = true;
-    }
+    setCopyStatus("");
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -105,12 +114,79 @@ export function AppointmentSettingCalculator() {
       trackCalculatorCompletion(currency);
       hasTrackedCompletion.current = true;
     }
+    window.requestAnimationFrame(() => {
+      resultRef.current?.focus({ preventScroll: true });
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      resultRef.current?.scrollIntoView({ behavior, block: "start" });
+    });
+  }
+
+  function loadExample() {
+    setInputs(ILLUSTRATIVE_INPUTS);
+    setResults(null);
+    setError("");
+    setCopyStatus("Illustrative values loaded. Review them, then calculate.");
+  }
+
+  function getLocalReport() {
+    if (!results) return "";
+    const labels: Array<[string, keyof AppointmentSettingQuoteInputs]> = [
+      ["Setup cost", "setupCost"],
+      ["Monthly fee", "monthlyFee"],
+      ["Fee per qualified meeting held", "perQualifiedHeldMeetingFee"],
+      ["Booked meetings", "bookedMeetings"],
+      ["Show rate (%)", "showRate"],
+      ["Qualification rate (%)", "qualificationRate"],
+      ["Close rate (%)", "closeRate"],
+      ["Deal value", "dealValue"],
+      ["Gross margin (%)", "grossMargin"],
+    ];
+    return [
+      "Appointment-setting quote calculation",
+      "Illustrative calculation based only on the entered assumptions. Not a benchmark or delivery forecast.",
+      `Currency: ${currency}`,
+      "",
+      "Inputs",
+      ...labels.map(([label, key]) => `${label}: ${inputs[key]}`),
+      "",
+      "Results",
+      `Total provider cost for the month: ${moneyFormatter.format(results.totalProviderCost)}`,
+      `Provider cost per qualified meeting held: ${moneyFormatter.format(results.costPerQualifiedHeldMeeting)}`,
+      `Provider cost per expected client: ${moneyFormatter.format(results.expectedCac)}`,
+      `Break-even close rate: ${(results.breakEvenCloseRate * 100).toFixed(1)}%`,
+      `Estimated contribution after provider cost: ${moneyFormatter.format(results.expectedGrossProfit)}`,
+      `Qualified held meetings: ${results.qualifiedHeldMeetings.toFixed(2)}`,
+      `Expected clients: ${results.expectedClients.toFixed(2)}`,
+    ].join("\n");
+  }
+
+  async function copyReport() {
+    const report = getLocalReport();
+    if (!report) return;
+    try {
+      await navigator.clipboard.writeText(report);
+      setCopyStatus("Calculation copied locally.");
+    } catch {
+      setCopyStatus("Copy failed. Use the download instead.");
+    }
+  }
+
+  function downloadReport() {
+    const report = getLocalReport();
+    if (!report) return;
+    const url = URL.createObjectURL(new Blob([report], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "appointment-setting-quote.txt";
+    link.click();
+    URL.revokeObjectURL(url);
+    setCopyStatus("Calculation downloaded locally.");
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-      <form onSubmit={submit} className="rounded-[12px] border border-white/[0.1] bg-card/40 p-6 md:p-9">
-        <div className="mb-8 flex flex-col gap-4 border-b border-white/[0.07] pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <form onSubmit={submit} className="rounded-[12px] border border-white/[0.1] bg-card/40 p-5 md:p-9">
+        <div className="mb-6 flex flex-col gap-4 border-b border-white/[0.07] pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Buyer inputs only</p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.02em]">Enter one month of the quote</h2>
@@ -118,6 +194,7 @@ export function AppointmentSettingCalculator() {
           <label className="text-sm font-bold uppercase tracking-[0.12em] text-foreground/70">
             Currency
             <select
+              aria-label="Calculation currency"
               value={currency}
               onChange={(event) => setCurrency(event.target.value as Currency)}
               className="ml-3 rounded-[10px] border border-white/[0.14] bg-background px-3 py-2 font-mono text-foreground outline-none focus:border-primary/70 focus:ring-2 focus:ring-primary/20"
@@ -127,7 +204,7 @@ export function AppointmentSettingCalculator() {
           </label>
         </div>
 
-        <div className="grid gap-x-6 gap-y-7 sm:grid-cols-2">
+        <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
           <Field id="setupCost" label="Setup cost" hint="One-time amount paid before launch. Enter 0 if there is none." value={inputs.setupCost} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
           <Field id="monthlyFee" label="Monthly fee" hint="Fixed provider fee for the month. Enter 0 if there is none." value={inputs.monthlyFee} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
           <Field id="perQualifiedHeldMeetingFee" label="Fee per qualified meeting held" hint="Amount billed after each qualified meeting happens. Enter 0 if there is none." value={inputs.perQualifiedHeldMeetingFee} suffix={CURRENCIES[currency].symbol} onChange={updateInput} />
@@ -141,21 +218,30 @@ export function AppointmentSettingCalculator() {
 
         {error ? <p role="alert" className="mt-6 text-sm font-semibold text-red-300">{error}</p> : null}
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <p className="mt-6 text-sm leading-relaxed text-foreground/65">Need to see the format first? Load illustrative values, then replace them. They are not benchmarks.</p>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <button type="submit" className="btn-press bg-primary px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
             Calculate the quote
           </button>
           <button
             type="button"
-            onClick={() => { setInputs(EMPTY_INPUTS); setResults(null); setError(""); hasTrackedCompletion.current = false; }}
+            onClick={loadExample}
+            className="btn-press min-h-12 border border-primary/35 px-7 py-3 text-sm font-bold uppercase tracking-[0.12em] text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary"
+          >
+            Load example
+          </button>
+          <button
+            type="button"
+            onClick={() => { setInputs(EMPTY_INPUTS); setResults(null); setError(""); setCopyStatus(""); hasTrackedCompletion.current = false; }}
             className="btn-press border border-white/[0.16] px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             Reset
           </button>
         </div>
+        {copyStatus && !results ? <p role="status" className="mt-4 text-sm text-foreground/68">{copyStatus}</p> : null}
       </form>
 
-      <section aria-live="polite" className="lg:sticky lg:top-28">
+      <section ref={resultRef} tabIndex={-1} aria-label="Quote calculation result" aria-live="polite" className="scroll-mt-24 focus:outline-none lg:sticky lg:top-28">
         <div className="rounded-[12px] border border-primary/25 bg-primary/[0.035] p-6 md:p-9">
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary">Quote economics</p>
           {!results ? (
@@ -191,6 +277,11 @@ export function AppointmentSettingCalculator() {
                 </div>
               </div>
               <p className="border-t border-white/[0.1] pt-5 text-sm leading-relaxed text-foreground/65">These estimates use only the numbers you entered. They are not a delivery forecast.</p>
+              <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.1] pt-5 sm:flex-row sm:flex-wrap">
+                <button type="button" onClick={copyReport} className="min-h-11 border border-primary/35 px-4 text-sm font-bold text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">Copy calculation</button>
+                <button type="button" onClick={downloadReport} className="min-h-11 border border-white/[0.16] px-4 text-sm font-bold text-foreground/80 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">Download .txt</button>
+              </div>
+              {copyStatus ? <p role="status" className="mt-3 text-sm text-foreground/68">{copyStatus}</p> : null}
             </div>
           )}
         </div>

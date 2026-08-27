@@ -51,6 +51,10 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
 
   const contentHref = `/api/library/playbooks/${encodeURIComponent(item.slug)}`;
   const url = `https://muditek.com/playbooks/${item.slug}`;
+  const isOutboundDiagnostic = item.slug === "outbound-failure-diagnostic";
+  const diagnosticHeadings = isOutboundDiagnostic
+    ? headings.filter((heading) => /^[1-6]\./.test(heading.label))
+    : [];
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground">
@@ -85,10 +89,63 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
               <span aria-hidden="true">•</span>
               <span>Updated {formatLibraryDate(item.updatedAt)}</span>
               <span aria-hidden="true">•</span>
+              <span>Version {item.version}</span>
+              <span aria-hidden="true">•</span>
               <span>{extension === ".pdf" ? "PDF" : extension === ".html" ? "Interactive document" : "Article"}</span>
             </div>
           </div>
         </header>
+
+        <section aria-labelledby="playbook-answer" className="border-b border-white/[0.06] bg-card/25 py-10 md:py-14">
+          <div className="mx-auto w-full max-w-[1080px] px-6 md:px-12">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Start here</p>
+            <h2 id="playbook-answer" className="mt-4 max-w-[34ch] text-2xl font-black leading-tight tracking-[-0.025em] text-foreground md:text-4xl">{item.answer}</h2>
+            <div className="mt-9 grid gap-7 border-t border-white/[0.08] pt-7 md:grid-cols-3">
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Bring</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.inputs.map((input) => <li key={input}>{input}</li>)}</ul>
+              </div>
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Leave with</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.outputs.map((output) => <li key={output}>{output}</li>)}</ul>
+              </div>
+              <div>
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-primary">Before you start</h3>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-foreground/70">{item.prerequisites.map((prerequisite) => <li key={prerequisite}>{prerequisite}</li>)}</ul>
+              </div>
+            </div>
+
+            {diagnosticHeadings.length > 0 ? (
+              <nav aria-label="Diagnostic index" className="mt-10 border-t border-white/[0.08] pt-7">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground/55">Six checks, in order</p>
+                <ol className="mt-4 grid gap-px overflow-hidden rounded-[2px] border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-3">
+                  {diagnosticHeadings.map((heading) => (
+                    <li key={heading.id} className="bg-background">
+                      <a href={`#${heading.id}`} className="flex min-h-14 items-center px-4 py-3 text-sm font-bold leading-5 text-foreground/75 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-primary">
+                        {heading.label}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            ) : null}
+
+            {isOutboundDiagnostic ? (
+              <div className="mt-8 flex flex-wrap gap-3" aria-label="Diagnostic tools and skills">
+                {item.relatedAssets.map((path) => {
+                  const label = path.includes("cold-offer")
+                    ? "Review the offer"
+                    : path.includes("buyer-signal")
+                      ? "Check targeting and signals"
+                      : path.includes("calculator")
+                        ? "Calculate the cohort"
+                        : "Audit funnel economics";
+                  return <Link key={path} href={path} className="inline-flex min-h-11 items-center border border-white/[0.12] px-4 py-2 text-sm font-bold text-foreground/75 hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">{label}</Link>;
+                })}
+              </div>
+            ) : null}
+          </div>
+        </section>
 
         <section className="py-12 md:py-16">
           <div className="mx-auto w-full max-w-[1120px] px-6 md:px-12">
@@ -131,7 +188,7 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
           </div>
         </section>
 
-        {item.relatedAssets.length > 0 ? (
+        {item.relatedAssets.length > 0 && !isOutboundDiagnostic ? (
           <section className="border-t border-white/[0.06] py-14">
             <div className="mx-auto w-full max-w-[1000px] px-6 md:px-12">
               <h2 className="text-2xl font-black tracking-[-0.02em]">Use this with</h2>

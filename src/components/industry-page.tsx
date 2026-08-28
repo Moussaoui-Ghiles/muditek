@@ -9,6 +9,7 @@ import { FaqBlock, type FaqItem } from "@/components/faq-block";
 import { StatStrip } from "@/components/stat-strip";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
+import { BOOKING_URL } from "@/lib/booking";
 import {
   INDUSTRIES,
   type IndustryConfig,
@@ -58,9 +59,6 @@ export interface IndustryPageData {
   datePublished: string;
   dateModified: string;
 }
-
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
 
 const ACCENT_TEXT: Record<IndustryAccent, string> = {
   primary: "text-primary",

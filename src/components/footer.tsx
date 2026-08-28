@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { EmailCapture } from "./email-capture";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
+import { BOOKING_URL } from "@/lib/booking";
 
 export function Footer() {
   return (
@@ -68,7 +69,7 @@ export function Footer() {
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Company</span>
               <Link href="/about" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">About</Link>
-              <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
               <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">LinkedIn</a>
             </div>
           </nav>

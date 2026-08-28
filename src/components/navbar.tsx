@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { BOOKING_URL } from "@/lib/booking";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -124,7 +125,7 @@ export function Navbar() {
             </Link>
           )}
           <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+            href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
@@ -243,7 +244,7 @@ export function Navbar() {
           )}
 
           <a
-            href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+            href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${

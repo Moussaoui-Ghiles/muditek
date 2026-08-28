@@ -11,6 +11,7 @@ import { TestimonialBlock } from "@/components/testimonial-block";
 import { DataCitation } from "@/components/data-citation";
 import { JsonLd } from "@/components/json-ld";
 import { DATA_POINTS } from "@/lib/data-points";
+import { BOOKING_URL } from "@/lib/booking";
 
 const ABOUT_TESTIMONIALS: Parameters<typeof TestimonialBlock>[0]["items"] = [];
 
@@ -282,7 +283,7 @@ export default function AboutPage() {
                   I build AI systems that run business operations. 35+ systems in production across telecom, financial services, and B2B SaaS. $3M+ in revenue generated and saved for clients. I built mudiAgent to run my own company first. When clients saw the results, they asked me to deploy it for them. Every system I ship gets documented in the B2B Agents newsletter.
                 </p>
                 <div className="flex items-center gap-4">
-                  <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>
+                  <a href="mailto:ghiles@muditek.com" className="text-sm font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>
                   <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-foreground/60 tracking-wider hover:text-foreground transition-colors">LinkedIn</a>
                 </div>
               </div>
@@ -310,7 +311,7 @@ export default function AboutPage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               30-minute call. No pitch. We&apos;ll tell you if we can help, and how much you&apos;re losing by waiting.
             </p>
-            <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book a Call
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />

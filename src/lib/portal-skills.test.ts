@@ -53,7 +53,6 @@ const EXPECTED_SKILLS = [
       "prompts/_TEMPLATE.md",
       "references/registry-schema.sql",
       "RUNBOOK.md",
-      "scripts/__pycache__/push-sheet.cpython-314.pyc",
       "scripts/classify-batch.ts",
       "scripts/contacts-merge.ts",
       "scripts/contacts.ts",

@@ -8,7 +8,7 @@ export function TldrBox({ tldr }: { tldr: string | null | undefined }) {
       <p className="text-xs font-mono uppercase tracking-[0.2em] text-primary mb-2">
         TL;DR
       </p>
-      <p className="text-base font-bold leading-snug text-foreground">{tldr}</p>
+      <p className="min-w-0 text-base font-bold leading-snug text-foreground [overflow-wrap:anywhere]">{tldr}</p>
     </aside>
   );
 }

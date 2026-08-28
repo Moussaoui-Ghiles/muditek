@@ -9,6 +9,7 @@ import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { DataCitation } from "@/components/data-citation";
+import { BOOKING_URL } from "@/lib/booking";
 import { DATA_POINTS } from "@/lib/data-points";
 
 export const metadata: Metadata = {
@@ -27,9 +28,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
 
 const VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260309_042944_4a2205b7-b061-490a-852b-92d9e9955ce9.mp4";
@@ -132,9 +130,9 @@ export default function Home() {
                 </span>
                 <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
               </Link>
-              <Link href="#contact" className="group px-8 py-5 border border-white/[0.15] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.05] transition-colors btn-press">
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group px-8 py-5 border border-white/[0.15] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.05] transition-colors btn-press">
                  Book a Call
-              </Link>
+              </a>
            </div>
         </div>
 
@@ -239,9 +237,9 @@ export default function Home() {
                      <span className="text-emerald-400 text-lg font-black">&euro;80-180K</span>
                    </div>
                    <p className="text-sm text-emerald-400/80 mb-4">&euro;50K in leaks found or you pay nothing</p>
-                   <Link href="/revenue-leak-audit" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-emerald-400 transition-colors">
+                   <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-emerald-400 transition-colors">
                       Book Your Diagnostic <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                   </Link>
+                   </a>
                 </div>
               </div>
             </ScrollReveal>
@@ -362,12 +360,12 @@ export default function Home() {
                  We pull your data, run the analysis, and show you exactly where the money goes. In euros. With the formulas. If we can&apos;t find meaningful waste, you pay nothing.
                </p>
 
-               <Link href="#contact" className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group">
+               <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group">
                  <span className="relative z-10 flex items-center gap-3">
                    Book a Call
                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform stroke-current"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                  </span>
-               </Link>
+               </a>
             </ScrollReveal>
          </div>
       </section>

@@ -210,6 +210,9 @@ export function getPortalSkill(slug: string): PortalSkillFile | null {
 function listFilesRecursive(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === "__pycache__" || entry.name === ".DS_Store") continue;
+    if (entry.name.endsWith(".pyc") || entry.name.endsWith(".pyo")) continue;
+
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...listFilesRecursive(path));

@@ -10,6 +10,7 @@ import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
+import { BOOKING_URL } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
@@ -127,12 +128,12 @@ export default function RevenueMachinePage() {
 
           <ScrollReveal delay={280}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book Your Diagnostic · €2,000
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
-              </Link>
+              </a>
               <Link href="#leaks" className="px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
                 See the 5 Leaks
               </Link>
@@ -298,7 +299,7 @@ export default function RevenueMachinePage() {
       </section>
 
       {/* ══════ WHAT YOU GET — 3 DELIVERABLES ══════ */}
-      <section className="py-32 md:py-40 w-full flex justify-center relative border-t border-white/[0.02]">
+      <section className="py-32 md:py-40 w-full flex justify-center relative overflow-hidden border-t border-white/[0.02]">
         <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-emerald-500/[0.025] rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
@@ -433,7 +434,7 @@ export default function RevenueMachinePage() {
           <ScrollReveal delay={320}>
             <div className="mt-16 md:mt-20 text-center">
               <a
-                href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink"
+                href={BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-press group relative inline-flex items-center justify-center px-12 md:px-16 py-6 bg-emerald-500 text-background text-base font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_60px_rgba(52,211,153,0.18)]"
@@ -464,7 +465,7 @@ export default function RevenueMachinePage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               In 5 days. If we can&apos;t find €50K, you pay nothing. Do the math on that.
             </p>
-            <a href="https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book Your Diagnostic
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />

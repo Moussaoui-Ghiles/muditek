@@ -1,8 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import AssetDetailContent, { type AssetLabels } from "@/components/portal/asset-detail-content";
 import { SkillMarkdownDetailContent } from "@/components/portal/skill-markdown-detail-content";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
+import { isPortalSkillSlug } from "@/lib/portal-skill-catalog";
 import type { ContentItem } from "@/lib/content-item";
 import {
   buildAssetAccess,
@@ -39,6 +40,7 @@ export default async function SkillDetailPage({
   const { slug: rawSlug } = await params;
   const slug = rawSlug?.trim();
   if (!slug) redirect("/portal/skills");
+  if (!isPortalSkillSlug(slug)) notFound();
 
   const target = `/portal/skills/${encodeURIComponent(slug)}`;
   const signInHref = `/sign-in?redirect_url=${encodeURIComponent(target)}`;

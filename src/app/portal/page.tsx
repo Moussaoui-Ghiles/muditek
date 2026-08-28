@@ -8,6 +8,7 @@ import { withDerivedThumbnails } from "@/lib/content-thumbnails";
 import { ensureMudikitMembership } from "@/lib/portal-account";
 import { buildPortalAccess } from "@/lib/portal-access";
 import { listPortalSkills } from "@/lib/portal-skills";
+import { filterPortalSkillItems } from "@/lib/portal-skill-catalog";
 import { PLAYBOOK_RESOURCE_CATEGORIES, categoryPortalPath } from "@/lib/content-item";
 import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import PortalContent, { type PortalHero, type UpcomingItem } from "./portal-content";
@@ -178,19 +179,19 @@ export default async function PortalPage({
     hasActiveSubscription: isPaid,
   });
 
-  const dbFreeItems = withDerivedThumbnails((await sql`
+  const dbFreeItems = filterPortalSkillItems(withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE is_free = true
     ORDER BY created_at DESC
-  `) as ContentItem[]);
+  `) as ContentItem[]));
 
-  const dbPaidItems = withDerivedThumbnails((await sql`
+  const dbPaidItems = filterPortalSkillItems(withDerivedThumbnails((await sql`
     SELECT id, title, slug, description, category, topic, download_url, file_type, thumbnail_url, is_new, is_free, created_at, updated_at
     FROM content_items
     WHERE is_free = false
     ORDER BY created_at DESC
-  `) as ContentItem[]);
+  `) as ContentItem[]));
 
   const localSkills = listPortalSkills();
   const dbSlugs = new Set([...dbFreeItems, ...dbPaidItems].map((item) => item.slug));

@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  getPortalSkill,
   getPortalSkillArchiveFiles,
   getPortalSkillBundle,
   listShippedPortalSkills,
 } from "./portal-skills";
+import {
+  filterPortalSkillItems,
+  getPortalSkillSection,
+  groupPortalSkills,
+  PORTAL_SKILL_SECTIONS,
+} from "./portal-skill-catalog";
 
 const EXPECTED_SKILLS = [
   {
@@ -197,4 +204,94 @@ describe("shipped portal skill bundles", () => {
       expect(archive.every((file) => file.data.byteLength > 0)).toBe(true);
     });
   }
+
+  it("publishes only the structured portal catalog", () => {
+    expect(PORTAL_SKILL_SECTIONS).toEqual([
+      {
+        id: "content-systems",
+        title: "Content systems",
+        description: "Plan, write, package, and distribute source-grounded content.",
+        slugs: [
+          "audience-content-os",
+          "linkedin-content-writer",
+          "x-content-writer",
+          "newsletter",
+          "tiktok-slideshow-machine",
+          "lead-magnets",
+        ],
+      },
+      {
+        id: "outbound-execution",
+        title: "Outbound execution",
+        description: "Review the offer, define the market, model the funnel, and build the list.",
+        slugs: [
+          "cold-offer-review",
+          "buyer-signal-list-research",
+          "outbound-funnel-economics",
+          "list-builder",
+          "list-expander",
+          "google-maps-owner-email-finder",
+        ],
+      },
+    ]);
+
+    expect(listedSkills.map((skill) => skill.slug)).toEqual(
+      PORTAL_SKILL_SECTIONS.flatMap((section) => section.slugs),
+    );
+    expect(getPortalSkillSection("newsletter")?.id).toBe("content-systems");
+    expect(getPortalSkillSection("list-builder")?.id).toBe("outbound-execution");
+    expect(getPortalSkill("copywriting")).toBeNull();
+  });
+
+  it("groups the portal shelf into content and outbound lanes", () => {
+    expect(
+      groupPortalSkills(listedSkills).map((section) => ({
+        id: section.id,
+        slugs: section.items.map((item) => item.slug),
+      })),
+    ).toEqual([
+      {
+        id: "content-systems",
+        slugs: [
+          "audience-content-os",
+          "linkedin-content-writer",
+          "x-content-writer",
+          "newsletter",
+          "tiktok-slideshow-machine",
+          "lead-magnets",
+        ],
+      },
+      {
+        id: "outbound-execution",
+        slugs: [
+          "cold-offer-review",
+          "buyer-signal-list-research",
+          "outbound-funnel-economics",
+          "list-builder",
+          "list-expander",
+          "google-maps-owner-email-finder",
+        ],
+      },
+    ]);
+  });
+
+  it("removes unapproved skill records without removing other portal resources", () => {
+    const items = [
+      { slug: "newsletter", category: "skill" },
+      { slug: "copywriting", category: "skill" },
+      { slug: "weekly-report", category: "template" },
+    ];
+
+    expect(filterPortalSkillItems(items)).toEqual([
+      { slug: "newsletter", category: "skill" },
+      { slug: "weekly-report", category: "template" },
+    ]);
+  });
+
+  it("uses reader-facing descriptions instead of agent trigger instructions", () => {
+    for (const skill of listedSkills) {
+      expect(skill.description).toBeTruthy();
+      expect(skill.description).not.toMatch(/\b(?:use when|also use when|explicitly invokes|meta skill)\b/i);
+    }
+  });
 });

@@ -54,7 +54,6 @@ export default async function SkillsPage() {
   `) as ContentItem[];
 
   const skills = withDerivedThumbnails(mergePortalSkills(rows));
-  const displayName = user.firstName || email.split("@")[0];
 
-  return <SkillsContent skills={skills} access={access} email={email} displayName={displayName} />;
+  return <SkillsContent skills={skills} access={access} />;
 }

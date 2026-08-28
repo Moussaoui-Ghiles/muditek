@@ -1,6 +1,12 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join, relative } from "path";
 import type { ContentItem } from "@/lib/content-item";
+import {
+  getPortalSkillSection,
+  getPortalSkillSummary,
+  isPortalSkillSlug,
+  PORTAL_SKILL_SLUGS,
+} from "./portal-skill-catalog";
 
 // Portal skills come ONLY from content/skills — the shipped, customer-facing set.
 // (Previously this also pulled .claude/.agents/.codex skill dirs in dev, which
@@ -19,12 +25,15 @@ export interface PortalSkillFile {
 }
 
 export function portalSkillToContentItem(skill: PortalSkillFile): ContentItem {
+  const section = getPortalSkillSection(skill.slug);
+
   return {
     id: `local-skill-${skill.slug}`,
     title: skill.name,
     slug: skill.slug,
-    description: skill.description,
+    description: getPortalSkillSummary(skill.slug) ?? skill.description,
     category: "skill",
+    topic: section?.id ?? null,
     download_url: `/api/portal/skills/${encodeURIComponent(skill.slug)}/download`,
     file_type: "md",
     thumbnail_url: null,
@@ -156,6 +165,8 @@ function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null
 }
 
 function readSkill(slug: string): PortalSkillFile | null {
+  if (!isPortalSkillSlug(slug)) return null;
+
   for (const baseDir of SKILL_DIRS) {
     const skill = readSkillFromDir(baseDir, slug);
     if (skill) return skill;
@@ -176,18 +187,21 @@ function listPortalSkillsFromDirs(skillDirs: string[]): ContentItem[] {
 
   for (const baseDir of skillDirs) {
     if (!existsSync(baseDir)) continue;
-    try {
-      for (const entry of readdirSync(baseDir, { withFileTypes: true })) {
-        if (!entry.isDirectory() || bySlug.has(entry.name)) continue;
-        const skill = readSkillFromDir(baseDir, entry.name);
+    for (const slug of PORTAL_SKILL_SLUGS) {
+      if (bySlug.has(slug)) continue;
+      try {
+        const skill = readSkillFromDir(baseDir, slug);
         if (skill) bySlug.set(skill.slug, skill);
+      } catch {
+        continue;
       }
-    } catch {
-      continue;
     }
   }
 
-  return Array.from(bySlug.values()).map(portalSkillToContentItem);
+  return PORTAL_SKILL_SLUGS
+    .map((slug) => bySlug.get(slug))
+    .filter((skill): skill is PortalSkillFile => Boolean(skill))
+    .map(portalSkillToContentItem);
 }
 
 export function mergePortalSkills(dbSkills: ContentItem[]): ContentItem[] {
@@ -195,12 +209,13 @@ export function mergePortalSkills(dbSkills: ContentItem[]): ContentItem[] {
   const bySlug = new Map<string, ContentItem>();
 
   for (const skill of local) bySlug.set(skill.slug, skill);
-  for (const skill of dbSkills) bySlug.set(skill.slug, skill);
+  for (const skill of dbSkills) {
+    if (isPortalSkillSlug(skill.slug)) bySlug.set(skill.slug, skill);
+  }
 
-  return Array.from(bySlug.values()).sort((a, b) => {
-    if (a.is_free !== b.is_free) return a.is_free ? -1 : 1;
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-  });
+  return PORTAL_SKILL_SLUGS
+    .map((slug) => bySlug.get(slug))
+    .filter((skill): skill is ContentItem => Boolean(skill));
 }
 
 export function getPortalSkill(slug: string): PortalSkillFile | null {

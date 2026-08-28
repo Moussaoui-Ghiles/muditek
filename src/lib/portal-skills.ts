@@ -1,7 +1,11 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join, relative } from "path";
 import type { ContentItem } from "@/lib/content-item";
-import { getLibraryItem, getPublishedLibraryItems, type LibraryItem } from "./library-manifest";
+
+// Portal skills come ONLY from content/skills — the shipped, customer-facing set.
+// (Previously this also pulled .claude/.agents/.codex skill dirs in dev, which
+// leaked internal tooling skills like manim/codex-loop into the local portal.)
+const SKILL_DIRS = [join(process.cwd(), "content/skills")];
 
 export interface PortalSkillFile {
   slug: string;
@@ -130,7 +134,8 @@ function resolveSkillFreeFlag(meta: Record<string, string>): boolean {
   return true;
 }
 
-function readSkillFromDir(dir: string, slug: string): PortalSkillFile | null {
+function readSkillFromDir(baseDir: string, slug: string): PortalSkillFile | null {
+  const dir = join(baseDir, slug);
   const file = join(dir, "SKILL.md");
   if (!existsSync(file)) return null;
 
@@ -151,31 +156,38 @@ function readSkillFromDir(dir: string, slug: string): PortalSkillFile | null {
 }
 
 function readSkill(slug: string): PortalSkillFile | null {
-  const item = getLibraryItem("skill", slug);
-  if (!item || item.status !== "published") return null;
-
-  const skill = readSkillFromDir(join(/* turbopackIgnore: true */ process.cwd(), item.source), slug);
-  if (!skill) return null;
-
-  return {
-    ...skill,
-    name: item.title,
-    description: item.summary,
-    is_free: item.access === "public",
-    updatedAt: new Date(`${item.updatedAt}T00:00:00.000Z`).toISOString(),
-  };
+  for (const baseDir of SKILL_DIRS) {
+    const skill = readSkillFromDir(baseDir, slug);
+    if (skill) return skill;
+  }
+  return null;
 }
 
 export function listPortalSkills(): ContentItem[] {
-  return listShippedPortalSkills();
+  return listPortalSkillsFromDirs(SKILL_DIRS);
 }
 
 export function listShippedPortalSkills(): ContentItem[] {
-  return getPublishedLibraryItems("skill")
-    .filter((item) => validatePublishedSkillBundle(item.slug).valid)
-    .map((item) => readSkill(item.slug))
-    .filter((skill): skill is PortalSkillFile => Boolean(skill))
-    .map(portalSkillToContentItem);
+  return listPortalSkillsFromDirs([join(process.cwd(), "content/skills")]);
+}
+
+function listPortalSkillsFromDirs(skillDirs: string[]): ContentItem[] {
+  const bySlug = new Map<string, PortalSkillFile>();
+
+  for (const baseDir of skillDirs) {
+    if (!existsSync(baseDir)) continue;
+    try {
+      for (const entry of readdirSync(baseDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || bySlug.has(entry.name)) continue;
+        const skill = readSkillFromDir(baseDir, entry.name);
+        if (skill) bySlug.set(skill.slug, skill);
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return Array.from(bySlug.values()).map(portalSkillToContentItem);
 }
 
 export function mergePortalSkills(dbSkills: ContentItem[]): ContentItem[] {
@@ -195,22 +207,9 @@ export function getPortalSkill(slug: string): PortalSkillFile | null {
   return readSkill(slug);
 }
 
-const EXCLUDED_BUNDLE_NAMES = new Set([
-  ".DS_Store",
-  ".env",
-  ".git",
-  "__pycache__",
-  "node_modules",
-]);
-
-function isExcludedBundleEntry(name: string): boolean {
-  return EXCLUDED_BUNDLE_NAMES.has(name) || name.endsWith(".pyc") || name.startsWith(".env.");
-}
-
 function listFilesRecursive(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (isExcludedBundleEntry(entry.name)) continue;
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...listFilesRecursive(path));
@@ -222,7 +221,6 @@ function listFilesRecursive(dir: string): string[] {
 }
 
 export function getPortalSkillArchiveFiles(slug: string): Array<{ path: string; data: Buffer }> {
-  if (!validatePublishedSkillBundle(slug).valid) return [];
   const skill = getPortalSkill(slug);
   if (!skill) return [];
 
@@ -284,7 +282,7 @@ function classifySkillFile(name: string, ext: string): { kind: SkillFileKind; is
   return { kind: "binary", isText: false };
 }
 
-function buildPortalSkillBundle(slug: string): PortalSkillBundle | null {
+export function getPortalSkillBundle(slug: string): PortalSkillBundle | null {
   const skill = getPortalSkill(slug);
   if (!skill) return null;
 
@@ -324,58 +322,4 @@ function buildPortalSkillBundle(slug: string): PortalSkillBundle | null {
     fileCount: files.length,
     files,
   };
-}
-
-export interface SkillBundleValidation {
-  valid: boolean;
-  errors: string[];
-}
-
-export function getSkillBundleValidationErrors(item: LibraryItem, bundle: PortalSkillBundle): string[] {
-  const errors: string[] = [];
-  const filePaths = new Set(bundle.files.map((file) => file.path));
-  if (!filePaths.has("SKILL.md")) errors.push("SKILL.md is missing.");
-  if (item.bundleFiles.length === 0) errors.push("The bundle file manifest is missing.");
-  for (const declaredFile of item.bundleFiles) {
-    if (!filePaths.has(declaredFile)) errors.push(`A declared bundle file is missing: ${declaredFile}.`);
-  }
-  for (const packagedFile of filePaths) {
-    if (!item.bundleFiles.includes(packagedFile)) errors.push(`An undeclared bundle file is present: ${packagedFile}.`);
-  }
-  if (!item.examplePath || !filePaths.has(item.examplePath)) {
-    errors.push(`The declared example is missing: ${item.examplePath || "none"}.`);
-  }
-  if (!item.validationCommand) errors.push("The offline validation command is missing.");
-  if (bundle.files.some((file) => file.size === 0)) errors.push("The bundle contains an empty file.");
-  if (item.access === "account" && bundle.fileCount < 2) {
-    errors.push("An account-gated bundle must provide more than the public SKILL.md.");
-  }
-  return errors;
-}
-
-export function validatePublishedSkillBundle(slug: string): SkillBundleValidation {
-  const item = getLibraryItem("skill", slug);
-  if (!item || item.status !== "published") {
-    return { valid: false, errors: ["The skill is not published."] };
-  }
-
-  const bundle = buildPortalSkillBundle(slug);
-  if (!bundle) return { valid: false, errors: ["The skill source or SKILL.md is missing."] };
-
-  const errors = getSkillBundleValidationErrors(item, bundle);
-
-  return { valid: errors.length === 0, errors };
-}
-
-export function getPortalSkillBundle(slug: string): PortalSkillBundle | null {
-  const validation = validatePublishedSkillBundle(slug);
-  if (!validation.valid) return null;
-  return buildPortalSkillBundle(slug);
-}
-
-export function isSkillBundleAccountGateEligible(slug: string): boolean {
-  const item = getLibraryItem("skill", slug);
-  if (!item || item.access !== "account") return false;
-  const bundle = getPortalSkillBundle(slug);
-  return Boolean(bundle && bundle.fileCount > 1 && bundle.files.some((file) => file.path === item.examplePath));
 }

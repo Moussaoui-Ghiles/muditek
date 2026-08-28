@@ -11,9 +11,9 @@ Audit whether a cold buyer can understand, believe, judge, and accept an existin
 
 Read all three before auditing:
 
-- `references/intake.md` for workspace search, progressive questions, evidence labels, and input coverage.
-- `references/audit-criteria.md` for the seven dimensions, additional cold-buyer tests, status rules, source limits, and earliest-broken-link logic.
-- `references/output-schema.md` for the required report and validation plan.
+- [[.codex/skills/cold-offer-review/references/intake|Intake and evidence protocol]] for vault search, progressive questions, evidence labels, and input coverage.
+- [[.codex/skills/cold-offer-review/references/audit-criteria|Audit criteria]] for the seven dimensions, additional cold-buyer tests, status rules, source limits, and earliest-broken-link logic.
+- [[.codex/skills/cold-offer-review/references/output-schema|Output schema]] for the required report and validation plan.
 
 ## Scope boundary
 
@@ -22,7 +22,7 @@ Read all three before auditing:
 - Do not declare market urgency, product-market fit, offer validation, or likely conversion from copy or internal coherence alone.
 - Do not invent buyer pains, proof, testimonials, guarantees, scarcity, outcomes, prices, or terms.
 - Do not import universal benchmarks. Treat Cole Gordon and Daniel Fazio material as attributed operator frameworks and self-reported examples, not laws or proof for this offer.
-- Keep net-new offer creation or a requested redesign/rebuild separate from this audit. When the original request is "audit, then improve," finish the evidence-led audit first, then rebuild using only the evidenced findings. Ask for further authority only if the rebuild requires a new material business decision.
+- Route net-new offer creation or a requested redesign/rebuild to `$offer-creation`. When the original request is "audit, then improve," finish the evidence-led audit first, then invoke `$offer-creation` in the same turn using only the evidenced findings. Ask for further authority only if the rebuild requires a new material business decision.
 
 ## Workflow
 
@@ -40,7 +40,7 @@ Mark any missing item `unknown`. Never substitute a likely answer.
 
 ### 2. Search before asking
 
-Search user-supplied material and the in-scope workspace for the company, offer name, buyer, mechanism, pricing, and evidence terms before asking questions. Inspect likely offer, proposal, pipeline, transcript, case-study, terms, and decision notes. Prefer exact-name searches, then bounded keyword searches in relevant folders.
+Search the vault for the user-provided company, offer name, buyer, mechanism, pricing, and evidence terms before asking questions. Inspect likely offer, proposal, pipeline, transcript, case-study, terms, and decision notes. Prefer exact-name searches, then bounded keyword searches under `marketing/` and relevant vault folders.
 
 Treat private notes as input, not automatically as buyer-visible proof. Record inaccessible links or files as unknown. Do not widen into unrelated confidential material.
 

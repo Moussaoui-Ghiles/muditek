@@ -18,7 +18,6 @@ interface Props {
 export default function PreferencesContent({ token, unsubscribed }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const [loadError, setLoadError] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<string>("active");
   const [topics, setTopics] = useState<string[]>([]);
@@ -27,11 +26,9 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
   const [msg, setMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoadError(false);
     fetch(`/api/newsletter/preferences/${token}`)
       .then((r) => {
-        if (r.status === 404) { setNotFound(true); return null; }
-        if (!r.ok) throw new Error("Preferences unavailable");
+        if (!r.ok) { setNotFound(true); return null; }
         return r.json();
       })
       .then((data) => {
@@ -41,8 +38,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
           setTopics(data.topics ?? []);
           setLoaded(true);
         }
-      })
-      .catch(() => setLoadError(true));
+      });
   }, [token]);
 
   function toggle(v: string) {
@@ -58,13 +54,11 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topics }),
       });
-      if (res.ok) setMsg("Preferences saved.");
+      if (res.ok) setMsg("Saved");
       else {
-        const d = await res.json().catch(() => ({}));
-        setMsg(d.error ?? "Could not save the preferences. Try again.");
+        const d = await res.json();
+        setMsg(d.error ?? "Failed");
       }
-    } catch {
-      setMsg("Could not save the preferences. Try again.");
     } finally {
       setSaving(false);
     }
@@ -81,35 +75,9 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
       if (res.ok) {
         setStatus("unsub");
         setMsg("Unsubscribed. You won't receive more emails.");
-      } else {
-        setMsg("Could not unsubscribe. Try again.");
       }
-    } catch {
-      setMsg("Could not unsubscribe. Try again.");
     } finally {
       setUnsubbing(false);
-    }
-  }
-
-  async function resubscribe() {
-    setSaving(true);
-    setMsg(null);
-    try {
-      const res = await fetch(`/api/newsletter/preferences/${token}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "resubscribe" }),
-      });
-      if (!res.ok) {
-        setMsg("Could not update the subscription. Try again.");
-        return;
-      }
-      const data = await res.json().catch(() => ({})) as { topics?: string[] };
-      setStatus("active");
-      setTopics(data.topics?.length ? data.topics : TOPICS.map((topic) => topic.value));
-      setMsg("Subscribed again.");
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -136,7 +104,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
           <Logo variant="mark+text" size={24} />
         </Link>
       </div>
-      <div className="w-full max-w-md" aria-busy={!loaded && !notFound && !loadError}>
+      <div className="w-full max-w-md">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Email preferences</h1>
           {email && <p className="text-sm text-[#a0a0a6] mt-2">{email}</p>}
@@ -148,31 +116,29 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
           </div>
         )}
 
-        {loadError ? (
-          <div className="rounded-lg border border-white/[0.08] bg-[#151517] p-5">
-            <p className="text-sm text-[#c4c4ca]">We could not load these preferences.</p>
-            <button type="button" onClick={() => window.location.reload()} className="mt-4 min-h-11 rounded-lg border border-white/15 px-4 text-sm font-medium hover:border-white/30">
-              Try again
-            </button>
-          </div>
-        ) : !loaded ? (
+        {!loaded ? (
           <p className="text-sm text-[#a0a0a6]">Loading…</p>
         ) : status === "unsub" ? (
           <div className="p-6 bg-[#151517] border border-white/[0.06] rounded-lg">
             <p className="text-sm mb-4">You are currently unsubscribed.</p>
             <button
-              type="button"
-              onClick={resubscribe}
-              disabled={saving}
+              onClick={async () => {
+                const res = await fetch(`/api/subscribe`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email, topics: TOPICS.map((t) => t.value) }),
+                });
+                if (res.ok) { setStatus("active"); setMsg("Resubscribed"); setTopics(TOPICS.map((t) => t.value)); }
+              }}
               className="px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white text-sm"
             >
-              {saving ? "Updating…" : "Subscribe again"}
+              Resubscribe
             </button>
           </div>
         ) : (
           <div className="space-y-6">
-            <fieldset>
-              <legend className="block text-sm font-medium mb-2">Topics</legend>
+            <div>
+              <label className="block text-sm font-medium mb-2">Topics</label>
               <div className="space-y-2">
                 {TOPICS.map((t) => (
                   <label
@@ -189,11 +155,12 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                   </label>
                 ))}
               </div>
-            </fieldset>
+            </div>
+
+            {msg && <p className="text-sm text-[#a0a0a6]">{msg}</p>}
 
             <div className="flex gap-3">
               <button
-                type="button"
                 onClick={save}
                 disabled={saving || topics.length === 0}
                 className="flex-1 px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white disabled:opacity-50"
@@ -201,7 +168,6 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
-                type="button"
                 onClick={unsub}
                 disabled={unsubbing}
                 className="px-5 py-2.5 border border-white/[0.06] text-[#a0a0a6] font-medium rounded-lg hover:border-[#3a3a3e] hover:text-[#e8e8ec] text-sm"
@@ -211,7 +177,6 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
             </div>
           </div>
         )}
-        <p role="status" aria-live="polite" className="mt-5 min-h-5 text-sm text-[#b8b8be]">{msg}</p>
       </div>
     </main>
   );

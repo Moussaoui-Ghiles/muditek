@@ -28,7 +28,7 @@ One observation may serve more than one layer only when each use is justified se
 - `source_class`
 - `source_reliability`
 - `evidence_ids`
-- `source_url_or_workspace_file`
+- `source_url_or_vault_note`
 - `date_published_or_updated`
 - `date_observed`
 - `date_verified`

@@ -1,11 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { createTar } from "@/lib/tar";
-import { getLibraryItem } from "@/lib/library-manifest";
-import { ensurePortalAccount } from "@/lib/portal-account";
+import { buildAssetAccess } from "@/lib/portal-asset-loader";
 import { getPortalSkill, getPortalSkillArchiveFiles } from "@/lib/portal-skills";
 import { getDb } from "@/lib/db";
-import { decideSkillDownloadAccess } from "@/lib/skill-download-access";
 import { recordUsageEvent } from "@/lib/usage-analytics";
 
 export const dynamic = "force-dynamic";
@@ -14,36 +12,28 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { isAuthenticated } = await auth();
+  if (!isAuthenticated) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  }
+
   const { slug } = await params;
-  const item = getLibraryItem("skill", slug);
   const skill = getPortalSkill(slug);
-  if (!item || !skill || item.status !== "published") {
+  if (!skill) {
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
-  const { isAuthenticated } = await auth();
-  let user = null as Awaited<ReturnType<typeof currentUser>>;
-  let email: string | undefined;
-  let hasActiveMembership = false;
-  const sql = getDb();
-
-  if (isAuthenticated) {
-    user = await currentUser();
-    email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
-    if (user && email) {
-      await ensurePortalAccount({ sql, email, clerkUserId: user.id });
-      const memberships = await sql`
-        SELECT role FROM portal_memberships
-        WHERE email = ${email} AND status = 'active' AND role IN ('free', 'admin')
-        LIMIT 1
-      `;
-      hasActiveMembership = memberships.length > 0;
-    }
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
+  if (!user || !email) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
   }
 
-  const decision = decideSkillDownloadAccess(item.access, isAuthenticated, hasActiveMembership);
-  if (!decision.allowed) {
-    return NextResponse.json({ error: decision.error }, { status: decision.status });
+  if (!skill.is_free) {
+    const access = await buildAssetAccess(email, user.id);
+    if (!access.isMudikit && !access.isAdmin) {
+      return NextResponse.json({ error: "MudiKit required." }, { status: 403 });
+    }
   }
 
   const files = getPortalSkillArchiveFiles(slug);
@@ -51,24 +41,21 @@ export async function GET(
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
+  recordUsageEvent(getDb(), {
+    email,
+    clerkUserId: user.id,
+    event: "skill_downloaded",
+    path: `/api/portal/skills/${slug}/download`,
+    resourceSlug: slug,
+    metadata: { title: skill.name },
+  }).catch(() => {});
+
   const body = createTar(files);
-
-  if (user && email) {
-    recordUsageEvent(sql, {
-      email,
-      clerkUserId: user.id,
-      event: "skill_downloaded",
-      path: `/api/portal/skills/${slug}/download`,
-      resourceSlug: slug,
-      metadata: { title: skill.name, lane: item.lane },
-    }).catch(() => {});
-  }
-
   return new NextResponse(new Uint8Array(body), {
     headers: {
       "Content-Type": "application/x-tar",
       "Content-Disposition": `attachment; filename="${slug}.tar"`,
-      "Cache-Control": item.access === "public" ? "public, max-age=300" : "private, max-age=60",
+      "Cache-Control": "private, max-age=60",
     },
   });
 }

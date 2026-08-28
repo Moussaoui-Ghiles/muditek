@@ -1,176 +1,411 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer } from "@/components/footer";
-import { JsonLd } from "@/components/json-ld";
+import Image from "next/image";
 import { Navbar } from "@/components/navbar";
-import { PlanetHeroMedia } from "@/components/planet-hero-media";
+import { Footer } from "@/components/footer";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { StatStrip } from "@/components/stat-strip";
+import { FaqBlock } from "@/components/faq-block";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
 
 export const metadata: Metadata = {
-  title: "Muditek | Done-for-you B2B appointment setting",
-  description: "Muditek runs AI-native outbound around one commercial outcome: qualified B2B meetings held.",
-  alternates: { canonical: "https://muditek.com" },
+  title: "Muditek | AI Systems That Eliminate Operational Waste",
+  description:
+    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
+  alternates: {
+    canonical: "https://muditek.com",
+    types: { "text/markdown": "https://muditek.com/index.md" },
+  },
   openGraph: {
-    title: "Muditek | Done-for-you B2B appointment setting",
-    description: "Done-for-you outbound built around qualified B2B meetings held, with deeper AI implementation when the operating system needs work.",
+    title: "Muditek | AI Systems That Eliminate Operational Waste",
+    description:
+      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. 35+ systems deployed in 2026. €50K guarantee.",
     url: "https://muditek.com",
     type: "website",
   },
 };
 
-const DELIVERY_PATH = [
-  "Targeting",
-  "List building",
-  "Infrastructure",
-  "Messaging",
-  "Outreach",
-  "Replies",
-  "Qualification",
-  "Attendance follow-up",
-] as const;
+const BOOKING_URL =
+  "https://outlook.office.com/bookwithme/user/c7d501f4b3b2442aabcac4e16e71734f@muditek.com/meetingtype/82MUNP6L_UOdnaSDy-xFTQ2?anonymous&ep=mlink";
 
-const EVALUATION_PATHS = [
-  {
-    label: "The offer",
-    title: "Review delivery, qualification, and billing rules.",
-    href: "/appointment-setting",
-    action: "Review the offer",
-  },
-  {
-    label: "Provider pricing",
-    title: "Compare public appointment-setting prices and models.",
-    href: "/appointment-setting-pricing",
-    action: "Use the pricing index",
-  },
-  {
-    label: "Quote calculator",
-    title: "Compare cost per held and qualified meeting locally.",
-    href: "/tools/appointment-setting-quote-calculator",
-    action: "Run the calculator",
-  },
-  {
-    label: "Failure diagnostic",
-    title: "Find the constraint before adding more outbound volume.",
-    href: "/playbooks/outbound-failure-diagnostic",
-    action: "Run the diagnostic",
-  },
-] as const;
+const VIDEO_URL =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260309_042944_4a2205b7-b061-490a-852b-92d9e9955ce9.mp4";
 
-export default function HomePage() {
+const TOOL_STACK = [
+  { name: "Claude", icon: "anthropic" },
+  { name: "n8n", icon: "n8n" },
+  { name: "Next.js", icon: "nextdotjs" },
+  { name: "Vercel", icon: "vercel" },
+  { name: "Supabase", icon: "supabase" },
+  { name: "PostgreSQL", icon: "postgresql" },
+  { name: "Python", icon: "python" },
+  { name: "HubSpot", icon: "hubspot" },
+  { name: "WhatsApp", icon: "whatsapp" },
+  { name: "Telegram", icon: "telegram" },
+  { name: "Google Workspace", icon: "google" },
+];
+
+const HOME_FAQ = [
+  {
+    q: "What does Muditek actually do?",
+    a: "We diagnose where companies lose money to manual operations, then build the AI systems that fix it. Three offers: mudiAgent (on-premises AI for telecom and enterprise), Revenue Leak Audit (B2B SaaS pipeline diagnostics), and operational infrastructure for investment firms. Every engagement starts with a diagnostic that quantifies the waste in euros before any code is written.",
+  },
+  {
+    q: "How is Muditek different from a regular dev shop or consultancy?",
+    a: "Dev shops bill hours. Consultancies bill decks. We bill outcomes — every engagement carries a guarantee in euros. mudiAgent guarantees 40 hours saved in 90 days. Revenue Leak Audit guarantees €50K in annual leakage found. PE Ops guarantees €150K+ in operational waste identified. If we miss, you pay nothing.",
+  },
+  {
+    q: "Do we own the system Muditek builds?",
+    a: "Yes. Source code, infrastructure, data — all yours. No SaaS subscriptions, no per-seat licensing, no vendor lock-in. After the build, you can extend, modify, or rebuild independently. Optional retainer if you want us to keep evolving it.",
+  },
+  {
+    q: "How long does a build take?",
+    a: "Diagnostics: 5 days to 4 weeks depending on offer. Builds: 4-8 weeks. We deliver in weeks what traditional dev shops take 12-18 months for, because the hard problems (multi-jurisdiction compliance, on-premises AI deployment, revenue ops automation) are already solved. We reuse the knowledge, not the code.",
+  },
+  {
+    q: "Who works with Muditek?",
+    a: "Telecom operators with 50+ employees, B2B SaaS founders at €800K-1.8M ARR, private equity and merchant banking firms managing investor operations across multiple jurisdictions. We take 1-2 build clients at a time so each engagement gets full attention.",
+  },
+];
+
+const PROOF_METRICS = [
+  { label: "Proposal drafting", before: "4 hrs", after: "12 min" },
+  { label: "Knowledge lookup", before: "30+ min", after: "10 sec" },
+  { label: "Weekly status report", before: "3 hrs", after: "Automated" },
+  { label: "Competitive intelligence", before: "Manual", after: "Daily, 7 am" },
+  { label: "Sales outreach", before: "Inconsistent", after: "Daily, auto" },
+];
+
+export default function Home() {
   return (
-    <div className="min-h-[100dvh] overflow-hidden bg-background text-foreground">
+    <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
+      <link rel="preload" as="image" href="/images/documents-desk.png" fetchPriority="high" />
       <Navbar />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "ProfessionalService",
-          name: "Muditek",
-          url: "https://muditek.com",
-          description: "Done-for-you B2B appointment setting and practical AI implementation.",
-          areaServed: "Remote",
-          hasOfferCatalog: {
-            "@type": "OfferCatalog",
-            name: "Muditek services",
-            itemListElement: [
-              { "@type": "Offer", itemOffered: { "@type": "Service", name: "Appointment Setting", url: "https://muditek.com/appointment-setting" } },
-              { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI Implementation", url: "https://muditek.com/ai-implementation" } },
-            ],
-          },
-        }}
+
+      {/* HERO */}
+      <div className="relative w-full h-[100dvh] min-h-[800px] overflow-hidden flex flex-col items-center">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/documents-desk.png"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          aria-hidden="true"
+        >
+          <source src={VIDEO_URL} type="video/mp4" />
+        </video>
+
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/90 via-background/40 to-background" aria-hidden="true" />
+
+        <div className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center max-w-5xl w-full pt-24">
+           <h1 className="text-5xl sm:text-7xl lg:text-[100px] font-black tracking-[-0.04em] leading-[0.9] text-foreground text-balance drop-shadow-2xl">
+              Your best people are stuck doing work that doesn&apos;t <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">need them.</span>
+           </h1>
+           <p className="mt-8 text-lg md:text-xl text-foreground/80 max-w-2xl leading-relaxed">
+             We find where you&apos;re bleeding money, then build the AI systems that fix it.
+           </p>
+           <p className="mt-4 text-sm text-foreground/60 max-w-xl italic">
+             From{" "}
+             <DataCitation
+               claim="35+ systems deployed"
+               source={DATA_POINTS.systemsDeployed.source}
+               n={DATA_POINTS.systemsDeployed.n}
+             />
+             {" "}and{" "}
+             <DataCitation
+               claim="5,000+ B2B operators reading our weekly playbooks"
+               source={DATA_POINTS.newsletterSubscribers.source}
+               n={DATA_POINTS.newsletterSubscribers.n}
+             />
+             {" "}in 2026.
+           </p>
+
+           <div className="mt-14 flex flex-col sm:flex-row items-center gap-5">
+              <Link href="#solutions" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+                <span className="relative z-10 flex items-center gap-3">
+                  See Which Solution Fits
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
+                <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
+              </Link>
+              <Link href="#contact" className="group px-8 py-5 border border-white/[0.15] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.05] transition-colors btn-press">
+                 Book a Call
+              </Link>
+           </div>
+        </div>
+
+        {/* INTEGRATIONS BAR */}
+        <div className="relative z-20 w-full border-t border-white/[0.08] bg-background/70 backdrop-blur-md overflow-hidden flex h-20 items-center">
+           <div className="flex animate-marquee w-max" style={{ animationDuration: '45s' }}>
+              {[...TOOL_STACK, ...TOOL_STACK, ...TOOL_STACK].map((tool, i) => (
+                <div key={i} className="flex items-center gap-3 mx-10 opacity-80 hover:opacity-100 transition-opacity">
+                  <Image
+                    src={`https://cdn.simpleicons.org/${tool.icon}/white`}
+                    alt={tool.name}
+                    width={20}
+                    height={20}
+                    className="h-5 w-5 object-contain"
+                    unoptimized
+                  />
+                  <span className="text-sm font-semibold tracking-wide text-foreground/80 uppercase whitespace-nowrap">{tool.name}</span>
+                </div>
+              ))}
+           </div>
+        </div>
+      </div>
+
+      {/* STAT STRIP */}
+      <div className="w-full max-w-[1500px] px-6 md:px-12 -mt-px">
+        <StatStrip
+          accentColor="primary"
+          stats={[
+            { value: "5,000+", label: "B2B operators reading our newsletter" },
+            { value: "29", label: "Playbooks shipped in 2026" },
+            { value: "3", label: "Guarantees backed in euros" },
+          ]}
+        />
+      </div>
+
+      {/* SOLUTIONS */}
+      <section id="solutions" className="py-32 md:py-48 relative border-b border-white/[0.02] w-full flex flex-col items-center">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.025] mesh-subtle" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+
+        <div className="max-w-[1500px] w-full px-6 md:px-12 relative z-10">
+          <ScrollReveal>
+             <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-24 gap-8">
+                <div>
+                   <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
+                     <span className="w-8 h-[1px] bg-primary/50" />
+                     Solutions
+                   </h2>
+                   <p className="text-sm text-foreground/60 mt-4 mb-8">Systems in production for telecom operators, B2B SaaS companies, and merchant banks across 3 continents.</p>
+                   <h3 className="text-4xl md:text-6xl font-black tracking-[-0.03em] leading-[0.9] text-foreground max-w-3xl text-balance">
+                      The waste looks different in every industry. The approach <span className="text-primary italic font-medium">doesn&apos;t.</span>
+                   </h3>
+                </div>
+                <div className="hidden md:block w-[1px] h-24 bg-white/[0.08]" />
+             </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* mudiAgent Card */}
+            <ScrollReveal delay={100}>
+              <div className="group relative h-[560px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/5 rounded-full blur-[80px] group-hover:bg-primary/10 transition-colors" />
+
+                <div className="relative z-10">
+                   <div className="text-sm font-semibold text-primary mb-6 tracking-wider uppercase">For Telecom & Enterprise</div>
+                   <h4 className="text-3xl font-black tracking-[0.02em] text-foreground mb-5 group-hover:text-primary transition-colors">mudiAgent</h4>
+                   <p className="text-base text-foreground/80 leading-relaxed">
+                     Your NOC team pulls the same SLA report from 5 systems every Monday. Six hours, same structure, every week. Your engineers search shared drives for 45 minutes to find one document. mudiAgent handles all of it on a device in your office. No cloud. No per-user fees.
+                   </p>
+                </div>
+
+                <div className="relative z-10 pt-6 border-t border-white/[0.08]">
+                   <div className="flex justify-between items-center mb-8">
+                     <span className="text-sm text-foreground/70 tracking-wider">Time saved weekly:</span>
+                     <span className="text-primary text-lg font-black">40+ hours</span>
+                   </div>
+                   <p className="text-sm text-primary/80 mb-4">40-hour guarantee or we reconfigure at no cost</p>
+                   <Link href="/mudiagent" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-primary transition-colors">
+                      Discovery Audit <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                   </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Revenue Leak Audit Card */}
+            <ScrollReveal delay={200}>
+               <div className="group relative h-[560px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/0 to-transparent group-hover:via-emerald-500/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] group-hover:bg-emerald-500/10 transition-colors" />
+
+                <div className="relative z-10">
+                   <div className="text-sm font-semibold text-emerald-400 mb-6 tracking-wider uppercase">For B2B SaaS</div>
+                   <h4 className="text-3xl font-black tracking-[0.02em] text-foreground mb-5 group-hover:text-emerald-400 transition-colors">Revenue Leak Audit</h4>
+                   <p className="text-base text-foreground/80 leading-relaxed">
+                     Average inbound response time in B2B SaaS is 42 hours. 30% of leads never get contacted at all. Your demo-to-close is 12% when the benchmark is 20%. We find every leak in your pipeline, quantify it in euros with the formulas, and build the systems that fix it.
+                   </p>
+                </div>
+
+                <div className="relative z-10 pt-6 border-t border-white/[0.08]">
+                   <div className="flex justify-between items-center mb-8">
+                     <span className="text-sm text-foreground/70 tracking-wider">Recovered annually:</span>
+                     <span className="text-emerald-400 text-lg font-black">&euro;80-180K</span>
+                   </div>
+                   <p className="text-sm text-emerald-400/80 mb-4">&euro;50K in leaks found or you pay nothing</p>
+                   <Link href="/revenue-leak-audit" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-emerald-400 transition-colors">
+                      Book Your Diagnostic <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                   </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* PE Ops Card */}
+            <ScrollReveal delay={300}>
+               <div className="group relative h-[560px] border border-white/[0.08] bg-card/[0.4] hover:bg-card/[0.6] backdrop-blur-md p-10 flex flex-col justify-between overflow-hidden transition-all duration-700 card-lift">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/0 to-transparent group-hover:via-sky-500/70 transition-all duration-[1.2s]" />
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-sky-500/5 rounded-full blur-[80px] group-hover:bg-sky-500/10 transition-colors" />
+
+                <div className="relative z-10">
+                   <div className="text-sm font-semibold text-sky-400 mb-6 tracking-wider uppercase">For Investment Firms</div>
+                   <h4 className="text-3xl font-black tracking-[0.02em] text-foreground mb-5 group-hover:text-sky-400 transition-colors">Operational Infrastructure</h4>
+                   <p className="text-base text-foreground/80 leading-relaxed">
+                     Your ops team spends 30+ hours a week on manual investor administration — KYC tracking in spreadsheets, documents generated by hand, signatures chased over email. We built the system that replaces all of it. Investor onboarding, compliance, document generation, e-signatures, fee computation — in production for a merchant banking firm.
+                   </p>
+                </div>
+
+                <div className="relative z-10 pt-6 border-t border-white/[0.08]">
+                   <div className="flex justify-between items-center mb-8">
+                     <span className="text-sm text-foreground/70 tracking-wider">LP onboarding:</span>
+                     <span className="text-sky-400 text-lg font-black">weeks → 3-5 days</span>
+                   </div>
+                   <p className="text-sm text-sky-400/80 mb-4">&euro;150K in waste found or you pay nothing</p>
+                   <Link href="/pe-ops" className="btn-press inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.15em] text-foreground group-hover:text-sky-400 transition-colors">
+                      See the Demo <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                   </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* CINEMATIC BREAK */}
+      <div className="relative w-full h-[500px] md:h-[650px] overflow-hidden">
+        <Image src="/images/documents-desk.png" alt="" fill className="object-cover object-center" style={{ filter: 'sepia(0.25) saturate(1.3) hue-rotate(-10deg) brightness(0.4)' }} aria-hidden="true" />
+        {/* Top fade */}
+        <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-background to-transparent" />
+        {/* Bottom fade */}
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
+        {/* Side vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,hsl(var(--background))_85%)]" />
+        {/* Center content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+          <div className="w-24 h-[1px] bg-primary/50 mb-10" />
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] leading-[0.9] text-foreground/60 text-center text-balance">
+            Systems in production across <span className="text-primary/70">3 continents.</span>
+          </h2>
+          <div className="w-24 h-[1px] bg-primary/50 mt-10" />
+        </div>
+      </div>
+
+      {/* PROOF */}
+      <section id="proof" className="py-32 md:py-48 relative overflow-hidden bg-background w-full flex justify-center">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
+
+         <div className="max-w-[1500px] w-full px-6 md:px-12 relative z-10 flex flex-col xl:flex-row gap-20">
+            <div className="xl:w-1/3 xl:pt-12">
+               <ScrollReveal>
+                  <div className="w-12 h-[1px] bg-primary mb-10" />
+                  <h2 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6">
+                     We built this<br />for ourselves.<br /><span className="text-primary italic font-medium">Then clients asked.</span>
+                  </h2>
+                  <p className="text-base text-foreground/70 leading-relaxed max-w-[400px]">
+                     Every number below comes from our own operations. We built mudiAgent to run Muditek. When clients saw the results, they asked us to deploy it for them.
+                  </p>
+               </ScrollReveal>
+            </div>
+
+            <div className="xl:w-2/3">
+               <div className="border border-white/[0.08] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
+                 <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.08] text-sm font-black uppercase tracking-[0.15em] text-foreground/60 bg-white/[0.02]">
+                   <div className="col-span-2">Task</div>
+                   <div>Before</div>
+                   <div className="text-primary">After mudiAgent</div>
+                 </div>
+
+                 {PROOF_METRICS.map((row, i) => (
+                    <ScrollReveal key={row.label} delay={i * 60}>
+                       <div className="group grid grid-cols-4 px-8 py-8 border-b border-white/[0.04] hover:bg-white/[0.02] transition-all duration-300 items-center stat-row cursor-default">
+                          <div className="col-span-2 text-sm font-bold tracking-wide uppercase text-foreground/80 group-hover:text-foreground transition-colors">
+                            {row.label}
+                          </div>
+                          <div className="text-sm font-mono text-foreground/50 line-through tracking-wider">
+                            {row.before}
+                          </div>
+                          <div className="text-base font-mono font-black tracking-wider text-primary group-hover:text-primary drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]">
+                            {row.after}
+                          </div>
+                       </div>
+                    </ScrollReveal>
+                 ))}
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* NEWSLETTER */}
+      <NewsletterInline tags={["source:homepage"]} />
+
+      {/* GUARANTEE */}
+      <section className="py-32 w-full relative border-t border-b border-white/[0.04] bg-card/[0.2] flex justify-center mesh-subtle">
+         <div className="max-w-[1000px] w-full px-6 text-center">
+            <ScrollReveal>
+               <div className="doppelrand mx-auto mb-16 inline-block">
+                 <div className="doppelrand-inner px-8 py-3 flex items-center gap-4 bg-background">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-sm font-black uppercase tracking-[0.3em] text-primary pt-[1px]">Zero-Risk Guarantee</span>
+                 </div>
+               </div>
+
+               <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance max-w-3xl mx-auto">
+                 Every engagement starts with a diagnostic. If we can&apos;t quantify the waste, <span className="text-primary italic font-medium">you don&apos;t pay.</span>
+               </h2>
+
+               <p className="text-lg text-foreground/70 max-w-2xl mx-auto leading-relaxed mb-16">
+                 We pull your data, run the analysis, and show you exactly where the money goes. In euros. With the formulas. If we can&apos;t find meaningful waste, you pay nothing.
+               </p>
+
+               <Link href="#contact" className="btn-press relative inline-flex items-center justify-center border border-primary hover:bg-primary hover:text-background text-primary px-12 py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-[2px] group">
+                 <span className="relative z-10 flex items-center gap-3">
+                   Book a Call
+                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform stroke-current"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                 </span>
+               </Link>
+            </ScrollReveal>
+         </div>
+      </section>
+
+      {/* FAQ */}
+      <FaqBlock items={HOME_FAQ} accentColor="primary" />
+
+      {/* MUDIKIT CTA */}
+      <MudikitCta
+        headline="Ship a system this weekend with MudiKit · $47/mo"
+        body="Paid Claude Code skills and portal resource drops for operators who want deployable assets, not another course."
       />
 
-      <main id="main-content">
-        <section className="relative flex min-h-[92dvh] items-end overflow-hidden border-b border-white/[0.08] pb-14 pt-32 md:pb-20 md:pt-44">
-          <PlanetHeroMedia />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,15,0.6)_0%,rgba(5,10,15,0.72)_48%,rgba(5,10,15,0.98)_100%)] sm:bg-[linear-gradient(90deg,rgba(5,10,15,0.98)_0%,rgba(5,10,15,0.88)_48%,rgba(5,10,15,0.34)_100%)]" />
-          <div className="relative mx-auto w-full max-w-[1500px] px-6 md:px-12">
-            <div className="max-w-[900px]">
-              <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.22em] text-primary">
-                <span className="h-px w-8 bg-primary" /> Appointment setting for sales-led B2B teams
-              </p>
-              <h1 className="mt-7 text-[43px] font-black leading-[0.95] tracking-[-0.04em] text-white sm:text-6xl md:text-[78px] lg:text-[88px]">
-                Done-for-you outbound. Built around qualified meetings held.
-              </h1>
-              <p className="mt-8 max-w-[760px] text-base leading-7 text-white/80 md:text-lg md:leading-8">
-                Muditek handles targeting, list building, infrastructure, messaging, outreach, replies, qualification, booking, and attendance follow-up. You pay the operating stack upfront. The delivery fee applies only after a qualified meeting is held.
-              </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <Link href="/appointment-setting" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-7 text-xs font-black uppercase tracking-[0.18em] text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-white motion-reduce:transform-none">
-                  Review the offer
-                </Link>
-                <Link href="/library" className="inline-flex min-h-14 items-center justify-center rounded-[2px] border border-white/25 bg-background/45 px-7 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">
-                  Use the public library
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* FINAL CTA */}
+      <section id="contact" className="py-48 min-h-[60vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
+         <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
+            <ScrollReveal>
+               <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance drop-shadow-2xl">
+                  Stop paying people to do work <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/40 italic font-medium pr-2">a machine</span> should handle.
+               </h2>
+               <p className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto mb-14 leading-relaxed">
+                  30-minute call. No pitch. We&apos;ll tell you if we can help, and how much you&apos;re losing by waiting.
+               </p>
 
-        <section className="border-b border-white/[0.08] py-16 md:py-20" aria-labelledby="delivery-heading">
-          <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
-            <div className="grid gap-8 lg:grid-cols-[260px_1fr] lg:items-start">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">End-to-end delivery</p>
-                <h2 id="delivery-heading" className="mt-4 text-2xl font-black leading-tight tracking-[-0.025em] text-foreground">One accountable outbound operation.</h2>
-              </div>
-              <ol className="grid border-t border-white/[0.1] sm:grid-cols-2 lg:grid-cols-4">
-                {DELIVERY_PATH.map((step, index) => (
-                  <li key={step} className="flex min-h-20 items-center gap-3 border-b border-white/[0.1] py-4 sm:px-4 sm:odd:border-r lg:border-r lg:odd:border-r">
-                    <span className="font-mono text-[11px] text-primary">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="text-sm font-bold text-foreground/78">{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </section>
+               <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+                  <span className="relative z-10 flex items-center gap-4">
+                     Book a Call
+                     <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />
+                  </span>
+               </a>
+            </ScrollReveal>
+         </div>
 
-        <section className="border-b border-white/[0.08] py-24 md:py-32" aria-labelledby="evaluate-heading">
-          <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
-            <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Evaluate before a call</p>
-                <h2 id="evaluate-heading" className="mt-6 max-w-xl text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-6xl">Inspect the offer from four angles.</h2>
-                <p className="mt-7 max-w-[520px] text-base leading-7 text-foreground/70">Check the delivery model, outside prices, your economics, and the constraint in your current funnel.</p>
-              </div>
-              <div className="border-t border-white/[0.1]">
-                {EVALUATION_PATHS.map((path) => (
-                  <Link key={path.href} href={path.href} className="group grid min-h-28 gap-3 border-b border-white/[0.1] py-6 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary sm:grid-cols-[155px_1fr_auto] sm:items-center">
-                    <span className="text-[11px] font-black uppercase tracking-[0.17em] text-primary">{path.label}</span>
-                    <span className="text-base font-bold leading-6 text-foreground">{path.title}</span>
-                    <span className="text-xs font-black uppercase tracking-[0.14em] text-foreground/60 transition-colors group-hover:text-primary">{path.action} →</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+         <div className="absolute top-[40%] left-1/2 -translate-x-1/2 text-[25vw] font-black tracking-[-0.05em] text-white/[0.015] pointer-events-none whitespace-nowrap z-0 select-none">
+            MUDITEK
+         </div>
+      </section>
 
-        <section className="border-b border-white/[0.08] py-20 md:py-24" aria-labelledby="ai-heading">
-          <div className="mx-auto grid w-full max-w-[1500px] gap-8 px-6 md:px-12 lg:grid-cols-[260px_1fr_auto] lg:items-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Deeper capability</p>
-            <div>
-              <h2 id="ai-heading" className="text-3xl font-black leading-tight tracking-[-0.03em] md:text-4xl">AI implementation for the operating system behind the work.</h2>
-              <p className="mt-4 max-w-[760px] text-base leading-7 text-foreground/70">When the constraint is inside research, routing, content, documents, data, or review, Muditek builds the controlled workflow around it. These are applications of the deeper capability, not separate offers.</p>
-            </div>
-            <Link href="/ai-implementation" className="inline-flex min-h-12 items-center border-b border-primary text-xs font-black uppercase tracking-[0.17em] text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary">
-              Review AI implementation →
-            </Link>
-          </div>
-        </section>
-
-        <section className="py-24 md:py-32" aria-labelledby="qualification-heading">
-          <div className="mx-auto grid w-full max-w-[1500px] gap-10 px-6 md:px-12 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">Fit review</p>
-              <h2 id="qualification-heading" className="mt-6 max-w-[920px] text-4xl font-black leading-[0.98] tracking-[-0.035em] md:text-7xl">Check the market, economics, and qualification rules first.</h2>
-              <p className="mt-7 max-w-[680px] text-base leading-7 text-foreground/70">The offer page shows the eligibility gates and the exact conditions for a billable qualified meeting.</p>
-            </div>
-            <Link href="/appointment-setting#fit-review" className="inline-flex min-h-14 items-center justify-center rounded-[2px] bg-primary px-8 text-xs font-black uppercase tracking-[0.18em] text-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-foreground">
-              Check if you qualify
-            </Link>
-          </div>
-        </section>
-      </main>
       <Footer />
     </div>
   );

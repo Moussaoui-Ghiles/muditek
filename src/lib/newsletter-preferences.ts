@@ -1,10 +1,8 @@
-import { getDb } from "./db";
+import { getDb } from "@/lib/db";
 
 type Sql = ReturnType<typeof getDb>;
 
-export function preferenceRecordAction(hasSubscriber: boolean): "none" | "ensure-token-only" {
-  return hasSubscriber ? "ensure-token-only" : "none";
-}
+const DEFAULT_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"];
 
 export async function getOrCreatePreferenceHref({
   email,
@@ -20,21 +18,18 @@ export async function getOrCreatePreferenceHref({
 
   await sql`CREATE EXTENSION IF NOT EXISTS pgcrypto`;
 
-  const existing = await sql`
-    SELECT id FROM newsletter_subscribers WHERE email = ${normalizedEmail} LIMIT 1
-  `;
-  if (preferenceRecordAction(existing.length > 0) === "none") return null;
-
   const rows = await sql`
-    UPDATE newsletter_subscribers
+    INSERT INTO newsletter_subscribers (email, source, topics, clerk_user_id)
+    VALUES (${normalizedEmail}, 'portal', ${DEFAULT_TOPICS}, ${clerkUserId})
+    ON CONFLICT (email) DO UPDATE
     SET
       clerk_user_id = CASE
-        WHEN clerk_user_id IS NULL OR clerk_user_id = ${clerkUserId}
+        WHEN newsletter_subscribers.clerk_user_id IS NULL
+          OR newsletter_subscribers.clerk_user_id = ${clerkUserId}
         THEN ${clerkUserId}
-        ELSE clerk_user_id
+        ELSE newsletter_subscribers.clerk_user_id
       END,
-      unsub_token = COALESCE(unsub_token, gen_random_uuid())
-    WHERE email = ${normalizedEmail}
+      unsub_token = COALESCE(newsletter_subscribers.unsub_token, gen_random_uuid())
     RETURNING unsub_token
   `;
 

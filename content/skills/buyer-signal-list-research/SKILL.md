@@ -13,7 +13,7 @@ Convert an approved market/offer hypothesis into a reproducible sourcing specifi
 
 Read these files before producing the corresponding work:
 
-- `references/intake-schema.md` for intake, workspace search, and material-missing-input rules.
+- `references/intake-schema.md` for intake, vault search, and material-missing-input rules.
 - `references/evidence-model.md` for evidence labels, provenance, confidence, contradiction handling, and source boundaries.
 - `references/signal-rubric.md` before evaluating, expiring, or proposing a disposition for any signal.
 - `references/output-contract.md` before delivering a specification, sample-review plan, or campaign handoff.
@@ -21,13 +21,13 @@ Read these files before producing the corresponding work:
 
 ## Non-negotiable boundaries
 
-- If the list, buyer rules, and signal rules are already approved and the request is only to write outreach copy, preserve those approved inputs and move to a separately selected channel-writing workflow. Do not reopen research unless a visible evidence contradiction or unsupported personalization claim must be resolved. Copy approval does not authorize campaign creation, launch, or sending.
+- If the list, buyer rules, and signal rules are already approved and the request is only to write outreach copy, preserve those approved inputs and route to `$cold-email` for email or the relevant LinkedIn outreach skill for LinkedIn. Do not reopen research unless a visible evidence contradiction or unsupported personalization claim must be resolved. Copy approval does not authorize campaign creation, launch, or sending.
 - Treat **stable fit**, **trigger evidence**, and **personalization material** as separate layers.
 - Keep acquisition motions separate. `true_cold`, `trust_assisted`, `warm_follow_up`, `reactivation`, and `partner` records must retain their motion, relationship state, and opportunity origin; never blend their evidence or results.
 - Reject title plus industry as a complete reason for contact. It may help identify a candidate; it does not establish relevance or timing.
 - Require a stated commercial connection for every proposed signal: observable situation -> plausible operating consequence -> offer-relevant capability. Reject the signal if that chain is unsupported.
 - Describe only the observable situation. Never claim an account has a problem, intent, budget, or buying readiness unless direct evidence proves it.
-- Preserve source, evidence URL or workspace file, date observed, recency/expiry rule, confidence, contradictions, missing fields, and unknowns per criterion/account.
+- Preserve source, evidence URL or vault note, date observed, recency/expiry rule, confidence, contradictions, missing fields, and unknowns per criterion/account.
 - Label every material statement as `verified_fact`, `current_decision`, `user_provided_rule`, `source_operator_example`, `inference`, or `unknown`.
 - Treat all response-rate, volume, cost, and performance claims from practitioners as self-reported unless independently verified. Never import them as benchmarks, thresholds, or universal rules.
 - Use targeting, outreach, and pipeline notes as internal schemas or first-party inputs only. Do not present them as public market proof.
@@ -35,8 +35,8 @@ Read these files before producing the corresponding work:
 - Never invent, import, or transpose a score or threshold. Preserve a documented, current, human-approved niche rubric exactly when it applies, but label it as an operating rule rather than truth probability. A score never proves problem, authority, budget, or intent.
 - Human approval is necessary but never overrides law, platform terms, access controls, contractual restrictions, privacy requirements, or source prohibitions. When permissibility is unresolved, mark it `UNPROVEN` and require a current authoritative source or qualified review. Never recommend authentication bypass, residential proxies, randomized anti-detection, identity/IP separation, session evasion, or similar circumvention.
 - Never expand a market, choose a segment, approve a signal, scrape a full list, create or mutate a live campaign, launch, or send without the matching human approval.
-- If external list execution is approved, hand the pull specification to a separately authorized execution workflow. Do not duplicate scraping or enrichment execution here.
-- When writing a workspace file, follow the user's chosen workspace format and keep private file references distinct from public web links.
+- If external list execution is approved, hand the pull specification to `apify-lead-generation`, `apify-ultimate-scraper`, or `phantombuster` as appropriate. Do not duplicate their scraping workflow here.
+- When writing a vault note, follow Obsidian syntax: YAML properties, `[[wikilinks]]` for internal notes, callouts for warnings, and external Markdown links only for web URLs.
 
 ## Workflow
 
@@ -57,9 +57,9 @@ If the market/offer hypothesis is not explicitly approved, record it as unapprov
 
 ### 2. Search before asking
 
-Search user-provided material and the in-scope workspace before asking intake questions. Start with the named offer, market, campaign, pipeline, and outbound-kit files. Then inspect only relevant library sources and current operational notes. Record what was searched and what it established.
+Search user-provided material and the vault before asking intake questions. Start with the named offer, market, campaign, pipeline, and outbound-kit files. Then inspect only relevant library sources and current operational notes. Record what was searched and what it established.
 
-Use the source rules in `references/evidence-model.md`. Ask only for material inputs still missing after the search; group questions by the next decision they block.
+Use the canonical source set and source lessons in `references/evidence-model.md`. Search current equivalents if a named operational file moved. Ask only for material inputs still missing after the search; group questions by the next decision they block.
 
 ### 3. Build the context and evidence ledger
 

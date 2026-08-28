@@ -291,7 +291,7 @@ function deriveN8nDescription(j: any): { description: string; trigger: string; a
   let stickyText: string | null = null;
   for (const s of stickies) {
     const raw = (s.parameters?.content || s.parameters?.text || "") as string;
-    const cleaned = raw
+    let cleaned = raw
       .replace(/```[\s\S]*?```/g, " ")
       .replace(/^#+\s*/gm, "")
       .replace(/\*\*/g, "")

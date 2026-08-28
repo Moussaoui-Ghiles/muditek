@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { auth } from "@clerk/nextjs/server";
 import { getWorkflowJson } from "@/lib/workflow-archive";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const admin = await requireAdmin(request);
-  if (!admin.authorized) return admin.response;
+  const { isAuthenticated } = await auth();
+  if (!isAuthenticated) return NextResponse.json({ error: "auth required" }, { status: 401 });
   const json = await getWorkflowJson(slug);
   if (json == null) return NextResponse.json({ error: "not found" }, { status: 404 });
   const body = JSON.stringify(json, null, 2);

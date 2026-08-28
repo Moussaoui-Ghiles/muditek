@@ -1,53 +1,87 @@
-import Link from "next/link";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 import { getOrCreatePreferenceHref } from "@/lib/newsletter-preferences";
+import NewsletterArchiveContent from "./newsletter-archive-content";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Newsletter Preferences · Muditek" };
+
+export const metadata = {
+  title: "Newsletter · Muditek Portal",
+  description: "Past issues of the Muditek newsletter.",
+};
+
+interface IssueRow {
+  slug: string;
+  subject: string;
+  sent_at: string | Date | null;
+  html: string | null;
+  stats: {
+    preview?: string | null;
+    tldr?: string | null;
+    thumbnail_url?: string | null;
+    image?: string | null;
+    hero_image?: string | null;
+  } | null;
+}
+
+function sanitizePreview(value: string | null | undefined): string | null {
+  const preview = value?.trim();
+  if (!preview) return null;
+  return preview.replace(/\bFree\b/g, "Open");
+}
 
 export default async function PortalNewsletterPage() {
-  const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? "";
-  let status: string | null = null;
-  let preferencesHref: string | null = null;
+  const { isAuthenticated } = await auth();
+  if (!isAuthenticated) redirect("/sign-in?redirect_url=/portal/newsletter");
 
-  if (email && user) {
-    try {
-      const sql = getDb();
-      const rows = await sql`SELECT status FROM newsletter_subscribers WHERE email = ${email} LIMIT 1`;
-      status = rows[0]?.status ? String(rows[0].status) : null;
-      if (rows.length > 0) {
-        preferencesHref = await getOrCreatePreferenceHref({ email, clerkUserId: user.id, sql });
-      }
-    } catch (error) {
-      console.error("newsletter preferences unavailable", error);
-    }
-  }
+  const user = await currentUser();
+  if (!user) redirect("/sign-in?redirect_url=/portal/newsletter");
+
+  const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
+  if (!email) redirect("/sign-in?redirect_url=/portal/newsletter");
+
+  const sql = getDb();
+
+  const rows = (await sql`
+    SELECT slug, subject, sent_at, html, stats
+    FROM newsletter_issues
+    WHERE status = 'sent'
+      AND slug IS NOT NULL
+      AND html IS NOT NULL
+      AND length(trim(html)) > 0
+      AND (
+        stats->>'portal_article' = 'true'
+        OR stats->>'portalArticle' = 'true'
+      )
+    ORDER BY sent_at DESC NULLS LAST
+  `) as IssueRow[];
+
+  const issues = rows.map((r) => ({
+    slug: r.slug,
+    subject: r.subject,
+    sent_at: r.sent_at ? new Date(r.sent_at).toISOString() : null,
+    preview: sanitizePreview(r.stats?.preview) || sanitizePreview(r.stats?.tldr),
+    thumbnailUrl:
+      r.stats?.thumbnail_url?.trim() ||
+      r.stats?.hero_image?.trim() ||
+      r.stats?.image?.trim() ||
+      extractNewsletterThumbnailFromHtml(r.html) ||
+      `/api/portal/newsletter-covers/${encodeURIComponent(r.slug)}`,
+  }));
+
+  const preferencesHref = await getOrCreatePreferenceHref({
+    email,
+    clerkUserId: user.id,
+    sql,
+  });
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-20 pt-8 sm:px-6 lg:px-10">
-      <header className="border-b border-white/[0.07] pb-7">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Separate consent</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.025em]">Newsletter Preferences</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/60">Your portal membership does not create or reactivate a newsletter subscription.</p>
-      </header>
-      <section className="mt-8 rounded-xl bg-white/[0.035] p-6">
-        <dl className="grid gap-5 sm:grid-cols-[180px_1fr]">
-          <dt className="text-xs font-semibold text-foreground/50">Account email</dt>
-          <dd className="text-sm text-foreground">{email}</dd>
-          <dt className="text-xs font-semibold text-foreground/50">Newsletter status</dt>
-          <dd className="text-sm capitalize text-foreground">{status ?? "Not subscribed"}</dd>
-        </dl>
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          {preferencesHref ? (
-            <Link href={preferencesHref} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-xs font-semibold text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">Manage preferences</Link>
-          ) : (
-            <Link href="/newsletter" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-xs font-semibold text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">Open newsletter signup</Link>
-          )}
-          <Link href="/newsletter" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/[0.1] px-5 text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Read public archive</Link>
-        </div>
-      </section>
-    </div>
+    <NewsletterArchiveContent
+      email={email}
+      issues={issues}
+      preferencesHref={preferencesHref}
+    />
   );
 }

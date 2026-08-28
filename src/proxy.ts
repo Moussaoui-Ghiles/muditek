@@ -1,13 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
-import { LIBRARY_MANIFEST, resolveLibraryPath } from "./lib/library-manifest";
+import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   // Marketing
   "/",
   "/about",
-  "/privacy",
-  "/ai-implementation",
   "/mudiagent",
   "/mudiagent-vs-chatgpt",
   "/pe-ops",
@@ -21,13 +18,6 @@ const isPublicRoute = createRouteMatcher([
   "/case-studies",
   "/case-studies/(.*)",
   "/revenue-leak-audit",
-  "/appointment-setting",
-  "/appointment-setting-pricing",
-  "/library",
-  "/skills",
-  "/skills/(.*)",
-  "/playbooks",
-  "/playbooks/(.*)",
   "/newsletter",
   "/newsletter/(.*)",
   "/tools",
@@ -70,8 +60,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/portal/covers/(.*)",
   "/api/portal/newsletter-covers/(.*)",
   "/api/portal/billing",
-  "/api/portal/skills/(.*)/download",
-  "/api/library/(.*)",
   "/api/indexnow",
 ]);
 
@@ -95,13 +83,6 @@ const LEGACY_PLAYBOOK_FILE_SLUGS: Record<string, string> = {
   "skill-creator-blueprint": "skill-creator-blueprint",
 };
 
-function permanentRedirect(target: string | URL, requestUrl: string) {
-  const request = new URL(requestUrl);
-  const destination = new URL(target, request);
-  destination.search = request.search;
-  return NextResponse.redirect(destination, 308);
-}
-
 function legacyPlaybookRedirect(req: Request) {
   const url = new URL(req.url);
   const match = url.pathname.match(/^\/playbooks\/([^/]+)\.(?:html|pdf)$/i);
@@ -109,67 +90,11 @@ function legacyPlaybookRedirect(req: Request) {
 
   const fileSlug = decodeURIComponent(match[1]).trim().toLowerCase();
   const resourceSlug = LEGACY_PLAYBOOK_FILE_SLUGS[fileSlug] ?? fileSlug;
-  const destination = new URL(`/playbooks/${encodeURIComponent(resourceSlug)}`, req.url);
-  return permanentRedirect(destination, req.url);
+  const destination = new URL(`/r/${encodeURIComponent(resourceSlug)}`, req.url);
+  return NextResponse.redirect(destination);
 }
 
-export function canonicalLibraryResponse(req: Request) {
-  const resolution = resolveLibraryPath(new URL(req.url).pathname);
-  if (resolution.status === "gone") {
-    return new NextResponse(null, { status: 410 });
-  }
-  if (resolution.status === "redirect") {
-    return permanentRedirect(resolution.target, req.url);
-  }
-  return null;
-}
-
-const REMOVED_TOOL_SLUGS = new Set([
-  "revenue-leak-calculator",
-  "google-maps-lead-finder",
-  "google-maps-company-finder",
-  "linkedin-serper-lead-finder",
-  "apollo-lead-finder",
-  "website-url-scraper",
-  "website-text-contact-extractor",
-  "serp-news-search",
-  "serp-autocomplete-suggestions",
-  "serp-flight-search",
-  "serp-hotel-search",
-  "tavily-web-research",
-  "open-meteo-forecast",
-]);
-
-const handleClerkRequest = clerkMiddleware(async (auth, req) => {
-  if (req.nextUrl.pathname.startsWith("/api/portal/tools/")) {
-    return NextResponse.json(
-      { error: "Public provider-backed tools are disabled." },
-      { status: 410 },
-    );
-  }
-
-  const removedTool = req.nextUrl.pathname.match(/^\/tools\/([^/]+)\/?$/);
-  if (removedTool && REMOVED_TOOL_SLUGS.has(decodeURIComponent(removedTool[1]))) {
-    return new NextResponse(null, { status: 410 });
-  }
-
-  const canonicalLibrary = canonicalLibraryResponse(req);
-  if (canonicalLibrary) return canonicalLibrary;
-
-  const legacyResource = req.nextUrl.pathname.match(/^\/(?:r|resources)\/([^/]+)\/?$/);
-  if (legacyResource) {
-    const slug = decodeURIComponent(legacyResource[1]);
-    const item = LIBRARY_MANIFEST.find((candidate) => candidate.slug === slug);
-    if (!item || item.status === "archived" || item.status === "removed") {
-      return new NextResponse(null, { status: 410 });
-    }
-    const target = item.status === "redirected"
-      ? item.redirectTarget
-      : `/${item.kind}s/${encodeURIComponent(item.slug)}`;
-    if (!target) return new NextResponse(null, { status: 410 });
-    return permanentRedirect(target, req.url);
-  }
-
+export default clerkMiddleware(async (auth, req) => {
   const redirectToUnlock = legacyPlaybookRedirect(req);
   if (redirectToUnlock) return redirectToUnlock;
 
@@ -181,22 +106,9 @@ const handleClerkRequest = clerkMiddleware(async (auth, req) => {
   return NextResponse.redirect(signInUrl);
 });
 
-export default function proxy(req: NextRequest, event: NextFetchEvent) {
-  const sensitiveNewsletterPath =
-    req.nextUrl.pathname.startsWith("/preferences/") ||
-    req.nextUrl.pathname.startsWith("/newsletter/confirm/");
-  if (sensitiveNewsletterPath) {
-    const response = NextResponse.next();
-    response.headers.set("Referrer-Policy", "no-referrer");
-    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
-    return response;
-  }
-  return handleClerkRequest(req, event);
-}
-
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|mp4|webm|m4v|mov|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|md)).*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|md)).*)",
     "/playbooks/(.*)",
     "/(api|trpc)(.*)",
   ],

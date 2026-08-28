@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { PortalAccess } from "@/lib/portal-access";
+import { SHOW_MUDIKIT_IN_PORTAL } from "@/lib/portal-features";
 import { PortalSidebar } from "./portal-sidebar";
 
 const PortalShellMountedContext = createContext(false);
@@ -13,10 +14,12 @@ const PortalShellMountedContext = createContext(false);
 type Crumb = { href: string; label: string };
 
 const LEAF_LABEL: Record<string, string> = {
-  skills: "Advanced Skills",
-  activity: "Recent Activity",
-  downloads: "Downloads and Versions",
-  newsletter: "Newsletter Preferences",
+  skills: "Skills",
+  playbooks: "Resources",
+  "workflow-archive": "Workflow Archive",
+  tools: "Tools",
+  ...(SHOW_MUDIKIT_IN_PORTAL ? { mudikit: "MudiKit" } : {}),
+  newsletter: "Newsletter",
   account: "Account",
 };
 
@@ -189,13 +192,13 @@ export function PortalShell({
             </section>
           )}
 
-          <main id="main-content" className="portal-canvas relative isolate">
+          <div className="portal-canvas relative isolate">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_60%_at_50%_0%,rgba(244,209,140,0.06),transparent_70%)]"
             />
             {children}
-          </main>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

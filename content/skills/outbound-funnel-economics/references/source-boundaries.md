@@ -4,7 +4,7 @@
 
 Separate sourced operator lessons from transparent definitions created for this diagnostic. Do not imply that a practitioner supplied every formula or that a self-reported example is a benchmark.
 
-## Public source set
+## Canonical internal source set
 
 ### Final outbound diagnostic article
 
@@ -22,6 +22,7 @@ Treat this as the product specification for the skill, not external validation.
 
 ### Cole Gordon: outbound setting motion and full-chain arithmetic
 
+Vault source: `library/sources/youtube/cole-gordon/2026-07-18-outbound-setting-team-75m-playbook.md`
 Original: https://www.youtube.com/watch?v=oWYKaIULG9Q
 
 Use:
@@ -34,6 +35,7 @@ Do not use reported volumes, conversion rates, compensation, or pickup rates as 
 
 ### Cole Gordon: marginal economics
 
+Vault source: `library/sources/youtube/cole-gordon/2026-07-18-economics-principles-scaling-business.md`
 Original: https://www.youtube.com/watch?v=F8lC4nhA8UY
 
 Use:
@@ -46,6 +48,7 @@ Treat this as an operator framework. Do not present its anecdotes or company fig
 
 ### Daniel Fazio: constraint investigation
 
+Vault source: `library/sources/youtube/daniel-fazio/2026-03-19-stop-being-stuck-same-revenue-constraint-theory.md`
 Original: https://www.youtube.com/watch?v=KgUEurlgXCQ
 
 Use:

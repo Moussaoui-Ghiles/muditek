@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
-import { trackFunnelEvent } from "@/components/acquisition-tracking";
+import { useState, type FormEvent } from "react";
+import { trackEvent } from "@/lib/client-analytics";
 
 const VALID_TOPICS = ["ai-agents", "gtm-systems", "solo-operator"] as const;
 type Topic = (typeof VALID_TOPICS)[number];
@@ -18,7 +18,6 @@ interface EmailCaptureProps {
   className?: string;
   compact?: boolean;
   onSuccess?: () => void;
-  label?: string;
 }
 
 const ACCENT_MAP = {
@@ -78,10 +77,7 @@ export function EmailCapture({
   className = "",
   compact = false,
   onSuccess,
-  label = "Work email address",
 }: EmailCaptureProps) {
-  const inputId = useId();
-  const errorId = `${inputId}-error`;
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -113,10 +109,9 @@ export function EmailCapture({
       }
 
       setStatus("success");
-      trackFunnelEvent("newsletter_opted_in", {
-        asset: "newsletter",
-        lane: "ai-implementation",
-        placement: derivedSource,
+      trackEvent("newsletter_signup", {
+        source: derivedSource,
+        topics: derivedTopics.join(","),
       });
       onSuccess?.();
     } catch (err) {
@@ -127,8 +122,8 @@ export function EmailCapture({
 
   if (status === "success") {
     return (
-      <div role="status" aria-live="polite" className={`flex items-center gap-3 ${compact ? "py-3" : "py-6"} ${className}`}>
-        <div aria-hidden="true" className={`h-2 w-2 rounded-full ${accent.pulse} motion-safe:animate-pulse`} />
+      <div className={`flex items-center gap-3 ${compact ? "py-3" : "py-6"} ${className}`}>
+        <div className={`w-2 h-2 rounded-full ${accent.pulse} animate-pulse`} />
         <span className={`text-sm font-bold uppercase tracking-[0.15em] ${accent.text}`}>
           {successMessage}
         </span>
@@ -149,38 +144,27 @@ export function EmailCapture({
         </p>
       )}
 
-      <label htmlFor={inputId} className="mb-2 block text-left text-sm font-semibold text-foreground/80">
-        {label}
-      </label>
-
       <form
         onSubmit={handleSubmit}
         className={`flex ${compact ? "flex-col gap-2 sm:flex-row" : "flex-col gap-3 sm:flex-row"}`}
       >
         <input
-          id={inputId}
-          name="email"
           type="email"
-          inputMode="email"
-          autoComplete="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          aria-invalid={status === "error"}
-          aria-describedby={status === "error" ? errorId : undefined}
-          className={`min-w-0 flex-1 bg-white/[0.03] border border-white/[0.12] rounded-[2px] ${compact ? "py-2.5 px-4 text-sm" : "py-3.5 px-5 text-sm"} font-mono text-foreground placeholder:text-foreground/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 ${accent.ring} transition-colors`}
+          className={`min-w-0 flex-1 bg-white/[0.03] border border-white/[0.08] rounded-[2px] ${compact ? "py-2.5 px-4 text-sm" : "py-3.5 px-5 text-sm"} font-mono text-foreground placeholder:text-foreground/30 focus:outline-none ${accent.ring} transition-colors`}
           disabled={status === "loading"}
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          aria-label={status === "loading" ? "Submitting email address" : undefined}
           className={`btn-press ${accent.btn} ${accent.btnHover} ${compact ? "w-full px-5 py-2.5 sm:w-auto" : "px-8 py-3.5"} font-black text-sm uppercase tracking-[0.15em] rounded-[2px] transition-transform whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {status === "loading" ? (
             <span className="flex items-center gap-2">
-              <svg aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin" viewBox="0 0 24 24" fill="none">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
@@ -193,7 +177,7 @@ export function EmailCapture({
       </form>
 
       {status === "error" && (
-        <p id={errorId} role="alert" className="mt-2 text-left text-sm text-red-300">{errorMsg}</p>
+        <p className="text-sm text-red-400/80 mt-2">{errorMsg}</p>
       )}
     </div>
   );

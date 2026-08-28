@@ -5,37 +5,40 @@ import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
 import { FaqBlock } from "@/components/faq-block";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { DataCitation } from "@/components/data-citation";
+import { DATA_POINTS } from "@/lib/data-points";
 import { getDb } from "@/lib/db";
 import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 
 const NEWSLETTER_FAQ = [
   {
     q: "What does the Muditek newsletter cover?",
-    a: "Practical AI systems, outbound operations, and implementation breakdowns. Issues can include prompts, workflows, research methods, lead-generation systems, and controlled agent setups.",
+    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype. Only systems that have run in production.",
   },
   {
-    q: "When is it sent?",
-    a: "When a complete issue is ready. There is no filler schedule.",
+    q: "How often does it send?",
+    a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
   },
   {
-    q: "Does a portal account subscribe me?",
-    a: "No. Newsletter consent is separate, optional, and unchecked when you create an account.",
+    q: "Will issues move behind a paywall later?",
+    a: "No. The newsletter is the front door. Audits and custom builds live separately. Selected article-style issues stay readable in the archive.",
   },
   {
     q: "Who reads it?",
-    a: "Operators, builders, and founders who want practical material they can inspect and adapt.",
+    a: "5,000+ B2B operators, AI builders, and founders across telecom, SaaS, agencies, and finance. Most subscribers run their own ops or sales teams and ship what they read here.",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "Muditek Newsletter | Outbound and AI Systems",
+  title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
   description:
-    "Read and subscribe to the Muditek newsletter for practical AI systems, outbound operations, and implementation breakdowns.",
+    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Unsubscribe anytime.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
-    title: "Muditek Newsletter",
+    title: "B2B Agents Newsletter | Muditek",
     description:
-      "Practical AI systems, outbound operations, and implementation breakdowns.",
+      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy.",
     url: "https://muditek.com/newsletter",
     type: "website",
   },
@@ -141,31 +144,44 @@ export default async function NewsletterPage() {
   return (
     <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <Navbar />
-      <main id="main-content" className="w-full">
 
       {/* HERO */}
       <section className="pt-32 md:pt-44 pb-20 md:pb-28 w-full flex justify-center relative overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-[900px] w-full px-6 md:px-12 relative z-10 text-center">
           <ScrollReveal>
-            <p className="mb-8 flex items-center justify-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-primary">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-8 flex items-center justify-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
-              Muditek Newsletter
+              B2B Agents Newsletter
               <span className="w-8 h-[1px] bg-primary/50" />
-            </p>
+            </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
             <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.95] text-foreground mb-8 text-balance">
-              Practical outbound and AI systems, <span className="text-primary italic font-medium">explained clearly.</span>
+              Every edition ships a <span className="text-primary italic font-medium">deployable system.</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
             <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
-              Each issue breaks down one problem, the method, and the implementation details. The public library remains available without subscribing.
+              Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
             </p>
-            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12">Subscription is explicit. You can unsubscribe at any time. A portal account does not subscribe or reactivate you.</p>
+            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12 italic">
+              Read by{" "}
+              <DataCitation
+                claim="5,000+ B2B operators"
+                source={DATA_POINTS.newsletterSubscribers.source}
+                n={DATA_POINTS.newsletterSubscribers.n}
+              />
+              {" "}across telecom, SaaS, agencies, and finance.{" "}
+              <DataCitation
+                claim="29 issues shipped"
+                source={DATA_POINTS.issuesShipped.source}
+                n={DATA_POINTS.issuesShipped.n}
+              />
+              {" "}in 2026.
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={240}>
@@ -186,13 +202,13 @@ export default async function NewsletterPage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
           <ScrollReveal>
-            <p className="mb-6 flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-primary">
+            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-primary/50" />
               Selected Articles
-            </p>
-            <h2 className="mb-16 text-4xl font-black leading-[0.9] tracking-[-0.03em] text-foreground md:text-5xl">
-              Article-style issues live <span className="text-primary italic font-medium">here.</span>
             </h2>
+            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
+              Article-style issues live <span className="text-primary italic font-medium">here.</span>
+            </h3>
           </ScrollReveal>
 
           {issues.length > 0 ? (
@@ -201,9 +217,9 @@ export default async function NewsletterPage() {
                 <ScrollReveal key={issue.slug} delay={i * 40}>
                   <Link
                     href={`/newsletter/${issue.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-[4px] border border-white/[0.08] bg-card/[0.2] backdrop-blur-md transition-[background-color,border-color,transform] duration-700 hover:bg-card/[0.5] card-lift"
+                    className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
                   >
-                    <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-colors duration-[1.2s] group-hover:via-primary/70" />
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
                     <NewsletterCardCover issue={issue} index={i} />
                     <div className="p-6 flex flex-col flex-1">
                       <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
@@ -242,29 +258,34 @@ export default async function NewsletterPage() {
       {/* FAQ */}
       <FaqBlock items={NEWSLETTER_FAQ} accentColor="primary" />
 
-      <section className="w-full border-y border-white/[0.06] py-20">
-        <div className="mx-auto flex w-full max-w-[1000px] flex-col gap-7 px-6 text-center md:px-12">
-          <h2 className="text-3xl font-black tracking-[-0.03em] md:text-5xl">The full library is public.</h2>
-          <p className="mx-auto max-w-2xl text-base leading-7 text-foreground/65">Read skills and playbooks or use the browser-only tools without joining the newsletter.</p>
-          <Link href="/library" className="mx-auto inline-flex min-h-12 items-center justify-center rounded-[2px] border border-white/15 px-6 text-xs font-black uppercase tracking-[0.17em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Open the library</Link>
-        </div>
-      </section>
+      {/* MUDIKIT CTA */}
+      <MudikitCta
+        headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
+        body="The newsletter is the public layer. MudiKit is the paid portal layer: Claude Code skills, resource drops, and tools in one account."
+      />
 
-      <section className="relative flex w-full justify-center border-t border-white/[0.04] bg-card/[0.15] py-24 mesh-subtle">
-        <div className="w-full max-w-[800px] px-6 text-center">
+      {/* BOTTOM CTA */}
+      <section className="py-32 w-full flex justify-center relative border-t border-white/[0.04] bg-card/[0.15] mesh-subtle">
+        <div className="max-w-[800px] w-full px-6 text-center">
           <ScrollReveal>
-            <h2 className="mb-8 text-balance text-3xl font-black leading-[1.05] tracking-[-0.03em] md:text-5xl">
-              Read first. Subscribe only if it is useful.
+            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance">
+              Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
             </h2>
-            <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-foreground/70">
-              The library contains the complete public skills, playbooks, and browser tools.
+            <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
+              Every issue points back to the portal so readers can open the resource, save it, and keep the system tied to one account.
             </p>
-            <Link href="/library" className="inline-flex min-h-12 items-center justify-center rounded-[2px] border border-white/15 px-6 text-xs font-black uppercase tracking-[0.17em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Open the library</Link>
+            <div className="max-w-md mx-auto">
+              <EmailCapture
+                source="newsletter-footer"
+                buttonText="Subscribe"
+                successMessage="You're in. Check your inbox."
+                accentColor="primary"
+              />
+            </div>
           </ScrollReveal>
         </div>
       </section>
 
-      </main>
       <Footer />
     </div>
   );

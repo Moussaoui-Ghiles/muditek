@@ -2,23 +2,23 @@
 
 ## Contents
 
-- Source-first discovery
+- Vault-first discovery
 - Evidence classes
 - Coverage schema
 - Progressive questioning
 - Contradictions and unknowns
 
-## Source-first discovery
+## Vault-first discovery
 
 Start from names and artifacts the user supplied. Search before asking:
 
 1. Exact offer, company, product, program, buyer, or proposal names.
-2. Current offer and pricing notes supplied for this work.
-3. Prospect-specific proposals, discovery calls, and pipeline notes when the named account makes them relevant.
+2. Offer and pricing notes under `marketing/offers/`.
+3. Prospect-specific proposals, discovery calls, and pipeline notes under `marketing/pipeline/` when the named account makes them relevant.
 4. Case studies, testimonials, delivery records, public pages, contracts, and terms named by the user.
 5. Decision notes that constrain pricing, qualification, or client fit.
 
-Use `rg` or the available workspace search. Keep searches bounded to the user's offer and evidence. Do not inspect unrelated confidential records.
+Use `rg` or the available vault search. Keep searches bounded to the user's offer and evidence. Do not inspect unrelated confidential client records.
 
 For a website or external file, inspect the accessible source itself. Record the URL, page or section, access date, and whether the buyer would see it. If it cannot be accessed, label it `unknown`; do not reconstruct it.
 

@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Inter, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { PostHogProvider } from "@/components/posthog-provider";
+import { WhatsAppBubble } from "@/components/whatsapp-bubble";
+import { ExitIntent } from "@/components/exit-intent";
 import { JsonLd } from "@/components/json-ld";
-import { RootProviders } from "@/components/root-providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,9 +40,9 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://muditek.com"),
-  title: "Muditek | Appointment Setting and AI Implementation",
+  title: "Muditek | AI Systems That Eliminate Operational Waste",
   description:
-    "B2B appointment setting, practical AI implementation, and a public library of working methods and tools.",
+    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-premises AI, revenue recovery, and operational infrastructure.",
   alternates: { canonical: "https://muditek.com" },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -44,9 +51,9 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
   },
   openGraph: {
-    title: "Muditek | Appointment Setting and AI Implementation",
+    title: "Muditek | AI Systems That Eliminate Operational Waste",
     description:
-      "B2B appointment setting, practical AI implementation, and a public library of working methods and tools.",
+      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-prem AI, revenue recovery, ops infrastructure.",
     url: "https://muditek.com",
     type: "website",
   },
@@ -62,12 +69,42 @@ export default function RootLayout({
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   return (
-    <html
-      lang="en"
-      data-scroll-behavior="smooth"
-      className={`${inter.variable} ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        logoImageUrl: "/icon.svg",
+        variables: {
+          colorPrimary: "#e8e8ec",
+          colorBackground: "#0a0a0c",
+          colorInputBackground: "#151517",
+          colorInputText: "#e8e8ec",
+          colorText: "#e8e8ec",
+          colorTextSecondary: "#a0a0a6",
+          colorDanger: "#f87171",
+          borderRadius: "6px",
+          fontFamily: "var(--font-geist), system-ui, sans-serif",
+        },
+      }}
+      localization={{
+        signIn: {
+          start: {
+            title: "Sign in to Muditek",
+            subtitle: "Welcome back. Access your portal, playbooks, and archive.",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Create your Muditek account",
+            subtitle: "One email. Portal + newsletter archive. Unsubscribe anytime.",
+          },
+        },
+      }}
     >
-      <body className="font-sans noise">
+      <html
+        lang="en"
+        className={`scroll-smooth ${inter.variable} ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+      >
+        <body className="font-sans noise">
           <JsonLd
             data={[
               {
@@ -83,7 +120,7 @@ export default function RootLayout({
                   height: 512,
                 },
                 description:
-                  "Appointment-setting systems, a public operating library, and practical AI implementation.",
+                  "AI systems that eliminate operational waste. We diagnose where companies lose money to manual operations and build AI systems that fix it.",
                 founder: {
                   "@type": "Person",
                   "@id": "https://muditek.com/#ghiles",
@@ -108,7 +145,7 @@ export default function RootLayout({
                 url: "https://muditek.com",
                 name: "Muditek",
                 description:
-                  "B2B appointment setting, practical AI implementation, and a public library of working methods and tools.",
+                  "AI systems that eliminate operational waste. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
                 publisher: { "@id": "https://muditek.com/#organization" },
                 inLanguage: "en",
               },
@@ -127,11 +164,14 @@ export default function RootLayout({
               },
             ]}
           />
-          <a href="#main-content" className="skip-link">Skip to main content</a>
-          <RootProviders posthogKey={posthogKey} posthogHost={posthogHost} gaMeasurementId={gaMeasurementId}>
-            {children}
-          </RootProviders>
-      </body>
-    </html>
+          <PostHogProvider apiKey={posthogKey} host={posthogHost}>{children}</PostHogProvider>
+          <WhatsAppBubble />
+          <ExitIntent />
+          <Analytics />
+          <SpeedInsights />
+          <GoogleAnalytics measurementId={gaMeasurementId} />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

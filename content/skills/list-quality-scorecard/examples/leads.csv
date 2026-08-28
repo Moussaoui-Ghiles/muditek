@@ -1,4 +1,0 @@
-email,title,domain,verification_status,icp_fit
-one@example.com,Founder,example.com,verified,yes
-ONE@example.com,CEO,https://example.com,valid,no
-two@example.org,,not a domain,catch-all,

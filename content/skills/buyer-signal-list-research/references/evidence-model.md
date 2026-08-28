@@ -21,7 +21,7 @@ Use exactly one primary label per statement or field:
 | `inference` | Reasoned interpretation from stated evidence. | Candidate rule or prioritization only; include rationale and confidence. |
 | `unknown` | Missing, inaccessible, ambiguous, expired, or unresolved. | Preserve and route to research/review; never fill with a default silently. |
 
-An internal targeting note can be a `user_provided_rule` or an input schema. It is not public proof merely because it exists in the in-scope workspace.
+An internal targeting note can be a `user_provided_rule` or an input schema. It is not public proof merely because it exists in the vault.
 
 ## Evidence ledger fields
 
@@ -35,7 +35,7 @@ Maintain one ledger row per claim or criterion:
 - `evidence_label`
 - `source_name`
 - `source_class`
-- `source_url_or_workspace_file`
+- `source_url_or_vault_note`
 - `source_excerpt_or_observed_fact`
 - `date_published` when known
 - `date_updated` when known
@@ -88,19 +88,25 @@ Separate the evidence chain:
 
 Do not skip directly from a public event to buying intent.
 
-## Source use rules
+## Canonical vault source set and safe use
 
-- Use public operator material only as an example or hypothesis unless its claim is independently verified.
-- Use compiled research to define possible problems, disqualifiers, and evidence gaps. It does not prove that a specific account has a problem.
-- Treat behavioral or engagement data as an observable event, not buying intent.
-- Use current first-party operating notes as rules or schemas, not public market proof.
-- Re-verify dated source capabilities, prices, access terms, and performance claims before use.
-- Keep niche-specific economics and judgment rules inside their stated market. Do not reuse them as universal thresholds.
-- Treat client or user answers as provided rules until independently evidenced.
+Read current files at these paths or locate their current equivalents when an operational file moved:
+
+| Vault source | Safe contribution | Boundary |
+|---|---|---|
+| `[[library/sources/youtube/cole-gordon/2026-07-18-outbound-setting-team-75m-playbook]]` | Market size, customer value, buyer accessibility, motion/source context, small first-party sample, and complete handoff-chain thinking. | Distinguish cold SDR from MDR follow-up. Treat figures and KPI ranges as operator examples, not universal benchmarks. |
+| `[[library/research/Pipeline Micro-Problems  Evidence-Led Research on Qualified-Meeting Buyers]]` | Problem records, evidence-strength language, disqualifiers, manual diagnostic logic, and explicit evidence gaps. | Compiled research is not proof that any particular account has a problem. Preserve the segment and source limitations. |
+| `[[library/sources/twitter/dimitar-angelov/2026-01-20-social-media-scraping-behavioral-lead-data]]` | Candidate behavioral-data sources and platform-specific observable events. | All performance, cost, volume, intent, and platform-limit claims are self-reported/operator claims unless independently verified. Engagement is not buying intent. |
+| `[[library/sources/twitter/dimitar-angelov/2026-03-14-problematized-outbound-personalization-is-dead]]` | Testable problem-matrix idea and distinction between surface personalization and commercial relevance. | Do not claim a problem from a proxy. All test results are self-reported. |
+| `[[library/sources/twitter/dimitar-angelov/2026-03-23-platform-exploits-cold-email-twitter-linkedin-response-rates]]` | Candidate timing, activity, role, and micro-segment hypotheses. | Every claimed rate or multiplier is self-reported and never a benchmark, threshold, forecast, or universal rule. Some tactics may create compliance or platform-risk concerns. |
+| `[[marketing/outbound-kit/list-source-map]]` | Source-comparison schema: authority, access method, native fields, enrichment gaps, fallback, and compliance flags. | Niche choices, counts, prices, and build order are dated operational inputs; re-verify before use. |
+| `[[marketing/outbound-kit/ma-enrichment-pipeline]]` | Universe -> structured fit -> evidence read -> contact enrichment -> review pipeline, plus evidence lines and explicit out-of-scope fields. | Its M&A judgment rubric and economics are niche-specific, not reusable market facts or thresholds. Exit signals are probability-raising, never proof of intent. |
+| `[[marketing/outbound-kit/intake-form]]` | Offer economics, fit, pain language, proof, logistics, suppression, and approval intake fields. | Client answers are user-provided rules until independently evidenced. |
+| `[[marketing/content-operating-system]]` | Truth labels, problem record, promotion gates, unknown preservation, source hierarchy, and qualified-response validation logic. | Content engagement cannot validate a niche; AI-generated material is never evidence. |
 
 ## Public-use rule
 
-If an output may be shown outside the company, verify precise statistics at the original source, remove confidential workspace details, obtain necessary client permission, and separate contracted, paid, built, tested, deployed, adopted, and business-result claims.
+If an output may be shown outside the company, verify precise statistics at the original source, remove confidential vault details, obtain necessary client permission, and separate contracted, paid, built, tested, deployed, adopted, and business-result claims.
 
 ## Permissibility boundary
 

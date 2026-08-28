@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import JSZip from "jszip";
-import { requireAdmin } from "@/lib/admin-auth";
 import { getWorkflowsInFolder } from "@/lib/workflow-archive";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +14,10 @@ function safeFileName(s: string): string {
     .slice(0, 100) || "workflow";
 }
 
-export async function GET(request: Request, { params }: { params: Promise<{ folder: string }> }) {
+export async function GET(_: Request, { params }: { params: Promise<{ folder: string }> }) {
   const { folder } = await params;
-  const admin = await requireAdmin(request);
-  if (!admin.authorized) return admin.response;
+  const { isAuthenticated } = await auth();
+  if (!isAuthenticated) return NextResponse.json({ error: "auth required" }, { status: 401 });
 
   const decoded = decodeURIComponent(folder).trim();
   if (!decoded) return NextResponse.json({ error: "folder required" }, { status: 400 });
@@ -28,7 +28,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ fold
   const zip = new JSZip();
   const used = new Set<string>();
   for (const it of items) {
-    const base = safeFileName(it.title || it.slug);
+    let base = safeFileName(it.title || it.slug);
     let name = `${base}.json`;
     let i = 2;
     while (used.has(name)) {

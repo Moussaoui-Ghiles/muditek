@@ -28,7 +28,6 @@ const MARKETING: SitemapEntry[] = [
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/newsletter", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/tools/revenue-leak-calculator", priority: 0.8, changeFrequency: "monthly" },
   { path: "/mudiagent-vs-chatgpt", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
   { path: "/pe-ops-vs-juniper-square", priority: 0.7, changeFrequency: "monthly", lastModified: "2026-05-04" },
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
@@ -36,7 +35,7 @@ const MARKETING: SitemapEntry[] = [
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
   ...PUBLIC_LIBRARY_PATHS.map((path) => ({
     path,
-    priority: path === "/library" ? 0.8 : 0.7,
+    priority: ["/library", "/playbooks", "/skills", "/tools"].includes(path) ? 0.8 : 0.7,
     changeFrequency: "monthly" as const,
     lastModified: "2026-08-28",
   })),

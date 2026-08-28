@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { readFileSync } from "node:fs";
+import { extname } from "node:path";
 import { join } from "node:path";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
@@ -10,8 +11,6 @@ import { ColdEmailCapacityCalculator } from "@/components/cold-email-capacity-ca
 import { BOOKING_URL } from "@/lib/booking";
 import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPublicPlaybook, PUBLIC_PLAYBOOKS } from "@/lib/public-library";
-
-export const dynamicParams = false;
 
 export function generateStaticParams() {
   return PUBLIC_PLAYBOOKS.map((playbook) => ({ slug: playbook.slug }));
@@ -23,6 +22,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "outbound-failure-diagnostic") {
+    return {
+      title: "Outbound Failure Diagnostic | Muditek",
+      alternates: { canonical: "https://muditek.com/revenue-leak-audit" },
+    };
+  }
   const playbook = getPublicPlaybook(slug);
   if (!playbook) return { title: "Playbook not found | Muditek" };
   const url = `https://muditek.com/playbooks/${playbook.slug}`;
@@ -45,47 +50,61 @@ export default async function PublicPlaybookPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (slug === "outbound-failure-diagnostic") permanentRedirect("/revenue-leak-audit");
+  if (slug === "openclaw-outbound") permanentRedirect("/playbooks/google-maps-outbound");
   const playbook = getPublicPlaybook(slug);
   if (!playbook) notFound();
 
   let raw = "";
-  try {
-    raw = readFileSync(
-      join(process.cwd(), "content", "playbooks", `${playbook.slug}.md`),
-      "utf8",
-    );
-  } catch {
-    notFound();
+  const extension = extname(playbook.source).toLowerCase();
+  if (extension === ".md") {
+    try {
+      raw = readFileSync(join(/* turbopackIgnore: true */ process.cwd(), playbook.source), "utf8");
+    } catch {
+      notFound();
+    }
   }
 
-  const { html, headings } = renderLibraryMarkdown(raw);
+  const { html, headings } = raw ? renderLibraryMarkdown(raw) : { html: "", headings: [] };
   const showCalculator = playbook.slug === "10000-cold-email-system";
   const url = `https://muditek.com/playbooks/${playbook.slug}`;
+  const contentHref = `/api/library/playbooks/${encodeURIComponent(playbook.slug)}`;
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground">
       <Navbar />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "TechArticle",
-          headline: playbook.title,
-          description: playbook.summary,
-          datePublished: "2026-08-28",
-          dateModified: "2026-08-28",
-          publisher: { "@id": "https://muditek.com/#organization" },
-          mainEntityOfPage: url,
-          url,
-          inLanguage: "en",
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "TechArticle",
+            headline: playbook.title,
+            description: playbook.summary,
+            datePublished: "2026-08-28",
+            dateModified: "2026-08-28",
+            publisher: { "@id": "https://muditek.com/#organization" },
+            mainEntityOfPage: url,
+            url,
+            inLanguage: "en",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Library", item: "https://muditek.com/library" },
+              { "@type": "ListItem", position: 2, name: "Playbooks", item: "https://muditek.com/playbooks" },
+              { "@type": "ListItem", position: 3, name: playbook.title, item: url },
+            ],
+          },
+        ]}
       />
 
       <main id="main-content">
         <header className="relative overflow-hidden border-b border-white/[0.06] pb-16 pt-36 md:pb-24 md:pt-48">
           <div aria-hidden="true" className="pointer-events-none absolute right-[10%] top-24 h-96 w-96 rounded-full bg-primary/[0.055] blur-[120px]" />
           <div className="relative mx-auto w-full max-w-[1080px] px-6 md:px-12">
-            <Link href="/library" className="text-sm font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">
-              ← Public library
+            <Link href="/playbooks" className="text-sm font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">
+              ← All playbooks
             </Link>
             <p className="mt-10 text-sm font-black uppercase tracking-[0.2em] text-primary">{playbook.topic}</p>
             <h1 className="mt-6 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl">
@@ -121,16 +140,25 @@ export default async function PublicPlaybookPage({
               </div>
             ) : null}
 
-            <article className="library-prose [&_h2]:scroll-mt-28" dangerouslySetInnerHTML={{ __html: html }} />
+            {extension === ".md" ? (
+              <article className="library-prose [&_h2]:scroll-mt-28" dangerouslySetInnerHTML={{ __html: html }} />
+            ) : (
+              <iframe
+                src={contentHref}
+                title={`${playbook.title} full playbook`}
+                className="h-[78dvh] min-h-[680px] w-full rounded-xl border border-white/[0.08] bg-card"
+                loading="lazy"
+              />
+            )}
           </div>
         </section>
 
         <section className="border-t border-white/[0.06] py-16">
           <div className="mx-auto w-full max-w-[900px] px-6 text-center md:px-12">
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-primary">Done-for-you appointment setting</p>
-            <h2 className="mt-5 text-3xl font-black tracking-[-0.03em] md:text-5xl">Want Muditek to run the system?</h2>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-primary">Implementation</p>
+            <h2 className="mt-5 text-3xl font-black tracking-[-0.03em] md:text-5xl">Want Muditek to build the system?</h2>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-foreground/65">
-              We handle list building, outreach, replies, qualification, booking, and attendance.
+              We scope the workflow, build the operating system, and hand over the working implementation.
             </p>
             <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex min-h-12 items-center justify-center rounded-[2px] bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background">
               Book a call

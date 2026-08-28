@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { PUBLIC_LIBRARY_PATHS } from "../lib/public-library";
 
 describe("marketing sitemap", () => {
   it("does not publish routes that have no page", () => {
@@ -9,10 +10,16 @@ describe("marketing sitemap", () => {
   });
 
   it("publishes the cold email and Google Maps resources", () => {
-    const source = readFileSync(join(process.cwd(), "src/lib/public-library.ts"), "utf8");
-    expect(source).toContain('"/playbooks/10000-cold-email-system"');
-    expect(source).toContain('"/playbooks/google-maps-outbound"');
-    expect(source).toContain('"/tools/cold-email-capacity-calculator"');
-    expect(source).toContain('"/skills/google-maps-owner-email-finder"');
+    expect(PUBLIC_LIBRARY_PATHS).toEqual(expect.arrayContaining([
+      "/playbooks",
+      "/skills",
+      "/tools",
+      "/playbooks/10000-cold-email-system",
+      "/playbooks/google-maps-outbound",
+      "/playbooks/loop-design-playbook",
+      "/tools/cold-email-capacity-calculator",
+      "/skills/google-maps-owner-email-finder",
+      "/skills/list-builder",
+    ]));
   });
 });

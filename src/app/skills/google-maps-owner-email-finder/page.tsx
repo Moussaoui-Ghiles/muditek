@@ -5,7 +5,6 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { BOOKING_URL } from "@/lib/booking";
-import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
 
 const SLUG = "google-maps-owner-email-finder";
@@ -20,25 +19,33 @@ export const metadata: Metadata = {
 export default function GoogleMapsOwnerFinderPage() {
   const bundle = getPortalSkillBundle(SLUG);
   if (!bundle) notFound();
-  const instructions = bundle.files.find((file) => file.path === "SKILL.md")?.raw;
-  if (!instructions) notFound();
-  const { html } = renderLibraryMarkdown(instructions);
   const downloadHref = `/api/portal/skills/${SLUG}/download`;
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground">
       <Navbar />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "SoftwareSourceCode",
-          name: "Google Maps Owner and Email Finder",
-          description: metadata.description,
-          codeRepository: "https://github.com/Moussaoui-Ghiles/google-maps-owner-email-finder",
-          programmingLanguage: "JavaScript",
-          license: "https://opensource.org/license/mit",
-          url: `https://muditek.com/skills/${SLUG}`,
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "SoftwareSourceCode",
+            name: "Google Maps Owner and Email Finder",
+            description: metadata.description,
+            codeRepository: "https://github.com/Moussaoui-Ghiles/google-maps-owner-email-finder",
+            programmingLanguage: "JavaScript",
+            license: "https://opensource.org/license/mit",
+            url: `https://muditek.com/skills/${SLUG}`,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Library", item: "https://muditek.com/library" },
+              { "@type": "ListItem", position: 2, name: "Skills", item: "https://muditek.com/skills" },
+              { "@type": "ListItem", position: 3, name: "Google Maps Owner and Email Finder", item: `https://muditek.com/skills/${SLUG}` },
+            ],
+          },
+        ]}
       />
       <main id="main-content">
         <header className="border-b border-white/[0.06] pb-16 pt-36 md:pb-24 md:pt-48">
@@ -79,13 +86,18 @@ export default function GoogleMapsOwnerFinderPage() {
 
         <section className="py-14 md:py-20">
           <div className="mx-auto w-full max-w-[900px] px-6 md:px-12">
-            <h2 className="text-3xl font-black tracking-[-0.03em]">Run it locally</h2>
+            <h2 className="text-3xl font-black tracking-[-0.03em]">What is in the package</h2>
+            <p className="mt-5 max-w-[65ch] text-base leading-7 text-foreground/65">
+              The package contains the collector, the result auditor, CSV templates, review rules, and a worked example. Read the separate guide for the complete workflow and operating limits.
+            </p>
             <ul className="mt-6 grid gap-2 sm:grid-cols-2" aria-label="Included files">
               {bundle.files.map((file) => (
                 <li key={file.path} className="break-all rounded-[2px] border border-white/[0.08] px-3 py-2 font-mono text-sm text-foreground/60">{file.path}</li>
               ))}
             </ul>
-            <article className="library-prose mt-12 border-t border-white/[0.08] pt-10" dangerouslySetInnerHTML={{ __html: html }} />
+            <Link href="/playbooks/google-maps-outbound" className="mt-8 inline-flex min-h-12 items-center justify-center border border-white/[0.14] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground hover:border-primary/60 hover:text-primary">
+              Read the implementation guide
+            </Link>
           </div>
         </section>
 

@@ -6,6 +6,18 @@ const nextConfig = {
       "./content/playbooks/google-maps-outbound.md",
       "./content/skills/google-maps-owner-email-finder/**/*",
     ],
+    "/playbooks/[slug]": [
+      "./content/playbooks/**/*",
+    ],
+    "/api/library/playbooks/[slug]": [
+      "./content/playbooks/**/*",
+    ],
+    "/skills/[slug]": [
+      "./content/skills/**/*",
+    ],
+    "/api/portal/skills/[slug]/download": [
+      "./content/skills/**/*",
+    ],
     "/portal/playbooks/[slug]": [
       "./content/playbooks/**/*.html",
       "./content/downloads/playbooks/**/*",
@@ -59,11 +71,6 @@ const nextConfig = {
         permanent: true,
       },
       // /buy handled by src/app/buy/page.tsx (do not re-add a config redirect here)
-      {
-        source: "/tools",
-        destination: "/tools/revenue-leak-calculator",
-        permanent: true,
-      },
       {
         // Legacy LinkedIn campaign URLs — UUID at root → /c/[id]
         source: "/:id(:?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",

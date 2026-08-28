@@ -101,9 +101,76 @@ const EXPECTED_SKILLS = [
       "templates/owners-output.csv",
     ],
   },
+  {
+    slug: "audience-content-os",
+    title: "Audience Content OS",
+    files: [
+      "SKILL.md",
+      "agents/openai.yaml",
+      "references/claim-map.md",
+      "references/source-doctrine.md",
+      "references/source-examples.md",
+    ],
+  },
+  {
+    slug: "linkedin-content-writer",
+    title: "LinkedIn Content Writer",
+    files: [
+      "SKILL.md",
+      "references/halbert-headlines.md",
+      "references/linkedin-winners.md",
+    ],
+  },
+  {
+    slug: "x-content-writer",
+    title: "X Content Writer",
+    files: [
+      "SKILL.md",
+      "references/format-guide.md",
+      "references/hook-review.md",
+      "references/source-fidelity.md",
+    ],
+  },
+  {
+    slug: "newsletter",
+    title: "Newsletter",
+    files: [
+      "SKILL.md",
+      "references/language.md",
+      "references/structure.md",
+    ],
+  },
+  {
+    slug: "tiktok-slideshow-machine",
+    title: "TikTok Slideshow Machine",
+    files: [
+      "SKILL.md",
+      "assets/slides-template.html",
+      "prompts/caption-generator.md",
+      "prompts/hook-generator.md",
+      "prompts/negative-constraints.md",
+      "prompts/reverse-engineer.md",
+      "references/codewithboi-anchor.md",
+      "references/posting-checklist.md",
+      "references/recurring-mistakes.md",
+      "references/render-pipeline.md",
+      "scripts/download-logo.sh",
+      "scripts/render.mjs",
+      "templates/asset-tag.template.json",
+      "templates/format-schema.template.json",
+    ],
+  },
+  {
+    slug: "lead-magnets",
+    title: "Lead Magnets",
+    files: [
+      "SKILL.md",
+      "references/source-framework.md",
+    ],
+  },
 ] as const;
 
-describe("shipped outbound skill bundles", () => {
+describe("shipped portal skill bundles", () => {
   const listedSkills = listShippedPortalSkills();
 
   for (const expected of EXPECTED_SKILLS) {

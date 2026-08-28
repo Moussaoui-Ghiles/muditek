@@ -1,310 +1,218 @@
 ---
-name: lead-magnets
-description: When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation. Also use when the user mentions "lead magnet," "gated content," "content upgrade," "downloadable," "ebook," "cheat sheet," "checklist," "template download," "opt-in," "freebie," "PDF download," "resource library," "content offer," "email capture content," "Notion template," "spreadsheet template," or "what should I give away for emails." Use this for planning what to create and how to distribute it. For interactive tools as lead magnets, see free-tool-strategy. For writing the actual content, see copywriting. For the email sequence after capture, see email-sequence.
-metadata:
-  version: 1.0.0
+name: Lead Magnets
+description: Build, critique, or improve lead magnets using the source-grounded $100M Leads problem-solution workflow. Use when the user asks for a lead magnet, free or low-cost offer, diagnostic, audit, assessment, sample, trial, tool, guide, case study, template, lead-magnet name, consumption plan, CTA, or lead-magnet economics. Produce a narrow-problem bridge to the core offer, explore the three solution types across four delivery mechanisms, test packaging before polishing, design for consumption, protect value quality, and create the post-value CTA. Do not reduce a lead magnet to email capture or generic free content.
 ---
 
 # Lead Magnets
 
-You are an expert in lead magnet strategy. Your goal is to help plan lead magnets that capture emails, generate qualified leads, and naturally lead to product adoption.
-
-## Before Planning
-
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
-
-Gather this context (ask if not provided):
-
-### 1. Business Context
-- What does the company do?
-- Who is the ideal customer?
-- What problems does your product solve?
-
-### 2. Current Lead Generation
-- How do you currently capture leads?
-- What lead magnets or offers do you have?
-- What's your current conversion rate on email capture?
+Build an offer that turns the right people into engaged leads by completely solving one narrow, meaningful problem and revealing the next problem the core offer solves.
 
-### 3. Content Assets
-- What existing content could be repurposed? (blog posts, guides, data)
-- What expertise can you package?
-- What templates or tools do you use internally?
-
-### 4. Goals
-- Primary goal: email list growth, lead quality, product education?
-- Target audience stage: awareness, consideration, or decision?
-- Timeline and resource constraints?
+Read `references/source-framework.md` before creating or auditing a lead magnet. Treat it as the source of truth for this workflow.
 
----
-
-## Lead Magnet Principles
+## Establish Context
 
-### 1. Solve a Specific Problem
-- Address one clear pain point, not a broad topic
-- "How to write cold emails that get replies" > "Marketing guide"
+Read the available offer, audience, pipeline, lead-magnet, decision, and product context before asking questions.
 
-### 2. Match the Buyer Stage
-- Awareness leads need education
-- Consideration leads need comparison and evaluation
-- Decision leads need implementation help
+Establish:
 
-### 3. High Perceived Value, Low Time Investment
-- Should look like it's worth paying for
-- Consumable in under 30 minutes (ideally under 10)
-- Immediate, actionable takeaway
+- the specific customer;
+- the core offer and the broader problem it solves;
+- the customer's preceding narrow problems;
+- available proof, expertise, assets, and delivery capacity;
+- existing lead magnets and known results;
+- real constraints that could support scarcity or urgency.
 
-### 4. Natural Path to Product
-- Solves a problem your product also solves
-- Creates awareness of a gap your product fills
-- Demonstrates your expertise in the space
+Separate verified facts, user-provided facts, and assumptions. Never invent customer pains, proof, results, capacity, benchmarks, scarcity, or deadlines. Ask only for missing information that would materially change the lead magnet.
 
-### 5. Easy to Consume
-- One clear format (don't mix ebook + video + spreadsheet)
-- Works on mobile
-- No special software required
+## Keep the Correct Frame
 
----
+Use these definitions:
 
-## Lead Magnet Types
+- **Core offer:** the product or service exchanged for money.
+- **Lead magnet:** a free or lower-cost offer that completely solves one narrow problem for a specific customer, then reveals a related problem the core offer solves.
+- **Engagement:** the right person raises their hand by showing interest. An email address alone is not the outcome.
 
-| Type | Best For | Effort | Time to Create |
-|------|----------|--------|----------------|
-| Checklist | Quick wins, process steps | Low | 1-2 hours |
-| Cheat sheet | Reference material, shortcuts | Low | 2-4 hours |
-| Template (doc/spreadsheet/Notion) | Repeatable processes, workflows | Low-Med | 2-8 hours |
-| Swipe file | Inspiration, examples | Medium | 4-8 hours |
-| Ebook/guide | Deep education, authority | High | 1-3 weeks |
-| Mini-course (email) | Education + nurture | Medium | 1-2 weeks |
-| Mini-course (video) | Education + personality | High | 2-4 weeks |
-| Quiz/assessment | Segmentation, engagement | Medium | 1-2 weeks |
-| Webinar | Authority, live engagement | Medium | 1 week prep |
-| Resource library | Ongoing value, return visits | High | Ongoing |
-| Free trial/community access | Product experience | Varies | Varies |
+Keep the chapter's direct-offer caveat in perspective: a core offer may engage leads without a lead magnet, but this is framing, not a step in the lead-magnet build workflow.
 
-**For detailed creation guidance per format**: See [references/format-guide.md](references/format-guide.md)
+Judge the finished lead magnet by four outcomes:
 
----
+1. It engages ideal customers when they see it.
+2. It generates more engagement than the core offer alone.
+3. It is valuable enough that people consume or use it.
+4. It makes the right people more likely to buy.
 
-## Matching Lead Magnets to Buyer Stage
+## Select the Operating Mode
 
-### Awareness Stage
-Goal: Educate on the problem. Attract people who don't know you yet.
+### Create
 
-| Format | Example |
-|--------|---------|
-| Checklist | "10-Point Website Audit Checklist" |
-| Cheat sheet | "SEO Cheat Sheet for Beginners" |
-| Ebook/guide | "The Complete Guide to Email Marketing" |
-| Quiz | "What Type of Marketer Are You?" |
+Run the complete workflow and produce the required deliverables.
 
-### Consideration Stage
-Goal: Help evaluate solutions. Build trust and demonstrate expertise.
+### Audit
 
-| Format | Example |
-|--------|---------|
-| Comparison template | "CRM Comparison Spreadsheet" |
-| Assessment | "Marketing Maturity Assessment" |
-| Case study collection | "5 Companies That 3x'd Their Pipeline" |
-| Webinar | "How to Choose the Right Analytics Tool" |
+Reverse-engineer the existing magnet through every workflow step. Mark each required outcome as `pass`, `fail`, or `unproven`, cite the evidence, and identify the earliest broken link.
 
-### Decision Stage
-Goal: Help implement. Remove friction to purchase.
+### Improve
 
-| Format | Example |
-|--------|---------|
-| Template | "Ready-to-Use Sales Email Templates" |
-| Free trial | "14-Day Free Trial" |
-| Implementation guide | "Migration Checklist: Switch in 30 Minutes" |
-| ROI calculator | "Calculate Your Savings" (→ see **free-tool-strategy**) |
+Preserve what is already proven. Change the earliest weak or unproven link rather than rewriting everything.
 
----
+## Run the Workflow
 
-## Gating Strategy
+### Step 0: Commit to Making It Valuable
 
-### Gating Options
+When lead generation is the constraint, build an amazing lead magnet. Do not begin with a generic asset format such as “ebook” or “checklist.” Begin with the customer and problem.
 
-| Approach | When to Use | Trade-off |
-|----------|-------------|-----------|
-| **Full gate** | High-value content, bottom-funnel | Max capture, lower reach |
-| **Partial gate** | Preview + full version | Balance of reach and capture |
-| **Ungated + optional** | Top-funnel education | Max reach, lower capture |
-| **Content upgrade** | Blog post + bonus | Contextual, high-intent |
+### Step 1: Map the Problem-Solution Bridge
 
-### What to Ask For
+Map the customer's broader goal into smaller problem-solution cycles.
 
-- **Email only** — highest conversion, lowest friction
-- **Email + name** — enables personalization, slight friction increase
-- **Email + company/role** — better lead qualification, more friction
-- **Multi-field** — only for high-value offers (webinars, demos)
+Choose one preceding problem that is:
 
-Rule of thumb: Ask for the minimum needed. Every extra field reduces conversion by 5-10%.
+- narrow;
+- meaningful to the specific customer;
+- solvable completely by the lead magnet;
+- connected to a next problem solved by the core offer.
 
-### How to Frame the Exchange
+Produce this bridge:
 
-- Make the value obvious: "Get the full 25-page guide free"
-- Show a preview: table of contents, first page, sample results
-- Add social proof: "Downloaded by 5,000+ marketers"
-- Reduce risk: "No spam. Unsubscribe anytime."
+> **Specific customer** has **narrow problem P1**.
+> The lead magnet delivers **complete solution S1**.
+> Receiving S1 reveals or intensifies **next problem P2**.
+> The core offer delivers **solution S2** to P2.
 
-**For form optimization**: See **form-cro** skill
-**For popup implementation**: See **popup-cro** skill
+Reject the concept if the core offer does not naturally solve P2.
 
----
+### Step 2: Explore How to Solve P1
 
-## Landing Page & Delivery
+Create concepts using all three solution types:
 
-### Landing Page Structure
+1. **Reveal the problem:** diagnose an unseen gap, risk, loss, or worsening condition.
+2. **Sample or trial:** provide full but brief access to a recurring solution; limit time, uses, or both.
+3. **One step of a multi-step process:** complete one valuable step while the core offer handles the remaining process.
 
-1. **Headline** — Clear benefit: what they'll get and why it matters
-2. **Preview/mockup** — Visual of the lead magnet (cover, screenshot, sample page)
-3. **What's inside** — 3-5 bullet points of key takeaways
-4. **Social proof** — Download count, testimonials, logos
-5. **Form** — Minimal fields, clear CTA button
-6. **FAQ** — Address hesitations (Is it really free? What format?)
+Do not force a one-of-three choice. Combine types when the experience supports it. A single magnet can reveal a problem, demonstrate a sample of the solution, and complete one step.
 
-**For landing page optimization**: See **page-cro** skill
+### Step 3: Explore How to Deliver It
 
-### Delivery Methods
+Translate each solution type across four delivery mechanisms:
 
-| Method | Pros | Cons |
-|--------|------|------|
-| **Instant download** | Immediate gratification | No email verification |
-| **Email delivery** | Verifies email, starts relationship | Slight delay |
-| **Thank you page + email** | Best of both—instant access + email copy | Slightly more complex |
-| **Drip delivery** | Builds habit, multiple touchpoints | Only for courses/series |
+1. **Software:** a tool does work for the customer.
+2. **Information:** teach the customer how to solve the problem.
+3. **Service:** perform the work for the customer.
+4. **Physical product:** deliver something tangible.
 
-### Thank You Page Optimization
+Build the full 3 x 4 exploration matrix before selecting a direction. Sketch all twelve combinations briefly. Combine mechanisms when doing so makes the solution stronger or easier to consume.
 
-Don't waste the thank you page. After they've converted:
-- Confirm delivery ("Check your inbox")
-- Offer a next step (book a demo, start trial, join community)
-- Share on social (pre-written tweet/post)
-- Recommend related content
+Shortlist concepts using evidence from the customer's problem, desired result, available proof, delivery capacity, and connection to the core offer. Do not select a format merely because it is easy to produce.
 
----
+### Step 4: Test the Packaging Before Polishing
 
-## Promotion & Distribution
+Test in this order:
 
-### Blog CTAs & Content Upgrades
+1. headline or name;
+2. image or display;
+3. subheadline.
 
-- Add relevant CTAs within blog posts (inline, end-of-post)
-- Create post-specific content upgrades (bonus checklist for a how-to post)
-- Content upgrades convert 2-5x better than generic sidebar CTAs
+Use pairwise polls, posts, direct messages, audience conversations, or small controlled promotion tests. Treat responses as directional evidence, not universal truth.
 
-### Exit-Intent & Popups
+Prefer clear, outcome-linked language. Small wording changes can create large differences, so preserve the winning language from each round.
 
-- Trigger on exit intent or scroll depth
-- Match the popup offer to the page content
-- **See popup-cro** for implementation
+Treat unsolicited questions about when or how to obtain the magnet as a strong signal. Spend effort testing the offer and packaging before perfecting an untested asset.
 
-### Social Media
+### Step 5: Make It Easy to Consume
 
-- Share snippets and teasers from the lead magnet
-- Create carousel posts from key points
-- Use the lead magnet as the CTA in your bio/profile
-- **See social-content** for social strategy
+Reduce the customer's time, access, and usage effort.
 
-### Paid Promotion
+- **Software:** support convenient devices and access paths.
+- **Information:** provide useful combinations of text, video, audio, and visual formats.
+- **Service:** widen useful times and delivery channels.
+- **Physical product:** simplify ordering, delivery, opening, instructions, and use.
 
-- Facebook/Instagram lead ads for top-funnel lead magnets
-- Google Ads for high-intent lead magnets (templates, tools)
-- LinkedIn for B2B lead magnets
-- Retarget blog visitors with lead magnet ads
-- **See paid-ads** for campaign strategy
+Do not impose a single-format rule. The source explicitly recommends multiple consumption formats because different customers prefer different paths.
 
-### Partner Co-Promotion
+### Step 6: Make It Darn Good
 
-- Cross-promote with complementary brands
-- Guest webinars with partner audiences
-- Include in partner newsletters
-- Bundle in resource collections
+Treat free and paid offers as reputation-bearing products.
 
----
+- Make the magnet worth the customer's time; free still has a cost.
+- Deliver the strongest useful value first rather than diluted leftovers.
+- Solve P1 completely.
+- Give away the method or secrets; sell implementation, continuation, convenience, scale, speed, or the solution to P2.
+- Make the magnet good enough that charging for it would be reasonable.
+- Permit a delivery budget when it increases value and improves customer acquisition economics.
 
-## Measuring Success
+Reject fluff, deliberately incomplete teasers, and assets designed only to collect contact information.
 
-### Key Metrics
+### Step 7: Make It Easy to Ask for More
 
-| Metric | What It Tells You | Benchmark |
-|--------|-------------------|-----------|
-| **Landing page conversion rate** | Offer attractiveness | 20-40% (warm traffic), 5-15% (cold) |
-| **Cost per lead** | Acquisition efficiency | Varies by channel and industry |
-| **Lead-to-customer rate** | Lead quality | 1-5% (B2B), varies widely |
-| **Email engagement** | Content relevance | 30-50% open, 2-5% click |
-| **Time to conversion** | Nurture effectiveness | Track by lead magnet source |
+Place the CTA after the customer receives value.
 
-**For detailed benchmarks by format and industry**: See [references/benchmarks.md](references/benchmarks.md)
+Include:
 
-### A/B Testing Ideas
+1. **what to do next:** one clear, direct action;
+2. **why to act now:** a truthful reason.
 
-- **Headline**: Benefit-focused vs. curiosity-driven
-- **Format**: Checklist vs. guide on same topic
-- **Gate level**: Full gate vs. partial preview
-- **Form fields**: Email-only vs. email + name
-- **CTA copy**: "Download Free Guide" vs. "Get Your Copy"
-- **Delivery**: Instant download vs. email delivery
+Use real capacity or inventory limits for scarcity. Use genuine deadlines or time-limited bonuses for urgency. A rotating bonus may add urgency without limiting total sales. A contextual “because” reason can also support action.
 
-### Lead Quality Signals
+Never invent scarcity, urgency, proof, or consequences. Prefer clarity over cleverness. Repeat the CTA where the consumption experience naturally supports it.
 
-Good lead magnet attracted quality leads if:
-- Higher-than-average email engagement
-- Leads progress to trial/demo at expected rates
-- Low unsubscribe rate after delivery
-- Leads match ICP demographics
+### Step 8: Check the Economics
 
----
+Include advertising and delivery costs. Compare the lead-magnet path with the core-offer path when both have data.
 
-## Output Format
+Calculate:
 
-When creating a lead magnet strategy, provide:
+- cost per engaged lead;
+- delivery cost per recipient;
+- total cost per engaged lead;
+- engaged-lead-to-customer conversion;
+- customer acquisition cost;
+- profit after acquisition cost.
 
-### 1. Lead Magnet Recommendation
-- Format and topic
-- Target buyer stage
-- Why this format for this audience
-- Estimated creation effort
+Do not import generic benchmarks. Use the business's actual baseline or label the metric unproven.
 
-### 2. Content Outline
-- Key sections/components
-- Length and scope
-- What makes it unique or valuable
+## Produce the Required Deliverables
 
-### 3. Gating & Capture Plan
-- What to gate and how
-- Form fields
-- Landing page structure
+For a full creation task, return:
 
-### 4. Distribution Plan
-- Promotion channels
-- Content upgrade opportunities
-- Paid amplification (if applicable)
+1. **Context ledger:** verified facts, assumptions, and missing evidence.
+2. **Problem-solution bridge:** P1/S1 to P2/S2.
+3. **Three solution concepts:** reveal, sample/trial, and one-step, including a combined concept where credible.
+4. **3 x 4 exploration matrix:** twelve concise delivery concepts.
+5. **Recommendation:** selected concept and evidence-based rationale.
+6. **Offer specification:** promise, recipient, scope, delivery, completion condition, and core-offer bridge.
+7. **Packaging test:** pairwise headline, image, and subheadline tests in the correct order.
+8. **Consumption plan:** access paths, formats, instructions, and friction removals.
+9. **Value audit:** why P1 is completely solved and why the magnet is worth the customer's time.
+10. **CTA:** action plus truthful reason to act now.
+11. **Economics sheet:** formulas, known inputs, unknowns, and comparison baseline.
+12. **Four-outcome verdict:** `pass`, `fail`, or `unproven` with evidence.
+13. **Next decision:** the one item the user should approve or test next.
 
-### 5. Measurement Plan
-- KPIs and targets
-- What to A/B test first
+Keep the output concise enough to make a decision. Do not write the full asset, launch ads, create forms, or build nurture sequences unless the user asks.
 
----
+## Diagnose Common Failures
 
-## Task-Specific Questions
+- **Generic free content:** no complete narrow solution.
+- **Wrong leads:** P1 is broad or disconnected from the specific customer.
+- **No paid bridge:** S1 does not reveal P2, or the core offer does not solve P2.
+- **Format-first thinking:** starts with “ebook,” “template,” or “webinar” before the problem.
+- **False one-of-three choice:** ignores combinations of reveal, sample, and one-step.
+- **Single-format friction:** contradicts the multiple-format consumption principle.
+- **Weak value:** protects useful information and gives away fluff.
+- **Premature production:** perfects the asset before testing its offer and packaging.
+- **Headline-only success:** measures claims or contact capture but not consumption and buying intent.
+- **Premature CTA:** asks for the sale before delivering the promised value.
+- **Fabricated urgency:** invents capacity, deadlines, proof, or scarcity.
+- **Benchmark theater:** substitutes generic averages for the business's own economics.
 
-1. What existing content or expertise could you turn into a lead magnet?
-2. Where does your audience spend time online?
-3. What's the most common question prospects ask before buying?
-4. Do you have an email nurture sequence set up for new leads?
-5. What's your budget for design and promotion?
+## Respect Scope Boundaries
 
----
+Use adjacent skills only when requested:
 
-## Related Skills
+- `copywriting` for producing the complete written asset;
+- `free-tool-strategy` for building an interactive tool;
+- `page-cro` and `form-cro` for the capture experience;
+- `email-sequence` for post-capture nurture;
+- `paid-ads`, `social-content`, or `linkedin-outreach-codex` for distribution.
 
-- **free-tool-strategy**: For interactive tools as lead magnets (calculators, graders, quizzes)
-- **copywriting**: For writing the lead magnet content itself
-- **email-sequence**: For nurture sequences after lead capture
-- **page-cro**: For optimizing lead magnet landing pages
-- **popup-cro**: For popup-based lead capture
-- **form-cro**: For optimizing capture forms
-- **content-strategy**: For content planning and topic selection
-- **analytics-tracking**: For measuring lead magnet performance
-- **paid-ads**: For paid promotion of lead magnets
-- **social-content**: For social media promotion
+Never present an adjacent plan as if the lead magnet itself has been validated.

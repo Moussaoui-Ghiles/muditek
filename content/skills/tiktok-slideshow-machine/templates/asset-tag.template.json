@@ -1,15 +1,9 @@
 {
-  "image_id": "<filename without ext>",
-  "filename": "<filename.jpg>",
-  "source": "pinterest|other",
-  "source_url": "<original URL>",
+  "filename": "<local filename>",
+  "source_url": "<original source URL>",
   "downloaded_at": "YYYY-MM-DD",
-  "tags": {
-    "subject": ["<e.g. laptop, code, person-typing>"],
-    "mood": ["<e.g. focused, dark, minimal>"],
-    "color_palette": ["<e.g. dark, neutral, high-contrast>"],
-    "composition": "<e.g. flat-lay, close-up, vertical>"
-  },
-  "usable_for_roles": ["filler", "setup", "payoff"],
-  "notes": "<any quirks — e.g. has visible watermark, person face visible, etc.>"
+  "rights_status": "<verified|permission-required|unknown>",
+  "subject": ["<visible subject>"],
+  "usable_for": ["<slide role>"],
+  "notes": "<crop, watermark, attribution, or quality notes>"
 }

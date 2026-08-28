@@ -1,0 +1,7 @@
+interface:
+  display_name: "Audience Content OS"
+  short_description: "Legacy explicit-only content framework"
+  default_prompt: "Use $audience-content-os to apply the legacy source framework to this content."
+
+policy:
+  allow_implicit_invocation: false

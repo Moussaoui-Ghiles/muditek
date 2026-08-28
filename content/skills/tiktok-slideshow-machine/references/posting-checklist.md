@@ -1,46 +1,31 @@
-# Posting Checklist (Manual)
+# Manual posting checklist
 
-Per project rule: never automate posting. This checklist is for the human operator (Ghiles) to follow when posting an issue produced by the skill.
+The bundle stops before posting. Use this checklist in the TikTok app.
 
-## Before posting
+## Before upload
 
-- [ ] Account is warm: posted ≥3 issues in last 7 days OR has done 5-7 days of organic browse-only warmup
-- [ ] Bio link is set (Notion list / lead-magnet page / approved CPA offer landing)
-- [ ] Sound is selected from TikTok Creative Center, last 72h, low-bpm cinematic / lo-fi
-- [ ] Native overlay text is drafted in `POST.md`
+- [ ] Every PNG has been visually reviewed.
+- [ ] Slides are ordered correctly.
+- [ ] The first slide promise is fulfilled by the set.
+- [ ] Claims, numbers, names, and quotations have sources.
+- [ ] The caption does not add a new unsupported claim.
+- [ ] The CTA is approved and uses one action.
+- [ ] Image, logo, font, and music rights have been checked.
 
-## Posting flow (TikTok app)
+## In the app
 
-1. Tap + → Upload → Select photos → pick `slide-01.png`, then `slide-02.png` (in that order)
-2. On slide 1: tap "Text" → paste native overlay from `POST.md` → position lower-third → white bold
-3. On slide 2: no text overlay (everything is baked in)
-4. Slide duration: 4 seconds each (default fine)
-5. Pick selected sound
-6. Paste caption + hashtags from `POST.md`
-7. Toggle: Allow comments ✓, Allow Stitch ✓, Allow Duet ✓
-8. Cover photo: pick slide 1
-9. Post
-
-## Post-time guidance
-
-- Niche: ai-tools, EU prime time = **19:00–22:00 CET** weekdays
-- US prime time (if account scales): 19:00–22:00 ET
-- Avoid posting <2h before/after another post on same account
+1. Upload the PNG files in numeric order.
+2. Preview the full sequence once.
+3. Check crop and text visibility on each slide.
+4. Add the approved caption.
+5. Add sound only when its rights and use are appropriate.
+6. Check the selected cover.
+7. Review audience and interaction settings.
+8. Publish only after the human owner approves the final preview.
 
 ## After posting
 
-- [ ] Append row to `marketing/tiktok/tracker.csv` with `post_id`, `posted_at`, `sound`
-- [ ] Set 24h reminder to log views/likes/saves/shares/comments
-- [ ] Set 7-day reminder to log views_7d
-- [ ] If post >50K views → mark format `validated_v1` in tracker
-- [ ] If post >100K views → write a v2 of this format with 1-2 small variations to A/B
-- [ ] If 5 consecutive posts <10K → trigger format swap (see `references/codewithboi-anchor.md` "When NOT to use")
-
-## What NOT to do
-
-- ❌ Bake the hook text into slide 1 PNG — TikTok ranks native overlays higher
-- ❌ Post with a sound that's been used >500K times — diminishing reach
-- ❌ Post 2 issues within 2h of each other from the same account
-- ❌ Use copyrighted music — TikTok strips it on upload
-- ❌ Edit a posted slide afterward — re-post instead
-- ❌ Buy aged accounts or use proxies (project rule: $0/mo MVP)
+- [ ] Save the public URL and actual posting time.
+- [ ] Record observed metrics with their measurement time.
+- [ ] Keep post metrics separate from profile visits, link clicks, leads, and revenue.
+- [ ] Do not attribute a business result to the slideshow without a tracked connection.

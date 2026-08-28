@@ -2,6 +2,12 @@ export function containsInlineImages(html: string): boolean {
   return /<img\b[^>]*\bsrc=["']data:image\//i.test(html);
 }
 
+const RETIRED_BEEHIIV_LOGO = /https:\/\/media\.beehiiv\.com\/[^"']*\/publication\/logo\/2effd3a4-1768-4ed7-8c9b-ff764a036162\/thumb_WhatsApp_Image_2025-05-23_at_00\.49\.13_a69bd58a\.jpg/gi;
+
+export function normalizePublicIssueHtml(html: string): string {
+  return html.replace(RETIRED_BEEHIIV_LOGO, "/images/ghiles.jpg");
+}
+
 export function personalizeNewsletterHtml(
   html: string,
   values: { confirmUrl: string },

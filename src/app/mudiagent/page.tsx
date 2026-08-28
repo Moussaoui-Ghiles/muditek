@@ -134,13 +134,13 @@ export default function MudiAgentPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <Link href="#contact" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book a Discovery Audit
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
-              </Link>
+              </a>
               <Link href="#transformation" className="px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press">
                 See What Changes
               </Link>

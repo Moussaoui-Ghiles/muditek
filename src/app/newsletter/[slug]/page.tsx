@@ -5,6 +5,7 @@ import { neon } from "@neondatabase/serverless";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { TldrBox } from "@/components/tldr-box";
+import { normalizePublicIssueHtml } from "@/lib/newsletter-html";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
 
 export const revalidate = 3600;
@@ -246,7 +247,7 @@ export default async function IssuePage({
         <TldrBox tldr={issue.stats?.tldr} />
         <article
           className="bg-white text-black rounded-lg overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: issue.html }}
+          dangerouslySetInnerHTML={{ __html: normalizePublicIssueHtml(issue.html) }}
         />
 
         <div className="mt-14 pt-10 border-t border-[#232326]">

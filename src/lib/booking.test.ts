@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { BOOKING_URL } from "./booking";
 
 const OBSOLETE_BOOKING_PATTERN = /outlook\.office\.com\/bookwithme/i;
+const IN_PAGE_BOOKING_PATTERN = /href=["']#contact["'][^>]*>[\s\S]{0,300}\b(?:book|call|demo|discovery)\b/i;
 
 function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -26,5 +27,13 @@ describe("public booking destination", () => {
     );
 
     expect(obsoleteFiles).toEqual([]);
+  });
+
+  it("does not disguise an in-page anchor as a booking action", () => {
+    const brokenCtas = sourceFiles(join(process.cwd(), "src/app")).filter((path) =>
+      IN_PAGE_BOOKING_PATTERN.test(readFileSync(path, "utf8")),
+    );
+
+    expect(brokenCtas).toEqual([]);
   });
 });

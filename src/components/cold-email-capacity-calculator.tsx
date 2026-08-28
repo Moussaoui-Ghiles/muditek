@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { Calculator, RotateCcw } from "lucide-react";
-import { trackToolCompletion } from "@/components/acquisition-tracking";
+import { trackEvent } from "@/lib/client-analytics";
 import {
   calculateColdEmailCapacity,
   type ColdEmailCapacityInputs,
@@ -146,8 +146,21 @@ export function ColdEmailCapacityCalculator() {
     setCostsEntered(COST_FIELDS.some((field) => values[field.key].trim() !== ""));
     setResult(next);
     setError("");
-    trackToolCompletion("cold-email-capacity-calculator");
-    window.requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    trackEvent("tool_completed", {
+      asset_slug: "cold-email-capacity-calculator",
+      lane: "outbound",
+      placement: "tool-result",
+      path: window.location.pathname,
+    });
+    window.requestAnimationFrame(() => {
+      const output = resultRef.current;
+      if (!output) return;
+      output.focus({ preventScroll: true });
+      output.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      });
+    });
   }
 
   function loadWorkedExample() {

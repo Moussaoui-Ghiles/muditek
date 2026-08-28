@@ -99,6 +99,7 @@ The audit rejects:
 - `explicit` claims without owner or proprietor language in the saved evidence text;
 - public emails without `published_unverified`;
 - emails without a source URL;
+- emails that do not appear in the saved evidence for the cited source page;
 - generated-looking or malformed email values;
 - unsupported status values.
 

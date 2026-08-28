@@ -31,7 +31,7 @@ Audit the reviewed file:
 node scripts/audit-results.mjs --input=run/owners.csv
 ```
 
-The audit rejects unsupported owner states, missing owner evidence, unrelated evidence domains, malformed email addresses, and email claims that are not labelled `published_unverified`.
+The audit rejects unsupported owner states, missing owner evidence, unrelated evidence domains, malformed email addresses, email claims that are not labelled `published_unverified`, and addresses that do not appear in the saved source-page evidence.
 
 ## Boundaries
 

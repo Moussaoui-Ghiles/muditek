@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { describe, it } from "vitest";
 import { auditRows } from "../../content/skills/google-maps-owner-email-finder/scripts/audit-results.mjs";
 import {
+  csvCell,
   isUnsafeIp,
   normalizeWebsite,
   parseCsv,
   parsePageEvidence,
+  readResponseBody,
   readCompanies,
 } from "../../content/skills/google-maps-owner-email-finder/scripts/collect-website-evidence.mjs";
 
@@ -68,17 +70,40 @@ describe("Google Maps owner and email finder package", () => {
       { rowNumber: 2, companyName: "Example", website: "https://example.com" },
     ]);
     assert.equal(parseCsv('name,notes\n"Example, Inc.","Said ""hello"""\n')[1][0], "Example, Inc.");
+    assert.equal(csvCell("=1+1"), "'=1+1");
+    assert.equal(csvCell("Normal Roofing"), "Normal Roofing");
+  });
+
+  it("stops reading an oversized chunked response", async () => {
+    const response = new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode("1234"));
+        controller.enqueue(new TextEncoder().encode("5678"));
+        controller.close();
+      },
+    }));
+
+    await assert.rejects(() => readResponseBody(response, 6), /larger than 2 MB/);
   });
 
   it("audits valid, unknown and invalid owner rows", () => {
     const headers = [
       "company_name", "website", "owner_name", "owner_role", "owner_status", "evidence_url", "evidence_text", "public_email", "email_status", "email_source_url", "notes",
     ];
+    const emailEvidence = new Map([
+      ["https://example.com/contact", new Set(["jane@example.org"])],
+    ]);
     assert.deepEqual(auditRows([
       headers,
       ["Example Roofing", "https://example.com", "Jane Smith", "Owner", "explicit", "https://example.com/about", "Jane Smith is the owner.", "jane@example.org", "published_unverified", "https://example.com/contact", ""],
       ["Unknown Roofing", "https://unknown.example", "", "", "unknown", "", "", "", "", "", "No evidence"],
-    ]), []);
+    ], emailEvidence), []);
+
+    const fabricatedEmail = auditRows([
+      headers,
+      ["Example Roofing", "https://example.com", "Jane Smith", "Owner", "explicit", "https://example.com/about", "Jane Smith is the owner.", "guessed@example.org", "published_unverified", "https://example.com/contact", ""],
+    ], emailEvidence);
+    assert.ok(fabricatedEmail.some((issue) => issue.includes("does not appear in the saved source-page evidence")));
 
     const invalidIssues = auditRows([
       headers,

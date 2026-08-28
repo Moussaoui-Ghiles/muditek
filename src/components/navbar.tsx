@@ -43,20 +43,20 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden xl:flex items-center gap-10">
           <Link href="/" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
             Home
           </Link>
 
           {/* Solutions dropdown */}
           <div className="relative group">
-            <button className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
+            <button aria-haspopup="true" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
               Solutions
               <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity mt-[1px]">
                 <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <div className="absolute top-full left-0 mt-3 w-72 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
+            <div className="absolute top-full left-0 mt-3 w-72 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
               <Link href="/mudiagent" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
                 mudiAgent
               </Link>
@@ -98,7 +98,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop CTA + user */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           {isLoaded && isSignedIn && (
             <UserButton
               appearance={{
@@ -137,7 +137,7 @@ export function Navbar() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden relative z-50 w-10 h-10 flex flex-col items-center justify-center gap-[5px]"
+          className="xl:hidden relative z-50 w-10 h-10 flex flex-col items-center justify-center gap-[5px]"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
         >
@@ -149,11 +149,11 @@ export function Navbar() {
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-background/95 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+        className={`fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-background/95 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] xl:hidden ${
           mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
       >
-        <div className="flex flex-col items-start justify-center h-full px-10 gap-1">
+        <div className="flex min-h-full flex-col items-start justify-start px-10 py-28 gap-1">
           <Link
             href="/"
             className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
@@ -166,6 +166,7 @@ export function Navbar() {
 
           <button
             onClick={() => setSolutionsOpen(!solutionsOpen)}
+            aria-expanded={solutionsOpen}
             className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex items-center gap-3 ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             }`}
@@ -176,7 +177,7 @@ export function Navbar() {
               <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-64 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
+          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-80 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
             <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
               <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
               <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>

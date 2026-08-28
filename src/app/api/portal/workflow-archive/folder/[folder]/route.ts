@@ -28,7 +28,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ folder: st
   const zip = new JSZip();
   const used = new Set<string>();
   for (const it of items) {
-    let base = safeFileName(it.title || it.slug);
+    const base = safeFileName(it.title || it.slug);
     let name = `${base}.json`;
     let i = 2;
     while (used.has(name)) {

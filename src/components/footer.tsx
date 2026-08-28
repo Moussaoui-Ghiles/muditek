@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="w-full border-t border-white/[0.06] bg-background" role="contentinfo">
       <div className="max-w-[1500px] mx-auto px-6 md:px-12 py-16">
         {/* Newsletter row */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-12 border-b border-white/[0.06]">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 pb-12 border-b border-white/[0.06]">
           <div className="shrink-0">
             <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground/70 block mb-1">
               B2B Agents
@@ -23,7 +23,7 @@ export function Footer() {
             buttonText="Subscribe"
             successMessage="You're in."
             compact
-            className="w-full md:max-w-md"
+            className="w-full lg:max-w-md"
           />
         </div>
 

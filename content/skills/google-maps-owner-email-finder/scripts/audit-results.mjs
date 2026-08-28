@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { readFile, readdir } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseCsv } from "./collect-website-evidence.mjs";
 
@@ -51,7 +51,47 @@ function matchesCompanyWebsite(citedUrl, website) {
   return Boolean(citedHost && websiteHost && citedHost === websiteHost);
 }
 
-export function auditRows(rows) {
+function normalizedUrl(value) {
+  try {
+    return new URL(value).toString();
+  } catch {
+    return "";
+  }
+}
+
+export async function loadEmailEvidence(inputPath) {
+  const evidence = new Map();
+  const evidenceDir = resolve(dirname(inputPath), "evidence");
+  let entries = [];
+  try {
+    entries = await readdir(evidenceDir, { withFileTypes: true });
+  } catch {
+    return evidence;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.toLowerCase().endsWith(".json")) continue;
+    try {
+      const document = JSON.parse(await readFile(resolve(evidenceDir, entry.name), "utf8"));
+      for (const page of Array.isArray(document.pages) ? document.pages : []) {
+        const url = normalizedUrl(page?.url ?? "");
+        if (!url) continue;
+        const emails = new Set(
+          (Array.isArray(page?.emails) ? page.emails : [])
+            .map((email) => String(email).trim().toLowerCase())
+            .filter(Boolean),
+        );
+        evidence.set(url, emails);
+      }
+    } catch {
+      // Invalid evidence files cannot support a result row.
+    }
+  }
+
+  return evidence;
+}
+
+export function auditRows(rows, emailEvidence = new Map()) {
   const issues = [];
   const header = rows[0] ?? [];
   const normalized = header.map((value) => value.trim());
@@ -93,6 +133,12 @@ export function auditRows(rows) {
       if (emailStatus !== "published_unverified") issues.push(`Row ${line}: public email must be published_unverified`);
       if (!validPublicUrl(emailSource)) issues.push(`Row ${line}: public email needs a source URL`);
       else if (!matchesCompanyWebsite(emailSource, website)) issues.push(`Row ${line}: email source URL must match the company website`);
+      else {
+        const publishedEmails = emailEvidence.get(normalizedUrl(emailSource));
+        if (!publishedEmails?.has(email.toLowerCase())) {
+          issues.push(`Row ${line}: public email does not appear in the saved source-page evidence`);
+        }
+      }
     } else if (emailStatus || emailSource) {
       issues.push(`Row ${line}: email status or source exists without an email`);
     }
@@ -103,9 +149,10 @@ export function auditRows(rows) {
 async function main() {
   const input = arg("--input");
   if (!input) throw new Error("Use --input=owners.csv.");
-  const rows = parseCsv(await readFile(resolve(input), "utf8"));
+  const inputPath = resolve(input);
+  const rows = parseCsv(await readFile(inputPath, "utf8"));
   if (rows.length < 2) throw new Error("Owners CSV has no result rows.");
-  const issues = auditRows(rows);
+  const issues = auditRows(rows, await loadEmailEvidence(inputPath));
   if (issues.length > 0) {
     process.stderr.write(`${issues.join("\n")}\n`);
     process.exitCode = 1;

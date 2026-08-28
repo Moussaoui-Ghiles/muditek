@@ -71,8 +71,9 @@ export function parseCsv(text) {
   return rows;
 }
 
-function csv(value) {
-  const text = String(value ?? "");
+export function csvCell(value) {
+  const raw = String(value ?? "");
+  const text = /^[\t\r ]*[=+\-@]/.test(raw) ? `'${raw}` : raw;
   return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
@@ -194,6 +195,31 @@ async function assertPublicHost(url) {
   }
 }
 
+export async function readResponseBody(response, maximumBytes = MAX_RESPONSE_BYTES) {
+  if (!response.body) return Buffer.alloc(0);
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let total = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maximumBytes) {
+        await reader.cancel("Response exceeded the configured limit.");
+        throw new Error("Page is larger than 2 MB.");
+      }
+      chunks.push(Buffer.from(value));
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return Buffer.concat(chunks, total);
+}
+
 async function fetchHtml(initialUrl) {
   let current = normalizeWebsite(initialUrl.toString());
   for (let redirect = 0; redirect <= MAX_REDIRECTS; redirect += 1) {
@@ -221,8 +247,7 @@ async function fetchHtml(initialUrl) {
     }
     const declaredLength = Number(response.headers.get("content-length") ?? 0);
     if (declaredLength > MAX_RESPONSE_BYTES) throw new Error("Page is larger than 2 MB.");
-    const buffer = Buffer.from(await response.arrayBuffer());
-    if (buffer.byteLength > MAX_RESPONSE_BYTES) throw new Error("Page is larger than 2 MB.");
+    const buffer = await readResponseBody(response);
     return { html: buffer.toString("utf8"), url: current.toString() };
   }
   throw new Error("Too many redirects.");
@@ -395,7 +420,7 @@ async function main() {
       result.error,
     ]);
   }
-  await writeFile(resolve(outputDir, "evidence-index.csv"), `${indexRows.map((row) => row.map(csv).join(",")).join("\n")}\n`, "utf8");
+  await writeFile(resolve(outputDir, "evidence-index.csv"), `${indexRows.map((row) => row.map(csvCell).join(",")).join("\n")}\n`, "utf8");
 
   const collected = results.filter((result) => result.status === "collected").length;
   process.stdout.write(`${JSON.stringify({ input: basename(input), companies: companies.length, collected, failed: companies.length - collected, outputDir }, null, 2)}\n`);

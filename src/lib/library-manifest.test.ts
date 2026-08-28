@@ -9,6 +9,7 @@ import {
 const CORE_SKILLS = [
   "buyer-signal-list-research",
   "cold-offer-review",
+  "google-maps-owner-email-finder",
   "outbound-funnel-economics",
 ];
 
@@ -26,6 +27,7 @@ const ACCOUNT_SKILLS = [
 ];
 
 const APPROVED_PLAYBOOKS = [
+  "10000-cold-email-system",
   "agentic-sdr-setup-guide",
   "ai-data-agent-guide",
   "ai-marketing-team-playbook",
@@ -52,9 +54,10 @@ describe("library publication manifest", () => {
     expect(skills.filter((item) => item.access === "account").map((item) => item.slug).sort()).toEqual(ACCOUNT_SKILLS);
   });
 
-  it("publishes the four browser-side tools and no provider-backed tools", () => {
+  it("publishes the five browser-side tools and no provider-backed tools", () => {
     expect(getPublishedLibraryItems("tool").map((item) => item.slug).sort()).toEqual([
       "appointment-setting-quote-calculator",
+      "cold-email-capacity-calculator",
       "csv-list-quality-auditor",
       "outbound-brief-builder",
       "outbound-funnel-economics-calculator",
@@ -65,11 +68,11 @@ describe("library publication manifest", () => {
     expect(getPublishedLibraryItems("playbook").map((item) => item.slug).sort()).toEqual(APPROVED_PLAYBOOKS);
   });
 
-  it("publishes exactly 13 skills, 16 playbooks, and four tools", () => {
-    expect(getPublishedLibraryItems("skill")).toHaveLength(13);
-    expect(getPublishedLibraryItems("playbook")).toHaveLength(16);
-    expect(getPublishedLibraryItems("tool")).toHaveLength(4);
-    expect(getPublishedLibraryItems()).toHaveLength(33);
+  it("publishes exactly 14 skills, 17 playbooks, and five tools", () => {
+    expect(getPublishedLibraryItems("skill")).toHaveLength(14);
+    expect(getPublishedLibraryItems("playbook")).toHaveLength(17);
+    expect(getPublishedLibraryItems("tool")).toHaveLength(5);
+    expect(getPublishedLibraryItems()).toHaveLength(36);
   });
 
   it("keeps archived and redirected assets out of publication", () => {

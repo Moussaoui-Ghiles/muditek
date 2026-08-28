@@ -7,9 +7,11 @@ import { AcquisitionPageView } from "@/components/acquisition-tracking";
 import { JsonLd } from "@/components/json-ld";
 import { CommercialNextStep } from "@/components/library/library-collection";
 import { CsvListQualityAuditor, OutboundBriefBuilder, OutboundFunnelCalculator } from "@/components/library/public-tools";
+import { ColdEmailCapacityCalculator } from "@/components/cold-email-capacity-calculator";
 import { formatLibraryDate, getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
 
 const TOOL_COMPONENTS = {
+  "cold-email-capacity-calculator": ColdEmailCapacityCalculator,
   "outbound-funnel-economics-calculator": OutboundFunnelCalculator,
   "csv-list-quality-auditor": CsvListQualityAuditor,
   "outbound-brief-builder": OutboundBriefBuilder,

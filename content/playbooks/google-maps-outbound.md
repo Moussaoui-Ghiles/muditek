@@ -67,6 +67,8 @@ Use the [Google Maps List Builder](/skills/google-maps-list-builder) when the ex
 
 Download the [Google Maps Owner and Email Finder](/skills/google-maps-owner-email-finder), unzip it and open the folder in Claude Code or Codex.
 
+The code is also available in the [public GitHub repository](https://github.com/Moussaoui-Ghiles/google-maps-owner-email-finder).
+
 Run:
 
 ```bash

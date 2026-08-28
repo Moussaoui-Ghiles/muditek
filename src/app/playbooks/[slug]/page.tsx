@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { AcquisitionPageView } from "@/components/acquisition-tracking";
 import { CommercialNextStep } from "@/components/library/library-collection";
+import { ColdEmailCapacityCalculator } from "@/components/cold-email-capacity-calculator";
 import { formatLibraryDate, getLibraryItem, getPublishedLibraryItems } from "@/lib/library-manifest";
 import { renderLibraryMarkdown, type ArticleHeading } from "@/lib/library-markdown";
 
@@ -52,6 +53,7 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
   const contentHref = `/api/library/playbooks/${encodeURIComponent(item.slug)}`;
   const url = `https://muditek.com/playbooks/${item.slug}`;
   const isOutboundDiagnostic = item.slug === "outbound-failure-diagnostic";
+  const isColdEmailCapacityGuide = item.slug === "10000-cold-email-system";
   const diagnosticHeadings = isOutboundDiagnostic
     ? headings.filter((heading) => /^[1-6]\./.test(heading.label))
     : [];
@@ -174,6 +176,11 @@ export default async function PlaybookPage({ params }: { params: Promise<{ slug:
                       ))}
                     </ol>
                   </details>
+                ) : null}
+                {isColdEmailCapacityGuide ? (
+                  <div className="mb-12">
+                    <ColdEmailCapacityCalculator />
+                  </div>
                 ) : null}
                 <article className="library-prose [&_h2]:scroll-mt-28" dangerouslySetInnerHTML={{ __html: markdownHtml }} />
               </>

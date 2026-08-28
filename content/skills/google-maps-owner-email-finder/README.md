@@ -2,6 +2,8 @@
 
 Research owner claims and public website emails for a local-business CSV without a paid API.
 
+Full guide: [muditek.com/playbooks/google-maps-outbound](https://muditek.com/playbooks/google-maps-outbound)
+
 The collector visits the supplied company website, saves relevant page evidence, and leaves the owner decision for review. Unsupported owners stay `unknown`. Website emails stay `published_unverified`.
 
 ## Requirements

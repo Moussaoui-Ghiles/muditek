@@ -4,9 +4,9 @@ import { getPublishedLibraryItems } from "../lib/library-manifest";
 import { libraryCanonicalPath } from "../lib/publication-index";
 
 describe("sitemap publication control", () => {
-  it("contains exactly 11 public pages and 33 published assets", () => {
-    expect(getManifestSitemapEntries()).toHaveLength(33);
-    expect(sitemap()).toHaveLength(44);
+  it("contains exactly 11 public pages and 36 published assets", () => {
+    expect(getManifestSitemapEntries()).toHaveLength(36);
+    expect(sitemap()).toHaveLength(47);
   });
 
   it("includes every and only the manifest-approved library asset", () => {

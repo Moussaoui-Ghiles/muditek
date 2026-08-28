@@ -17,6 +17,7 @@ const EXPECTED_SKILL_SLUGS = [
   "list-builder",
   "list-expander",
   "google-maps-list-builder",
+  "google-maps-owner-email-finder",
   "list-quality-scorecard",
   "icp-prompt-builder",
   "audience-content-os",
@@ -29,6 +30,7 @@ const EXPECTED_SKILL_SLUGS = [
 const CORE_SKILLS = new Set([
   "cold-offer-review",
   "buyer-signal-list-research",
+  "google-maps-owner-email-finder",
   "outbound-funnel-economics",
 ]);
 

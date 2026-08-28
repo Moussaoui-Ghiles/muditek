@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingIncludes: {
+    "/*": [
+      "./content/playbooks/10000-cold-email-system.md",
+      "./content/playbooks/google-maps-outbound.md",
+      "./content/skills/google-maps-owner-email-finder/**/*",
+    ],
     "/portal/playbooks/[slug]": [
       "./content/playbooks/**/*.html",
       "./content/downloads/playbooks/**/*",

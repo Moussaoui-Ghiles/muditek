@@ -12,24 +12,20 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { isAuthenticated } = await auth();
-  if (!isAuthenticated) {
-    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-  }
-
   const { slug } = await params;
   const skill = getPortalSkill(slug);
   if (!skill) {
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
-  const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
-  if (!user || !email) {
-    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-  }
+  const { isAuthenticated } = await auth();
+  const user = isAuthenticated ? await currentUser() : null;
+  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? null;
 
   if (!skill.is_free) {
+    if (!user || !email) {
+      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+    }
     const access = await buildAssetAccess(email, user.id);
     if (!access.isMudikit && !access.isAdmin) {
       return NextResponse.json({ error: "MudiKit required." }, { status: 403 });
@@ -41,21 +37,23 @@ export async function GET(
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
   }
 
-  recordUsageEvent(getDb(), {
-    email,
-    clerkUserId: user.id,
-    event: "skill_downloaded",
-    path: `/api/portal/skills/${slug}/download`,
-    resourceSlug: slug,
-    metadata: { title: skill.name },
-  }).catch(() => {});
+  if (user && email) {
+    recordUsageEvent(getDb(), {
+      email,
+      clerkUserId: user.id,
+      event: "skill_downloaded",
+      path: `/api/portal/skills/${slug}/download`,
+      resourceSlug: slug,
+      metadata: { title: skill.name },
+    }).catch(() => {});
+  }
 
   const body = createTar(files);
   return new NextResponse(new Uint8Array(body), {
     headers: {
       "Content-Type": "application/x-tar",
       "Content-Disposition": `attachment; filename="${slug}.tar"`,
-      "Cache-Control": "private, max-age=60",
+      "Cache-Control": skill.is_free ? "public, max-age=300" : "private, max-age=60",
     },
   });
 }

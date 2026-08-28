@@ -61,7 +61,7 @@ Clean the file before research:
 3. Confirm the website belongs to the listed company and location.
 4. Keep failed and unknown websites in the file.
 
-Use the [Google Maps List Builder](/skills/google-maps-list-builder) when the export needs normalization or company-fit review.
+Normalize and review the Maps export before starting owner research.
 
 ## 2. Download and run the collector
 
@@ -229,7 +229,7 @@ Then manually open every claimed-owner page and check:
 - the email appears on the cited page;
 - no email is called verified.
 
-After any separate contact enrichment or verification, run the [CSV List Quality Auditor](/tools/csv-list-quality-auditor) before sending.
+After any separate contact enrichment or verification, run your normal CSV list-quality audit before sending.
 
 ## Completion checklist
 

@@ -85,6 +85,22 @@ const EXPECTED_SKILLS = [
       "scripts/verify-website.ts",
     ],
   },
+  {
+    slug: "google-maps-owner-email-finder",
+    title: "Google Maps Owner Email Finder",
+    files: [
+      "SKILL.md",
+      ".gitignore",
+      "examples/example.md",
+      "LICENSE",
+      "README.md",
+      "references/review-rules.md",
+      "scripts/audit-results.mjs",
+      "scripts/collect-website-evidence.mjs",
+      "templates/businesses-input.csv",
+      "templates/owners-output.csv",
+    ],
+  },
 ] as const;
 
 describe("shipped outbound skill bundles", () => {

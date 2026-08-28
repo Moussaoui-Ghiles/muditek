@@ -1,6 +1,7 @@
 ---
 name: google-maps-owner-email-finder
 description: Research owner evidence and public website emails for a local-business CSV without paid APIs, then return a reviewable result that preserves unknowns.
+is_free: true
 ---
 
 # Google Maps Owner and Email Finder

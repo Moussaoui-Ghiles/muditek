@@ -103,7 +103,7 @@ The example assumes the sequence sends 2.5 messages per contact on average. The 
 
 The arithmetic also produces 220 positive replies, 55 meetings booked, 38.5 meetings held, 30.8 qualified meetings and 6.16 projected deals. These are worked numbers, not results or benchmarks. Replace every input with your own limits and rates.
 
-Use the [Outbound Funnel Economics Calculator](/tools/outbound-funnel-economics-calculator) once a real campaign cohort has matured.
+Use the [Outbound Funnel Economics workflow](/portal/skills/outbound-funnel-economics) once a real campaign cohort has matured.
 
 Do not buy the system until you can answer:
 
@@ -222,7 +222,7 @@ For every list build:
 6. Enrich people only at approved companies.
 7. Verify the contact path under one written standard.
 8. Keep failed and unknown records visible.
-9. Run the [CSV List Quality Auditor](/tools/csv-list-quality-auditor) before upload.
+9. Run your normal CSV list-quality audit before upload.
 
 Track list supply in one table:
 

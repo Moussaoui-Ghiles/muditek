@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { INDUSTRY_SLUGS } from "@/lib/industries";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
+import { PUBLIC_LIBRARY_PATHS } from "@/lib/public-library";
 
 const BASE = "https://muditek.com";
 
@@ -12,13 +13,15 @@ export const dynamic = "force-dynamic";
 // per-page date. Avoids emitting a false "everything updated right now" signal.
 const SITE_UPDATED = new Date("2026-05-04");
 
-const MARKETING: Array<{
+type SitemapEntry = {
   path: string;
   priority: number;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   // Real per-page dateModified, where the page declares one in its JSON-LD.
   lastModified?: string;
-}> = [
+};
+
+const MARKETING: SitemapEntry[] = [
   { path: "", priority: 1, changeFrequency: "weekly" },
   { path: "/mudiagent", priority: 0.9, changeFrequency: "monthly" },
   { path: "/revenue-leak-audit", priority: 0.9, changeFrequency: "monthly" },
@@ -31,6 +34,12 @@ const MARKETING: Array<{
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
+  ...PUBLIC_LIBRARY_PATHS.map((path) => ({
+    path,
+    priority: path === "/library" ? 0.8 : 0.7,
+    changeFrequency: "monthly" as const,
+    lastModified: "2026-08-28",
+  })),
 ];
 
 const MUDIKIT_MARKETING: typeof MARKETING = [

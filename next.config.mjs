@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingIncludes: {
+    "/*": [
+      "./content/skills/**/*",
+      "./content/public-skills/**/*",
+    ],
     "/skills/[slug]": [
       "./content/skills/**/*",
       "./content/public-skills/**/*",

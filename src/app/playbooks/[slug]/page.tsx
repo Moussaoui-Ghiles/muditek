@@ -8,6 +8,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { ColdEmailCapacityCalculator } from "@/components/cold-email-capacity-calculator";
+import { AssetEmailForm } from "@/components/asset-email-form";
 import { BOOKING_URL } from "@/lib/booking";
 import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPublicPlaybook, PUBLIC_PLAYBOOKS } from "@/lib/public-library";
@@ -150,6 +151,14 @@ export default async function PublicPlaybookPage({
                 loading="lazy"
               />
             )}
+          </div>
+        </section>
+
+        <section className="border-t border-white/[0.06] py-14">
+          <div className="mx-auto w-full max-w-[900px] px-6 md:px-12">
+            <h2 className="text-2xl font-black tracking-[-0.03em] md:text-3xl">Want this playbook in your inbox?</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/60">I will send you the link plus the systems I publish next.</p>
+            <AssetEmailForm slug={playbook.slug} label="" className="mt-5 max-w-md" />
           </div>
         </section>
 

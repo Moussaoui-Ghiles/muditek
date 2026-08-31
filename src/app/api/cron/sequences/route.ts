@@ -39,6 +39,44 @@ export async function GET(request: Request) {
 
   const sql = getDb();
 
+  // Behavior-based segment recompute (opt-in via env until the COLD purge is done):
+  // HOT = clicked in 90 days, WARM = opened in 90 days, COLD = neither.
+  let segmentsRecomputed = 0;
+  if (process.env.SEGMENT_RECOMPUTE_ENABLED === "true") {
+    const updated = await sql`
+      WITH engagement AS (
+        SELECT
+          subscriber_id,
+          bool_or(event = 'clicked') AS clicked,
+          bool_or(event = 'opened') AS opened
+        FROM newsletter_events
+        WHERE ts > NOW() - INTERVAL '90 days'
+          AND subscriber_id IS NOT NULL
+        GROUP BY subscriber_id
+      )
+      UPDATE newsletter_subscribers s
+      SET segment = CASE
+        WHEN e.clicked THEN 'HOT'
+        WHEN e.opened THEN 'WARM'
+        ELSE 'COLD'
+      END
+      FROM (
+        SELECT s2.id, COALESCE(e2.clicked, false) AS clicked, COALESCE(e2.opened, false) AS opened
+        FROM newsletter_subscribers s2
+        LEFT JOIN engagement e2 ON e2.subscriber_id = s2.id
+        WHERE s2.status = 'active'
+      ) e
+      WHERE s.id = e.id
+        AND s.segment IS DISTINCT FROM (CASE
+          WHEN e.clicked THEN 'HOT'
+          WHEN e.opened THEN 'WARM'
+          ELSE 'COLD'
+        END)
+      RETURNING s.id
+    `;
+    segmentsRecomputed = updated.length;
+  }
+
   const allLeads = await sql`
     SELECT
       lower(s.email) AS email,
@@ -109,5 +147,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ processed: allLeads.length, sent, skipped, errors });
+  return NextResponse.json({ processed: allLeads.length, sent, skipped, errors, segmentsRecomputed });
 }

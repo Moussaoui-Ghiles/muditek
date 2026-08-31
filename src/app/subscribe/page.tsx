@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/logo/logo";
 
@@ -10,7 +11,9 @@ const TOPICS = [
   { value: "solo-operator", label: "Solo operator playbooks" },
 ];
 
-export default function SubscribePage() {
+function SubscribeForm() {
+  const searchParams = useSearchParams();
+  const sourceParam = (searchParams.get("src") || searchParams.get("source") || "subscribe-page").slice(0, 50);
   const [email, setEmail] = useState("");
   const [topics, setTopics] = useState<string[]>(TOPICS.map((t) => t.value));
   const [submitting, setSubmitting] = useState(false);
@@ -29,7 +32,7 @@ export default function SubscribePage() {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, topics, source: "subscribe-page" }),
+        body: JSON.stringify({ email, topics, source: sourceParam }),
       });
       const data = await res.json();
       if (res.ok) setDone(true);
@@ -131,5 +134,13 @@ export default function SubscribePage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function SubscribePage() {
+  return (
+    <Suspense fallback={null}>
+      <SubscribeForm />
+    </Suspense>
   );
 }

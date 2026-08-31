@@ -1,4 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { verifyAssetDownloadToken } from "@/lib/asset-email";
 import { NextResponse } from "next/server";
 import { createTar } from "@/lib/tar";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
@@ -9,10 +10,15 @@ import { recordUsageEvent } from "@/lib/usage-analytics";
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+  const url = new URL(req.url);
+  const tokenEmail = (url.searchParams.get("e") ?? "").trim().toLowerCase();
+  const token = url.searchParams.get("t") ?? "";
+  const hasValidToken =
+    tokenEmail.length > 0 && verifyAssetDownloadToken(slug, tokenEmail, token);
   const skill = getPortalSkill(slug);
   if (!skill) {
     return NextResponse.json({ error: "Skill not found." }, { status: 404 });
@@ -22,7 +28,7 @@ export async function GET(
   const user = isAuthenticated ? await currentUser() : null;
   const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? null;
 
-  if (!skill.is_free) {
+  if (!skill.is_free && !hasValidToken) {
     if (!user || !email) {
       return NextResponse.json({ error: "Sign in required." }, { status: 401 });
     }

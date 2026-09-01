@@ -2,16 +2,16 @@
 title: Lookalike Company Finder
 promise: The n8n workflow that finds the companies your lead database misses, verifies them on their own websites, and hands Smartlead a draft campaign for your review. 77 nodes, one file, import in one click.
 mode: page
-asset: /downloads/n8n/lookalike-company-finder.json
-button: Download the workflow
+asset: https://github.com/Moussaoui-Ghiles/n8n-workflows/tree/master/lookalike-company-finder
+button: Open the workflow on GitHub
 email_subject: Your lookalike company finder (n8n workflow)
 ---
 
 Here is the workflow, as promised.
 
-[Download the workflow]({{ASSET_URL}})
+[Open the workflow on GitHub]({{ASSET_URL}})
 
-Import it in n8n: Workflows, then Import from file. It is also on GitHub with the full README, the intake format, and the safety gates: https://github.com/Moussaoui-Ghiles/n8n-workflows/tree/master/lookalike-company-finder
+The README there has the intake format, the environment variables, and the safety gates. To import: copy the workflow.json, then in n8n go to Workflows and Import from file.
 
 What it does. You give it your ICP and three to five companies you already know are a perfect fit. It learns how those companies are tagged and what their websites say, then finds the companies your database misses. It checks every website before it looks for a person, finds the right people, removes bad emails, writes a personal first line for each one, and builds the campaign in Smartlead as a draft. Nothing sends until you approve it.
 

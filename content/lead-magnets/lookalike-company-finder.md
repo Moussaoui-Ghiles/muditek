@@ -20,10 +20,8 @@ Import it into n8n (Workflows, then Import from file), add your API keys from th
 
 Give it your ICP and three to five companies that already fit. It comes back with the companies your database misses, the right person at each one, verified emails, and a Smartlead campaign waiting for your approval.
 
-If you are looking for more qualified calls with your buyers, I can book them for you on a performance basis. Book a call and we see if it is a fit:
-
-[Book a call](https://calendly.com/biz-ghiless/30min)
-
 Ghiles
 
-P.S. Grab my agent skills here: https://muditek.com/portal/skills. Free signup, takes a minute.
+P.S. If you are looking for more qualified calls with your buyers, I can book them for you on a performance basis. [Book a call](https://calendly.com/biz-ghiless/30min) to see if it is a fit.
+
+P.P.S. Grab my agent skills here: https://muditek.com/portal/skills. Free signup, takes a minute.

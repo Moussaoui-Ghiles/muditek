@@ -30,6 +30,12 @@ export interface LeadMagnet {
   button: string;
   emailSubject: string;
   emailMarkdown: string;
+  /** Optional page copy. headline defaults to title, subhead to promise. */
+  headline: string;
+  subhead: string;
+  bullets: string[];
+  image: string | null;
+  imageAlt: string;
 }
 
 const MAGNET_DIR = join(process.cwd(), "content", "lead-magnets");
@@ -72,6 +78,14 @@ export function getLeadMagnet(slug: string): LeadMagnet | null {
     button: meta.button ?? "Open it",
     emailSubject: meta.email_subject ?? `Your ${meta.title}`,
     emailMarkdown: body,
+    headline: meta.headline ?? meta.title,
+    subhead: meta.subhead ?? meta.promise ?? "",
+    bullets: (meta.bullets ?? "")
+      .split("|")
+      .map((b) => b.trim())
+      .filter(Boolean),
+    image: meta.image ?? null,
+    imageAlt: meta.image_alt ?? meta.title,
   };
 }
 

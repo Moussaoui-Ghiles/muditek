@@ -1,6 +1,11 @@
 ---
 title: Lookalike Company Finder
-promise: The n8n workflow that finds the companies your lead database misses, verifies them on their own websites, and hands Smartlead a draft campaign for your review. 77 nodes, one file, import in one click.
+headline: The AI SDR that finds the companies your lead database misses
+subhead: Give it your ICP and a few best-fit companies. It finds similar companies, checks each website, and builds the campaign for review. The full 77-node n8n workflow from the post, free.
+bullets: Prospeo, Exa, and Parallel find companies like your best fits | GPT-5 Nano reads their websites and rejects weak fits | Live website checks before any contact search | Prospeo finds the right people, MillionVerifier removes bad emails | Claude writes a personal first line from company data | Smartlead gets the campaign as a draft. Nothing sends on its own.
+image: /lead-magnets/lookalike-company-finder.jpg
+image_alt: The 77-node n8n workflow canvas from the LinkedIn post
+promise: The n8n workflow that finds the companies your lead database misses, verifies them on their own websites, and hands Smartlead a draft campaign for your review.
 mode: page
 asset: https://github.com/Moussaoui-Ghiles/n8n-workflows/tree/master/lookalike-company-finder
 button: Open the workflow on GitHub

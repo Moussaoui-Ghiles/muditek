@@ -9,14 +9,17 @@ interface AssetEmailFormProps {
   className?: string;
 }
 
+type Unlocked = { assetUrl: string | null; button: string; mode: "page" | "email" };
+
 export function AssetEmailForm({
   slug,
-  label = "Or get it by email",
+  label = "",
   className = "",
 }: AssetEmailFormProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [unlocked, setUnlocked] = useState<Unlocked | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -29,19 +32,37 @@ export function AssetEmailForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to send.");
-      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to send.");
+      setUnlocked({
+        assetUrl: data.assetUrl ?? null,
+        button: data.button ?? "Open it",
+        mode: data.mode === "email" ? "email" : "page",
+      });
       setStatus("success");
-      trackEvent("asset_email_requested", { slug });
+      trackEvent("lead_magnet_optin", { slug });
     } catch (err) {
       setStatus("error");
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
     }
   }
 
-  if (status === "success") {
+  if (status === "success" && unlocked) {
+    if (unlocked.mode === "page" && unlocked.assetUrl) {
+      return (
+        <div className={className}>
+          <a
+            href={unlocked.assetUrl}
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-background"
+          >
+            {unlocked.button}
+          </a>
+          <p className="mt-3 text-sm font-semibold text-foreground/70">
+            A copy is also in your inbox.
+          </p>
+        </div>
+      );
+    }
     return (
       <p className={`text-sm font-bold uppercase tracking-[0.14em] text-primary ${className}`}>
         Sent. Check your inbox.
@@ -51,7 +72,9 @@ export function AssetEmailForm({
 
   return (
     <div className={className}>
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground/50">{label}</p>
+      {label ? (
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground/50">{label}</p>
+      ) : null}
       <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2">
         <input
           type="email"
@@ -65,9 +88,9 @@ export function AssetEmailForm({
         <button
           type="submit"
           disabled={status === "loading"}
-          className="inline-flex min-h-11 items-center justify-center rounded-[2px] border border-white/[0.14] px-5 py-2.5 text-sm font-black uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-12 items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {status === "loading" ? "Sending..." : "Email it to me"}
+          {status === "loading" ? "One second..." : "Get it"}
         </button>
       </form>
       {status === "error" && (

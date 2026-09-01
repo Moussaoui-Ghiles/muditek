@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getPortalSkill } from "@/lib/portal-skills";
-import { getPublicPlaybook } from "@/lib/public-library";
 import {
-  assetDownloadToken,
-  subscribeAndSendAsset,
-} from "@/lib/asset-email";
+  getLeadMagnet,
+  renderMagnetEmailHtml,
+  resolveMagnetAssetUrl,
+} from "@/lib/lead-magnets";
+import { sendMagnetEmail } from "@/lib/asset-email";
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
@@ -43,34 +43,31 @@ export async function POST(
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
-    const skill = getPortalSkill(slug);
-    const playbook = skill ? null : getPublicPlaybook(slug);
-    if (!skill && !playbook) {
+    const magnet = getLeadMagnet(slug);
+    if (!magnet) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    if (skill) {
-      const token = assetDownloadToken(slug, email);
-      await subscribeAndSendAsset({
-        email,
-        slug,
-        title: skill.name,
-        kind: "skill",
-        linkPath: `/api/portal/skills/${encodeURIComponent(slug)}/download?e=${encodeURIComponent(email)}&t=${token}`,
-      });
-    } else if (playbook) {
-      await subscribeAndSendAsset({
-        email,
-        slug,
-        title: playbook.title,
-        kind: "playbook",
-        linkPath: `/playbooks/${encodeURIComponent(slug)}`,
-      });
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muditek.com";
+    const assetUrl = resolveMagnetAssetUrl(magnet, email, baseUrl);
+    const bodyHtml = renderMagnetEmailHtml(magnet, assetUrl);
 
-    return NextResponse.json({ ok: true });
+    await sendMagnetEmail({
+      email,
+      slug: magnet.slug,
+      subject: magnet.emailSubject,
+      bodyHtml,
+      baseUrl,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      mode: magnet.mode,
+      assetUrl: magnet.mode === "page" ? assetUrl : null,
+      button: magnet.button,
+    });
   } catch (err) {
-    console.error("asset email error", err);
+    console.error("lead magnet delivery error", err);
     return NextResponse.json({ error: "Delivery failed" }, { status: 500 });
   }
 }

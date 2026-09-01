@@ -7,7 +7,6 @@ import { Navbar } from "@/components/navbar";
 import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPublicSkill, PUBLIC_SKILLS } from "@/lib/public-library";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
-import { AssetEmailForm } from "@/components/asset-email-form";
 
 export function generateStaticParams() {
   return PUBLIC_SKILLS.map((skill) => ({ slug: skill.slug }));
@@ -87,7 +86,6 @@ export default async function PublicSkillPage({ params }: { params: Promise<{ sl
               <p className="mt-3 text-4xl font-black">{bundle.fileCount} files</p>
               <p className="mt-4 text-sm leading-6 text-foreground/65">{bundle.is_free ? "Public download. No account required." : "Free. Get it by email below, or read it in the portal."}</p>
               <a href={bundle.downloadUrl} className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-background">Download package</a>
-              <AssetEmailForm slug={slug} className="mt-6 border-t border-white/[0.08] pt-6" />
             </aside>
           </div>
         </section>

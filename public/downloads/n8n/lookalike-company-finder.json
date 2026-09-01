@@ -1,0 +1,2661 @@
+{
+  "name": "AI SDR v2 — Seed-Led Market Discovery to Smartlead Draft",
+  "nodes": [
+    {
+      "id": "note-intake",
+      "name": "01 — Campaign intake",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1500,
+        -420
+      ],
+      "parameters": {
+        "content": "## 1. Campaign intake\n\nThe workflow is reusable. It never hardcodes an industry.\n\nRequired input:\n- ICP definition\n- Best-fit seed companies and domains\n- Target titles\n- Offer and approved message rules\n\nOptional hard limits:\n- Geography\n- Employee range\n- Excluded domains\n\nManual runs use dry_run=true and stop before paid APIs.",
+        "width": 1100,
+        "height": 720,
+        "color": 7
+      }
+    },
+    {
+      "id": "webhook-intake",
+      "name": "Campaign Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1330,
+        -90
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-sdr-v2-campaign-intake",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "manual-trigger",
+      "name": "Manual Dry Run",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1330,
+        150
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "sample-intake",
+      "name": "Sample Intake",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1130,
+        150
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{json:{\n  dry_run:true,\n  campaign_name:'AI SDR dry run',\n  icp:{definition:'Companies matching the supplied ICP',must_have:[],disqualifiers:[]},\n  seed_companies:[{name:'Example best fit',domain:'example.com'}],\n  geography:'United States',\n  employee_min:1,\n  employee_max:10000,\n  target_titles:['Founder','CEO'],\n  target_seniorities:['Founder/Owner','C-Suite'],\n  offer:'Approved campaign offer goes here',\n  voice_rules:'Use approved copy. Do not invent proof.',\n  excluded_domains:[],\n  lookalike_pages:3,\n  exa_results_per_seed:25,\n  parallel_match_limit:150\n}}];"
+      }
+    },
+    {
+      "id": "normalize-intake",
+      "name": "Normalize and Validate Intake",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        20
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const raw=$json.body ?? $json;\nconst seeds=(raw.seed_companies ?? raw.best_fit_companies ?? []).map((s)=>{\n  if(typeof s==='string') return {name:s,domain:s};\n  return {name:s.name ?? s.company ?? s.domain,domain:s.domain ?? s.website ?? ''};\n}).map((s)=>({...s,domain:String(s.domain).toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0]})).filter((s)=>s.domain);\nconst icp=typeof raw.icp==='string'?{definition:raw.icp}:raw.icp;\nconst missing=[];\nif(!icp?.definition) missing.push('icp.definition');\nif(!seeds.length) missing.push('seed_companies');\nif(!(raw.target_titles ?? []).length) missing.push('target_titles');\nif(!raw.offer) missing.push('offer');\nif(missing.length) throw new Error('Missing required intake fields: '+missing.join(', '));\nreturn [{json:{\n  run_id:raw.run_id ?? ('ai-sdr-'+Date.now()),\n  dry_run:raw.dry_run===true,\n  campaign_name:raw.campaign_name ?? 'AI SDR campaign',\n  icp,\n  seeds,\n  geography:raw.geography ?? '',\n  employee_min:Number(raw.employee_min ?? 1),\n  employee_max:Number(raw.employee_max ?? 100000),\n  target_titles:raw.target_titles,\n  target_seniorities:raw.target_seniorities ?? ['Founder/Owner','C-Suite','Partner','Vice President','Head','Director'],\n  offer:raw.offer,\n  voice_rules:raw.voice_rules ?? 'Use only supplied facts. Keep messages concise.',\n  approved_sequence:raw.approved_sequence ?? null,\n  excluded_domains:(raw.excluded_domains ?? []).map((d)=>String(d).toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0]),\n  lookalike_pages:Math.min(Number(raw.lookalike_pages ?? 3),10),\n  exa_results_per_seed:Math.min(Number(raw.exa_results_per_seed ?? 25),100),\n  parallel_match_limit:Math.min(Number(raw.parallel_match_limit ?? 150),500),\n  smartlead_campaign_id:raw.smartlead_campaign_id ?? null,\n  review_webhook_url:raw.review_webhook_url ?? ''\n}}];"
+      }
+    },
+    {
+      "id": "if-dry-run",
+      "name": "Dry Run?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -660,
+        20
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dry-run",
+              "leftValue": "={{ $json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "dry-run-summary",
+      "name": "Dry Run Complete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -430,
+        190
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{json:{status:'DRY_RUN_OK',message:'Input contract is valid. No API calls were made.',campaign:$json.campaign_name,seed_count:$json.seeds.length,icp:$json.icp.definition}}];"
+      }
+    },
+    {
+      "id": "note-discovery",
+      "name": "02 — Seed-led market discovery",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -430,
+        -650
+      ],
+      "parameters": {
+        "content": "## 2. Learn the market from best-fit companies\n\nThe seed companies are not examples. They are the discovery mechanism.\n\nThe workflow:\n1. Reads how each seed appears in Prospeo.\n2. Expands through Prospeo Lookalike, Exa Find Similar, and Parallel Entity Search.\n3. Reads each candidate website.\n4. Uses a cheap model to keep only plausible ICP fits.\n\nProspeo pacing: HTTP nodes run in small batches. Keep the account-wide limit near 2 requests/second.",
+        "width": 1550,
+        "height": 1220,
+        "color": 7
+      }
+    },
+    {
+      "id": "expand-seeds",
+      "name": "Expand Seed Companies",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -430,
+        -40
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg=$json;\nreturn cfg.seeds.map((seed)=>({json:{...cfg,seed}}));"
+      }
+    },
+    {
+      "id": "prospeo-fingerprint",
+      "name": "Prospeo — Fingerprint Seeds",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -190,
+        -270
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-company",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:1,filters:{company:{websites:{include:[$json.seed.domain]}}}}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "normalize-fingerprints",
+      "name": "Normalize Seed Fingerprints",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        -270
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg=$('Expand Seed Companies').item.json;\nconst results=$json.results ?? [];\nif(!results.length) return [{json:{...cfg.seed,source:'seed',known_fit:true,industry:'',keywords:[],description:'',cfg}}];\nreturn results.map((r)=>{const c=r.company ?? r; return {json:{name:c.name ?? cfg.seed.name,domain:String(c.domain ?? c.website ?? cfg.seed.domain).toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],industry:c.industry ?? '',keywords:Array.isArray(c.keywords)?c.keywords:[],description:c.description ?? '',source:'seed+prospeo',known_fit:true,cfg}};});"
+      }
+    },
+    {
+      "id": "expand-lookalike-pages",
+      "name": "Expand Prospeo Lookalike Pages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -190,
+        -100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg=$json;\nconst out=[];\nfor(let page=1;page<=cfg.lookalike_pages;page++) out.push({json:{...cfg,page}});\nreturn out;"
+      }
+    },
+    {
+      "id": "prospeo-lookalikes",
+      "name": "Prospeo — Seed Lookalikes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        40,
+        -100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-company",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:$json.page,filters:{company_lookalike:{domain:$json.seed.domain},...($json.geography?{company_location_search:{include:[$json.geography]}}:{}),company_headcount_custom:{min:$json.employee_min,max:$json.employee_max}}}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "normalize-prospeo-lookalikes",
+      "name": "Normalize Prospeo Lookalikes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        270,
+        -100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Expand Prospeo Lookalike Pages').item.json;\nreturn ($json.results ?? []).map((r)=>{const c=r.company ?? r;return {json:{name:c.name ?? '',domain:String(c.domain ?? c.website ?? '').toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],industry:c.industry ?? '',keywords:Array.isArray(c.keywords)?c.keywords:[],description:c.description ?? '',source:'prospeo-lookalike',seed:task.seed.domain,known_fit:false,cfg:task}};}).filter((x)=>x.json.domain);"
+      }
+    },
+    {
+      "id": "exa-similar",
+      "name": "Exa — Find Similar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        40,
+        70
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.exa.ai/findSimilar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.EXA_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({url:'https://'+$json.seed.domain,numResults:$json.exa_results_per_seed,excludeSourceDomain:true,category:'company',contents:{text:{maxCharacters:1500}}}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 3,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "normalize-exa",
+      "name": "Normalize Exa Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        270,
+        70
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Expand Seed Companies').item.json;\nreturn ($json.results ?? []).map((r)=>({json:{name:r.title ?? '',domain:String(r.url ?? '').toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],industry:'',keywords:[],description:String(r.text ?? '').slice(0,1500),source:'exa',seed:task.seed.domain,known_fit:false,cfg:task}})).filter((x)=>x.json.domain);"
+      }
+    },
+    {
+      "id": "parallel-search",
+      "name": "Parallel — Entity Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -190,
+        270
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.parallel.ai/v1beta/findall/entity-search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.PARALLEL_AI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({entity_type:'companies',objective:$json.icp.definition+' Geography: '+$json.geography+' Employee range: '+$json.employee_min+'-'+$json.employee_max,match_limit:$json.parallel_match_limit}) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "normalize-parallel",
+      "name": "Normalize Parallel Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        270
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg=$('Normalize and Validate Intake').item.json;\nreturn ($json.entities ?? []).map((e)=>({json:{name:e.name ?? '',domain:String(e.website ?? e.domain ?? '').toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],linkedin_url:e.url ?? '',industry:'',keywords:[],description:e.description ?? '',source:'parallel',known_fit:false,cfg}})).filter((x)=>x.json.domain);"
+      }
+    },
+    {
+      "id": "merge-seed-prospeo",
+      "name": "Merge Seeds + Prospeo",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        500,
+        -210
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "merge-exa",
+      "name": "Merge + Exa",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        700,
+        -110
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "merge-parallel",
+      "name": "Merge + Parallel",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        900,
+        0
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "dedupe-initial",
+      "name": "Deduplicate Initial Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const excluded=new Set($('Normalize and Validate Intake').first().json.excluded_domains);\nconst seen=new Set(); const out=[];\nfor(const item of $input.all()){\n const c=item.json; const d=String(c.domain ?? '').toLowerCase();\n if(!d||excluded.has(d)||seen.has(d)) continue;\n seen.add(d); out.push({json:c});\n}\nreturn out;"
+      }
+    },
+    {
+      "id": "fetch-initial-websites",
+      "name": "Read Candidate Websites",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1300,
+        0
+      ],
+      "parameters": {
+        "url": "={{ 'https://' + $json.domain }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true,
+              "maxRedirects": 5
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "prepare-initial-judge",
+      "name": "Prepare Initial ICP Judge",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const c=$('Deduplicate Initial Candidates').item.json;\nconst html=typeof $json==='string'?$json:($json.data ?? $json.body ?? '');\nconst text=String(html).replace(/<script[\\s\\S]*?<\\/script>/gi,' ').replace(/<style[\\s\\S]*?<\\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&[a-z#0-9]+;/gi,' ').replace(/\\s+/g,' ').trim().slice(0,5000);\nconst cfg=c.cfg ?? $('Normalize and Validate Intake').first().json;\nreturn [{json:{candidate:{...c,website_text:text},request_body:{model:$env.OPENAI_ICP_MODEL || 'gpt-5-nano',messages:[{role:'system',content:'You are a strict B2B company qualification engine. Return JSON only: {\"qualified\":boolean,\"confidence\":0-100,\"reason\":\"one sentence\"}.'},{role:'user',content:'ICP: '+JSON.stringify(cfg.icp)+'\\nCompany: '+JSON.stringify({name:c.name,domain:c.domain,industry:c.industry,keywords:c.keywords,description:c.description})+'\\nLive website text: '+text+'\\nDoes this company fit?'}],response_format:{type:'json_object'},reasoning_effort:'minimal'}}}];"
+      }
+    },
+    {
+      "id": "initial-ai-judge",
+      "name": "GPT-5 Nano — Initial Fit Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1710,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.OPENAI_API_KEY_NANO || $env.OPENAI_API_KEY) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "parse-initial-judge",
+      "name": "Parse Initial Fit Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Initial ICP Judge').item.json;\nlet decision={qualified:false,confidence:0,reason:'No model decision'};\ntry{decision=JSON.parse($json.choices?.[0]?.message?.content ?? '{}');}catch{}\nif(src.candidate.known_fit) decision={qualified:true,confidence:100,reason:'Supplied best-fit seed company'};\nreturn [{json:{...src.candidate,...decision}}];"
+      }
+    },
+    {
+      "id": "if-initial-fit",
+      "name": "Plausible ICP Fit?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2130,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "initial-fit",
+              "leftValue": "={{ $json.qualified }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "initial-reject-sink",
+      "name": "Rejected Before Market Sweep",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2350,
+        310
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "note-filters",
+      "name": "03 — Mine filters and sweep",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2350,
+        -650
+      ],
+      "parameters": {
+        "content": "## 3. Turn confirmed fits into the widest candidate universe\n\nThe workflow mines industries and discriminative phrases from confirmed companies.\n\nIt then pulls:\n- Every industry used by at least one confirmed fit\n- Every useful keyword across all industries\n- Only the hard geography and employee limits at pull time\n\nFilters above Prospeo's 25,000-result ceiling are split by US state or employee band. A shard that still exceeds the ceiling fails loudly instead of silently losing companies.",
+        "width": 1550,
+        "height": 1220,
+        "color": 7
+      }
+    },
+    {
+      "id": "prepare-filter-mining",
+      "name": "Prepare Filter Mining",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2350,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rows=$input.all().map((i)=>i.json);\nif(!rows.length) throw new Error('No confirmed fits. Stop and fix the ICP or seed list.');\nconst cfg=$('Normalize and Validate Intake').first().json;\nconst evidence=rows.slice(0,150).map((c)=>({name:c.name,domain:c.domain,industry:c.industry,keywords:c.keywords,description:c.description,website_text:String(c.website_text ?? '').slice(0,1200)}));\nreturn [{json:{confirmed:rows,cfg,request_body:{model:$env.OPENAI_ICP_MODEL || 'gpt-5-nano',messages:[{role:'system',content:'Mine database filters from confirmed ICP-fit companies. Return JSON only: {\"industries\":[\"...\"],\"keywords\":[\"...\"]}. Keep every observed industry. Keep discriminative product, service, customer, and category phrases. Remove generic stopwords.'},{role:'user',content:'ICP: '+JSON.stringify(cfg.icp)+'\\nConfirmed fits: '+JSON.stringify(evidence)}],response_format:{type:'json_object'},reasoning_effort:'minimal'}}}];"
+      }
+    },
+    {
+      "id": "mine-filters-ai",
+      "name": "GPT-5 Nano — Mine Industries and Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2570,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.OPENAI_API_KEY_NANO || $env.OPENAI_API_KEY) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "parse-filter-plan",
+      "name": "Create Filter Tasks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2790,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Filter Mining').item.json;\nlet plan={industries:[],keywords:[]}; try{plan=JSON.parse($json.choices?.[0]?.message?.content ?? '{}');}catch{}\nconst inds=[...new Set([...(plan.industries ?? []),...src.confirmed.map((c)=>c.industry).filter(Boolean)])];\nconst kws=[...new Set([...(plan.keywords ?? []),...src.confirmed.flatMap((c)=>Array.isArray(c.keywords)?c.keywords:[])])].filter((x)=>String(x).trim().length>2);\nconst base={...((src.cfg.geography)?{company_location_search:{include:[src.cfg.geography]}}:{}),company_headcount_custom:{min:src.cfg.employee_min,max:src.cfg.employee_max}};\nreturn [...inds.map((v)=>({json:{label:'industry:'+v,filters:{...base,company_industry:{include:[v]}},cfg:src.cfg}})),...kws.map((v)=>({json:{label:'keyword:'+v,filters:{...base,company_keywords:{include:[v]}},cfg:src.cfg}}))];"
+      }
+    },
+    {
+      "id": "count-filter",
+      "name": "Prospeo — Count Each Filter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3010,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-company",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:1,filters:$json.filters}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "plan-filter-shards",
+      "name": "Plan Direct Pull or Shards",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3230,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Create Filter Tasks').item.json;\nconst total=Number($json.pagination?.total_count ?? 0);\nreturn [{json:{...task,total_count:total,needs_shard:total>24000}}];"
+      }
+    },
+    {
+      "id": "if-shard",
+      "name": "Over 24,000?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3450,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "needs-shard",
+              "leftValue": "={{ $json.needs_shard }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "expand-shards",
+      "name": "Split Large Filters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3670,
+        -120
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$json;\nconst cfg=task.cfg;\nif(String(cfg.geography).toLowerCase().includes('united states')){\n const states=['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];\n return states.map((state)=>({json:{...task,label:task.label+'|'+state,filters:{...task.filters,company_location_search:{include:[state+', United States']}}}}));\n}\nconst min=cfg.employee_min,max=cfg.employee_max;\nconst edges=[min,11,51,201,501,1001,5001,10001,max+1].filter((v,i,a)=>v>=min&&v<=max+1&&a.indexOf(v)===i).sort((a,b)=>a-b);\nconst out=[]; for(let i=0;i<edges.length-1;i++) out.push({json:{...task,label:task.label+'|employees '+edges[i]+'-'+(edges[i+1]-1),filters:{...task.filters,company_headcount_custom:{min:edges[i],max:edges[i+1]-1}}}});\nreturn out;"
+      }
+    },
+    {
+      "id": "count-shard",
+      "name": "Prospeo — Count Shards",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3890,
+        -120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-company",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:1,filters:$json.filters}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "expand-shard-pages",
+      "name": "Expand Shard Pages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4110,
+        -120
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Split Large Filters').item.json; const total=Number($json.pagination?.total_count ?? 0);\nif(total>24000) throw new Error('Shard still exceeds Prospeo limit: '+task.label+' ('+total+'). Add a second shard dimension before running.');\nconst pages=Math.ceil(total/25); const out=[]; for(let page=1;page<=pages;page++) out.push({json:{...task,page,total_count:total}}); return out;"
+      }
+    },
+    {
+      "id": "expand-direct-pages",
+      "name": "Expand Direct Pages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3670,
+        120
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$json; const pages=Math.ceil(Number(task.total_count ?? 0)/25); const out=[]; for(let page=1;page<=pages;page++) out.push({json:{...task,page}}); return out;"
+      }
+    },
+    {
+      "id": "merge-pull-pages",
+      "name": "Merge Pull Pages",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        4330,
+        0
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "prospeo-wide-pull",
+      "name": "Prospeo — Pull Candidate Universe",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4550,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-company",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:$json.page,filters:$json.filters}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "normalize-wide-candidates",
+      "name": "Normalize Wide Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4770,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Merge Pull Pages').item.json;\nreturn ($json.results ?? []).map((r)=>{const c=r.company ?? r;return {json:{name:c.name ?? '',domain:String(c.domain ?? c.website ?? '').toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],industry:c.industry ?? '',keywords:Array.isArray(c.keywords)?c.keywords:[],description:c.description ?? '',source:'prospeo-filter',source_filter:task.label,known_fit:false,cfg:task.cfg}};}).filter((x)=>x.json.domain);"
+      }
+    },
+    {
+      "id": "merge-confirmed-wide",
+      "name": "Merge Confirmed + Wide Pull",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        4990,
+        -10
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "dedupe-final-companies",
+      "name": "Deduplicate Company Universe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5210,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg=$('Normalize and Validate Intake').first().json; const excluded=new Set(cfg.excluded_domains); const seen=new Set(); const out=[];\nfor(const item of $input.all()){const c=item.json;const d=String(c.domain??'').toLowerCase();if(!d||excluded.has(d)||seen.has(d))continue;seen.add(d);out.push({json:{...c,cfg}});}return out;"
+      }
+    },
+    {
+      "id": "note-qualification",
+      "name": "04 — Live verification",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5200,
+        -650
+      ],
+      "parameters": {
+        "content": "## 4. Restore precision with live evidence\n\nBroad discovery protects recall. This stage restores precision.\n\nEvery unique domain is:\n1. Read from its live homepage.\n2. Judged against the ICP.\n3. Saved with a confidence score and a concrete reason.\n\nDead, parked, inaccessible, or non-matching companies do not reach contact enrichment.",
+        "width": 1250,
+        "height": 1220,
+        "color": 7
+      }
+    },
+    {
+      "id": "fetch-final-websites",
+      "name": "Read Every Company Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5430,
+        -10
+      ],
+      "parameters": {
+        "url": "={{ 'https://' + $json.domain }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true,
+              "maxRedirects": 5
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "prepare-final-judge",
+      "name": "Prepare Final Website Judge",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5650,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const c=$('Deduplicate Company Universe').item.json;\nconst html=typeof $json==='string'?$json:($json.data ?? $json.body ?? '');\nconst text=String(html).replace(/<script[\\s\\S]*?<\\/script>/gi,' ').replace(/<style[\\s\\S]*?<\\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&[a-z#0-9]+;/gi,' ').replace(/\\s+/g,' ').trim().slice(0,6000);\nconst parked=['domain is parked','buy this domain','domain for sale','account suspended','coming soon','under construction'].some((p)=>text.toLowerCase().includes(p));\nreturn [{json:{candidate:{...c,website_text:text,website_status:!text?'dead':parked?'parked':'live'},request_body:{model:$env.OPENAI_ICP_MODEL || 'gpt-5-nano',messages:[{role:'system',content:'You are the final strict B2B company verifier. Return JSON only: {\"qualified\":boolean,\"confidence\":0-100,\"reason\":\"one sentence\",\"evidence\":\"short exact evidence from the supplied website text\"}.'},{role:'user',content:'ICP: '+JSON.stringify(c.cfg.icp)+'\\nCompany: '+c.name+' ('+c.domain+')\\nCurrent website text: '+text+'\\nDoes the current company fit?'}],response_format:{type:'json_object'},reasoning_effort:'minimal'}}}];"
+      }
+    },
+    {
+      "id": "final-ai-judge",
+      "name": "GPT-5 Nano — Final Website Verification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5870,
+        -10
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.OPENAI_API_KEY_NANO || $env.OPENAI_API_KEY) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "parse-final-judge",
+      "name": "Save Evidence and Final Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6090,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Final Website Judge').item.json; let d={qualified:false,confidence:0,reason:'No decision',evidence:''};try{d=JSON.parse($json.choices?.[0]?.message?.content ?? '{}');}catch{}\nif(src.candidate.website_status!=='live') d={qualified:false,confidence:100,reason:'Website is '+src.candidate.website_status,evidence:''};\nreturn [{json:{...src.candidate,final_qualified:!!d.qualified,final_confidence:Number(d.confidence??0),final_reason:d.reason??'',evidence:d.evidence??'',evidence_url:'https://'+src.candidate.domain}}];"
+      }
+    },
+    {
+      "id": "if-final-fit",
+      "name": "Verified ICP Company?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6310,
+        -10
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "final-fit",
+              "leftValue": "={{ $json.final_qualified }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "final-reject-sink",
+      "name": "Rejected After Website Verification",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        6550,
+        310
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "note-contacts",
+      "name": "05 — Contacts, validation, and campaign draft",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6550,
+        -650
+      ],
+      "parameters": {
+        "content": "## 5. Turn verified companies into an outreach-ready campaign\n\nOnly verified companies reach this stage.\n\nThe workflow:\n1. Pulls every matching person from Prospeo.\n2. Deduplicates contacts.\n3. Verifies every email with MillionVerifier.\n4. Creates evidence-backed personalization.\n5. Creates or updates a Smartlead campaign in DRAFT.\n\nIt never starts sending. A human must review the list, proof, and copy before activation.",
+        "width": 1700,
+        "height": 1220,
+        "color": 7
+      }
+    },
+    {
+      "id": "prospeo-contact-page1",
+      "name": "Prospeo — Contact Count + Page 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        6550,
+        -10
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-person",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:1,filters:{company:{websites:{include:[$json.domain]}},person_job_title:{include:$json.cfg.target_titles,match_only_exact_job_titles:false},person_seniority:{include:$json.cfg.target_seniorities}}}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "expand-contact-pages",
+      "name": "Expand All Contact Pages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6770,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const company=$('Verified ICP Company?').item.json; const total=Number($json.pagination?.total_count ?? 0); const pages=Math.min(Math.ceil(total/25),1000); const out=[];for(let page=1;page<=pages;page++)out.push({json:{company,page}});return out;"
+      }
+    },
+    {
+      "id": "prospeo-contact-pull",
+      "name": "Prospeo — Pull Matching Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        6990,
+        -10
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.prospeo.io/search-person",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-KEY",
+              "value": "={{ $env.PROSPEO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({page:$json.page,filters:{company:{websites:{include:[$json.company.domain]}},person_job_title:{include:$json.company.cfg.target_titles,match_only_exact_job_titles:false},person_seniority:{include:$json.company.cfg.target_seniorities}}}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "normalize-contacts",
+      "name": "Normalize and Deduplicate Contacts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7210,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const task=$('Expand All Contact Pages').item.json; const out=[];\nfor(const r of ($json.results ?? [])){const p=r.person ?? r;const c=r.company ?? {};out.push({json:{first_name:p.first_name??'',last_name:p.last_name??'',job_title:p.job_title??p.title??'',linkedin_url:p.linkedin_url??'',email:p.email??'',email_status:p.email_status??'',company_name:c.name??task.company.name,domain:String(c.domain??c.website??task.company.domain).toLowerCase().replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0],company:task.company,cfg:task.company.cfg}});}return out;"
+      }
+    },
+    {
+      "id": "if-has-email",
+      "name": "Provider Returned Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7430,
+        -10
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-email",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "millionverifier",
+      "name": "MillionVerifier — Validate Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        7650,
+        -10
+      ],
+      "parameters": {
+        "url": "https://api.millionverifier.com/api/v3/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api",
+              "value": "={{ $env.MILLIONVERIFIER_API_KEY }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "timeout",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "apply-email-verdict",
+      "name": "Keep Strictly Valid Emails",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7870,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const contact=$('Provider Returned Email?').item.json;return [{json:{...contact,email_validation:$json,result_ok:String($json.result??'').toLowerCase()==='ok'}}];"
+      }
+    },
+    {
+      "id": "if-email-valid",
+      "name": "Email Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8090,
+        -10
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "email-valid",
+              "leftValue": "={{ $json.result_ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "prepare-personalization",
+      "name": "Prepare Evidence-Backed Outreach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8310,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const lead=$json;const cfg=lead.cfg;\nreturn [{json:{lead,request_body:{model:$env.ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929',max_tokens:1400,system:'You write concise B2B cold email. Use only supplied facts. Never invent proof. Return JSON only with keys subject_1,email_1,email_2,email_3,email_4.',messages:[{role:'user',content:'Offer: '+cfg.offer+'\\nVoice rules: '+cfg.voice_rules+'\\nICP: '+JSON.stringify(cfg.icp)+'\\nProspect: '+JSON.stringify({first_name:lead.first_name,job_title:lead.job_title,company_name:lead.company_name,domain:lead.domain})+'\\nVerified company evidence: '+JSON.stringify({reason:lead.company.final_reason,evidence:lead.company.evidence,url:lead.company.evidence_url})+'\\nWrite four short emails. Do not claim personal research beyond the supplied evidence.'}]}}}];"
+      }
+    },
+    {
+      "id": "claude-personalization",
+      "name": "Claude — Research and Personalize",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        8530,
+        -10
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.ANTHROPIC_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "parse-personalization",
+      "name": "Build Smartlead Lead Record",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8750,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Evidence-Backed Outreach').item.json;let copy={};try{const t=($json.content??[]).find((x)=>x.type==='text')?.text??'{}';const fence=String.fromCharCode(96).repeat(3);const clean=t.trim().startsWith(fence)?t.trim().slice(t.trim().indexOf('\\n')+1,-3).trim():t;copy=JSON.parse(clean);}catch{}\nreturn [{json:{email:src.lead.email,first_name:src.lead.first_name,last_name:src.lead.last_name,company_name:src.lead.company_name,custom_fields:{job_title:src.lead.job_title,company_domain:src.lead.domain,evidence:src.lead.company.evidence,evidence_url:src.lead.company.evidence_url,subject_1:copy.subject_1??'',email_1:copy.email_1??'',email_2:copy.email_2??'',email_3:copy.email_3??'',email_4:copy.email_4??''},cfg:src.lead.cfg}}];"
+      }
+    },
+    {
+      "id": "aggregate-campaign",
+      "name": "Aggregate Approved Campaign Draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8970,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const leads=$input.all().map((i)=>i.json);if(!leads.length)throw new Error('No strictly valid emails reached campaign creation.');const cfg=leads[0].cfg;return [{json:{cfg,leads,lead_list:leads.map(({cfg,...l})=>l)}}];"
+      }
+    },
+    {
+      "id": "create-smartlead-campaign",
+      "name": "Smartlead — Create Draft Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        9190,
+        -10
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://server.smartlead.ai/api/v1/campaigns/create?api_key=' + $env.SMARTLEAD_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({name:$json.cfg.campaign_name+' — AI SDR draft'}) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "prepare-smartlead-draft",
+      "name": "Prepare Sequence and Lead Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9410,
+        -10
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const campaign=$json;const src=$('Aggregate Approved Campaign Draft').first().json;const campaign_id=campaign.id??campaign.campaign_id;\nif(!campaign_id)throw new Error('Smartlead campaign creation did not return an ID.');const batches=[];for(let i=0;i<src.lead_list.length;i+=100)batches.push(src.lead_list.slice(i,i+100));return [{json:{campaign_id,cfg:src.cfg,sequences:{sequences:[{seq_number:1,seq_delay_details:{delay_in_days:0},subject:'{{subject_1}}',email_body:'{{email_1}}'},{seq_number:2,seq_delay_details:{delay_in_days:3},subject:'Re: {{subject_1}}',email_body:'{{email_2}}'},{seq_number:3,seq_delay_details:{delay_in_days:4},subject:'Re: {{subject_1}}',email_body:'{{email_3}}'},{seq_number:4,seq_delay_details:{delay_in_days:4},subject:'Re: {{subject_1}}',email_body:'{{email_4}}'}]},batches}}];"
+      }
+    },
+    {
+      "id": "save-smartlead-sequence",
+      "name": "Smartlead — Save Draft Sequence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        9630,
+        -100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://server.smartlead.ai/api/v1/campaigns/' + $json.campaign_id + '/sequences?api_key=' + $env.SMARTLEAD_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.sequences) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "split-lead-batches",
+      "name": "Split Smartlead Lead Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9630,
+        100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Sequence and Lead Batches').first().json;return src.batches.map((batch)=>({json:{campaign_id:src.campaign_id,lead_list:batch}}));"
+      }
+    },
+    {
+      "id": "upload-smartlead-leads",
+      "name": "Smartlead — Upload Valid Leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        9850,
+        100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://server.smartlead.ai/api/v1/campaigns/' + $json.campaign_id + '/leads?api_key=' + $env.SMARTLEAD_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({lead_list:$json.lead_list}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "merge-smartlead-writes",
+      "name": "Wait for Sequence + Lead Upload",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        10060,
+        0
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "draft-complete",
+      "name": "Campaign Draft Complete — Human Review Required",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10280,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const prep=$('Prepare Sequence and Lead Batches').first().json;return [{json:{status:'DRAFT_READY',campaign_id:prep.campaign_id,campaign_name:prep.cfg.campaign_name,review_required:true,sending_started:false,message:'Review targeting, evidence, emails, and sequence in Smartlead. This workflow never starts the campaign.'}}];"
+      }
+    },
+    {
+      "id": "note-replies",
+      "name": "06 — Reply routing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        10500,
+        -650
+      ],
+      "parameters": {
+        "content": "## 6. Reply routing\n\nSmartlead sends reply events to the second webhook.\n\nThe model classifies each reply as:\n- positive\n- negative\n- out_of_office\n- wrong_person\n- unsubscribe\n- bounce\n\nPositive, wrong-person, and uncertain replies go to human review. The workflow does not send autonomous replies.",
+        "width": 1250,
+        "height": 1220,
+        "color": 7
+      }
+    },
+    {
+      "id": "reply-webhook",
+      "name": "Smartlead Reply Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        10520,
+        -30
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-sdr-v2-smartlead-reply",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "prepare-reply-classification",
+      "name": "Prepare Reply Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10740,
+        -30
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const event=$json.body??$json;const text=event.reply_text??event.email_body??event.message??'';return [{json:{event,request_body:{model:$env.OPENAI_ICP_MODEL || 'gpt-5-nano',messages:[{role:'system',content:'Classify a cold email reply. Return JSON only: {\"category\":\"positive|negative|out_of_office|wrong_person|unsubscribe|bounce|uncertain\",\"reason\":\"one sentence\",\"return_date\":null}.'},{role:'user',content:String(text)}],response_format:{type:'json_object'},reasoning_effort:'minimal'}}}];"
+      }
+    },
+    {
+      "id": "reply-ai",
+      "name": "GPT-5 Nano — Classify Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        10960,
+        -30
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.OPENAI_API_KEY_NANO || $env.OPENAI_API_KEY) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500
+    },
+    {
+      "id": "route-reply",
+      "name": "Route Reply to Human Review",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11180,
+        -30
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src=$('Prepare Reply Classification').item.json;let d={category:'uncertain',reason:'No decision'};try{d=JSON.parse($json.choices?.[0]?.message?.content??'{}');}catch{}\nreturn [{json:{...src.event,classification:d,requires_human:['positive','wrong_person','uncertain'].includes(d.category),no_autonomous_reply:true}}];"
+      }
+    },
+    {
+      "id": "review-callback",
+      "name": "Send Review Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        11400,
+        -30
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AI_SDR_REVIEW_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1500,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Campaign Intake Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize and Validate Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Dry Run": {
+      "main": [
+        [
+          {
+            "node": "Sample Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample Intake": {
+      "main": [
+        [
+          {
+            "node": "Normalize and Validate Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize and Validate Intake": {
+      "main": [
+        [
+          {
+            "node": "Dry Run?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Parallel — Entity Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run?": {
+      "main": [
+        [
+          {
+            "node": "Dry Run Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Expand Seed Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Seed Companies": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Fingerprint Seeds",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Expand Prospeo Lookalike Pages",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Exa — Find Similar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Fingerprint Seeds": {
+      "main": [
+        [
+          {
+            "node": "Normalize Seed Fingerprints",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Prospeo Lookalike Pages": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Seed Lookalikes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Seed Lookalikes": {
+      "main": [
+        [
+          {
+            "node": "Normalize Prospeo Lookalikes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exa — Find Similar": {
+      "main": [
+        [
+          {
+            "node": "Normalize Exa Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parallel — Entity Search": {
+      "main": [
+        [
+          {
+            "node": "Normalize Parallel Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Seed Fingerprints": {
+      "main": [
+        [
+          {
+            "node": "Merge Seeds + Prospeo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Prospeo Lookalikes": {
+      "main": [
+        [
+          {
+            "node": "Merge Seeds + Prospeo",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Seeds + Prospeo": {
+      "main": [
+        [
+          {
+            "node": "Merge + Exa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Exa Candidates": {
+      "main": [
+        [
+          {
+            "node": "Merge + Exa",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge + Exa": {
+      "main": [
+        [
+          {
+            "node": "Merge + Parallel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Parallel Candidates": {
+      "main": [
+        [
+          {
+            "node": "Merge + Parallel",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge + Parallel": {
+      "main": [
+        [
+          {
+            "node": "Deduplicate Initial Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicate Initial Candidates": {
+      "main": [
+        [
+          {
+            "node": "Read Candidate Websites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Candidate Websites": {
+      "main": [
+        [
+          {
+            "node": "Prepare Initial ICP Judge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Initial ICP Judge": {
+      "main": [
+        [
+          {
+            "node": "GPT-5 Nano — Initial Fit Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5 Nano — Initial Fit Check": {
+      "main": [
+        [
+          {
+            "node": "Parse Initial Fit Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Initial Fit Decision": {
+      "main": [
+        [
+          {
+            "node": "Plausible ICP Fit?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plausible ICP Fit?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Filter Mining",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Confirmed + Wide Pull",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected Before Market Sweep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Filter Mining": {
+      "main": [
+        [
+          {
+            "node": "GPT-5 Nano — Mine Industries and Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5 Nano — Mine Industries and Keywords": {
+      "main": [
+        [
+          {
+            "node": "Create Filter Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Filter Tasks": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Count Each Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Count Each Filter": {
+      "main": [
+        [
+          {
+            "node": "Plan Direct Pull or Shards",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Direct Pull or Shards": {
+      "main": [
+        [
+          {
+            "node": "Over 24,000?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Over 24,000?": {
+      "main": [
+        [
+          {
+            "node": "Split Large Filters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Expand Direct Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Large Filters": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Count Shards",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Count Shards": {
+      "main": [
+        [
+          {
+            "node": "Expand Shard Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Shard Pages": {
+      "main": [
+        [
+          {
+            "node": "Merge Pull Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Direct Pages": {
+      "main": [
+        [
+          {
+            "node": "Merge Pull Pages",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Pull Pages": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Pull Candidate Universe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Pull Candidate Universe": {
+      "main": [
+        [
+          {
+            "node": "Normalize Wide Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Wide Candidates": {
+      "main": [
+        [
+          {
+            "node": "Merge Confirmed + Wide Pull",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Confirmed + Wide Pull": {
+      "main": [
+        [
+          {
+            "node": "Deduplicate Company Universe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicate Company Universe": {
+      "main": [
+        [
+          {
+            "node": "Read Every Company Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Every Company Website": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Website Judge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Final Website Judge": {
+      "main": [
+        [
+          {
+            "node": "GPT-5 Nano — Final Website Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5 Nano — Final Website Verification": {
+      "main": [
+        [
+          {
+            "node": "Save Evidence and Final Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Evidence and Final Decision": {
+      "main": [
+        [
+          {
+            "node": "Verified ICP Company?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verified ICP Company?": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Contact Count + Page 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected After Website Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Contact Count + Page 1": {
+      "main": [
+        [
+          {
+            "node": "Expand All Contact Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand All Contact Pages": {
+      "main": [
+        [
+          {
+            "node": "Prospeo — Pull Matching Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospeo — Pull Matching Contacts": {
+      "main": [
+        [
+          {
+            "node": "Normalize and Deduplicate Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize and Deduplicate Contacts": {
+      "main": [
+        [
+          {
+            "node": "Provider Returned Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provider Returned Email?": {
+      "main": [
+        [
+          {
+            "node": "MillionVerifier — Validate Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MillionVerifier — Validate Email": {
+      "main": [
+        [
+          {
+            "node": "Keep Strictly Valid Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep Strictly Valid Emails": {
+      "main": [
+        [
+          {
+            "node": "Email Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Evidence-Backed Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Evidence-Backed Outreach": {
+      "main": [
+        [
+          {
+            "node": "Claude — Research and Personalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude — Research and Personalize": {
+      "main": [
+        [
+          {
+            "node": "Build Smartlead Lead Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Smartlead Lead Record": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Approved Campaign Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Approved Campaign Draft": {
+      "main": [
+        [
+          {
+            "node": "Smartlead — Create Draft Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smartlead — Create Draft Campaign": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sequence and Lead Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sequence and Lead Batches": {
+      "main": [
+        [
+          {
+            "node": "Smartlead — Save Draft Sequence",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Smartlead Lead Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Smartlead Lead Batches": {
+      "main": [
+        [
+          {
+            "node": "Smartlead — Upload Valid Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smartlead — Save Draft Sequence": {
+      "main": [
+        [
+          {
+            "node": "Wait for Sequence + Lead Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smartlead — Upload Valid Leads": {
+      "main": [
+        [
+          {
+            "node": "Wait for Sequence + Lead Upload",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Wait for Sequence + Lead Upload": {
+      "main": [
+        [
+          {
+            "node": "Campaign Draft Complete — Human Review Required",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smartlead Reply Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Reply Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Reply Classification": {
+      "main": [
+        [
+          {
+            "node": "GPT-5 Nano — Classify Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5 Nano — Classify Reply": {
+      "main": [
+        [
+          {
+            "node": "Route Reply to Human Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Reply to Human Review": {
+      "main": [
+        [
+          {
+            "node": "Send Review Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Berlin",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "executionTimeout": 21600
+  }
+}

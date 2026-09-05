@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Build a Six-Bot Content System With Hermes · Muditek</title>
+<meta name="description" content="Build six Hermes bots that find relevant ideas, verify research, choose an angle, write the main piece, rebuild it for each platform, review the campaign, and improve the next run.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0B2F66;--ink:#07111F;--body:#243244;--paper:#FFFFFF;--white:#FFFFFF;--soft:#F3F8FF;--line:#8FA9C8;--gold:#FFB000;--gold-deep:#B7192A;--maxw:890px;--measure:62ch}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:1.25rem;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--black);text-decoration-thickness:2px;text-underline-offset:4px}strong{font-weight:700;color:var(--black)}code{font-family:"IBM Plex Mono",monospace;background:#E7F0FC;color:var(--black);padding:.13em .38em;border-radius:4px;font-size:.9em;font-weight:600}
+.hero,.toc,.doc,.footer{width:min(var(--maxw),92vw);margin-inline:auto}.letterhead{width:min(var(--maxw),92vw);margin:0 auto;background:var(--paper);border-bottom:3px solid var(--black)}.letterhead__inner{width:100%;padding:3.5rem 0 2.4rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.letterhead img{height:64px;width:auto;display:block}.letterhead__meta{font-family:"IBM Plex Mono",monospace;color:var(--black);font-size:.92rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:right}
+.hero{padding:4rem 0 2rem}.kicker{font-family:"IBM Plex Mono",monospace;font-size:.93rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 1rem}h1,h2,h3,h4{font-family:"IBM Plex Sans",system-ui,sans-serif;color:var(--black);font-weight:700;line-height:1.08;letter-spacing:-.025em;text-wrap:balance}.hero h1{font-size:clamp(2.8rem,7vw,4.9rem);line-height:.97;letter-spacing:-.05em;max-width:16ch;margin:0 0 1.6rem}.hero__lead{font-size:clamp(1.42rem,2.5vw,1.86rem);line-height:1.35;font-weight:700;max-width:35ch;margin:0 0 1.5rem}.hero__thesis{max-width:var(--measure);margin:0 0 1.15rem}
+.stage-map{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin:2.3rem 0 .8rem}.stage{min-height:106px;border:2px solid var(--black);background:var(--white);padding:1rem;display:flex;flex-direction:column;justify-content:space-between}.stage b{font-size:1.08rem;line-height:1.1}.stage span{font-family:"IBM Plex Mono",monospace;font-size:.8rem;font-weight:700;color:var(--gold-deep)}.stage.hot{background:var(--gold)}.route{font-family:"IBM Plex Mono",monospace;font-size:.93rem;font-weight:700;margin:0 0 1.8rem;overflow-wrap:anywhere}
+@media(max-width:690px){.letterhead__inner{align-items:flex-start;flex-direction:column}.letterhead__meta{text-align:left}.stage-map{grid-template-columns:repeat(2,1fr)}}
+.toc{margin-top:2rem;padding:1.5rem 0 .6rem;border-top:4px solid var(--black);border-bottom:1px solid var(--line)}.toc h2{font-family:"IBM Plex Mono",monospace;font-size:.98rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);border:0;margin:0 0 1rem;padding:0}.toc ol{list-style:none;padding:0;margin:0;columns:2;column-gap:3rem}.toc li{break-inside:avoid;margin:0 0 .7rem}.toc a{font-weight:700;text-decoration:none}.toc a:hover{text-decoration:underline}@media(max-width:690px){.toc ol{columns:1}}
+.doc{padding:2rem 0 5rem}.doc p,.doc li{max-width:var(--measure)}.doc p{margin:0 0 1.15rem}h2{font-size:clamp(2rem,4vw,2.7rem);margin:4.8rem 0 1.3rem;padding-bottom:.6rem;border-bottom:3px solid var(--black);scroll-margin-top:1.5rem}h3{font-size:1.55rem;margin:2.5rem 0 .75rem}.lede{font-size:1.42rem;line-height:1.36;font-weight:700;max-width:39ch!important;margin-bottom:1.45rem!important}
+.callout{margin:1.8rem 0 2rem;border:2px solid var(--black);border-left:12px solid var(--gold);background:var(--white);padding:1.35rem 1.45rem}.callout p{margin:0;max-width:none;font-weight:600}.architecture{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.7rem 0 2rem}.architecture article{border:2px solid var(--black);background:var(--white);padding:1.25rem}.architecture b{display:block;font-size:1.28rem;margin-bottom:.45rem}.architecture span{display:block;font-family:"IBM Plex Mono",monospace;font-size:.9rem;line-height:1.45}@media(max-width:680px){.architecture{grid-template-columns:1fr}}
+.tw{overflow-x:auto;margin:1.5rem 0 2rem;border:2px solid var(--black)}table{width:100%;border-collapse:collapse;font-size:1rem}th{background:var(--black);color:var(--white);padding:.95rem 1rem;text-align:left}td{border-top:1px solid var(--line);padding:.85rem 1rem;vertical-align:top}tr:nth-child(even) td{background:var(--soft)}
+.contract{display:grid;grid-template-columns:repeat(5,1fr);border:2px solid var(--black);margin:1.5rem 0 2rem}.contract div{padding:1rem;border-right:1px solid var(--line);background:var(--white)}.contract div:last-child{border-right:0}.contract b{display:block;font-family:"IBM Plex Mono",monospace;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:.4rem}.contract span{display:block;font-size:.94rem;line-height:1.4}@media(max-width:760px){.contract{grid-template-columns:1fr}.contract div{border-right:0;border-bottom:1px solid var(--line)}.contract div:last-child{border-bottom:0}}
+.roles{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem;margin:1.4rem 0 2.2rem}.role{border:2px solid var(--black);background:var(--white);padding:1.3rem}.role__num{display:inline-flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:999px;background:var(--gold);font-family:"IBM Plex Mono",monospace;font-weight:700;margin-bottom:.7rem}.role h3{font-size:1.38rem;margin:0 0 .5rem}.role p{font-size:1rem;line-height:1.48;margin:0 0 .65rem;max-width:none}.role p:last-child{margin:0}.role__out{font-family:"IBM Plex Mono",monospace;font-weight:700}@media(max-width:680px){.roles{grid-template-columns:1fr}}
+.bullets,.numlist{margin:1.1rem 0 1.7rem;padding-left:1.4rem}.bullets li,.numlist li{margin:0 0 .55rem;padding-left:.2rem}.bullets li::marker,.numlist li::marker{color:var(--gold-deep);font-weight:700}
+.codewrap{position:relative;margin:1.6rem 0 2rem}.code-title{font-family:"IBM Plex Mono",monospace;font-size:.9rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 .5rem}pre{margin:0;background:var(--black);color:#F7F7F8;border:2px solid var(--black);padding:3.15rem 1.35rem 1.35rem;overflow-x:auto;font-size:.91rem;line-height:1.65}pre code{font-family:"IBM Plex Mono",monospace;background:none;color:inherit;padding:0;font-size:1em;white-space:pre}.copy{position:absolute;top:2.6rem;right:.75rem;border:2px solid var(--white);background:var(--white);color:var(--black);font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.8rem;padding:.45rem .7rem;cursor:pointer}.copy:hover{background:var(--gold);border-color:var(--gold)}.copy.ok{background:#087A50;border-color:#087A50;color:var(--white)}
+.state{margin:1.6rem 0 2rem;padding:1.25rem;border:2px solid var(--black);background:var(--gold);font-family:"IBM Plex Mono",monospace;font-weight:700;overflow-wrap:anywhere}.week{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin:1.4rem 0 2rem}.day{border:2px solid var(--black);background:var(--white);padding:.8rem;min-height:120px}.day b{display:block;font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--gold-deep);margin-bottom:.4rem}.day span{display:block;font-size:.92rem;line-height:1.25;font-weight:700}@media(max-width:820px){.week{grid-template-columns:repeat(2,1fr)}}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.4rem 0 2rem}.three article{border:2px solid var(--black);background:var(--white);padding:1.15rem}.three b{display:block;font-family:"IBM Plex Mono",monospace;margin-bottom:.45rem}.three p{font-size:.98rem;line-height:1.45;margin:0;max-width:none}@media(max-width:680px){.three{grid-template-columns:1fr}}.checklist{list-style:none;padding:0;margin:1.2rem 0 2rem;display:grid;gap:.8rem}.checklist li{position:relative;padding-left:2rem;margin:0;font-weight:600}.checklist li::before{content:"";position:absolute;left:0;top:.52rem;width:.8rem;height:.8rem;background:var(--gold);border:2px solid var(--black)}
+.source-note{font-size:.95rem;border-top:1px solid var(--line);padding-top:1.2rem;margin-top:3rem;color:var(--body)}.cta{margin:4.8rem 0 1rem;background:var(--black);color:var(--white);border:4px solid var(--black);padding:2.8rem}.cta h2{color:var(--white);border:0;margin:0 0 1rem;padding:0;font-size:2.45rem}.cta p{color:var(--white);max-width:58ch}.cta strong{color:var(--white)}.cta a{display:inline-block;margin-top:.7rem;background:var(--gold);color:var(--black);text-decoration:none;font-weight:700;padding:.9rem 1.25rem}.cta a:hover{background:var(--white)}@media(max-width:620px){.cta{padding:2rem 1.25rem}.cta h2{font-size:2rem}}
+.footer{border-top:3px solid var(--black);padding:2rem 0 3rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.footer img{height:38px;width:auto}.footer p{margin:0;font-size:.96rem;max-width:52ch}@media(max-width:640px){.footer{flex-direction:column;align-items:flex-start}}
+@media print{body{font-size:11pt}.copy{display:none}pre{background:#0E0E12!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}h2,.callout,.codewrap,.tw,.cta,.role{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="letterhead"><div class="letterhead__inner"><img src="/brand/muditek-logo-light.png" alt="Muditek"><span class="letterhead__meta">Hermes Content System · Build Guide</span></div></header>
+
+<header class="hero">
+  <p class="kicker">Full implementation playbook</p>
+  <h1>How to Build a Six-Bot Content System With Hermes</h1>
+  <p class="hero__lead">Turn one relevant topic into verified research, one clear angle, a useful main piece, and platform-specific content without losing the sources or your judgment.</p>
+  <p class="hero__thesis">Six Hermes bots each own one part of the job. Obsidian holds the shared knowledge. Hermes Kanban moves one campaign record through the workflow. You approve what gets published and what the system learns.</p>
+  <div class="stage-map" role="img" aria-label="Eight-stage Hermes content workflow">
+    <div class="stage hot"><span>01</span><b>Idea</b></div><div class="stage"><span>02</span><b>Research</b></div><div class="stage"><span>03</span><b>Angle</b></div><div class="stage"><span>04</span><b>Long-form</b></div>
+    <div class="stage"><span>05</span><b>Distribution</b></div><div class="stage"><span>06</span><b>Review</b></div><div class="stage"><span>07</span><b>Performance</b></div><div class="stage hot"><span>08</span><b>Updated playbooks</b></div>
+  </div>
+  <p class="route">idea → research → angle → long-form → distribution → review → performance → updated playbooks</p>
+</header>
+
+<nav class="toc" aria-label="Table of contents"><h2>Contents</h2><ol>
+  <li><a href="#architecture">1. Understand the architecture</a></li><li><a href="#brain">2. Build the shared content brain</a></li><li><a href="#contracts">3. Give every bot a fixed contract</a></li><li><a href="#team">4. Configure the six bots</a></li><li><a href="#record">5. Create one campaign record</a></li><li><a href="#hermes">6. Build the team in Hermes</a></li><li><a href="#first-run">7. Run the first campaign</a></li><li><a href="#distribution">8. Rebuild the idea for each platform</a></li><li><a href="#approval">9. Keep approval human</a></li><li><a href="#learning">10. Close the learning loop</a></li><li><a href="#minimum">11. Build the smallest useful version</a></li>
+</ol></nav>
+
+<article class="doc">
+  <h2 id="architecture">1. Understand the architecture</h2>
+  <p class="lede">Six separate chats do not make a content system.</p>
+  <p>The system works because each bot receives a defined input, makes one decision, and returns a defined handoff.</p>
+  <p>If research never reaches the strategist, the angle becomes generic. If the writer never receives the source package, claims drift. If distribution only shortens the finished article, every platform gets the same post in a different size. If performance never updates the playbooks, the system repeats the same mistakes.</p>
+  <div class="architecture"><article><b>Hermes bots</b><span>Each bot makes one editorial decision and hands the result to the next bot.</span></article><article><b>Obsidian</b><span>Stores the approved voice, audience, offer, proof, platform, and performance notes.</span></article><article><b>Hermes Kanban</b><span>Tracks assignments, dependencies, comments, revisions, and approvals between profiles.</span></article></div>
+  <div class="callout"><p>Use chat for questions. Keep campaign data and task status in files and Kanban.</p></div>
+  <div class="tw"><table><thead><tr><th>Layer</th><th>What it controls</th><th>What it must not replace</th></tr></thead><tbody>
+    <tr><td><strong>Bot Mode</strong></td><td>The visible roster and communication between named bots.</td><td>The durable campaign record.</td></tr><tr><td><strong>Profiles</strong></td><td>Separate memory, sessions, skills, and instructions for each role.</td><td>The shared editorial knowledge.</td></tr><tr><td><strong>Obsidian</strong></td><td>The accepted knowledge every role is allowed to read.</td><td>Draft storage for every thought the bots produce.</td></tr><tr><td><strong>Kanban</strong></td><td>Dependencies, handoffs, comments, review, retries, and human input.</td><td>The editorial decisions owned by the bots and you.</td></tr>
+  </tbody></table></div>
+
+  <h2 id="brain">2. Build the shared content brain</h2>
+  <p class="lede">Start with the knowledge all six roles need to make compatible decisions.</p>
+  <p>Use plain Markdown files inside one Obsidian vault. Keep accepted rules, reusable examples, evidence standards, and links to source material. Keep working drafts inside campaign folders so discarded work does not pollute long-term memory.</p>
+  <div class="codewrap"><p class="code-title">Obsidian folder structure</p><button class="copy" type="button" aria-label="Copy the Obsidian folder structure">Copy</button><pre><code>media-company/
+├── index.md
+├── brand/
+│   ├── voice.md
+│   ├── audience.md
+│   ├── offers.md
+│   └── proof.md
+├── discovery/
+│   ├── signals.md
+│   ├── customer-questions.md
+│   └── authority-clips.md
+├── engine/
+│   ├── angles.md
+│   ├── hooks.md
+│   ├── repurposing.md
+│   ├── review.md
+│   └── performance.md
+├── platforms/
+│   ├── x.md
+│   ├── linkedin.md
+│   ├── newsletter.md
+│   ├── video.md
+│   └── carousel.md
+└── campaigns/
+    └── one-folder-per-active-campaign/</code></pre></div>
+  <p>The <code>index.md</code> file is the entry point every bot reads first. It defines what you publish, who it is for, what every campaign must contain, how work moves, and which decisions require you.</p>
+  <div class="codewrap"><p class="code-title">Minimum index.md</p><button class="copy" type="button" aria-label="Copy the index template">Copy</button><pre><code># What we publish about
+- Applied AI systems for operators
+- Practical agent builds
+- New tools with a specific business use
+
+# Who we publish for
+- Founders
+- Marketers
+- AI operators
+
+# Every campaign must contain
+- One clear reader outcome
+- One central claim
+- Direct evidence for important claims
+- One reusable framework, workflow, or decision rule
+- Platform-native distribution
+
+# Routing
+- New signals → Signal Scout
+- Approved signals → Researcher
+- Complete source packages → Content Strategist
+- Approved angle briefs → Long-Form Writer
+- Approved main pieces → Distribution Bot
+- Every external asset → Editor
+
+# Human approval
+- Required before publishing
+- Required before changing voice, audience, offer, or evidence rules
+- Required before a performance lesson becomes a permanent rule</code></pre></div>
+
+  <h2 id="contracts">3. Give every bot a fixed contract</h2>
+  <p class="lede">&quot;Make great content&quot; gives every bot the same vague job.</p>
+  <p>Give each profile one decision, a fixed set of inputs, one exact output, a clear stopping point, and checks that show when the work is done.</p>
+  <div class="contract" aria-label="Five fields in every bot contract"><div><b>Owns</b><span>The decision this bot makes.</span></div><div><b>Reads</b><span>The files and fields it may use.</span></div><div><b>Returns</b><span>The artifact the next bot receives.</span></div><div><b>Must not</b><span>Decisions reserved for another bot or a person.</span></div><div><b>Done when</b><span>The checks that complete the handoff.</span></div></div>
+  <div class="codewrap"><p class="code-title">Profile contract skeleton</p><button class="copy" type="button" aria-label="Copy the profile contract">Copy</button><pre><code>ROLE: [role name]
+
+OWNS
+[one editorial decision]
+
+READS
+[approved vault files and campaign fields]
+
+RETURNS
+[one defined handoff artifact]
+
+MUST NOT
+[decisions owned by another role or a human]
+
+DONE WHEN
+[checks that prove the handoff is complete]
+
+If a required input is missing, return the task to the previous stage.
+Do not fill the gap with a plausible assumption.</code></pre></div>
+
+  <h2 id="team">4. Configure the six bots</h2>
+  <p class="lede">Give each bot one decision.</p>
+  <div class="roles">
+    <article class="role"><span class="role__num">1</span><h3>Signal Scout</h3><p><strong>Owns:</strong> whether a topic deserves research now.</p><p><strong>Reads:</strong> launches, research, customer questions, objections, clips from credible sources, and active conversations.</p><p class="role__out">Returns: signal brief or rejection.</p></article>
+    <article class="role"><span class="role__num">2</span><h3>Researcher</h3><p><strong>Owns:</strong> what the available evidence supports.</p><p><strong>Reads:</strong> the approved signal and original sources.</p><p class="role__out">Returns: evidence package with direct sources.</p></article>
+    <article class="role"><span class="role__num">3</span><h3>Content Strategist</h3><p><strong>Owns:</strong> the reader, outcome, tension, thesis, format, and reusable object.</p><p><strong>Reads:</strong> the signal, evidence package, audience, offer, and platform rules.</p><p class="role__out">Returns: one angle brief.</p></article>
+    <article class="role"><span class="role__num">4</span><h3>Long-Form Writer</h3><p><strong>Owns:</strong> the deepest useful version of the approved angle.</p><p><strong>Reads:</strong> the angle brief, evidence package, voice rules, and relevant content patterns.</p><p class="role__out">Returns: the main piece.</p></article>
+    <article class="role"><span class="role__num">5</span><h3>Distribution Bot</h3><p><strong>Owns:</strong> the platform-specific entry point for each asset.</p><p><strong>Reads:</strong> the original angle, main piece, and platform playbooks.</p><p class="role__out">Returns: distinct X, LinkedIn, newsletter, carousel, and video assets.</p></article>
+    <article class="role"><span class="role__num">6</span><h3>Editor</h3><p><strong>Owns:</strong> whether the complete campaign is ready for your review.</p><p><strong>Reads:</strong> every asset together, the source package, voice rules, and campaign objective.</p><p class="role__out">Returns: approval, revision request, or rejection.</p></article>
+  </div>
+  <h3>Signal Scout handoff</h3><ul class="bullets"><li>What happened.</li><li>Why the audience may care.</li><li>The original source and strongest clip, screenshot, chart, or result.</li><li>The question the finished piece could answer.</li><li>How quickly the opportunity may decay.</li><li>A short rejection reason when the signal is weak.</li></ul><p>Signal Scout should reject far more ideas than it approves. It does not choose the thesis or draft the post.</p>
+  <h3>Researcher handoff</h3><ul class="bullets"><li>The current event or source creating urgency.</li><li>Three to seven verified claims.</li><li>Direct URLs for every important claim.</li><li>Relevant quotations or timestamped clips.</li><li>Contradictions, missing evidence, and what the sources do not prove.</li><li>Two or three mechanisms worth explaining.</li></ul><p>The Researcher verifies the original claim, checks primary sources, records useful numbers, and separates facts from inference. It does not choose a headline first and hunt for supporting evidence.</p>
+  <h3>Angle brief</h3><div class="codewrap"><p class="code-title">Content Strategist output</p><button class="copy" type="button" aria-label="Copy the angle brief template">Copy</button><pre><code>reader:
+reader outcome:
+current source:
+central tension:
+thesis:
+what becomes possible:
+main format:
+main headline:
+reusable object:
+proof required:
+  sections:
+  distribution entry points:
+  - proof
+  - mechanism
+  - workflow
+  - risk
+  - result</code></pre></div>
+  <p>The reusable object is the template, framework, visual, or checklist the reader can keep. The Content Strategist returns one recommendation and explains why the rejected directions are weaker.</p>
+  <h3>Main piece checklist</h3><ul class="bullets"><li>An outcome-led headline.</li><li>A first screen that makes the result tangible.</li><li>Visible architecture.</li><li>Claims tied to the source package.</li><li>A complete workflow or framework.</li><li>Examples where a reader could get stuck.</li><li>A short ending that makes the idea easy to remember.</li></ul><p>The Long-Form Writer creates the source material for the campaign. It does not write every platform asset.</p>
+  <h3>Editor checks</h3><ul class="bullets"><li>Several hooks making the same claim.</li><li>The same opening story repeated across platforms.</li><li>Unsupported claims introduced during distribution.</li><li>Tone changes between assets.</li><li>A carousel that adds nothing beyond the main piece.</li><li>A call to action that does not match the reader.</li><li>One platform receiving much less value than the others.</li></ul>
+  <div class="callout"><p>The Editor can approve, request a revision, or reject an asset. It cannot publish.</p></div><p>Your review screen should show the final copy, supporting source, intended platform, media, and the decision you need to make.</p>
+
+  <h2 id="record">5. Create one campaign record</h2>
+  <p class="lede">Each bot should receive the same fields every time.</p>
+  <p>Keep one campaign record for the whole job. Every bot reads it, adds its part, and passes it on. You can see the full decision history without reopening six chats.</p>
+  <div class="codewrap"><p class="code-title">Campaign record</p><button class="copy" type="button" aria-label="Copy the campaign record template">Copy</button><pre><code>campaign: hermes-content-system
+status: research
+
+signal:
+  event:
+  source:
+  urgency:
+  audience_question:
+
+research:
+  verified_claims: []
+  sources: []
+  authority_clips: []
+  contradictions: []
+  unknowns: []
+
+angle:
+  reader:
+  outcome:
+  tension:
+  thesis:
+  reusable_object:
+
+main_piece:
+  format:
+  path:
+  approval_state:
+
+distribution:
+  x: []
+  linkedin: []
+  newsletter: []
+  video: []
+  carousel: []
+
+review:
+  issues: []
+  decision:
+
+performance:
+  observations: []
+  proposed_rule_changes: []</code></pre></div>
+  <p>If a required field is missing, the bot sends the task back instead of guessing.</p>
+
+  <h2 id="hermes">6. Build the team in Hermes</h2>
+  <p class="lede">Profiles hold role memory. Bot Mode makes the team visible. Kanban carries the work.</p>
+  <ol class="numlist"><li>Open the current Hermes desktop application.</li><li>Create one isolated profile for each of the six roles.</li><li>Clone the same base configuration so the profiles share the model and core capabilities while keeping separate sessions and memory.</li><li>Put the role contract inside each profile's <code>SOUL</code> file.</li><li>Point each profile at the same <code>media-company</code> vault.</li><li>Restrict each role to the files and campaign fields it is expected to change.</li><li>Add the six profiles to one Bot Mode roster.</li><li>Keep one persistent room for questions and interventions.</li><li>Create one Kanban board and start its dispatcher.</li><li>Assign the first campaign to Signal Scout.</li></ol>
+  <div class="tw"><table><thead><tr><th>Kanban stage</th><th>Required input</th><th>Output</th></tr></thead><tbody>
+    <tr><td>Idea</td><td>Watchlist and audience questions.</td><td>Signal brief or rejection.</td></tr><tr><td>Research</td><td>Approved signal.</td><td>Evidence package.</td></tr><tr><td>Angle</td><td>Complete evidence package.</td><td>One angle brief.</td></tr><tr><td>Long-form</td><td>Approved angle and evidence.</td><td>Main piece.</td></tr><tr><td>Distribution</td><td>Original angle, main piece, platform rules.</td><td>Platform-specific assets.</td></tr><tr><td>Review</td><td>All assets and sources together.</td><td>Approval queue.</td></tr><tr><td>Performance</td><td>Published assets and results.</td><td>Proposed lessons.</td></tr><tr><td>Updated playbooks</td><td>Approved lessons.</td><td>Revised shared rules.</td></tr>
+  </tbody></table></div>
+  <p>Hermes Kanban keeps the task and handoff state on a durable SQLite-backed board. Tasks can wait for dependencies, carry comments, survive restarts, enter review, and return to the correct profile when changes are required.</p>
+
+  <h2 id="first-run">7. Run the first campaign</h2>
+  <p class="lede">Use the system itself as the first assignment.</p>
+  <div class="codewrap"><p class="code-title">First Signal Scout prompt</p><button class="copy" type="button" aria-label="Copy the Signal Scout prompt">Copy</button><pre><code>Find the strongest practical content opportunity created by the latest
+Hermes Bot Mode release.
+
+Prioritize a specific workflow a solo operator can build now.
+
+Return:
+- the official source
+- current audience interest
+- useful authority clips
+- the question the finished piece should answer
+- reasons to reject weak angles
+
+Do not draft content.</code></pre></div>
+  <p>The expected route is:</p><ol class="numlist"><li><strong>Signal Scout</strong> identifies Bot Mode as the event and the six-bot content operation as the possible workflow.</li><li><strong>Researcher</strong> checks the official release, documentation, walkthroughs, and community tests. It records what Bot Mode, Profiles, and Kanban actually do.</li><li><strong>Content Strategist</strong> chooses the reader, outcome, tension, thesis, format, and reusable object.</li><li><strong>Long-Form Writer</strong> creates the complete guide from the approved angle and evidence.</li><li><strong>Distribution Bot</strong> develops different entry points based on the capability, architecture, research, implementation, and results.</li><li><strong>Editor</strong> compares the full package, checks every important claim against the source package, and prepares it for your review.</li></ol>
+  <div class="state">one campaign → one record → six decisions → one human approval queue</div>
+
+  <h2 id="distribution">8. Rebuild the idea for each platform</h2>
+  <p class="lede">Distribution is not shortening one article five times.</p><p>The Distribution Bot returns to the angle brief. It chooses the part of the argument that fits what people expect on each platform.</p>
+  <div class="tw"><table><thead><tr><th>Platform</th><th>Useful entry point</th></tr></thead><tbody><tr><td><strong>X</strong></td><td>The sharpest claim, proof point, build sequence, or authority clip.</td></tr><tr><td><strong>LinkedIn</strong></td><td>The operator lesson, internal decision, or before-and-after workflow.</td></tr><tr><td><strong>Carousel</strong></td><td>The framework that becomes easier to understand when shown visually.</td></tr><tr><td><strong>Video</strong></td><td>A spoken narrative built around tension, demonstration, and result.</td></tr><tr><td><strong>Newsletter</strong></td><td>The nuance, examples, and personal context that would overload a short post.</td></tr></tbody></table></div>
+  <p>Every asset needs its own reason to exist, even for someone who already saw another part of the campaign.</p>
+  <h3>A seven-day X sequence</h3><div class="week" aria-label="Seven-day X distribution sequence"><div class="day"><b>DAY 1</b><span>Main argument and complete guide</span></div><div class="day"><b>DAY 2</b><span>Architecture: bots, brain, production desk</span></div><div class="day"><b>DAY 3</b><span>Authority clip and one mechanism</span></div><div class="day"><b>DAY 4</b><span>Practical build or handoff contract</span></div><div class="day"><b>DAY 5</b><span>Why one chat repeats itself</span></div><div class="day"><b>DAY 6</b><span>How the feedback loop works</span></div><div class="day"><b>DAY 7</b><span>The complete system in one visual</span></div></div>
+
+  <h2 id="approval">9. Keep approval human</h2>
+  <p class="lede">The first version prepares everything and publishes nothing.</p><p>You approve:</p><ul class="checklist"><li>The central angle.</li><li>The main draft.</li><li>Claims about products, people, or results.</li><li>Every public post.</li><li>Changes to voice, audience, offer, or editorial policy.</li><li>Performance lessons that become permanent rules.</li></ul>
+  <p>Every approval, revision, and rejection becomes an example the bots can follow. When you keep making the same correction, add it to the relevant playbook. Keep publishing approval human until the review queue stops surfacing serious errors.</p><div class="callout"><p>Automate the repeated decisions. Keep your judgment in the publishing process.</p></div>
+
+  <h2 id="learning">10. Close the learning loop</h2>
+  <p class="lede">Reporting numbers is not learning. The next campaign must change.</p><p>After every campaign, record:</p><ul class="bullets"><li>The signal and subject.</li><li>The reader outcome and central angle.</li><li>The hook type, format, and platform.</li><li>Impressions or reach.</li><li>Meaningful engagement.</li><li>Clicks, follows, replies, or conversions tied to the goal.</li><li>What the Editor approved or revised.</li><li>What should be tested again.</li></ul>
+  <p>You do not need a seventh permanent bot. Give the Editor one weekly review task. It compares recent campaigns and proposes changes to hooks, angles, and platform rules. Every proposal must name the posts supporting it.</p>
+  <div class="three"><article><b>KEEP</b><p>Patterns that worked repeatedly and still match the strategy.</p></article><article><b>TEST</b><p>Promising patterns that need another controlled attempt.</p></article><article><b>STOP</b><p>Repeatedly weak patterns, duplicated formats, or expensive work with no useful result.</p></article></div>
+  <p>One strong result creates a hypothesis, not a permanent rule. You approve each change before the shared brain updates.</p>
+
+  <h2 id="minimum">11. Build the smallest useful version</h2>
+  <p class="lede">Do not begin with six fully autonomous bots.</p><ol class="numlist"><li>Create the Obsidian content brain and fill the minimum voice, audience, proof, and platform files.</li><li>Create Signal Scout, Researcher, and Editor first.</li><li>Run three real ideas through signal, research, and review.</li><li>Add Content Strategist when the evidence packages are consistently useful.</li><li>Add Long-Form Writer when the angle briefs constrain the draft clearly.</li><li>Add Distribution Bot after one main format is working.</li><li>Record performance and review proposed playbook changes once a week.</li><li>Keep approval human while the system learns your standards.</li></ol>
+  <p>The first useful version can return one researched opportunity, one angle brief, and one approval-ready post. Add the main piece next. Then add the platform package. Then close the performance loop.</p>
+  <div class="state">Hermes runs the team. Obsidian holds the shared knowledge. Your approvals decide what the system learns.</div>
+  <p class="source-note">Source basis: <a href="https://x.com/VibeMarketer_/status/2093330541177352217" target="_blank" rel="noopener noreferrer">&quot;How to Build a One-Person Media Company With Hermes Bots&quot; by VibeMarketer_</a>. This guide adapts the roles, handoffs, and build sequence from that source. The performance reported in the source belongs to its author, not Muditek.</p>
+  <section class="cta"><h2>Want this system built for your content operation?</h2><p><strong>Muditek builds agent workflows around your sources, rules, tools, and approval steps.</strong></p><p><a href="https://muditek.com">See what Muditek builds</a></p></section>
+</article>
+
+<footer class="footer"><img src="/brand/muditek-logo-light.png" alt="Muditek"><p>Built by Muditek. Agent systems that run the work on infrastructure you control. <a href="https://muditek.com">muditek.com</a></p></footer>
+</body>
+</html>

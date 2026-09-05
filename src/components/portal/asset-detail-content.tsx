@@ -306,6 +306,39 @@ function HtmlAssetFrame({
         ${body}
       `;
 
+      for (const button of Array.from(shadow.querySelectorAll<HTMLButtonElement>("button.copy"))) {
+        const onCopy = async () => {
+          const pre = button.parentElement?.querySelector("pre");
+          const value = pre?.innerText?.trim();
+          if (!value) return;
+
+          try {
+            await navigator.clipboard.writeText(value);
+          } catch {
+            const input = document.createElement("textarea");
+            input.value = value;
+            input.setAttribute("readonly", "");
+            input.style.position = "fixed";
+            input.style.opacity = "0";
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand("copy");
+            input.remove();
+          }
+
+          const label = button.textContent;
+          button.textContent = "Copied";
+          button.classList.add("ok");
+          window.setTimeout(() => {
+            button.textContent = label || "Copy";
+            button.classList.remove("ok");
+          }, 1500);
+        };
+
+        button.addEventListener("click", onCopy);
+        cleanup.push(() => button.removeEventListener("click", onCopy));
+      }
+
       const pages = Array.from(shadow.querySelectorAll(".page")).filter((page) => {
         if (!(page instanceof HTMLElement)) return false;
         const rect = page.getBoundingClientRect();

@@ -26,6 +26,7 @@ const LOCAL_HTML_PLAYBOOK_SLUGS = new Set([
   "geo-playbook",
   "google-maps-outbound",
   "hermes-outbound-gtm-agent",
+  "hermes-six-bot-content-system",
   "judgment-moat",
   "local-ai-build-guide",
   "loop-design-playbook",

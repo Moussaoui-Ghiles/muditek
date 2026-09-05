@@ -107,14 +107,11 @@ export function PortalShell({
     if (pageEyebrow || pageTitle || rightSlot) {
       return (
         <>
-          <section className="border-b border-white/[0.05] bg-[#0a0a0c]">
+          <section className="border-b border-white/[0.05] bg-background">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-5 sm:px-6 md:flex-row md:items-end md:justify-between md:py-7 lg:px-10">
               <div className="min-w-0">
                 {pageEyebrow && (
-                  <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
-                    <span aria-hidden className="h-px w-6 bg-primary/50" />
-                    {pageEyebrow}
-                  </p>
+                  <p className="text-sm font-bold text-primary">{pageEyebrow}</p>
                 )}
                 {pageTitle && (
                   <h1 className="mt-3 text-[34px] font-black leading-[0.92] tracking-[-0.035em] text-foreground md:text-[48px]">
@@ -134,11 +131,11 @@ export function PortalShell({
 
   return (
     <PortalShellMountedContext.Provider value={true}>
-    <div className="mudikit-dark min-h-[100dvh] bg-[#0a0a0c] text-foreground antialiased">
+    <div className="mudikit-dark min-h-[100dvh] bg-background text-foreground antialiased">
       <SidebarProvider>
         <PortalSidebar access={access} displayName={displayName} />
-        <SidebarInset className="min-h-svh min-w-0 [overflow-x:clip] bg-[#0a0a0c]">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-[#0a0a0c]/85 px-4 backdrop-blur-xl md:px-6">
+        <SidebarInset className="min-h-svh min-w-0 [overflow-x:clip] bg-background">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-background/85 px-4 backdrop-blur-xl md:px-6">
             <SidebarTrigger aria-label="Toggle sidebar">
               <Menu className="size-4" />
             </SidebarTrigger>
@@ -172,14 +169,11 @@ export function PortalShell({
           </header>
 
           {(pageEyebrow || pageTitle || rightSlot) && (
-            <section className="border-b border-white/[0.05] bg-[#0a0a0c]">
+            <section className="border-b border-white/[0.05] bg-background">
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-5 sm:px-6 md:flex-row md:items-end md:justify-between md:py-7 lg:px-10">
                 <div className="min-w-0">
                   {pageEyebrow && (
-                    <p className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-primary">
-                      <span aria-hidden className="h-px w-6 bg-primary/50" />
-                      {pageEyebrow}
-                    </p>
+                    <p className="text-sm font-bold text-primary">{pageEyebrow}</p>
                   )}
                   {pageTitle && (
                     <h1 className="mt-3 text-[34px] font-black leading-[0.92] tracking-[-0.035em] text-foreground md:text-[48px]">
@@ -195,7 +189,7 @@ export function PortalShell({
           <div className="portal-canvas relative isolate">
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_60%_at_50%_0%,rgba(244,209,140,0.06),transparent_70%)]"
+              className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_60%_at_50%_0%,rgba(245,158,11,0.07),transparent_70%)]"
             />
             {children}
           </div>

@@ -14,7 +14,7 @@ export default function WelcomePage() {
   }, [router]);
 
   return (
-    <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex items-center justify-center px-6">
+    <main className="min-h-[100dvh] bg-background text-foreground flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="mb-10">
           <Link href="/" aria-label="Muditek home">
@@ -28,13 +28,13 @@ export default function WelcomePage() {
         </div>
 
         <h1 className="text-3xl font-black tracking-[-0.02em] mb-4">Payment confirmed.</h1>
-        <p className="text-[#a0a0a6] text-base leading-relaxed mb-8">
+        <p className="text-foreground/70 text-base leading-relaxed mb-8">
           Opening your portal now. Receipt in your inbox.
         </p>
 
         <Link
           href="/portal"
-          className="inline-flex items-center gap-2 h-11 px-5 rounded-[6px] bg-[#e8e8ec] text-[#0a0a0c] font-semibold text-sm hover:bg-white active:scale-[0.99] transition-all duration-150"
+          className="inline-flex items-center gap-2 h-11 px-5 rounded-[6px] bg-foreground text-background font-semibold text-sm hover:bg-white active:scale-[0.99] transition-all duration-150"
         >
           Go to portal now
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">

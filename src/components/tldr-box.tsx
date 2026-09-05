@@ -3,11 +3,9 @@ export function TldrBox({ tldr }: { tldr: string | null | undefined }) {
   return (
     <aside
       data-speakable="tldr"
-      className="mb-10 border-l-2 border-primary/40 bg-card/30 px-5 py-4 rounded-r-[2px]"
+      className="mb-10 border border-white/[0.08] bg-card/40 px-5 py-4 rounded-[4px]"
     >
-      <p className="text-xs font-mono uppercase tracking-[0.2em] text-primary mb-2">
-        TL;DR
-      </p>
+      <p className="text-sm font-bold text-primary mb-2">In short</p>
       <p className="min-w-0 text-base font-bold leading-snug text-foreground [overflow-wrap:anywhere]">{tldr}</p>
     </aside>
   );

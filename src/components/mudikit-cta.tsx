@@ -1,121 +1,95 @@
 import Link from "next/link";
-import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
+import { PUBLIC_PLAYBOOKS, PUBLIC_SKILLS, PUBLIC_TOOLS } from "@/lib/public-library";
 
-interface MudikitCtaProps {
+interface LibraryCtaProps {
   variant?: "inline" | "section";
   className?: string;
   headline?: string;
   body?: string;
   ctaLabel?: string;
+  href?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
 }
 
-const DEFAULT_HEADLINE = "Get MudiKit · $47/mo";
+const DEFAULT_HEADLINE = "Take the systems before you buy anything.";
 const DEFAULT_BODY =
-  "Paid Claude Code skills and portal resource drops for operators who want deployable assets, not another course.";
-const DEFAULT_CTA_LABEL = "Get MudiKit - $47/mo";
+  "The skills, resources, and browser tools in the library are the files Muditek runs on. Read them here. Download them with a free portal account.";
+const DEFAULT_CTA_LABEL = "Open the library";
 
+const SHELF = [
+  { label: "Skills", href: "/skills", items: PUBLIC_SKILLS.slice(0, 3).map((s) => s.title) },
+  { label: "Resources", href: "/playbooks", items: PUBLIC_PLAYBOOKS.slice(0, 3).map((p) => p.title) },
+  { label: "Tools", href: "/tools", items: PUBLIC_TOOLS.slice(0, 2).map((t) => t.title) },
+];
+
+/**
+ * Library and portal call to action. The file keeps its historical name so
+ * existing page imports keep working.
+ */
 export function MudikitCta({
   variant = "section",
   className = "",
   headline = DEFAULT_HEADLINE,
   body = DEFAULT_BODY,
   ctaLabel = DEFAULT_CTA_LABEL,
-}: MudikitCtaProps) {
-  if (!SHOW_MUDIKIT_ON_WEBSITE) return null;
-
+  href = "/library",
+  secondaryLabel = "Create a portal account",
+  secondaryHref = "/sign-up",
+}: LibraryCtaProps) {
   if (variant === "inline") {
     return (
-      <aside
-        className={`my-10 border border-white/[0.08] bg-card/[0.3] backdrop-blur-md rounded-[6px] p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5 md:gap-8 ${className}`}
-      >
-        <div className="flex-1">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-primary/80 mb-2">
-            MudiKit
-          </p>
-          <h3 className="text-lg md:text-xl font-black tracking-tight text-foreground mb-1">
-            {headline}
-          </h3>
-          <p className="text-sm text-foreground/65 leading-relaxed font-light">
-            {body}
-          </p>
+      <section className={`w-full border-t border-white/[0.08] ${className}`}>
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-20 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="max-w-[56ch]">
+            <h3 className="text-2xl md:text-3xl font-black tracking-[-0.02em] leading-[1.05] text-foreground mb-3 text-balance">{headline}</h3>
+            <p className="text-[17px] text-foreground/80 leading-[1.65]">{body}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-5 shrink-0">
+            <Link href={href} className="btn btn-solid">
+              {ctaLabel}
+              <svg className="btn-icon" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </Link>
+            <Link href={secondaryHref} className="text-sm font-bold text-foreground/70 hover:text-foreground transition-colors underline underline-offset-4 decoration-white/25">
+              {secondaryLabel}
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-          <Link
-            href="/mudikit"
-            className="btn-press inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-xs font-black uppercase tracking-[0.18em] rounded-[2px] hover:scale-[1.02] transition-transform"
-          >
-            {ctaLabel}
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-              <path
-                d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
-          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/40">
-            Cancel anytime
-          </span>
-        </div>
-      </aside>
+      </section>
     );
   }
 
   return (
-    <section
-      className={`py-24 md:py-32 w-full flex justify-center border-t border-b border-white/[0.04] bg-card/[0.18] ${className}`}
-    >
-      <div className="max-w-[1100px] w-full px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
-          <div className="md:col-span-7">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 mb-5 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-primary/40" />
-              MudiKit · The Operator&apos;s Library
-            </p>
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] text-foreground mb-6 text-balance">
-              {headline.replace(" · $47/mo", "")}{" "}
-              <span className="text-primary italic font-medium">
-                $47/month.
-              </span>
-            </h2>
-            <p className="text-base md:text-lg text-foreground/65 font-light leading-relaxed max-w-2xl">
-              {body}
-            </p>
-          </div>
-
-          <div className="md:col-span-5 flex flex-col items-start md:items-end gap-3">
-            <Link
-              href="/mudikit"
-              className="btn-press group relative inline-flex items-center justify-center px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                {ctaLabel}
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  className="group-hover:translate-x-1 transition-transform"
-                >
-                  <path
-                    d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <div className="absolute inset-0 w-0 bg-primary group-hover:w-full transition-all duration-500 ease-in-out z-0" />
+    <section className={`w-full band-warm border-t border-[color:var(--surface-warm-line)] ${className}`}>
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <span className="rule" aria-hidden />
+          <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance mb-5">{headline}</h2>
+          <p className="text-lg md:text-xl text-foreground/80 leading-[1.6] max-w-[48ch] mb-10">{body}</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href={href} className="btn btn-solid">
+              {ctaLabel}
+              <svg className="btn-icon" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </Link>
-            <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/45">
-              Paid skills · Portal drops
-            </span>
-            <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-foreground/35">
-              Cancel anytime
-            </span>
+            <Link href={secondaryHref} className="btn btn-amber">{secondaryLabel}</Link>
+          </div>
+        </div>
+        <div className="lg:col-span-7">
+          <div className="panel">
+            <div className="panel-bar"><span>muditek.com/library</span><span>public</span></div>
+            <div className="panel-body grid gap-6 sm:grid-cols-3">
+              {SHELF.map((group) => (
+                <div key={group.label}>
+                  <Link href={group.href} className="panel-amber font-bold hover:underline underline-offset-4">{group.label}/</Link>
+                  <ul className="mt-2 space-y-1.5">
+                    {group.items.map((title) => (
+                      <li key={title} className="flex gap-2 leading-snug"><span className="panel-dim shrink-0">-</span><span>{title}</span></li>
+                    ))}
+                    <li className="panel-dim">...</li>
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

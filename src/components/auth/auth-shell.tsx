@@ -19,7 +19,7 @@ export function AuthShell({
   const altLabel = variant === "sign-in" ? "Create account" : "Sign in";
 
   return (
-    <div className="mudikit-dark relative flex min-h-[100dvh] flex-col bg-[#0c0c0e] text-[#e8e8ec]">
+    <div className="mudikit-dark relative flex min-h-[100dvh] flex-col bg-background text-foreground">
       {/* faint grid texture */}
       <div
         aria-hidden

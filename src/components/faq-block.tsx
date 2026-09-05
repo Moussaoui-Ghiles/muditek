@@ -9,34 +9,18 @@ export interface FaqItem {
 
 interface FaqBlockProps {
   items: FaqItem[];
+  /** Legacy prop. The block has one style now. */
   accentColor?: Accent;
   title?: string;
   className?: string;
   id?: string;
 }
 
-const BORDER: Record<Accent, { left: string; hover: string }> = {
-  primary: { left: "border-primary/20", hover: "hover:border-primary/50" },
-  emerald: { left: "border-emerald-500/20", hover: "hover:border-emerald-500/50" },
-  sky: { left: "border-sky-500/20", hover: "hover:border-sky-500/50" },
-  neutral: { left: "border-white/[0.08]", hover: "hover:border-white/30" },
-};
-
-export function FaqBlock({
-  items,
-  accentColor = "neutral",
-  title = "Common Questions",
-  className = "",
-  id,
-}: FaqBlockProps) {
+export function FaqBlock({ items, title = "Questions people ask first", className = "", id }: FaqBlockProps) {
   if (!items || items.length === 0) return null;
-  const b = BORDER[accentColor];
 
   return (
-    <section
-      id={id}
-      className={`py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02] ${className}`}
-    >
+    <section id={id} className={`w-full border-t border-white/[0.08] ${className}`}>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -48,26 +32,24 @@ export function FaqBlock({
           })),
         }}
       />
-      <div className="max-w-[900px] w-full px-6 md:px-12">
-        <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-12 flex items-center gap-3">
-          <span className="w-8 h-[1px] bg-foreground/20" />
-          {title}
-        </h2>
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className={`py-8 pl-5 border-l-2 ${b.left} ${b.hover} hover:bg-white/[0.01] hover:pl-6 transition-all duration-300 ${
-              i < items.length - 1 ? "border-b border-b-white/[0.03]" : ""
-            }`}
-          >
-            <h3 className="text-base font-bold text-foreground/80 mb-3">
-              &quot;{item.q}&quot;
-            </h3>
-            <p className="text-base text-foreground/70 font-light leading-relaxed max-w-2xl">
-              {item.a}
-            </p>
-          </div>
-        ))}
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-4">
+          <span className="rule" aria-hidden />
+          <h2 className="text-4xl md:text-5xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance lg:sticky lg:top-32">
+            {title}
+          </h2>
+        </div>
+        <div className="lg:col-span-8 border-b border-white/[0.08]">
+          {items.map((item, i) => (
+            <details key={i} className="faq" name="faq">
+              <summary>
+                <span>{item.q}</span>
+                <span className="faq-plus" aria-hidden />
+              </summary>
+              <p className="faq-body">{item.a}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );

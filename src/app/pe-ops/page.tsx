@@ -10,7 +10,7 @@ import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Operational Infrastructure for Investment Firms | Muditek",
@@ -124,7 +124,7 @@ export default function PEOpsPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group relative px-10 py-5 bg-sky-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <a href={BOOK_PATH} className="group relative px-10 py-5 bg-sky-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   See the Demo
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -163,11 +163,6 @@ export default function PEOpsPage() {
       {/* ══════ NEWSLETTER ══════ */}
       <NewsletterInline tags={["source:pe-ops", "segment:pe"]} accentColor="sky" />
 
-      {/* ══════ IMAGE BREAK ══════ */}
-      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
-        <Image src="/images/pe-office.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.3) saturate(1.3) brightness(0.65)' }} aria-hidden="true" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
-      </div>
 
       {/* ══════ CASE STUDY ══════ */}
       <section id="case-study" className="py-32 md:py-48 w-full flex justify-center relative">
@@ -318,7 +313,7 @@ export default function PEOpsPage() {
             <p className="text-sm font-mono text-foreground/50 tracking-wider uppercase mb-14">
               I take 1-2 build clients at a time. Each engagement gets my full attention.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOK_PATH} className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 See the Demo
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />

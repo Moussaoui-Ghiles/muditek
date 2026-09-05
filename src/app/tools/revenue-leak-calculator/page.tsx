@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
+import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 interface LeakResult {
   name: string;
@@ -23,7 +23,7 @@ const LEAK_CATEGORIES = [
   { num: "02", name: "Pipeline Conversion", desc: "B2B SaaS demo-to-close benchmarks sit at 20-25% (OpenView SaaS Benchmarks). Every percentage point below benchmark, multiplied by your deal volume and ACV, becomes visible lost revenue." },
   { num: "03", name: "Revenue Churn", desc: "Best-in-class B2B SaaS maintains ~0.5% monthly churn (6% annual). Excess churn above this compounds against your entire MRR base, month after month." },
   { num: "04", name: "Lead Source ROI", desc: "Most B2B SaaS companies run 2-4 paid channels without attribution. If a channel costs more than it produces in pipeline, every euro spent there is money burned." },
-  { num: "05", name: "Outbound Performance", desc: "Outbound meeting rates benchmark at 2% for well-targeted B2B campaigns. Below that, you're paying to send emails nobody responds to — and missing the meetings that would have closed." },
+  { num: "05", name: "Outbound Performance", desc: "Outbound meeting rates benchmark at 2% for well-targeted B2B campaigns. Below that, you're paying to send emails nobody responds to, and missing the meetings that would have closed." },
 ];
 
 export default function RevenueLeakCalculatorPage() {
@@ -111,7 +111,7 @@ export default function RevenueLeakCalculatorPage() {
         gap: `€${(channelSpendVal - channelRevenueVal).toLocaleString()}/mo wasted`,
         amount: Math.round(waste),
         formula: `(€${channelSpendVal.toLocaleString()} spend − €${channelRevenueVal.toLocaleString()} pipeline) × 12 months`,
-        methodology: "If a paid channel costs more than the pipeline it produces, every euro of the gap is burned money. Most B2B SaaS companies run 2-4 channels without proper revenue attribution — the diagnostic traces every euro to its source.",
+        methodology: "If a paid channel costs more than the pipeline it produces, every euro of the gap is burned money. Most B2B SaaS companies run 2-4 channels without proper revenue attribution . Attribution is the fix.",
       });
     }
 
@@ -175,7 +175,7 @@ export default function RevenueLeakCalculatorPage() {
             value={field.value}
             onChange={(e) => field.setter(e.target.value)}
             placeholder={field.placeholder}
-            className={`w-full bg-white/[0.03] border border-white/[0.08] rounded-[2px] py-3 text-sm font-mono text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-emerald-500/40 transition-colors ${field.unit === "€" ? "pl-9 pr-4" : field.unit ? "pl-4 pr-14" : "pl-4 pr-4"}`}
+            className={`w-full bg-white/[0.03] border border-white/[0.08] rounded-[2px] py-3 text-sm font-mono text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/60 transition-colors ${field.unit === "€" ? "pl-9 pr-4" : field.unit ? "pl-4 pr-14" : "pl-4 pr-4"}`}
           />
           {field.unit && field.unit !== "€" && (
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 text-sm font-mono">{field.unit}</span>
@@ -183,59 +183,50 @@ export default function RevenueLeakCalculatorPage() {
         </div>
         <p className="text-sm text-foreground/50 mt-1.5">{field.hint}</p>
         {field.label.includes("Response") && responseTimeWarning && (
-          <p className="text-sm text-amber-400/80 mt-1">That looks like minutes. This field is in hours.</p>
+          <p className="text-sm text-primary mt-1">That looks like minutes. This field is in hours.</p>
         )}
       </div>
     );
   }
 
   return (
-    <div className="bg-background min-h-[100dvh] text-foreground selection:bg-emerald-500/20 flex flex-col items-center">
+    <div className="bg-background min-h-[100dvh] text-foreground selection:bg-primary/20 flex flex-col items-center">
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-32 md:pt-44 pb-16 md:pb-24 w-full flex justify-center relative overflow-hidden">
-        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-[900px] w-full px-6 md:px-12 relative z-10">
+      <section className="w-full">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-36 md:pt-48 pb-16 md:pb-20">
           <ScrollReveal>
-            <div className="flex items-center gap-4 mb-8">
-              <Image src="/icon.svg" alt="Muditek" width={32} height={32} />
-              <h2 className="text-sm font-black tracking-[0.3em] uppercase text-emerald-400 flex items-center gap-3">
-                <span className="w-8 h-[1px] bg-emerald-400/50" />
-                Muditek / Tool
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={80}>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-8 text-balance">
-              Revenue Leak <span className="text-emerald-400 italic font-medium">Calculator</span>
+            <Link href="/tools" className="inline-flex items-center gap-2 text-sm font-bold text-foreground/60 hover:text-foreground transition-colors mb-8">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M9.5 6H2.5M5 3.5L2.5 6L5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              All tools
+            </Link>
+            <p className="text-base font-bold text-primary mb-6">Tool · Revenue operations</p>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.04em] leading-[0.92] text-foreground text-balance max-w-[14ch] mb-7">
+              Revenue Leak Calculator
             </h1>
-          </ScrollReveal>
-
-          <ScrollReveal delay={160}>
-            <p className="text-base md:text-lg text-foreground/70 font-light leading-relaxed max-w-2xl mb-4">
-              Enter your numbers. See where your B2B SaaS pipeline is leaking revenue across 5 categories, each with the formula and methodology shown.
+            <p className="text-xl md:text-2xl text-foreground/85 leading-[1.5] max-w-[60ch] mb-4">
+              Enter your numbers. See where a B2B SaaS pipeline leaks revenue across five categories, each with the formula and the method shown.
             </p>
-            <p className="text-sm text-foreground/50 font-mono tracking-wider">
-              No email required. Results shown instantly. Benchmarks sourced from OpenView, HubSpot, Bessemer, and InsideSales.com.
+            <p className="text-sm text-foreground/60">
+              No email required for the totals. Benchmarks are cited from OpenView, HubSpot, Bessemer, and InsideSales.com. The output is an estimate from the values you enter.
             </p>
           </ScrollReveal>
         </div>
       </section>
 
       {/* What We Measure */}
-      <section className="pb-16 w-full flex justify-center">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-20">
           <ScrollReveal delay={200}>
-            <h3 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-6">5 Leak Categories We Measure</h3>
-            <div className="space-y-3">
+            <span className="rule" aria-hidden />
+            <h2 className="text-4xl md:text-5xl font-black tracking-[-0.035em] leading-[0.95] mb-10">Five leak categories</h2>
+            <div className="border-t border-white/[0.08]">
               {LEAK_CATEGORIES.map((cat) => (
-                <div key={cat.num} className="border border-white/[0.05] bg-card/[0.2] p-5 rounded-[4px] flex gap-5 items-start">
-                  <span className="text-lg font-black text-foreground/[0.1] shrink-0 font-mono">{cat.num}</span>
+                <div key={cat.num} className="border-b border-white/[0.08] py-5 grid gap-2 md:grid-cols-[220px_1fr] md:gap-8">
+                  <h3 className="text-base font-black text-foreground"><span className="font-mono text-sm text-primary mr-3">{cat.num}</span>{cat.name}</h3>
                   <div>
-                    <h4 className="text-sm font-black tracking-[0.1em] uppercase text-emerald-400/80 mb-1">{cat.name}</h4>
-                    <p className="text-sm text-foreground/60 font-light leading-relaxed">{cat.desc}</p>
+                    <p className="text-base text-foreground/85 leading-relaxed max-w-[70ch]">{cat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -245,20 +236,20 @@ export default function RevenueLeakCalculatorPage() {
       </section>
 
       {/* Calculator */}
-      <section className="pb-32 w-full flex justify-center">
-        <div className="max-w-[900px] w-full px-6 md:px-12">
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-24">
           <div ref={formRef}>
             <ScrollReveal delay={240}>
-              <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl p-8 md:p-12">
+              <div className="border border-white/[0.05] bg-card/40 rounded-[4px] p-8 md:p-12">
                 {/* Core fields */}
-                <h3 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-8">Core Metrics</h3>
+                <h3 className="text-base font-bold text-primary mb-8">Core Metrics</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                   {coreFields.map(renderField)}
                 </div>
 
                 {/* Advanced fields */}
                 <div className="border-t border-white/[0.05] pt-8 mb-10">
-                  <h3 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-2">Channel Performance</h3>
+                  <h3 className="text-sm font-bold text-foreground/60 mb-2">Channel Performance</h3>
                   <p className="text-sm text-foreground/50 mb-6">Optional. Leave blank to skip these leak categories.</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {advancedFields.map(renderField)}
@@ -270,7 +261,7 @@ export default function RevenueLeakCalculatorPage() {
                   disabled={!hasAnyInput}
                   className={`w-full py-4 font-black text-sm uppercase tracking-[0.2em] rounded-[2px] transition-all btn-press ${
                     hasAnyInput
-                      ? "bg-emerald-500 text-background hover:scale-[1.01]"
+                      ? "bg-primary text-background hover:scale-[1.01]"
                       : "bg-white/[0.05] text-foreground/30 cursor-not-allowed"
                   }`}
                 >
@@ -282,14 +273,14 @@ export default function RevenueLeakCalculatorPage() {
 
           {/* Results */}
           {results !== null && (
-            <div className="mt-8 border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl p-8 md:p-12">
+            <div className="mt-8 border border-white/[0.05] bg-card/40 rounded-[4px] p-8 md:p-12">
               {results.length === 0 ? (
                 <div className="text-center py-8">
                   <h3 className="text-xl font-black text-foreground mb-4">No leaks detected with these numbers</h3>
-                  <p className="text-base text-foreground/60 font-light max-w-lg mx-auto mb-8">
-                    Your metrics are at or above benchmark. If this doesn&apos;t match your intuition, the diagnostic uses your actual CRM and Stripe data for a deeper analysis.
+                  <p className="text-base text-foreground/60 max-w-lg mx-auto mb-8">
+                    Your metrics are at or above benchmark. If that does not match your intuition, an audit on your actual CRM and billing data goes deeper than a calculator can.
                   </p>
-                  <button onClick={recalculate} className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-[0.15em]">
+                  <button onClick={recalculate} className="text-sm font-bold text-primary hover:text-foreground transition-colors underline underline-offset-4">
                     Adjust Numbers
                   </button>
                 </div>
@@ -297,15 +288,15 @@ export default function RevenueLeakCalculatorPage() {
                 <>
                   {/* Total — always visible */}
                   <div className="text-center mb-12 pb-10 border-b border-white/[0.05]">
-                    <span className="text-sm font-black uppercase tracking-[0.25em] text-emerald-400/80 block mb-3">Estimated Annual Revenue Leakage</span>
-                    <span className="text-5xl md:text-7xl font-black text-foreground font-mono tracking-tight stat-glow">
+                    <span className="text-sm font-bold text-primary block mb-3">Estimated Annual Revenue Leakage</span>
+                    <span className="text-5xl md:text-7xl font-black text-foreground font-mono tracking-tight ">
                       €{totalLeak.toLocaleString()}
                     </span>
-                    <span className="text-base text-foreground/50 font-light block mt-3">/year across {results.length} leak {results.length === 1 ? "category" : "categories"}</span>
+                    <span className="text-base text-foreground/50 block mt-3">/year across {results.length} leak {results.length === 1 ? "category" : "categories"}</span>
                   </div>
 
                   {/* Teaser — always visible: leak names + amounts only */}
-                  <h4 className="text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-6">
+                  <h4 className="text-base font-bold text-primary mb-6">
                     {resultsUnlocked ? "Breakdown by Category" : "Leaks Detected"}
                   </h4>
 
@@ -314,34 +305,33 @@ export default function RevenueLeakCalculatorPage() {
                       <div className="space-y-3 mb-10">
                         {results.map((leak) => (
                           <div key={leak.name} className="flex items-center justify-between border border-white/[0.05] bg-white/[0.01] px-6 py-4 rounded-[4px]">
-                            <span className="text-sm font-black tracking-[0.1em] uppercase text-foreground/70">{leak.name}</span>
-                            <span className="text-lg font-black font-mono text-emerald-400">€{leak.amount.toLocaleString()}/yr</span>
+                            <span className="text-sm font-bold text-foreground">{leak.name}</span>
+                            <span className="text-lg font-black font-mono text-primary">€{leak.amount.toLocaleString()}/yr</span>
                           </div>
                         ))}
                       </div>
 
                       {/* Email gate */}
-                      <div className="border border-emerald-500/[0.2] bg-emerald-500/[0.04] rounded-[4px] p-8 text-center">
+                      <div className="border border-white/[0.1] bg-card/40 rounded-[4px] p-8 text-center">
                         <div className="flex items-center justify-center gap-3 mb-4">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-emerald-400">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-primary">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                           <h4 className="text-lg font-black text-foreground">Unlock the Full Breakdown</h4>
                         </div>
-                        <p className="text-sm text-foreground/60 font-light leading-relaxed mb-6 max-w-md mx-auto">
+                        <p className="text-base text-foreground/70 leading-relaxed mb-6 max-w-md mx-auto">
                           Get the formulas, methodology, benchmark comparisons, and a prioritized fix roadmap for each leak category.
                         </p>
                         <EmailCapture
                           tags={["source:calculator", "segment:saas", "calculator:qualified"]}
-                          accentColor="emerald"
-                          buttonText="Unlock Full Report"
+                                                    buttonText="Unlock Full Report"
                           successMessage="Unlocked! Scroll down for details."
                           onSuccess={() => setResultsUnlocked(true)}
                           className="max-w-md mx-auto"
                         />
-                        <p className="text-xs text-foreground/30 mt-3 font-mono tracking-wider">
-                          No spam. We&apos;ll also send a copy to your inbox.
+                        <p className="text-xs text-foreground/50 mt-3">
+                          A copy goes to your inbox. Unsubscribe in one click.
                         </p>
                       </div>
                     </>
@@ -356,8 +346,8 @@ export default function RevenueLeakCalculatorPage() {
                           return (
                             <div key={leak.name} className="border border-white/[0.05] bg-white/[0.01] p-6 md:p-8 rounded-[4px]">
                               <div className="flex items-start justify-between gap-4 mb-4">
-                                <h5 className="text-base font-black tracking-[0.1em] uppercase text-foreground">{leak.name}</h5>
-                                <span className="text-xl font-black font-mono text-emerald-400 shrink-0">
+                                <h5 className="text-base font-black text-foreground">{leak.name}</h5>
+                                <span className="text-xl font-black font-mono text-primary shrink-0">
                                   €{leak.amount.toLocaleString()}/yr
                                 </span>
                               </div>
@@ -365,10 +355,10 @@ export default function RevenueLeakCalculatorPage() {
                               <div className="mb-5">
                                 <div className="flex justify-between text-sm text-foreground/50 mb-1.5">
                                   <span>Share of total leakage</span>
-                                  <span className="font-mono font-bold text-emerald-400/70">{pct.toFixed(0)}%</span>
+                                  <span className="font-mono font-bold text-primary">{pct.toFixed(0)}%</span>
                                 </div>
                                 <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                                  <div className="h-full bg-emerald-500/60 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+                                  <div className="h-full bg-primary/70 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
                                 </div>
                               </div>
 
@@ -383,7 +373,7 @@ export default function RevenueLeakCalculatorPage() {
                                 </div>
                                 <div>
                                   <span className="text-foreground/50 block mb-1">Gap</span>
-                                  <span className="text-emerald-400/80 font-medium">{leak.gap}</span>
+                                  <span className="text-primary font-medium">{leak.gap}</span>
                                 </div>
                               </div>
 
@@ -399,7 +389,7 @@ export default function RevenueLeakCalculatorPage() {
                                   </svg>
                                   How we calculated this
                                 </summary>
-                                <p className="text-sm text-foreground/50 font-light leading-relaxed mt-2 pl-5">{leak.methodology}</p>
+                                <p className="text-sm text-foreground/50 leading-relaxed mt-2 pl-5">{leak.methodology}</p>
                               </details>
                             </div>
                           );
@@ -407,7 +397,7 @@ export default function RevenueLeakCalculatorPage() {
                       </div>
 
                       <div className="mt-8 text-center">
-                        <button onClick={recalculate} className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-[0.15em]">
+                        <button onClick={recalculate} className="text-sm font-bold text-primary hover:text-foreground transition-colors underline underline-offset-4">
                           Adjust Numbers
                         </button>
                       </div>
@@ -418,27 +408,25 @@ export default function RevenueLeakCalculatorPage() {
 
               {/* CTA — always visible */}
               <div className="mt-12 pt-10 border-t border-white/[0.05]">
-                <p className="text-base text-foreground/60 font-light leading-relaxed mb-2">
-                  This is an estimate based on published industry benchmarks. The full diagnostic uses your actual CRM and Stripe data to find every leak with exact euro amounts and formulas — including leaks this calculator can&apos;t detect.
+                <p className="text-base text-foreground/60 leading-relaxed mb-2">
+                  This is an estimate from published benchmarks and the values you entered. A workflow audit on your actual CRM and billing data finds what a calculator cannot.
                 </p>
-                <p className="text-sm text-foreground/50 font-mono tracking-wider mb-8">
-                  If we can&apos;t find €50K in annual leakage, you pay nothing.
+                <p className="text-sm text-foreground/60 mb-8">
+                  If the audit finds nothing worth building, you do not pay for it.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <a
-                    href={BOOKING_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform btn-press"
+                    href={BOOK_PATH}
+                    className="btn btn-solid"
                   >
-                    Book Your Diagnostic
+                    Book a call
                   </a>
                   <a
                     href="/subscribe"
-                    className="inline-flex items-center justify-center px-8 py-5 border border-white/[0.1] text-foreground text-sm font-bold uppercase tracking-[0.2em] rounded-[2px] hover:bg-white/[0.02] transition-colors btn-press"
+                    className="btn btn-outline"
                   >
-                    Subscribe to Newsletter
+                    Subscribe to the newsletter
                   </a>
                 </div>
               </div>

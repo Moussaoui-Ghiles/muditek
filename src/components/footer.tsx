@@ -1,31 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { EmailCapture } from "./email-capture";
-import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export function Footer() {
   return (
     <footer className="w-full border-t border-white/[0.06] bg-background" role="contentinfo">
       <div className="max-w-[1500px] mx-auto px-6 md:px-12 py-16">
-        {/* Newsletter row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 pb-12 border-b border-white/[0.06]">
-          <div className="shrink-0">
-            <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground/70 block mb-1">
-              B2B Agents
-            </span>
-            <span className="text-sm text-foreground/50 font-light">
-              One deployable system per week for B2B operators.
-            </span>
-          </div>
-          <EmailCapture
-            tags={["source:footer"]}
-            buttonText="Subscribe"
-            successMessage="You're in."
-            compact
-            className="w-full lg:max-w-md"
-          />
-        </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
           <div>
@@ -33,44 +13,42 @@ export function Footer() {
               <Image src="/icon.svg" alt="" width={24} height={24} aria-hidden="true" />
               <span className="text-sm font-black tracking-[0.2em] text-foreground/70 uppercase">MUDITEK</span>
             </Link>
-            <p className="text-sm text-foreground/50 max-w-[28ch] leading-relaxed">
-              AI systems that eliminate operational waste.
+            <p className="text-sm text-foreground/50 max-w-[30ch] leading-relaxed">
+              AI transformation partner and outbound systems for B2B companies. Audit first, build second, you own the result.
+            </p>
+            <p className="text-sm text-foreground/50 max-w-[30ch] leading-relaxed mt-3">
+              Outbound pricing lives at{" "}
+              <a href="https://meetingsheld.com" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-foreground underline underline-offset-4 decoration-white/20">meetingsheld.com</a>.
             </p>
           </div>
 
           <nav className="flex flex-wrap gap-12 md:gap-16" aria-label="Footer navigation">
             <div>
-              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Solutions</span>
-              <Link href="/mudiagent" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">mudiAgent</Link>
-              <Link href="/revenue-leak-audit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Revenue Leak Audit</Link>
-              <Link href="/pe-ops" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Operational Infrastructure</Link>
-              {SHOW_MUDIKIT_ON_WEBSITE ? (
-                <Link href="/mudikit" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">MudiKit ($47/mo)</Link>
-              ) : null}
-              <Link href="/tools/revenue-leak-calculator" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Revenue Leak Calculator</Link>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Services</span>
+              <Link href="/ai-transformation" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">AI transformation</Link>
+              <Link href="/outbound" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Outbound</Link>
+              <Link href="/ma-origination" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">M&amp;A origination</Link>
+              <a href={BOOK_PATH} className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Book a call</a>
             </div>
             <div>
-              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Industries</span>
-              <Link href="/who-we-help" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Who We Help</Link>
-              <Link href="/who-we-help/private-equity" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Private Equity & VC</Link>
-              <Link href="/who-we-help/b2b-saas" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">B2B SaaS</Link>
-              <Link href="/who-we-help/agencies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Agencies</Link>
-              <Link href="/who-we-help/telecom" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Telecom</Link>
-              <Link href="/who-we-help/fintech" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Fintech & Payments</Link>
-            </div>
-            <div>
-              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Learn</span>
-              <Link href="/case-studies" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Case Studies</Link>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Library</span>
+              <Link href="/skills" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Skills</Link>
+              <Link href="/playbooks" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Resources</Link>
+              <Link href="/tools" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Tools</Link>
               <Link href="/newsletter" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Newsletter</Link>
-              <Link href="/library" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Public Library</Link>
-              <Link href="/sign-up" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Portal</Link>
-              <Link href="/mudiagent-vs-chatgpt" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">vs ChatGPT</Link>
-              <Link href="/pe-ops-vs-juniper-square" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">vs Juniper Square</Link>
+              <Link href="/library" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Everything</Link>
+            </div>
+            <div>
+              <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Portal</span>
+              <Link href="/sign-up" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Create an account</Link>
+              <Link href="/sign-in?redirect_url=/portal" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Sign in</Link>
+              <Link href="/portal/skills" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Skill downloads</Link>
+              <Link href="/portal/tools" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">Portal tools</Link>
             </div>
             <div>
               <span className="block text-sm font-black tracking-[0.25em] uppercase text-foreground/50 mb-4">Company</span>
               <Link href="/about" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">About</Link>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
+              <a href={BOOK_PATH} className="block text-sm text-foreground/60 hover:text-foreground transition-colors mb-2.5 font-medium">Contact</a>
               <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="block text-sm text-foreground/60 hover:text-foreground transition-colors font-medium">LinkedIn</a>
             </div>
           </nav>

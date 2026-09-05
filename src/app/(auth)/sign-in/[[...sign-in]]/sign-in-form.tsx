@@ -17,9 +17,9 @@ const CLERK_ELEMENTS = {
   dividerText: "text-[10px] uppercase tracking-[0.18em] text-white/35",
   formFieldLabel: "text-[11px] font-medium text-white/55",
   formFieldInput:
-    "bg-[#0e0e11] border border-white/[0.07] focus:border-amber-400/40 focus:ring-1 focus:ring-amber-400/20 transition-colors rounded-[8px] h-10 text-[13.5px] text-white placeholder:text-white/30",
+    "bg-white/[0.03] border border-white/[0.07] focus:border-amber-400/40 focus:ring-1 focus:ring-amber-400/20 transition-colors rounded-[8px] h-10 text-[13.5px] text-white placeholder:text-white/30",
   formButtonPrimary:
-    "bg-white text-[#0c0c0e] hover:bg-white/95 active:scale-[0.99] transition-all duration-150 rounded-[8px] h-10 text-[13.5px] font-semibold normal-case tracking-normal",
+    "bg-white text-background hover:bg-white/95 active:scale-[0.99] transition-all duration-150 rounded-[8px] h-10 text-[13.5px] font-semibold normal-case tracking-normal",
   footer: "bg-transparent",
   footerActionText: "text-[12px] text-white/40",
   footerActionLink: "text-[12px] text-white font-semibold hover:underline underline-offset-4",
@@ -31,10 +31,7 @@ const CLERK_ELEMENTS = {
 
 const HERO = (
   <div className="max-w-[560px]">
-    <p className="reveal mb-5 inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-primary">
-      <span className="h-px w-8 bg-primary/50" />
-      Members
-    </p>
+    <p className="reveal mb-6 text-sm font-bold text-foreground/60">Members</p>
     <h1 className="reveal text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white md:text-[64px]">
       Welcome back to{" "}
       <span className="text-primary">Muditek</span>.
@@ -48,10 +45,7 @@ export default function SignInForm({ redirectUrl = "/portal" }: { redirectUrl?: 
   return (
     <AuthShell variant="sign-in" hero={HERO}>
       <div className="reveal reveal-delay-2 mb-6 hidden lg:block">
-        <p className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/60">
-          <span className="h-px w-8 bg-white/30" />
-          Sign in
-        </p>
+        <p className="text-sm font-bold text-foreground/60">Sign in</p>
       </div>
       <div className="reveal reveal-delay-3">
         <SignIn

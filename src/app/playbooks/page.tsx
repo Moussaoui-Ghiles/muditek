@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { MudikitCta } from "@/components/mudikit-cta";
+import { LibraryHeader, LibraryList } from "@/components/library/library-list";
 import { PUBLIC_PLAYBOOKS } from "@/lib/public-library";
 
 export const metadata: Metadata = {
-  title: "Muditek Playbooks | Outbound and AI Systems",
+  title: "Resources | Outbound and AI Systems | Muditek",
   description: "Complete operating guides for outbound, local lead generation, and AI implementation.",
   alternates: { canonical: "https://muditek.com/playbooks" },
 };
 
 const GROUPS = [
-  {
-    title: "Outbound systems",
-    description: "Lead research, cold email, and outbound agents.",
-    items: PUBLIC_PLAYBOOKS.slice(0, 7),
-  },
-  {
-    title: "AI implementation",
-    description: "Local AI, agent loops, content systems, SEO, and human review.",
-    items: PUBLIC_PLAYBOOKS.slice(7),
-  },
+  { title: "Outbound systems", description: "Lead research, cold email, and outbound agents.", items: PUBLIC_PLAYBOOKS.slice(0, 7) },
+  { title: "AI transformation", description: "Local AI, agent loops, content systems, SEO, and human review.", items: PUBLIC_PLAYBOOKS.slice(7) },
 ];
 
 export default function PlaybooksPage() {
@@ -28,31 +22,36 @@ export default function PlaybooksPage() {
     <div className="min-h-[100dvh] bg-background text-foreground">
       <Navbar />
       <main id="main-content">
-        <header className="border-b border-white/[0.06] pb-16 pt-36 md:pb-24 md:pt-48">
-          <div className="mx-auto w-full max-w-[1100px] px-6 md:px-12">
-            <Link href="/library" className="text-sm font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">← Library</Link>
-            <p className="mt-10 text-sm font-black uppercase tracking-[0.2em] text-primary">Playbooks</p>
-            <h1 className="mt-5 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl">Complete operating guides.</h1>
-            <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/70">Read the method before you buy software or automate the work.</p>
-          </div>
-        </header>
+        <LibraryHeader
+          back={{ href: "/library", label: "Library" }}
+          kicker="Resources"
+          title="Complete operating guides."
+          lead="The full method behind each system, written to be followed. Read it before you buy software or automate the work."
+        />
         {GROUPS.map((group) => (
-          <section key={group.title} className="border-b border-white/[0.06] py-14 last:border-b-0 md:py-20">
-            <div className="mx-auto w-full max-w-[1100px] px-6 md:px-12">
-              <h2 className="text-4xl font-black tracking-[-0.04em]">{group.title}</h2>
-              <p className="mt-4 text-base leading-7 text-foreground/65">{group.description}</p>
-              <div className="mt-9 grid gap-5 md:grid-cols-2">
-                {group.items.map((item) => (
-                  <Link key={item.slug} href={`/playbooks/${item.slug}`} className="group rounded-xl border border-white/[0.08] bg-card/30 p-7 hover:border-primary/50">
-                    <p className="text-sm font-black uppercase tracking-[0.18em] text-primary">{item.topic}</p>
-                    <h3 className="mt-4 text-3xl font-black leading-tight tracking-[-0.03em] group-hover:text-primary">{item.title}</h3>
-                    <p className="mt-5 text-base leading-7 text-foreground/65">{item.summary}</p>
-                  </Link>
-                ))}
+          <section key={group.title} className="border-t border-white/[0.08]">
+            <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12 py-16 md:py-20 grid gap-8 lg:grid-cols-12 lg:gap-16">
+              <div className="lg:col-span-4">
+                <span className="rule" aria-hidden />
+                <h2 className="text-4xl md:text-5xl font-black tracking-[-0.035em] leading-[0.95] lg:sticky lg:top-32">{group.title}</h2>
+                <p className="mt-4 text-base leading-relaxed text-foreground/70 max-w-[36ch]">{group.description}</p>
+              </div>
+              <div className="lg:col-span-8">
+                <LibraryList items={group.items} />
               </div>
             </div>
           </section>
         ))}
+        <MudikitCta
+          variant="inline"
+          headline="Want every file in one place?"
+          body="A free portal account keeps the skills, resources, and tools together, with downloads tied to one login."
+          ctaLabel="Create a portal account"
+          href="/sign-up"
+          secondaryLabel="Sign in"
+          secondaryHref="/sign-in?redirect_url=/portal/playbooks"
+        />
+        <NewsletterInline source="playbooks" />
       </main>
       <Footer />
     </div>

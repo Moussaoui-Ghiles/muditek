@@ -148,10 +148,7 @@ function SectionHeading({
   return (
     <div className="mb-6 flex flex-col gap-3 border-b border-white/[0.07] pb-5 md:flex-row md:items-end md:justify-between">
       <div>
-        <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
-          <span aria-hidden className="h-px w-7 bg-primary/60" />
-          {kicker}
-        </p>
+        <p className="text-sm font-bold text-primary">{kicker}</p>
         <h2 className="mt-3 text-[24px] font-black leading-none tracking-[-0.02em] text-white md:text-[28px]">
           {title}
         </h2>
@@ -159,7 +156,7 @@ function SectionHeading({
       {action ? (
         <Link
           href={action.href}
-          className="group inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-primary transition-opacity hover:opacity-80"
+          className="group inline-flex items-center gap-2 text-sm font-bold text-foreground/70 transition-colors hover:text-primary"
         >
           {action.label}
           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -182,7 +179,7 @@ function SkillRow({ item, access }: { item: ContentItem; access: PortalAccess })
         <Wand2 className="size-[17px]" />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+        <div className="flex items-center gap-2 text-xs font-bold text-white/70">
           Skill
           {!accessible ? <Lock className="size-3" /> : null}
         </div>
@@ -232,7 +229,7 @@ function ResourceCard({ item, access }: { item: ContentItem; access: PortalAcces
         ) : null}
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
+        <div className="flex items-center justify-between text-xs font-bold text-white/70">
           <span>{resourceLabel(item)}</span>
           {date ? <span>{date}</span> : null}
         </div>
@@ -262,7 +259,7 @@ function ToolCard({ tool }: { tool: (typeof PORTAL_TOOLS)[number] }) {
         <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/[0.1] bg-black/25 text-white/85">
           <Wrench className="size-[18px]" />
         </span>
-        <span className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/70">
+        <span className="rounded-full border border-white/15 px-2.5 py-1 text-xs font-bold text-white/70">
           {tool.category}
         </span>
       </div>
@@ -332,77 +329,10 @@ export default function PortalHomeContent({
   const hasHero = !!(hero && hero.title);
 
   return (
-    <main className="relative noise">
+    <main className="relative">
       {/* ── Hero band ── */}
-      <section className="relative overflow-hidden border-b border-white/[0.06]">
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="portal-mesh">
-            <span className="portal-blob portal-blob-1" />
-            <span className="portal-blob portal-blob-2" />
-            <span className="portal-blob portal-blob-3" />
-            <span className="portal-blob portal-blob-4" />
-            <span className="portal-blob portal-blob-5" />
-          </div>
-          <div className="portal-hero-grid absolute inset-0" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,12,0.8)_0%,rgba(10,10,12,0.28)_38%,transparent_70%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_bottom,transparent_0%,rgba(10,10,12,0.55)_78%,#0a0a0c_100%)]" />
-        </div>
-        <style>{`
-          .portal-mesh {
-            position: absolute;
-            inset: 0;
-            filter: blur(56px) saturate(150%);
-          }
-          .portal-blob {
-            position: absolute;
-            border-radius: 9999px;
-            mix-blend-mode: screen;
-            opacity: 0.7;
-            will-change: transform;
-          }
-          .portal-blob-1 {
-            width: 46%; height: 150%; left: -8%; top: -25%;
-            background: radial-gradient(circle at 50% 50%, #3b6cf5, transparent 60%);
-            animation: portalBlob1 12s ease-in-out infinite alternate;
-          }
-          .portal-blob-2 {
-            width: 42%; height: 155%; left: 22%; top: -30%;
-            background: radial-gradient(circle at 50% 50%, #7c3aed, transparent 60%);
-            animation: portalBlob2 15s ease-in-out infinite alternate;
-          }
-          .portal-blob-3 {
-            width: 46%; height: 150%; right: 8%; top: -22%;
-            background: radial-gradient(circle at 50% 50%, #d6409f, transparent 60%);
-            animation: portalBlob3 11s ease-in-out infinite alternate;
-          }
-          .portal-blob-4 {
-            width: 40%; height: 150%; right: -10%; top: -18%;
-            background: radial-gradient(circle at 50% 50%, #22b8cf, transparent 60%);
-            animation: portalBlob4 14s ease-in-out infinite alternate;
-          }
-          .portal-blob-5 {
-            width: 34%; height: 140%; left: 6%; top: -8%; opacity: 0.5;
-            background: radial-gradient(circle at 50% 50%, #f59e0b, transparent 62%);
-            animation: portalBlob5 10s ease-in-out infinite alternate;
-          }
-          @keyframes portalBlob1 { from { transform: translate3d(-8%,-6%,0) scale(0.9); } to { transform: translate3d(16%,12%,0) scale(1.28); } }
-          @keyframes portalBlob2 { from { transform: translate3d(10%,8%,0) scale(1.2); } to { transform: translate3d(-14%,-10%,0) scale(0.85); } }
-          @keyframes portalBlob3 { from { transform: translate3d(6%,-8%,0) scale(0.95); } to { transform: translate3d(-16%,12%,0) scale(1.3); } }
-          @keyframes portalBlob4 { from { transform: translate3d(0,0,0) scale(1.1); } to { transform: translate3d(-18%,-12%,0) scale(0.9); } }
-          @keyframes portalBlob5 { from { transform: translate3d(-6%,4%,0) scale(0.95); } to { transform: translate3d(20%,-10%,0) scale(1.3); } }
-          .portal-hero-grid {
-            background-image:
-              linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
-            background-size: 48px 48px;
-            -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
-            mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
-            opacity: 0.5;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .portal-blob-1, .portal-blob-2, .portal-blob-3, .portal-blob-4, .portal-blob-5 { animation: none; }
-          }
-        `}</style>
+      <section className="relative overflow-hidden border-b border-white/[0.08]">
+        <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-60" />
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 md:pb-24 md:pt-24 lg:px-10">
           {hasHero ? (
             <div className="max-w-3xl">
@@ -410,8 +340,7 @@ export default function PortalHomeContent({
                 {displayName ? `Welcome back, ${displayName}.` : "Welcome back."}
               </p>
               {hero!.eyebrow ? (
-                <p className="reveal reveal-delay-1 mt-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
-                  <span aria-hidden className="h-px w-8 bg-primary/60" />
+                <p className="reveal reveal-delay-1 mt-5 text-sm font-bold text-white/70">
                   {hero!.eyebrow}
                 </p>
               ) : null}
@@ -428,7 +357,7 @@ export default function PortalHomeContent({
               {hero!.ctaLabel && hero!.ctaHref ? (
                 <a
                   href={hero!.ctaHref}
-                  className="btn-press reveal reveal-delay-3 mt-7 inline-flex items-center gap-2 rounded-[8px] bg-primary px-6 py-3.5 text-[13px] font-black uppercase tracking-[0.12em] text-primary-foreground"
+                  className="btn btn-amber btn-sm reveal reveal-delay-3 mt-7"
                 >
                   {hero!.ctaLabel}
                   <ArrowRight className="size-4" />
@@ -516,7 +445,7 @@ export default function PortalHomeContent({
                   <Newspaper className="size-5" />
                 </span>
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
+                  <div className="text-xs font-bold text-white/70">
                     From the newsletter
                     {formatShortDate(latestIssue.sent_at)
                       ? ` · ${formatShortDate(latestIssue.sent_at)}`

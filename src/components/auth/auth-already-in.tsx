@@ -24,8 +24,8 @@ export function AuthAlreadyIn({ variant }: { variant: "sign-in" | "sign-up" }) {
 
   return (
     <div className="w-full max-w-[420px]">
-      <div className="reveal reveal-delay-1 mb-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.26em] font-semibold text-emerald-300/80">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+      <div className="reveal reveal-delay-1 mb-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.26em] font-semibold text-primary">
+        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
         Signed in
       </div>
       <h1 className="reveal reveal-delay-1 text-4xl font-black tracking-[-0.02em] leading-[1.05] text-white">
@@ -62,7 +62,7 @@ export function AuthAlreadyIn({ variant }: { variant: "sign-in" | "sign-up" }) {
         <div className="mt-5 space-y-2">
           <Link
             href="/portal"
-            className="flex h-10 w-full items-center justify-center gap-2 rounded-[8px] bg-white text-[13.5px] font-semibold text-[#0c0c0e] transition-all duration-150 hover:bg-white/95 active:scale-[0.99] btn-press"
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-[8px] bg-white text-[13.5px] font-semibold text-background transition-all duration-150 hover:bg-white/95 active:scale-[0.99] btn-press"
           >
             Continue to portal
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">

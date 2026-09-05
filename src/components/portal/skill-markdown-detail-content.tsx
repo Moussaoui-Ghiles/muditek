@@ -253,7 +253,7 @@ function LockedState({ item }: { item: ContentItem }) {
             </p>
             <Link
               href="/portal/skills"
-              className="group mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-[#0a0a0c] transition-all duration-200 hover:gap-3 hover:bg-amber-50"
+              className="group mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-background transition-all duration-200 hover:gap-3 hover:bg-amber-50"
             >
               Back to skills
               <ArrowUpRight className="size-3.5" />
@@ -365,7 +365,7 @@ export function SkillMarkdownDetailContent({
               <button
                 type="button"
                 onClick={copyCurrent}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold text-[#0a0a0c] transition-all duration-200 hover:bg-amber-50"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold text-background transition-all duration-200 hover:bg-amber-50"
               >
                 {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                 {copied ? "Copied" : "Copy markdown"}

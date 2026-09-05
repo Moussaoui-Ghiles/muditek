@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { FaqBlock } from "@/components/faq-block";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "mudiAgent vs ChatGPT Enterprise | On-Premises AI Comparison | Muditek",
@@ -125,9 +125,7 @@ export default function MudiAgentVsChatGPTPage() {
 
           <ScrollReveal delay={240}>
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={BOOK_PATH}
               className="group relative inline-flex items-center px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press"
             >
               <span className="relative z-10 flex items-center gap-3">
@@ -269,7 +267,7 @@ export default function MudiAgentVsChatGPTPage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               In 30 minutes, we&apos;ll identify your top 3 automation targets and estimate the hours you&apos;d recover. No pitch. No commitment.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOK_PATH} className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book a Discovery Audit
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />

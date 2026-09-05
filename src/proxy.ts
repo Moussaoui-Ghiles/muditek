@@ -5,6 +5,9 @@ const isPublicRoute = createRouteMatcher([
   // Marketing
   "/",
   "/about",
+  "/ai-transformation",
+  "/outbound",
+  "/ma-origination",
   "/mudiagent",
   "/mudiagent-vs-chatgpt",
   "/pe-ops",
@@ -30,6 +33,7 @@ const isPublicRoute = createRouteMatcher([
   "/tools/(.*)",
   "/preferences/(.*)",
   "/subscribe",
+  "/book",
   "/robots.txt",
   "/sitemap.xml",
   "/llms.txt",
@@ -56,6 +60,7 @@ const isPublicRoute = createRouteMatcher([
   // APIs (public or self-authenticating)
   "/api/submit",
   "/api/subscribe",
+  "/api/book",
   "/api/assets/(.*)",
   "/api/account/ensure",
   "/api/admin/(.*)",
@@ -71,6 +76,19 @@ const isPublicRoute = createRouteMatcher([
   "/api/portal/skills/(.*)/download",
   "/api/portal/billing",
   "/api/indexnow",
+]);
+
+/** Only these need a session. Everything else that is not public renders as-is (including 404s). */
+const isPrivateRoute = createRouteMatcher([
+  "/portal(.*)",
+  "/portal-skills-preview(.*)",
+  "/skill-shelf-preview(.*)",
+  "/workflows(.*)",
+  "/preferences",
+  "/api/portal/(.*)",
+  "/api/account/(.*)",
+  "/api/skills/(.*)",
+  "/api/workflows/(.*)",
 ]);
 
 const LEGACY_PLAYBOOK_FILE_SLUGS: Record<string, string> = {
@@ -109,6 +127,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (redirectToUnlock) return redirectToUnlock;
 
   if (isPublicRoute(req)) return;
+  if (!isPrivateRoute(req)) return;
   const { userId } = await auth();
   if (userId) return;
   const signInUrl = new URL("/sign-in", req.url);

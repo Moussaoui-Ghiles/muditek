@@ -439,7 +439,7 @@ export function RevenueLeakWorkbench() {
         </section>
 
         {/* OUTPUT */}
-        <section className="relative isolate overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0c] p-6 md:p-7">
+        <section className="relative isolate overflow-hidden rounded-2xl border border-white/[0.07] bg-background p-6 md:p-7">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700"

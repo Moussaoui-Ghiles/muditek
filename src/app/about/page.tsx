@@ -3,68 +3,76 @@ import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { NewsletterInline } from "@/components/newsletter-inline";
 import { FaqBlock } from "@/components/faq-block";
-import { PullQuote } from "@/components/pull-quote";
 import { MudikitCta } from "@/components/mudikit-cta";
-import { TestimonialBlock } from "@/components/testimonial-block";
-import { DataCitation } from "@/components/data-citation";
+import { NewsletterInline } from "@/components/newsletter-inline";
 import { JsonLd } from "@/components/json-ld";
-import { DATA_POINTS } from "@/lib/data-points";
-import { BOOKING_URL } from "@/lib/booking";
-
-const ABOUT_TESTIMONIALS: Parameters<typeof TestimonialBlock>[0]["items"] = [];
+import { BOOK_PATH } from "@/lib/booking";
 
 const ABOUT_FAQ = [
   {
     q: "Who runs Muditek?",
-    a: "Ghiles Moussaoui — engineer turned operator. Started building automation systems for B2B founders in 2024, now runs Muditek full-time. Reaches 35K B2B operators and AI builders on LinkedIn weekly. Based in Europe, working with clients across telecom, B2B SaaS, and investment banking.",
+    a: "Ghiles Moussaoui, engineer turned operator. He builds and runs the AI systems behind Muditek and does every client engagement himself with a stack of agents doing the repetitive parts.",
   },
   {
     q: "Where is Muditek based, and who can work with you?",
-    a: "Europe-based, fully remote engagements. Most clients are in Europe and North America. We take 1-2 build clients at a time so each gets full attention. Diagnostic offers (Revenue Leak Audit, mudiAgent discovery) have wider availability.",
+    a: "Remote, working with clients in Europe and North America. A small number of build clients at a time so each gets full attention. Outbound engagements have wider availability.",
   },
   {
     q: "How do I get started?",
-    a: "Two doors. Start with the newsletter for weekly systems and playbooks, or book a 30-minute call to discuss a custom build (mudiAgent, Revenue Leak Audit, or operational infrastructure).",
+    a: "Read the skills and resources in the library to see how the systems run, or book a call to talk about your own company: AI transformation or outbound.",
   },
   {
     q: "Do you publish anything else?",
-    a: "Yes. Weekly newsletter (5,000+ subscribers), daily LinkedIn posts (35K followers), and the public archive of past issues at /newsletter. The newsletter is the source of truth — everything else mirrors it.",
+    a: "Yes. The newsletter, daily LinkedIn posts, and the public library: downloadable skills, resources, and browser tools taken from the systems we run.",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "About Muditek | AI Systems That Eliminate Operational Waste",
+  title: "About Muditek | Ghiles Moussaoui, AI Transformation and Outbound",
   description:
-    "Muditek diagnoses where companies lose money to manual ops and builds the AI systems that fix it. 35+ systems deployed in 2026. Founder: Ghiles Moussaoui.",
+    "Muditek is run by Ghiles Moussaoui. He audits how work happens, builds the AI systems that run it, and operates outbound engines for B2B companies.",
   alternates: {
     canonical: "https://muditek.com/about",
     types: { "text/markdown": "https://muditek.com/about.md" },
   },
   openGraph: {
-    title: "About Muditek | AI Systems That Eliminate Operational Waste",
+    title: "About Muditek | Ghiles Moussaoui, AI Transformation and Outbound",
     description:
-      "Muditek diagnoses where companies lose money to manual operations and builds the AI systems that fix it. 35+ systems deployed in 2026.",
+      "Muditek is run by Ghiles Moussaoui. AI transformation and outbound systems for B2B companies, built and operated.",
     url: "https://muditek.com/about",
     type: "website",
   },
 };
 
-const PROOF_METRICS = [
-  { label: "Proposal drafting", before: "4 hrs", after: "12 min" },
-  { label: "Knowledge lookup", before: "30+ min", after: "10 sec" },
-  { label: "Weekly status report", before: "3 hrs", after: "Automated" },
-  { label: "Competitor monitoring", before: "Manual", after: "Daily, 7am" },
-  { label: "Sales outreach", before: "Inconsistent", after: "Daily, auto" },
+const RUNS_ON = [
+  { label: "Proposal drafting", before: "By hand, every time", after: "Drafted by an agent, reviewed by me" },
+  { label: "Lead research", before: "Manual, one at a time", after: "Owner names and emails, source cited" },
+  { label: "Reply handling", before: "Whenever I got to it", after: "Classified and answered in minutes" },
+  { label: "Weekly reporting", before: "Rebuilt every Friday", after: "Generated from the data, on schedule" },
+  { label: "Content", before: "Written from scratch", after: "Drafted from my sources, in my voice" },
 ];
 
-const TRACK_RECORD = [
-  { value: "35+", label: "Systems Deployed" },
-  { value: "$3M+", label: "Revenue Generated & Saved" },
-  { value: "26", label: "Modules (Merchant Bank Platform)" },
-  { value: "3 mo", label: "Build Time (Full Platform)" },
+const HOW = [
+  { n: "1", title: "Identify", body: "We sit with the people doing the work and map every workflow. Automate, augment, or keep human, ranked by impact. You see the map before any system is built. If the audit finds nothing worth building, you do not pay for it." },
+  { n: "2", title: "Build", body: "The three folders that make your business AI-executable, then the automations built on top, inside the tools your team already uses. Your context, your workflows, your past work. Nothing generic." },
+  { n: "3", title: "Adopt", body: "Your team learns to update, extend, and maintain it, with a playbook for keeping it running. You own everything. An optional retainer keeps it evolving, but the system runs whether you keep us or not." },
 ];
+
+const RULES = [
+  { title: "Audit first, build second.", body: "Every engagement starts with a workflow audit. Nothing gets built on a guess." },
+  { title: "You own everything.", body: "Code, prompts, data, domains, accounts. No SaaS fee, no lock-in, no data in someone else's cloud." },
+  { title: "Run, then handed over with training.", body: "Outbound is run by us and paid per meeting held. Systems come with training and an optional retainer." },
+  { title: "Everything runs Muditek first.", body: "Every system we sell runs Muditek first. Every one of them ends up as a skill or a resource in the library." },
+];
+
+function Arrow() {
+  return (
+    <svg className="btn-icon" viewBox="0 0 12 12" fill="none" aria-hidden>
+      <path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 export default function AboutPage() {
   return (
@@ -75,248 +83,162 @@ export default function AboutPage() {
           "@type": "ProfilePage",
           "@id": "https://muditek.com/about#profilepage",
           url: "https://muditek.com/about",
-          dateModified: "2026-06-25",
+          dateModified: "2026-09-05",
           mainEntity: { "@id": "https://muditek.com/#ghiles" },
         }}
       />
       <Navbar />
 
-      {/* ══════ HERO ══════ */}
-      <section className="pt-32 md:pt-44 pb-24 md:pb-32 w-full flex justify-center relative overflow-hidden">
-        <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
+      {/* HERO */}
+      <section className="w-full">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-36 md:pt-48 pb-20 md:pb-28 grid gap-14 lg:grid-cols-12 lg:gap-12 items-end">
+          <div className="lg:col-span-8">
+            <ScrollReveal>
+              <p className="text-base font-bold text-primary mb-8">About Muditek</p>
+              <h1 className="text-5xl sm:text-6xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.92] text-foreground text-balance mb-8 max-w-[14ch]">
+                We make businesses readable by machines. Then we build the systems that <span className="text-primary">run them.</span>
+              </h1>
+            </ScrollReveal>
+            <ScrollReveal delay={100}>
+              <p className="text-xl md:text-2xl text-foreground/85 leading-[1.5] max-w-[54ch]">
+                Muditek is an AI transformation partner for B2B companies and the operator behind their outbound. One person, a stack of agents, and everything written down so a machine can read it.
+              </p>
+            </ScrollReveal>
+          </div>
+          <ScrollReveal delay={200} className="lg:col-span-4">
+            <figure className="max-w-[320px]">
+              <Image src="/images/ghiles.jpg" alt="Ghiles Moussaoui, founder of Muditek" width={640} height={640} className="w-full aspect-square object-cover rounded-[4px] border border-white/[0.08]" priority />
+              <figcaption className="mt-4 text-sm text-foreground/70">
+                <span className="block font-bold text-foreground">Ghiles Moussaoui</span>
+                Founder. Builds the systems, runs the engagements.
+              </figcaption>
+            </figure>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* HOW WE WORK */}
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28">
           <ScrollReveal>
-            <div className="flex items-center gap-4 mb-8">
-              <Image src="/icon.svg" alt="Muditek" width={32} height={32} />
-              <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary flex items-center gap-3">
-                <span className="w-8 h-[1px] bg-primary/50" />
-                About Muditek
+            <span className="rule" aria-hidden />
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance max-w-[22ch] mb-16">
+              How every engagement runs.
+            </h2>
+          </ScrollReveal>
+          <ol className="grid md:grid-cols-3 gap-10 md:gap-8">
+            {HOW.map((p, i) => (
+              <li key={p.n} className="border-t border-white/[0.08] pt-6">
+                <ScrollReveal delay={i * 100}>
+                  <div className="flex items-baseline gap-4 mb-4">
+                    <span className="font-mono text-sm text-primary">{p.n}</span>
+                    <h3 className="text-2xl font-black tracking-[-0.02em] text-foreground">{p.title}</h3>
+                  </div>
+                  <p className="text-[17px] text-foreground/85 leading-[1.65] max-w-[38ch]">{p.body}</p>
+                </ScrollReveal>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* RUNS MUDITEK FIRST */}
+      <section className="w-full band-warm border-t border-[color:var(--surface-warm-line)]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <ScrollReveal>
+              <span className="rule" aria-hidden />
+              <h2 className="text-3xl md:text-[44px] font-black tracking-[-0.035em] leading-[0.98] text-foreground text-balance mb-6">
+                We built this for ourselves. Then clients asked.
               </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={80}>
-            <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.9] text-foreground mb-12 text-balance max-w-4xl">
-              We diagnose where companies lose money. Then we build the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 opacity-90">systems that fix it.</span>
-            </h1>
-          </ScrollReveal>
-
-          <ScrollReveal delay={160}>
-            <p className="text-base md:text-lg text-foreground/70 font-light leading-relaxed max-w-2xl">
-              Muditek builds custom AI systems that eliminate operational waste for telecom operators, B2B SaaS companies, and investment firms. Every engagement starts with a diagnostic that quantifies the problem in euros. If we can&apos;t find the waste, you don&apos;t pay.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal delay={220}>
-            <p className="mt-6 text-sm text-foreground/50 font-light italic max-w-2xl">
-              From{" "}
-              <DataCitation
-                claim="5,000+ B2B operators in our newsletter"
-                source={DATA_POINTS.newsletterSubscribers.source}
-                n={DATA_POINTS.newsletterSubscribers.n}
-              />
-              {" "}and{" "}
-              <DataCitation
-                claim="35+ systems we've deployed in 2026"
-                source={DATA_POINTS.systemsDeployed.source}
-                n={DATA_POINTS.systemsDeployed.n}
-              />
-              , the patterns we ship here come from real engagements — not theory.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal delay={300}>
-            <PullQuote
-              quote="If we can't quantify the waste in euros before any system is built, we don't take the engagement."
-              source="Ghiles Moussaoui, Founder"
-              year={2026}
-            />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ══════ APPROACH — Diagnose, Build, Own ══════ */}
-      <section className="py-32 md:py-40 w-full flex justify-center relative border-t border-white/[0.02]">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
-        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-primary/50" />
-              How We Work
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
-              Diagnose. Build. <span className="text-primary italic font-medium">Own.</span>
-            </h3>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {[
-              {
-                num: "01",
-                title: "Diagnose",
-                body: "We pull your data, map your workflows, and quantify every hour of waste. In euros, with the formulas. You see exactly where the money goes before any system is built. If we can't find meaningful waste, you don't pay for the diagnostic.",
-              },
-              {
-                num: "02",
-                title: "Build",
-                body: "We build the AI system that eliminates what the diagnostic found. Custom-built for your operations, on your infrastructure. You own the code, the data, and the system. No SaaS fees, no vendor lock-in.",
-              },
-              {
-                num: "03",
-                title: "Own",
-                body: "You own everything we build. Complete source code, your database, your infrastructure. We offer an optional retainer for optimization and scaling, but the system runs whether you keep us or not.",
-              },
-            ].map((step, i) => (
-              <ScrollReveal key={step.num} delay={i * 100}>
-                <div className="group relative h-full border border-white/[0.05] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md p-10 flex flex-col overflow-hidden transition-all duration-700 card-lift">
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
-                  <span className="text-5xl font-black text-foreground/[0.06] block mb-6">{step.num}</span>
-                  <h4 className="text-xl font-black tracking-[0.05em] text-foreground mb-4">{step.title}</h4>
-                  <p className="text-base text-foreground/70 font-light leading-relaxed">{step.body}</p>
-                </div>
-              </ScrollReveal>
-            ))}
+              <p className="text-[17px] text-foreground/80 leading-[1.65] max-w-[40ch]">
+                Every line here is a job that used to sit on my desk and now runs on an agent I review. It is the same system we install for clients.
+              </p>
+            </ScrollReveal>
           </div>
-        </div>
-      </section>
-
-      {/* ══════ WE RUN IT — Proof metrics ══════ */}
-      <section className="py-32 md:py-40 w-full flex justify-center relative overflow-hidden bg-card/[0.15]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
-        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
-          <ScrollReveal>
-            <div className="w-12 h-[1px] bg-primary mb-10" />
-            <h2 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-6">
-              We built this for ourselves.<br /><span className="text-primary italic font-medium">Then clients asked.</span>
-            </h2>
-            <p className="text-base text-foreground/70 font-light leading-relaxed mb-10 max-w-xl">
-              Every number below comes from our own operations. We built mudiAgent to run Muditek. When clients saw the results, they asked us to deploy it for them.
-            </p>
-
-            <PullQuote
-              quote="We built mudiAgent to run Muditek first. The clients came after the results did."
-              source="Ghiles Moussaoui, Founder"
-              year={2026}
-              className="mb-12"
-            />
-          </ScrollReveal>
-
-          <div className="border border-white/[0.05] bg-card/[0.3] backdrop-blur-md rounded-[4px] shadow-2xl">
-            <div className="grid grid-cols-4 px-8 py-6 border-b border-white/[0.05] text-sm font-black uppercase tracking-[0.2em] text-foreground/60 bg-white/[0.01]">
-              <div className="col-span-2">Task</div>
-              <div>Before</div>
-              <div className="text-primary">After mudiAgent</div>
-            </div>
-            {PROOF_METRICS.map((row, i) => (
-              <ScrollReveal key={row.label} delay={i * 60}>
-                <div className={`group grid grid-cols-4 px-8 py-7 items-center stat-row cursor-default ${i < PROOF_METRICS.length - 1 ? "border-b border-white/[0.02]" : ""}`}>
-                  <div className="col-span-2 text-sm font-bold tracking-[0.1em] uppercase text-foreground/70 group-hover:text-foreground transition-colors">{row.label}</div>
-                  <div className="text-sm font-mono text-foreground/50 line-through tracking-wider">{row.before}</div>
-                  <div className="text-sm font-mono font-black tracking-wider text-primary/90 group-hover:text-primary">{row.after}</div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ TRACK RECORD — Numbers ══════ */}
-      <section className="py-32 md:py-40 w-full flex justify-center relative">
-        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-primary/50" />
-              Track Record
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
-              The numbers <span className="text-primary italic font-medium">speak.</span>
-            </h3>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {TRACK_RECORD.map((m, i) => (
-              <ScrollReveal key={m.label} delay={i * 80}>
-                <div className="border border-white/[0.05] bg-card/[0.2] p-8 text-center rounded-[4px] card-lift">
-                  <span className="text-3xl md:text-4xl font-black text-foreground block mb-2 tracking-tight">{m.value}</span>
-                  <span className="text-sm font-mono text-foreground/60 tracking-wider uppercase">{m.label}</span>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-
-          <ScrollReveal delay={400}>
-            <div className="mt-12 border border-white/[0.05] bg-card/[0.2] p-8 rounded-[4px]">
-              <h4 className="text-sm font-black uppercase tracking-[0.2em] text-foreground/60 mb-4">Differentiators</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-foreground/70 font-light leading-relaxed">
-                <p><span className="text-foreground/80 font-medium">Diagnose first, build second.</span> Every engagement starts with a diagnostic that quantifies waste in euros. No guesswork.</p>
-                <p><span className="text-foreground/80 font-medium">Client owns everything.</span> No SaaS fees, no vendor lock-in, no data in someone else&apos;s cloud. You own the code.</p>
-                <p><span className="text-foreground/80 font-medium">Weeks, not months.</span> We don&apos;t reuse the code. We reuse the knowledge. That&apos;s why we deliver in weeks what traditionally takes a year.</p>
-                <p><span className="text-foreground/80 font-medium">Guarantee on every offer.</span> If we can&apos;t find the waste, you don&apos;t pay. That&apos;s not aspirational. It&apos;s contractual.</p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ══════ TESTIMONIALS ══════ */}
-      <TestimonialBlock
-        items={ABOUT_TESTIMONIALS}
-        emptyStateNote="Client and reader notes will publish here once we collect enough signed-off quotes. We don't fabricate testimonials."
-      />
-
-      {/* ══════ NEWSLETTER ══════ */}
-      <NewsletterInline tags={["source:about"]} />
-
-      {/* ══════ FOUNDER ══════ */}
-      <section className="py-24 md:py-32 w-full flex justify-center border-t border-white/[0.02]">
-        <div className="max-w-[1100px] w-full px-6 md:px-12">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-foreground/60 mb-8 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-foreground/20" />
-              Founder
-            </h2>
-            <div className="flex flex-col md:flex-row md:items-start gap-8">
-              <Image src="/images/ghiles.jpg" alt="Ghiles Moussaoui" width={96} height={96} className="rounded-full border-2 border-white/[0.1]" />
-              <div>
-                <h3 className="text-2xl font-black text-foreground mb-3">Ghiles Moussaoui</h3>
-                <p className="text-sm text-foreground/70 font-light leading-relaxed max-w-xl mb-4">
-                  I build AI systems that run business operations. 35+ systems in production across telecom, financial services, and B2B SaaS. $3M+ in revenue generated and saved for clients. I built mudiAgent to run my own company first. When clients saw the results, they asked me to deploy it for them. Every system I ship gets documented in the B2B Agents newsletter.
-                </p>
-                <div className="flex items-center gap-4">
-                  <a href="mailto:ghiles@muditek.com" className="text-sm font-mono text-primary/80 tracking-wider hover:text-primary transition-colors">ghiles@muditek.com</a>
-                  <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="text-sm font-mono text-foreground/60 tracking-wider hover:text-foreground transition-colors">LinkedIn</a>
+          <div className="lg:col-span-7">
+            <ScrollReveal delay={120}>
+              <div className="panel">
+                <div className="panel-bar"><span>Muditek operations</span><span>running</span></div>
+                <div className="panel-body">
+                  <div className="grid grid-cols-[1.2fr_1fr_1.4fr] gap-4 pb-3 text-[11px] uppercase tracking-[0.12em] panel-dim">
+                    <span>Task</span><span>Before</span><span className="panel-amber">Now</span>
+                  </div>
+                  {RUNS_ON.map((row) => (
+                    <div key={row.label} className="panel-row grid grid-cols-[1.2fr_1fr_1.4fr] gap-4 items-start">
+                      <span className="text-foreground font-semibold font-sans text-sm">{row.label}</span>
+                      <span className="panel-dim">{row.before}</span>
+                      <span className="text-foreground">{row.after}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* RULES */}
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28">
+          <ScrollReveal>
+            <span className="rule" aria-hidden />
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance max-w-[22ch] mb-16">
+              Four rules we do not bend.
+            </h2>
+          </ScrollReveal>
+          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-10 border-t border-white/[0.08] pt-10">
+            {RULES.map((r, i) => (
+              <ScrollReveal key={r.title} delay={i * 80}>
+                <h3 className="text-xl font-black tracking-[-0.01em] text-foreground mb-3">{r.title}</h3>
+                <p className="text-[17px] text-foreground/85 leading-[1.65] max-w-[44ch]">{r.body}</p>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDER */}
+      <section className="w-full band-warm border-t border-[color:var(--surface-warm-line)]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <ScrollReveal>
+              <span className="rule" aria-hidden />
+              <h2 className="text-4xl md:text-5xl font-black tracking-[-0.035em] leading-[0.95] text-foreground">Ghiles Moussaoui</h2>
+            </ScrollReveal>
+          </div>
+          <ScrollReveal delay={100} className="lg:col-span-8">
+            <p className="text-lg md:text-xl text-foreground/85 leading-[1.6] max-w-[60ch] mb-8">
+              I build AI systems that run business operations, and I run them. Muditek works the way I tell clients to work: the business written down so a machine can read it, agents doing the repetitive parts, me reviewing. Every system I ship ends up as a skill or a resource in the library, and the newsletter is where I write up how it went.
+            </p>
+            <div className="flex flex-wrap items-center gap-6">
+              <a href="mailto:ghiles@muditek.com" className="text-base font-bold text-foreground underline underline-offset-4 decoration-primary/60 hover:text-primary transition-colors">ghiles@muditek.com</a>
+              <a href="https://www.linkedin.com/in/ghiles-moussaoui-b36218250/" target="_blank" rel="noopener noreferrer" className="text-base font-bold text-foreground/70 hover:text-foreground transition-colors">LinkedIn</a>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ══════ FAQ ══════ */}
-      <FaqBlock items={ABOUT_FAQ} accentColor="primary" />
+      <FaqBlock items={ABOUT_FAQ} />
 
-      {/* ══════ MUDIKIT CTA ══════ */}
       <MudikitCta
-        headline="Or skip the call. Subscribe to MudiKit · $47/mo"
-        body="Want the self-serve layer? MudiKit is the paid portal library: Claude Code skills, resource drops, tools, and billing in one account."
+        headline="Or skip the call. Start with the library."
+        body="Skills, resources, and browser tools taken from the systems we run. Free with a portal account."
       />
 
-      {/* ══════ CTA ══════ */}
-      <section className="py-32 min-h-[40vh] w-full flex items-center justify-center relative overflow-hidden bg-background">
-        <div className="max-w-[1000px] w-full px-6 text-center relative z-10">
+      <NewsletterInline source="about" />
+
+      {/* CTA */}
+      <section className="w-full">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-28 md:py-40 text-center">
           <ScrollReveal>
-            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.04em] leading-[0.9] mb-10 text-balance">
-              Stop paying people to do work <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/40 italic font-medium pr-2">a machine</span> should handle.
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-[-0.04em] leading-[0.92] text-balance mb-8 max-w-[18ch] mx-auto">
+              Stop paying people to do work a machine should handle.
             </h2>
-            <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
-              30-minute call. No pitch. We&apos;ll tell you if we can help, and how much you&apos;re losing by waiting.
+            <p className="text-lg md:text-xl text-foreground/70 max-w-[46ch] mx-auto mb-12 leading-relaxed">
+              A few answers, then a slot on the calendar. On the call we tell you whether it is worth building, and what it would take.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
-              <span className="relative z-10 flex items-center gap-4">
-                Book a Call
-                <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />
-              </span>
-            </a>
+            <a href={BOOK_PATH} className="btn btn-solid">Book a call<Arrow /></a>
           </ScrollReveal>
         </div>
       </section>

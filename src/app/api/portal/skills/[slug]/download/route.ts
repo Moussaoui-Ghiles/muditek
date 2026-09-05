@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { verifyAssetDownloadToken } from "@/lib/asset-email";
 import { NextResponse } from "next/server";
-import { createTar } from "@/lib/tar";
+import JSZip from "jszip";
 import { buildAssetAccess } from "@/lib/portal-asset-loader";
 import { getPortalSkill, getPortalSkillArchiveFiles } from "@/lib/portal-skills";
 import { getDb } from "@/lib/db";
@@ -54,11 +54,14 @@ export async function GET(
     }).catch(() => {});
   }
 
-  const body = createTar(files);
+  const zip = new JSZip();
+  const folder = zip.folder(slug);
+  for (const file of files) folder?.file(file.path, file.data);
+  const body = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
   return new NextResponse(new Uint8Array(body), {
     headers: {
-      "Content-Type": "application/x-tar",
-      "Content-Disposition": `attachment; filename="${slug}.tar"`,
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="${slug}.zip"`,
       "Cache-Control": skill.is_free ? "public, max-age=300" : "private, max-age=60",
     },
   });

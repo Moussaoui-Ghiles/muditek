@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Navbar } from "@/components/navbar";
+import { NewsletterInline } from "@/components/newsletter-inline";
 import { renderLibraryMarkdown } from "@/lib/library-markdown";
 import { getPublicSkill, PUBLIC_SKILLS } from "@/lib/public-library";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
@@ -62,39 +63,41 @@ export default async function PublicSkillPage({ params }: { params: Promise<{ sl
         },
       ]} />
       <main id="main-content">
-        <header className="border-b border-white/[0.06] pb-16 pt-36 md:pb-24 md:pt-48">
-          <div className="mx-auto w-full max-w-[1080px] px-6 md:px-12">
-            <Link href="/skills" className="text-sm font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">← All skills</Link>
-            <p className="mt-10 text-sm font-black uppercase tracking-[0.2em] text-primary">Downloadable workflow</p>
-            <h1 className="mt-5 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl">{title}</h1>
-            <p className="mt-8 max-w-[68ch] text-lg leading-8 text-foreground/70">{summary}</p>
+        <header className="w-full">
+          <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12 pt-36 md:pt-48 pb-16 md:pb-20 grid gap-12 lg:grid-cols-12 lg:gap-16 items-end">
+            <div className="lg:col-span-8">
+              <Link href="/skills" className="inline-flex items-center gap-2 text-sm font-bold text-foreground/60 hover:text-foreground transition-colors mb-8">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M9.5 6H2.5M5 3.5L2.5 6L5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                All skills
+              </Link>
+              <p className="text-base font-bold text-primary mb-6">Skill{item?.topic ? ` · ${item.topic}` : ""}</p>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.92] tracking-[-0.04em] text-balance max-w-[16ch]">{title}</h1>
+              <p className="mt-7 max-w-[60ch] text-lg md:text-xl leading-relaxed text-foreground/75">{summary}</p>
+            </div>
+            <aside className="lg:col-span-4">
+              <div className="panel">
+                <div className="panel-bar"><span>{slug}/</span><span>{bundle.fileCount} files</span></div>
+                <div className="panel-body">
+                  <ul className="space-y-1">
+                    {bundle.files.slice(0, 8).map((file) => (
+                      <li key={file.path} className="flex gap-2 break-all"><span className="panel-dim">├</span><span>{file.path}</span></li>
+                    ))}
+                    {bundle.files.length > 8 ? <li className="panel-dim">... {bundle.files.length - 8} more</li> : null}
+                  </ul>
+                  <a href={bundle.downloadUrl} className="btn btn-amber btn-sm w-full mt-6">Download package</a>
+                  <p className="mt-3 text-xs text-foreground/60 font-sans">{bundle.is_free ? "Public download. No account required." : "Free with a portal account."}</p>
+                </div>
+              </div>
+            </aside>
           </div>
         </header>
 
-        <section className="border-b border-white/[0.06] py-12 md:py-16">
-          <div className="mx-auto grid w-full max-w-[1080px] gap-8 px-6 md:px-12 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div>
-              <h2 className="text-3xl font-black tracking-[-0.03em]">Included files</h2>
-              <ul className="mt-6 grid gap-2 sm:grid-cols-2">
-                {bundle.files.map((file) => (
-                  <li key={file.path} className="break-all rounded-[2px] border border-white/[0.08] px-3 py-2 font-mono text-sm text-foreground/60">{file.path}</li>
-                ))}
-              </ul>
-            </div>
-            <aside className="rounded-xl border border-white/[0.08] bg-card/50 p-6">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-primary">Package</p>
-              <p className="mt-3 text-4xl font-black">{bundle.fileCount} files</p>
-              <p className="mt-4 text-sm leading-6 text-foreground/65">{bundle.is_free ? "Public download. No account required." : "Free. Get it by email below, or read it in the portal."}</p>
-              <a href={bundle.downloadUrl} className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[2px] bg-primary px-5 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-background">Download package</a>
-            </aside>
-          </div>
-        </section>
-
         {html ? (
-          <section className="py-14 md:py-20">
+          <section className="border-t border-white/[0.08] py-14 md:py-20">
             <article className="library-prose mx-auto w-full max-w-[900px] px-6 md:px-12" dangerouslySetInnerHTML={{ __html: html }} />
           </section>
         ) : null}
+        <NewsletterInline source={`skill:${slug}`} headline="Get the next skill before it is published." />
       </main>
       <Footer />
     </div>

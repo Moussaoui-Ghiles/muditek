@@ -83,7 +83,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
 
   if (notFound) {
     return (
-      <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex items-center justify-center px-6">
+      <main className="min-h-[100dvh] bg-background text-foreground flex items-center justify-center px-6">
         <div className="absolute top-8 left-8">
           <Link href="/" aria-label="Muditek home">
             <Logo variant="mark+text" size={24} />
@@ -91,14 +91,14 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
         </div>
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-3">Preferences not found</h1>
-          <p className="text-[#a0a0a6]">This link may be invalid or expired.</p>
+          <p className="text-foreground/70">This link may be invalid or expired.</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex items-center justify-center px-6 py-16">
+    <main className="min-h-[100dvh] bg-background text-foreground flex items-center justify-center px-6 py-16">
       <div className="absolute top-8 left-8">
         <Link href="/" aria-label="Muditek home">
           <Logo variant="mark+text" size={24} />
@@ -107,19 +107,19 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
       <div className="w-full max-w-md">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Email preferences</h1>
-          {email && <p className="text-sm text-[#a0a0a6] mt-2">{email}</p>}
+          {email && <p className="text-sm text-foreground/70 mt-2">{email}</p>}
         </div>
 
         {unsubscribed && (
-          <div className="mb-6 p-4 bg-[#151517] border border-white/[0.06] rounded-lg text-sm">
+          <div className="mb-6 p-4 bg-card border border-white/[0.06] rounded-lg text-sm">
             You&apos;ve been unsubscribed. You can re-subscribe below anytime.
           </div>
         )}
 
         {!loaded ? (
-          <p className="text-sm text-[#a0a0a6]">Loading…</p>
+          <p className="text-sm text-foreground/70">Loading…</p>
         ) : status === "unsub" ? (
-          <div className="p-6 bg-[#151517] border border-white/[0.06] rounded-lg">
+          <div className="p-6 bg-card border border-white/[0.06] rounded-lg">
             <p className="text-sm mb-4">You are currently unsubscribed.</p>
             <button
               onClick={async () => {
@@ -130,7 +130,7 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                 });
                 if (res.ok) { setStatus("active"); setMsg("Resubscribed"); setTopics(TOPICS.map((t) => t.value)); }
               }}
-              className="px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white text-sm"
+              className="px-5 py-2.5 bg-foreground text-background font-medium rounded-lg hover:bg-white text-sm"
             >
               Resubscribe
             </button>
@@ -143,13 +143,13 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
                 {TOPICS.map((t) => (
                   <label
                     key={t.value}
-                    className="flex items-center gap-3 p-3 bg-[#151517] border border-white/[0.06] rounded-lg cursor-pointer hover:border-[#3a3a3e]"
+                    className="flex items-center gap-3 p-3 bg-card border border-white/[0.06] rounded-lg cursor-pointer hover:border-white/[0.2]"
                   >
                     <input
                       type="checkbox"
                       checked={topics.includes(t.value)}
                       onChange={() => toggle(t.value)}
-                      className="size-4 accent-[#e8e8ec]"
+                      className="size-4 accent-primary"
                     />
                     <span className="text-sm">{t.label}</span>
                   </label>
@@ -157,20 +157,20 @@ export default function PreferencesContent({ token, unsubscribed }: Props) {
               </div>
             </div>
 
-            {msg && <p className="text-sm text-[#a0a0a6]">{msg}</p>}
+            {msg && <p className="text-sm text-foreground/70">{msg}</p>}
 
             <div className="flex gap-3">
               <button
                 onClick={save}
                 disabled={saving || topics.length === 0}
-                className="flex-1 px-5 py-2.5 bg-[#e8e8ec] text-[#0a0a0c] font-medium rounded-lg hover:bg-white disabled:opacity-50"
+                className="flex-1 px-5 py-2.5 bg-foreground text-background font-medium rounded-lg hover:bg-white disabled:opacity-50"
               >
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
                 onClick={unsub}
                 disabled={unsubbing}
-                className="px-5 py-2.5 border border-white/[0.06] text-[#a0a0a6] font-medium rounded-lg hover:border-[#3a3a3e] hover:text-[#e8e8ec] text-sm"
+                className="px-5 py-2.5 border border-white/[0.06] text-foreground/70 font-medium rounded-lg hover:border-white/[0.2] hover:text-foreground text-sm"
               >
                 {unsubbing ? "…" : "Unsubscribe"}
               </button>

@@ -4,38 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { EmailCapture } from "./email-capture";
 
-const PAGE_CONFIG: Record<string, { heading: string; description: string; tags: string[]; accent: "primary" | "emerald" | "sky" }> = {
-  "/tools/revenue-leak-calculator": {
-    heading: "Before you go — get your full revenue leak report.",
-    description: "We'll email you the complete breakdown with formulas, methodology, and a prioritized fix roadmap.",
-    tags: ["source:exit-intent", "segment:saas", "exit:calculator"],
-    accent: "emerald",
-  },
-  "/mudiagent": {
-    heading: "Get the 3 workflows every telecom can automate.",
-    description: "A guide to the highest-ROI automation targets for telecom and enterprise operations.",
-    tags: ["source:exit-intent", "segment:telecom", "exit:mudiagent"],
-    accent: "primary",
-  },
-  "/revenue-leak-audit": {
-    heading: "Get the 5-Leak Diagnostic Framework.",
-    description: "The exact methodology we use to find €80-180K in annual pipeline leakage.",
-    tags: ["source:exit-intent", "segment:saas", "exit:revenue-audit"],
-    accent: "emerald",
-  },
-  "/pe-ops": {
-    heading: "Get the PE Operations Maturity Checklist.",
-    description: "Score your firm's operational infrastructure across 12 dimensions.",
-    tags: ["source:exit-intent", "segment:pe", "exit:pe-ops"],
-    accent: "sky",
-  },
-};
-
 const DEFAULT_CONFIG = {
-  heading: "One deployable system. Every week.",
-  description: "Last edition: an outbound system that books 153 calls for $1,200/month. You get the full build — architecture, code, and steps to deploy it.",
+  heading: "Before you go: one working system per issue.",
+  description: "How the outbound engine runs, how the agents are written, what broke and what got fixed. Written by the person running it.",
   tags: ["source:exit-intent"],
-  accent: "primary" as const,
 };
 
 const SUPPRESSED_PATHS = [
@@ -89,7 +61,7 @@ export function ExitIntent() {
 
   if (!visible || suppressed) return null;
 
-  const config = PAGE_CONFIG[pathname] || DEFAULT_CONFIG;
+  const config = DEFAULT_CONFIG;
 
   return (
     <div
@@ -121,21 +93,20 @@ export function ExitIntent() {
           <h3 className="text-xl md:text-2xl font-black tracking-[-0.02em] text-foreground mb-3 pr-8">
             {config.heading}
           </h3>
-          <p className="text-sm text-foreground/60 font-light leading-relaxed">
+          <p className="text-sm text-foreground/70 leading-relaxed">
             {config.description}
           </p>
         </div>
 
         <EmailCapture
           tags={config.tags}
-          accentColor={config.accent}
-          buttonText="Send It"
-          successMessage="Done. Check your inbox."
+          buttonText="Subscribe"
+          successMessage="You're in. Check your inbox."
           onSuccess={() => setTimeout(() => setVisible(false), 2000)}
         />
 
-        <p className="text-xs text-foreground/30 mt-4 font-mono tracking-wider">
-          No spam. Unsubscribe anytime.
+        <p className="text-xs text-foreground/50 mt-4">
+          Unsubscribe in one click, in every email.
         </p>
       </div>
     </div>

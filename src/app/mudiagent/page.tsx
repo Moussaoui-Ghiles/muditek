@@ -10,7 +10,7 @@ import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "mudiAgent | Digital Employees for Telecom & Enterprise | Muditek",
@@ -134,7 +134,7 @@ export default function MudiAgentPage() {
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <a href={BOOK_PATH} className="group relative px-10 py-5 bg-foreground text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book a Discovery Audit
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -149,11 +149,6 @@ export default function MudiAgentPage() {
         </div>
       </section>
 
-      {/* ══════ IMAGE BREAK ══════ */}
-      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
-        <Image src="/images/noc-center.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.4) saturate(1.6) hue-rotate(-10deg) brightness(0.6)' }} aria-hidden="true" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
-      </div>
 
       {/* ══════ WHAT CHANGES (PAS: Solution) ══════ */}
       <section id="transformation" className="py-32 md:py-48 w-full flex justify-center relative border-t border-white/[0.02]">
@@ -442,7 +437,7 @@ export default function MudiAgentPage() {
             <p className="text-sm font-mono text-foreground/50 tracking-wider uppercase mb-14">
               We take a limited number of deployments per quarter to ensure configuration quality
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOK_PATH} className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book a Discovery Audit
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-primary transition-colors" />

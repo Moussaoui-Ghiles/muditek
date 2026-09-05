@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { FaqBlock } from "@/components/faq-block";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Muditek vs Juniper Square | Custom Private Equity Operations Platform | Muditek",
@@ -128,9 +128,7 @@ export default function PEOpsVsJuniperSquarePage() {
           <ScrollReveal delay={240}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
               <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={BOOK_PATH}
                 className="group relative px-10 py-5 bg-sky-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press"
               >
                 <span className="relative z-10 flex items-center gap-3">
@@ -298,7 +296,7 @@ export default function PEOpsVsJuniperSquarePage() {
             <p className="text-sm font-mono text-foreground/50 tracking-wider uppercase mb-14">
               I take 1-2 build clients at a time. Each engagement gets my full attention.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOK_PATH} className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-sky-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 See the Demo
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />

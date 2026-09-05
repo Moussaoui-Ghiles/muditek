@@ -1,27 +1,51 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
+
+const SERVICES = [
+  { href: "/ai-transformation", label: "AI transformation", note: "Audit, systems built for you, coaching for your team" },
+  { href: "/outbound", label: "Outbound", note: "Signal-based, built and run for you, or coached" },
+  { href: "/ma-origination", label: "M&A origination", note: "Owner meetings for advisors, brokers, and buyers" },
+];
+
+const PRIMARY = [
+  { href: "/library", label: "Library" },
+  { href: "/newsletter", label: "Newsletter" },
+  { href: "/about", label: "About" },
+];
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const servicesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { isSignedIn, isLoaded } = useUser();
 
-  useEffect(() => {
+  const servicesActive = SERVICES.some((s) => isActive(pathname, s.href));
+
+  // Close both menus when the route changes. Adjusting state during render
+  // avoids the extra commit an effect would cost.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
     setMobileOpen(false);
-    setSolutionsOpen(false);
-  }, [pathname]);
+    setServicesOpen(false);
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -30,119 +54,121 @@ export function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (!servicesOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setServicesOpen(false);
+    }
+    function onClick(e: MouseEvent) {
+      if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) setServicesOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [servicesOpen]);
+
+  const linkClass = (active: boolean) =>
+    `text-[15px] font-bold tracking-[-0.01em] transition-colors ${active ? "text-foreground" : "text-foreground/65 hover:text-foreground"}`;
+
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-40 flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1800px] mx-auto transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-xl shadow-lg" : ""}`}
+        className={`fixed top-0 left-0 right-0 z-40 flex justify-between items-center px-6 md:px-12 py-5 w-full transition-[background-color,box-shadow] duration-300 ${scrolled || mobileOpen ? "bg-background/85 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.06)]" : ""}`}
         role="navigation"
         aria-label="Main navigation"
       >
-        <Link href="/" className="group flex items-center gap-3 relative z-50" aria-label="Muditek homepage">
-          <Image src="/icon.svg" alt="" width={36} height={36} aria-hidden="true" />
+        <Link href="/" className="flex items-center gap-3 relative z-50" aria-label="Muditek homepage">
+          <Image src="/icon.svg" alt="" width={34} height={34} aria-hidden="true" />
           <span className="text-base font-black tracking-[0.2em] text-foreground uppercase">MUDITEK</span>
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden xl:flex items-center gap-10">
-          <Link href="/" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Home
-          </Link>
-
-          {/* Solutions dropdown */}
-          <div className="relative group">
-            <button aria-haspopup="true" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold cursor-pointer flex items-center gap-1.5">
-              Solutions
-              <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity mt-[1px]">
-                <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Desktop */}
+        <div className="hidden xl:flex items-center gap-9">
+          <div
+            ref={servicesRef}
+            className="relative"
+            onMouseEnter={() => setServicesOpen(true)}
+            onMouseLeave={() => setServicesOpen(false)}
+          >
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={servicesOpen}
+              aria-controls="services-menu"
+              onClick={() => setServicesOpen((v) => !v)}
+              className={`${linkClass(servicesActive || servicesOpen)} inline-flex items-center gap-1.5 py-2`}
+            >
+              Services
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden className={`transition-transform duration-300 ${servicesOpen ? "rotate-180" : ""}`}>
+                <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <div className="absolute top-full left-0 mt-3 w-72 py-3 bg-card/95 backdrop-blur-xl border border-white/[0.06] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 shadow-2xl z-50 rounded-[6px]">
-              <Link href="/mudiagent" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                mudiAgent
-              </Link>
-              <Link href="/revenue-leak-audit" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Revenue Leak Audit
-              </Link>
-              <Link href="/pe-ops" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Operational Infrastructure
-              </Link>
-              <div className="h-px bg-white/[0.04] mx-5 my-2" />
-              <Link href="/who-we-help" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Who We Help
-              </Link>
-              <Link href="/case-studies" className="block px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Case Studies
-              </Link>
-              <div className="h-px bg-white/[0.04] mx-5 my-2" />
-              <Link href="/tools/revenue-leak-calculator" className="flex items-center justify-between px-5 py-2.5 text-sm uppercase tracking-[0.15em] font-bold text-foreground/60 hover:text-foreground hover:bg-white/[0.04] transition-colors">
-                Revenue Leak Calculator
-                <span className="text-[10px] font-black tracking-[0.15em] text-emerald-400/70 uppercase">Open</span>
-              </Link>
+            <div
+              id="services-menu"
+              role="menu"
+              className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 transition-[opacity,transform] duration-200 ease-out ${servicesOpen ? "opacity-100 translate-y-0 visible" : "opacity-0 -translate-y-1 invisible pointer-events-none"}`}
+            >
+              <div className="w-[22rem] bg-card border border-white/[0.1] border-t-2 border-t-primary shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)] overflow-hidden">
+                {SERVICES.map((s) => (
+                  <Link
+                    key={s.href}
+                    href={s.href}
+                    role="menuitem"
+                    className="block px-5 py-4 border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors group"
+                  >
+                    <span className={`block text-[15px] font-black tracking-[-0.01em] ${isActive(pathname, s.href) ? "text-primary" : "text-foreground group-hover:text-primary"} transition-colors`}>{s.label}</span>
+                    <span className="block mt-0.5 text-sm text-foreground/65 leading-snug">{s.note}</span>
+                  </Link>
+                ))}
+                <Link href={BOOK_PATH} role="menuitem" className="block px-5 py-3.5 text-sm font-bold text-foreground/75 hover:text-foreground hover:bg-white/[0.04] transition-colors">
+                  Not sure which? Book a call and we say which one fits.
+                </Link>
+              </div>
             </div>
           </div>
 
-          <Link href="/about" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            About
-          </Link>
-          <Link href="/newsletter" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Newsletter
-          </Link>
-          <Link href="/library" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-            Library
-          </Link>
+          {PRIMARY.map((item) => (
+            <Link key={item.href} href={item.href} className={linkClass(isActive(pathname, item.href))}>
+              {item.label}
+            </Link>
+          ))}
 
           {isLoaded && isSignedIn && (
-            <>
-              <Link href="/portal" className="text-sm uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors font-bold">
-                Portal
-              </Link>
-            </>
+            <Link href="/portal" className={linkClass(isActive(pathname, "/portal"))}>
+              Portal
+            </Link>
           )}
         </div>
 
-        {/* Desktop CTA + user */}
         <div className="hidden xl:flex items-center gap-3">
           {isLoaded && isSignedIn && (
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8 ring-1 ring-white/[0.08]",
-                },
-              }}
-            />
+            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 ring-1 ring-white/[0.08]" } }} />
           )}
           {isLoaded && !isSignedIn && (
-            <Link
-              href="/sign-in?redirect_url=/portal"
-              className="px-4 py-2.5 text-sm uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground transition-colors font-bold"
-            >
-              Sign in
-            </Link>
+            <>
+              <Link href="/sign-in?redirect_url=/portal" className="px-3 py-2.5 text-[15px] font-bold text-foreground/65 hover:text-foreground transition-colors">
+                Sign in
+              </Link>
+              <Link href="/sign-up" className="btn btn-outline btn-sm">
+                Join the portal
+              </Link>
+            </>
           )}
-          {isLoaded && !isSignedIn && (
-            <Link
-              href="/sign-up"
-              className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-primary text-background hover:scale-[1.03] transition-transform btn-press"
-            >
-              Join Portal
-            </Link>
-          )}
-          <a
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-[2px] text-sm font-black uppercase tracking-[0.18em] bg-foreground text-background hover:scale-[1.03] transition-transform btn-press"
-          >
-            Book a Call
-          </a>
+          <Link href={BOOK_PATH} className="btn btn-solid btn-sm">
+            Book a call
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="xl:hidden relative z-50 w-10 h-10 flex flex-col items-center justify-center gap-[5px]"
+          className="xl:hidden relative z-50 w-11 h-11 -mr-2 flex flex-col items-center justify-center gap-[5px]"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
+          aria-controls="mobile-menu"
         >
           <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "rotate-45 translate-y-[6.5px]" : ""}`} />
           <span className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0" : "opacity-100"}`} />
@@ -150,124 +176,55 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile overlay */}
+      {/* Mobile menu */}
       <div
-        className={`fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-background/95 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] xl:hidden ${
-          mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
-        }`}
+        id="mobile-menu"
+        className={`fixed inset-0 z-30 overflow-y-auto overscroll-contain bg-background transition-opacity duration-300 ease-out xl:hidden ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
+        aria-hidden={!mobileOpen}
       >
-        <div className="flex min-h-full flex-col items-start justify-start px-10 py-28 gap-1">
-          <Link
-            href="/"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "60ms" : "0ms" }}
-          >
-            Home
-          </Link>
+        <div className="flex min-h-full flex-col px-6 pt-28 pb-12">
+          <p className="text-sm font-bold text-primary mb-3">Services</p>
+          <ul className="border-t border-white/[0.08] mb-8">
+            {SERVICES.map((s, i) => (
+              <li key={s.href} className="border-b border-white/[0.08]">
+                <Link
+                  href={s.href}
+                  className={`block py-4 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                  style={{ transitionDelay: mobileOpen ? `${60 + i * 50}ms` : "0ms" }}
+                >
+                  <span className="block text-2xl font-black tracking-[-0.02em] text-foreground">{s.label}</span>
+                  <span className="block mt-1 text-sm text-foreground/65">{s.note}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-          <button
-            onClick={() => setSolutionsOpen(!solutionsOpen)}
-            aria-expanded={solutionsOpen}
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex items-center gap-3 ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "120ms" : "0ms" }}
+          <ul className="border-t border-white/[0.08] mb-10">
+            {[...PRIMARY, ...(isLoaded && isSignedIn ? [{ href: "/portal", label: "Portal" }] : [])].map((item, i) => (
+              <li key={item.href} className="border-b border-white/[0.08]">
+                <Link
+                  href={item.href}
+                  className={`block py-4 text-2xl font-black tracking-[-0.02em] text-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                  style={{ transitionDelay: mobileOpen ? `${240 + i * 50}ms` : "0ms" }}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div
+            className={`mt-auto flex flex-col gap-3 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${mobileOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+            style={{ transitionDelay: mobileOpen ? "420ms" : "0ms" }}
           >
-            Solutions
-            <svg width="14" height="14" viewBox="0 0 8 8" fill="none" className={`transition-transform duration-300 ${solutionsOpen ? "rotate-180" : ""}`}>
-              <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${solutionsOpen ? "max-h-80 opacity-100 mb-4" : "max-h-0 opacity-0"}`}>
-            <div className="pl-4 pt-3 flex flex-col gap-3 border-l border-white/[0.06]">
-              <Link href="/mudiagent" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">mudiAgent</Link>
-              <Link href="/revenue-leak-audit" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Revenue Leak Audit</Link>
-              <Link href="/pe-ops" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Operational Infrastructure</Link>
-              <Link href="/who-we-help" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Who We Help</Link>
-              <Link href="/case-studies" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Case Studies</Link>
-              <Link href="/tools/revenue-leak-calculator" className="text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors">Revenue Leak Calculator</Link>
-            </div>
+            <Link href={BOOK_PATH} className="btn btn-solid w-full">Book a call</Link>
+            {isLoaded && !isSignedIn && (
+              <>
+                <Link href="/sign-up" className="btn btn-outline w-full">Join the portal</Link>
+                <Link href="/sign-in?redirect_url=/portal" className="py-3 text-center text-base font-bold text-foreground/70 hover:text-foreground">Sign in</Link>
+              </>
+            )}
           </div>
-
-          <Link
-            href="/about"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "200ms" : "0ms" }}
-          >
-            About
-          </Link>
-
-          <Link
-            href="/newsletter"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "260ms" : "0ms" }}
-          >
-            Newsletter
-          </Link>
-
-          <Link
-            href="/library"
-            className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "300ms" : "0ms" }}
-          >
-            Library
-          </Link>
-
-          {isLoaded && !isSignedIn && (
-            <>
-              <Link
-                href="/sign-up"
-                className={`text-2xl font-black uppercase tracking-[0.05em] text-primary hover:text-primary/80 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
-              >
-                Join Portal
-              </Link>
-              <Link
-                href="/sign-in?redirect_url=/portal"
-                className={`text-xl font-bold uppercase tracking-[0.05em] text-foreground/60 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "360ms" : "0ms" }}
-              >
-                Sign in
-              </Link>
-            </>
-          )}
-          {isLoaded && isSignedIn && (
-            <>
-              <Link
-                href="/portal"
-                className={`text-2xl font-black uppercase tracking-[0.05em] text-foreground/80 hover:text-foreground transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                  mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-                }`}
-                style={{ transitionDelay: mobileOpen ? "320ms" : "0ms" }}
-              >
-                Portal
-              </Link>
-            </>
-          )}
-
-          <a
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`mt-8 px-8 py-4 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] btn-press ${
-              mobileOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: mobileOpen ? "500ms" : "0ms" }}
-          >
-            Book a Call
-          </a>
         </div>
       </div>
     </>

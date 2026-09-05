@@ -10,7 +10,7 @@ import { LeadMagnetGate } from "@/components/lead-magnet-gate";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { StatStrip } from "@/components/stat-strip";
 import { FaqBlock } from "@/components/faq-block";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Revenue Leak Audit | Find Where Your Pipeline Loses Money | Muditek",
@@ -128,7 +128,7 @@ export default function RevenueMachinePage() {
 
           <ScrollReveal delay={280}>
             <div className="flex flex-col sm:flex-row items-start gap-5">
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
+              <a href={BOOK_PATH} className="group relative px-10 py-5 bg-emerald-500 text-background font-black text-sm uppercase tracking-[0.2em] overflow-hidden rounded-[2px] hover:scale-[1.02] transition-transform duration-300 btn-press">
                 <span className="relative z-10 flex items-center gap-3">
                   Book Your Diagnostic · €2,000
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -142,11 +142,6 @@ export default function RevenueMachinePage() {
         </div>
       </section>
 
-      {/* ══════ IMAGE BREAK ══════ */}
-      <div className="relative w-full h-[250px] md:h-[350px] overflow-hidden">
-        <Image src="/images/revenue-dashboard.png" alt="" fill className="object-cover" style={{ filter: 'sepia(0.3) saturate(1.4) hue-rotate(10deg) brightness(0.6)' }} aria-hidden="true" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
-      </div>
 
       {/* ══════ WHY NOW ══════ */}
       <section className="py-20 w-full flex justify-center border-t border-b border-white/[0.02] bg-card/[0.2]">
@@ -434,9 +429,7 @@ export default function RevenueMachinePage() {
           <ScrollReveal delay={320}>
             <div className="mt-16 md:mt-20 text-center">
               <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={BOOK_PATH}
                 className="btn-press group relative inline-flex items-center justify-center px-12 md:px-16 py-6 bg-emerald-500 text-background text-base font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500 shadow-[0_0_60px_rgba(52,211,153,0.18)]"
               >
                 <span className="relative z-10 flex items-center gap-4">
@@ -465,7 +458,7 @@ export default function RevenueMachinePage() {
             <p className="text-lg text-foreground/60 font-light max-w-2xl mx-auto mb-14 leading-relaxed">
               In 5 days. If we can&apos;t find €50K, you pay nothing. Do the math on that.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
+            <a href={BOOK_PATH} className="btn-press group relative inline-flex items-center justify-center px-14 py-6 bg-emerald-500 text-background text-sm font-black uppercase tracking-[0.2em] overflow-hidden rounded-[2px] transition-transform hover:scale-[1.03] duration-500">
               <span className="relative z-10 flex items-center gap-4">
                 Book Your Diagnostic
                 <div className="w-1.5 h-1.5 rounded-[1px] bg-background/50 group-hover:bg-foreground transition-colors" />

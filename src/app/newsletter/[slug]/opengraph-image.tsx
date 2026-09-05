@@ -55,9 +55,9 @@ export default async function Image({
     return ogImage({
       accent: "primary",
       eyebrow: "Newsletter",
-      title: "Muditek B2B Agents Newsletter",
+      title: "Muditek the Muditek newsletter",
       subtitle:
-        "Weekly playbooks for AI operators, B2B operators, and investment professionals. 5,000+ subscribers.",
+        "One working system per issue, written by the person who runs it.",
     });
   }
   const tldr = issue.stats?.tldr ?? issue.stats?.preview ?? "";
@@ -65,6 +65,6 @@ export default async function Image({
     accent: "primary",
     eyebrow: "Newsletter",
     title: trim(issue.subject, 110),
-    subtitle: tldr ? trim(tldr, 180) : "Muditek B2B Agents Newsletter. Read by 5,000+ operators.",
+    subtitle: tldr ? trim(tldr, 180) : "The Muditek newsletter. One working system per issue.",
   });
 }

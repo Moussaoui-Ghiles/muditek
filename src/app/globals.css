@@ -24,7 +24,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-hero-sub: hsl(210 15% 45%);
+  --color-hero-sub: hsl(210 15% 70%);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -83,6 +83,10 @@
   --ring: hsl(210 15% 45%);
   --radius: 0.625rem;
 
+  /* Warm surface: amber-tinted band that alternates with the navy ground */
+  --surface-warm: hsl(32 34% 8%);
+  --surface-warm-line: hsl(32 30% 16%);
+
   /* Sidebar layout dimensions — defined in CSS so first paint is correct
      before SidebarProvider injects its inline style (prevents layout flash). */
   --sidebar-width: 16rem;
@@ -98,35 +102,35 @@
   --sidebar-ring: hsl(210 15% 45%);
 }
 
-/* MudiKit admin/portal — homepage-aligned amber primary (scoped) */
+/* Portal — same navy palette as the marketing site (scoped) */
 .mudikit-dark {
-  --background: #0c0c0e;
-  --foreground: #e8e8ec;
-  --card: #151517;
-  --card-foreground: #e8e8ec;
-  --popover: #151517;
-  --popover-foreground: #e8e8ec;
+  --background: hsl(210 50% 4%);
+  --foreground: hsl(210 15% 92%);
+  --card: hsl(215 35% 7%);
+  --card-foreground: hsl(210 15% 92%);
+  --popover: hsl(215 35% 7%);
+  --popover-foreground: hsl(210 15% 92%);
   --primary: #F59E0B;
-  --primary-foreground: #0c0c0e;
-  --secondary: #232326;
-  --secondary-foreground: #e8e8ec;
-  --muted: #1a1a1d;
-  --muted-foreground: #d4d4d8;
-  --accent: #232326;
-  --accent-foreground: #e8e8ec;
+  --primary-foreground: hsl(210 50% 4%);
+  --secondary: hsl(215 20% 10%);
+  --secondary-foreground: hsl(210 15% 92%);
+  --muted: hsl(215 20% 10%);
+  --muted-foreground: hsl(210 15% 70%);
+  --accent: hsl(215 20% 10%);
+  --accent-foreground: hsl(210 15% 92%);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #232326;
-  --input: #232326;
-  --ring: #636366;
+  --border: hsl(210 18% 15%);
+  --input: hsl(210 18% 15%);
+  --ring: hsl(210 15% 45%);
 
-  --sidebar: #0c0c0e;
-  --sidebar-foreground: #e8e8ec;
-  --sidebar-primary: #e8e8ec;
-  --sidebar-primary-foreground: #0c0c0e;
-  --sidebar-accent: #151517;
-  --sidebar-accent-foreground: #e8e8ec;
-  --sidebar-border: #232326;
-  --sidebar-ring: #636366;
+  --sidebar: hsl(210 50% 4%);
+  --sidebar-foreground: hsl(210 15% 92%);
+  --sidebar-primary: hsl(210 15% 92%);
+  --sidebar-primary-foreground: hsl(210 50% 4%);
+  --sidebar-accent: hsl(215 35% 7%);
+  --sidebar-accent-foreground: hsl(210 15% 92%);
+  --sidebar-border: hsl(210 18% 15%);
+  --sidebar-ring: hsl(210 15% 45%);
 
   font-family: var(--font-geist);
 }
@@ -184,6 +188,219 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+
+  /* ─── Site buttons (derived from the hero) ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.1rem 2.25rem;
+    border-radius: 2px;
+    font-size: 0.875rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s ease-out, border-color 0.3s ease-out, color 0.3s ease-out;
+  }
+  .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+  .btn:active { transform: scale(0.97) translateY(1px); }
+  .btn-solid { background: var(--foreground); color: var(--background); }
+  .btn-solid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary);
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .btn-solid:hover::before { transform: scaleX(1); }
+  .btn-solid:hover { transform: translateY(-2px); }
+  .btn-outline { border: 1px solid rgba(255, 255, 255, 0.16); color: var(--foreground); }
+  .btn-outline:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+  .btn-amber { background: var(--primary); color: var(--background); }
+  .btn-amber:hover { transform: translateY(-2px); }
+  .btn-sm { padding: 0.8rem 1.4rem; font-size: 0.75rem; letter-spacing: 0.14em; }
+  .btn-icon { width: 12px; height: 12px; transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+  .btn:hover .btn-icon { transform: translateX(4px); }
+
+  /* ─── Bands: navy ground, warm amber-tinted surface, full amber drench ─── */
+  .band-warm { background: var(--surface-warm); }
+  .band-warm .panel { background: hsl(32 30% 6%); border-color: var(--surface-warm-line); }
+  .band-warm .faq { border-color: var(--surface-warm-line); }
+  .drench { background: var(--primary); color: hsl(210 50% 4%); }
+  .drench .rule { background: hsl(210 50% 4%); }
+  .drench .field { background: rgba(5, 10, 15, 0.10); border-color: rgba(5, 10, 15, 0.35); color: hsl(210 50% 4%); }
+  .drench .field::placeholder { color: rgba(5, 10, 15, 0.55); }
+  .drench .field:focus { border-color: hsl(210 50% 4%); background: rgba(5, 10, 15, 0.14); }
+  .drench .btn-solid { background: hsl(210 50% 4%); color: var(--primary); }
+  .drench .btn-solid::before { background: hsl(210 50% 10%); }
+  .drench .btn-solid:hover { color: #fff; }
+  .drench ::selection { background: rgba(5, 10, 15, 0.25); }
+
+  /* ─── Amber rule: the one section marker ─── */
+  .rule { display: block; width: 2.5rem; height: 2px; background: var(--primary); margin-bottom: 1.75rem; }
+
+  /* ─── Artifact panel: file trees, threads, rows rendered in mono ─── */
+  .panel {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 2px solid var(--primary);
+    background: var(--card);
+    border-radius: 4px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(228, 233, 238, 0.92);
+    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+  }
+  .panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(228, 233, 238, 0.5);
+  }
+  .panel-body { padding: 1.25rem 1.5rem; overflow-x: auto; }
+  .panel-dim { color: rgba(228, 233, 238, 0.55); }
+  .panel-amber { color: var(--primary); }
+  .panel-row { display: flex; gap: 1rem; padding: 0.55rem 0; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+  .panel-row:first-child { border-top: 0; }
+
+  /* ─── FAQ accordion ─── */
+  .faq { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+    transition: color 0.2s ease-out;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--primary); }
+  .faq summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+  .faq-plus { flex: none; width: 14px; height: 14px; position: relative; }
+  .faq-plus::before, .faq-plus::after {
+    content: ""; position: absolute; background: currentColor; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-out;
+  }
+  .faq-plus::before { width: 14px; height: 1.5px; }
+  .faq-plus::after { width: 1.5px; height: 14px; }
+  .faq[open] .faq-plus::after { transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+  .faq-body { padding: 0 0 1.75rem; max-width: 62ch; color: rgba(228, 233, 238, 0.82); line-height: 1.7; font-size: 1.0625rem; }
+  .faq[open] .faq-body { animation: portalReveal 400ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  /* ─── Input ─── */
+  .field {
+    width: 100%;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    padding: 1rem 1.25rem;
+    color: var(--foreground);
+    font-size: 0.9375rem;
+    transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+  }
+  .field::placeholder { color: rgba(228, 233, 238, 0.45); }
+  .field:focus { outline: none; border-color: rgba(245, 158, 11, 0.6); background: rgba(255, 255, 255, 0.045); }
+  .field:user-invalid { border-color: rgba(245, 158, 11, 0.5); }
+  .field-select {
+    appearance: none;
+    padding-right: 3rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23F59E0B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+  }
+  .field-select option { background: var(--card); color: var(--foreground); }
+  .field-select:invalid, .field-select option[value=""] { color: rgba(228, 233, 238, 0.55); }
+  .field-select:valid { color: var(--foreground); }
+
+  /* ─── Choice: a radio rendered as a full-width row, the mark on the left ─── */
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+  }
+  .choice:hover { border-color: rgba(255, 255, 255, 0.22); }
+  .choice input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .choice-mark {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(228, 233, 238, 0.4);
+    position: relative;
+    transition: border-color 0.2s ease-out;
+  }
+  .choice-mark::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--primary);
+    transform: scale(0);
+    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .choice:has(input:checked) { border-color: rgba(245, 158, 11, 0.7); background: var(--surface-warm); }
+  .choice:has(input:checked) .choice-mark { border-color: var(--primary); }
+  .choice:has(input:checked) .choice-mark::after { transform: scale(1); }
+  .choice:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+  .check { display: flex; align-items: flex-start; gap: 0.85rem; cursor: pointer; }
+  .check input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .check-mark {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 2px;
+    border: 1.5px solid rgba(228, 233, 238, 0.4);
+    position: relative;
+    transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+  }
+  .check-mark::after {
+    content: "";
+    position: absolute;
+    left: 5px; top: 1px;
+    width: 5px; height: 10px;
+    border-right: 2px solid hsl(210 50% 4%);
+    border-bottom: 2px solid hsl(210 50% 4%);
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .check:has(input:checked) .check-mark { background: var(--primary); border-color: var(--primary); }
+  .check:has(input:checked) .check-mark::after { transform: rotate(45deg) scale(1); }
+  .check:has(input:focus-visible) .check-mark { outline: 2px solid var(--primary); outline-offset: 3px; }
 
   /* ─── Button Press Physics ─── */
   .btn-press {
@@ -274,11 +491,6 @@
   .tnum { font-variant-numeric: tabular-nums; }
   .hairline { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
 
-  .mesh-bg {
-    background-image:
-      radial-gradient(ellipse 70% 50% at 0% 0%, rgba(50, 213, 131, 0.04), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(112, 183, 255, 0.03), transparent 60%);
-  }
 
   .pulse-dot::after {
     content: "";
@@ -371,8 +583,9 @@
   .editor-paper .ProseMirror li { margin-bottom: 0.3em; }
   .editor-paper .ProseMirror li > p { margin-bottom: 0.3em; }
   .editor-paper .ProseMirror blockquote {
-    border-left: 3px solid #b8a888;
-    padding: 0.2em 0 0.2em 1.2em;
+    border: 1px solid #b8a888;
+    background: rgba(184, 168, 136, 0.12);
+    padding: 0.6em 1.2em;
     margin: 1.2em 0;
     color: #4a3f33;
     font-style: italic;

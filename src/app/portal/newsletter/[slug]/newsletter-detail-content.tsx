@@ -176,7 +176,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
           margin: 0 0 16px;
         }
         .portal-newsletter-article .newsletter-body :where(h1, h2, h3, h4) {
-          color: #0c0c0e;
+          color: var(--background);
           line-height: 1.25;
           margin: 28px 0 12px;
         }
@@ -187,7 +187,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
         .portal-newsletter-article .newsletter-body h2 { font-size: 22px; }
         .portal-newsletter-article .newsletter-body h3 { font-size: 18px; }
         .portal-newsletter-article .newsletter-body a {
-          color: #0c0c0e;
+          color: var(--background);
           text-decoration: underline;
           text-underline-offset: 3px;
         }
@@ -204,7 +204,7 @@ export default function NewsletterDetailContent({ issue, prev, next }: Props) {
           font-size: 0.92em;
         }
         .portal-newsletter-article .newsletter-body pre {
-          background: #0c0c0e;
+          background: var(--background);
           color: #e8e8ec;
           padding: 16px;
           border-radius: 8px;

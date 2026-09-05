@@ -59,7 +59,7 @@ function fallbackCoverSrc(issue: ArchiveIssue): string {
   const date = formatMonthDay(issue.sent_at).toUpperCase();
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="675" viewBox="0 0 900 675">
-  <rect width="900" height="675" fill="#0a0a0c"/>
+  <rect width="900" height="675" fill="var(--background)"/>
   <rect x="1" y="1" width="898" height="673" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
   <circle cx="760" cy="74" r="260" fill="rgba(245,158,11,0.16)"/>
   <circle cx="88" cy="660" r="220" fill="rgba(255,255,255,0.055)"/>

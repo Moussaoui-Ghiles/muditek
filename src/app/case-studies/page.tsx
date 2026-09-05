@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { CASE_STUDIES } from "@/lib/case-studies";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Case Studies | AI Systems in Production in 2026 | Muditek",
@@ -158,9 +158,7 @@ export default function CaseStudiesIndexPage() {
               Each case starts the same way — a 30-minute diagnostic call. We&apos;ll tell you whether the pattern fits and what your version of the build would look like.
             </p>
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={BOOK_PATH}
               className="btn-press inline-flex items-center gap-3 px-12 py-5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform"
             >
               Book a Call

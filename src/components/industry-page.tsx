@@ -9,7 +9,7 @@ import { FaqBlock, type FaqItem } from "@/components/faq-block";
 import { StatStrip } from "@/components/stat-strip";
 import { MudikitCta } from "@/components/mudikit-cta";
 import { SHOW_MUDIKIT_ON_WEBSITE } from "@/lib/portal-features";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 import {
   INDUSTRIES,
   type IndustryConfig,
@@ -497,7 +497,7 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
                 Newsletter
               </p>
               <h3 className="text-base font-bold text-foreground mb-1">
-                B2B Agents weekly
+                the newsletter weekly
               </h3>
               <p className="text-sm text-foreground/55 font-light">
                 Real implementations, every week.
@@ -522,9 +522,7 @@ export function IndustryPage({ data }: { data: IndustryPageData }) {
               30-minute call. No pitch. We&apos;ll tell you whether the diagnostic would find waste worth fixing, and what the next step looks like.
             </p>
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={BOOK_PATH}
               className={`btn-press group relative inline-flex items-center justify-center px-12 py-5 ${heroBtn} text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform`}
             >
               <span className="flex items-center gap-3">

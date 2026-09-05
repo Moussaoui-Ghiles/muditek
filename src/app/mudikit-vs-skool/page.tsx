@@ -49,7 +49,7 @@ const FAQ = [
   },
   {
     q: "Is MudiKit a community at all?",
-    a: "Not a community platform. The public layer is the B2B Agents newsletter (5,000+ operators) and LinkedIn (35K). Subscribers get the library and update emails. There are no live calls, no Discord, no homework. Async by design.",
+    a: "Not a community platform. The public layer is the Muditek newsletter (5,000+ operators) and LinkedIn (35K). Subscribers get the library and update emails. There are no live calls, no Discord, no homework. Async by design.",
   },
   {
     q: "What if I'm not technical enough for MudiKit?",

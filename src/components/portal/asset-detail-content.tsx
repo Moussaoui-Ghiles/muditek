@@ -430,7 +430,7 @@ export default function AssetDetailContent({
       <main className="relative">
         {/* Minimal reader header — type, format, share, download. Title/description
             live in the embedded content below, so they are not repeated here. */}
-        <section className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#0a0a0c]/90 backdrop-blur-xl">
+        <section className="sticky top-0 z-30 border-b border-white/[0.07] bg-background/90 backdrop-blur-xl">
           <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6 lg:px-10">
             <div className="flex min-w-0 items-center gap-3">
               <Link

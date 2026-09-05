@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 import { getPortalSkillBundle } from "@/lib/portal-skills";
 
 const SLUG = "google-maps-owner-email-finder";
@@ -103,7 +103,7 @@ export default function GoogleMapsOwnerFinderPage() {
 
         <section className="border-t border-white/[0.06] py-16 text-center">
           <h2 className="text-3xl font-black tracking-[-0.03em]">Want Muditek to run the appointment-setting work?</h2>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[2px] bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background">Book a call</a>
+          <a href={BOOK_PATH} className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[2px] bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background">Book a call</a>
         </section>
       </main>
       <Footer />

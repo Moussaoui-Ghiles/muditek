@@ -343,7 +343,7 @@ export default function ArchiveContent({
         )}
 
         {/* Sticky search + filters */}
-        <section className="sticky top-14 z-20 -mx-4 mb-10 border-y border-white/[0.06] bg-[#0a0a0c]/85 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+        <section className="sticky top-14 z-20 -mx-4 mb-10 border-y border-white/[0.06] bg-background/85 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
           <div className="flex min-w-0 items-center gap-2 rounded-[2px] border border-white/[0.1] bg-white/[0.025] px-4 transition-colors focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/30">
             <Search aria-hidden className="size-5 shrink-0 text-foreground" />
             <Input

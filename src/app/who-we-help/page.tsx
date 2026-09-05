@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterInline } from "@/components/newsletter-inline";
 import { INDUSTRIES, INDUSTRY_SLUGS } from "@/lib/industries";
-import { BOOKING_URL } from "@/lib/booking";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Who We Help | AI Systems by Industry in 2026 | Muditek",
@@ -148,9 +148,7 @@ export default function WhoWeHelpIndexPage() {
               Most engagements start with a 30-minute diagnostic call. We&apos;ll tell you whether your industry is something we can help with — and if it is, what the diagnostic would find.
             </p>
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={BOOK_PATH}
               className="btn-press inline-flex items-center gap-3 px-12 py-5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform"
             >
               Book a Call

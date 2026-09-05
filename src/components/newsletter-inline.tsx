@@ -1,53 +1,43 @@
-"use client";
-
 import { EmailCapture } from "./email-capture";
 import { ScrollReveal } from "./scroll-reveal";
 
 interface NewsletterInlineProps {
-  tags: string[];
+  /** Where the signup came from. Stored on the subscriber row. */
+  source?: string;
+  /** Legacy prop. First "source:*" tag is used when `source` is absent. */
+  tags?: string[];
   accentColor?: "primary" | "emerald" | "sky";
+  headline?: string;
+  body?: string;
+  className?: string;
 }
 
+/**
+ * The newsletter block that closes every marketing page.
+ * Amber ground, navy type. One headline, one line, one field.
+ */
 export function NewsletterInline({
+  source,
   tags,
-  accentColor = "primary",
+  headline = "One working system per issue.",
+  body = "How the outbound engine runs, how the agents are written, what broke and what got fixed. Written by the person running it. Reply to any issue and it gets read.",
+  className = "",
 }: NewsletterInlineProps) {
-  const allTags = ["source:newsletter-inline", ...tags];
+  const derived = source ?? tags?.find((t) => t.startsWith("source:"))?.slice(7) ?? "newsletter-inline";
 
   return (
-    <section className="py-24 w-full relative border-t border-b border-white/[0.04] bg-card/[0.15] flex justify-center mesh-subtle">
-      <div className="max-w-[700px] w-full px-6 text-center">
-        <ScrollReveal>
-          <div className="doppelrand mx-auto mb-10 inline-block">
-            <div className="doppelrand-inner px-6 py-2.5 flex items-center gap-3 bg-background">
-              <div className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-pulse" />
-              <span className="text-sm font-black uppercase tracking-[0.3em] text-foreground/70 pt-[1px]">
-                B2B Agents Newsletter
-              </span>
-            </div>
-          </div>
-
-          <h3 className="text-2xl md:text-3xl font-black tracking-[-0.02em] leading-[1.1] mb-4 text-balance">
-            One deployable system.{" "}
-            <span className={accentColor === "primary" ? "text-primary italic font-medium" : accentColor === "emerald" ? "text-emerald-400 italic font-medium" : "text-sky-400 italic font-medium"}>
-              Every week.
-            </span>
-          </h3>
-
-          <p className="text-sm text-foreground/60 font-light leading-relaxed mb-8 max-w-lg mx-auto">
-            Last edition: an outbound system that books 153 calls for
-            $1,200/month. The one before: an AI agent that writes proposals
-            in 12 minutes. You get the full build, every week.
-          </p>
-
-          <EmailCapture
-            tags={allTags}
-            accentColor={accentColor}
-            buttonText="Subscribe"
-            successMessage="You're in. Check your inbox."
-            compact
-            className="max-w-md mx-auto"
-          />
+    <section className={`w-full drench ${className}`} aria-labelledby="newsletter-heading">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-10 lg:grid-cols-12 lg:gap-16 items-start">
+        <ScrollReveal className="lg:col-span-7">
+          <p className="text-base font-bold mb-6 opacity-80">The newsletter</p>
+          <h2 id="newsletter-heading" className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-balance mb-5">
+            {headline}
+          </h2>
+          <p className="text-lg md:text-xl leading-[1.6] max-w-[50ch] opacity-90">{body}</p>
+        </ScrollReveal>
+        <ScrollReveal delay={120} className="lg:col-span-5 lg:pt-16">
+          <EmailCapture source={derived} buttonText="Subscribe" />
+          <p className="mt-4 text-sm opacity-75">Unsubscribe in one click, in every email.</p>
         </ScrollReveal>
       </div>
     </section>

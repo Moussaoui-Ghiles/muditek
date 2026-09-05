@@ -40,9 +40,9 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://muditek.com"),
-  title: "Muditek | AI Systems That Eliminate Operational Waste",
+  title: "Muditek | AI Transformation Partner and Outbound Systems for B2B",
   description:
-    "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-premises AI, revenue recovery, and operational infrastructure.",
+    "Muditek audits how your work actually happens, builds the AI systems that run it, and trains your team to keep them running. Outbound engines built and operated for you.",
   alternates: { canonical: "https://muditek.com" },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -51,9 +51,9 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
   },
   openGraph: {
-    title: "Muditek | AI Systems That Eliminate Operational Waste",
+    title: "Muditek | AI Transformation Partner and Outbound Systems for B2B",
     description:
-      "We diagnose where companies lose money to manual operations and build the AI systems that fix it. On-prem AI, revenue recovery, ops infrastructure.",
+      "We audit how your work actually happens, build the AI systems that run it, and train your team to keep them running. Outbound built and operated for you.",
     url: "https://muditek.com",
     type: "website",
   },
@@ -74,28 +74,28 @@ export default function RootLayout({
         baseTheme: dark,
         logoImageUrl: "/icon.svg",
         variables: {
-          colorPrimary: "#e8e8ec",
-          colorBackground: "#0a0a0c",
-          colorInputBackground: "#151517",
+          colorPrimary: "#F59E0B",
+          colorBackground: "#0C1118",
+          colorInputBackground: "#050A0F",
           colorInputText: "#e8e8ec",
           colorText: "#e8e8ec",
-          colorTextSecondary: "#a0a0a6",
+          colorTextSecondary: "#a9b3bd",
           colorDanger: "#f87171",
           borderRadius: "6px",
-          fontFamily: "var(--font-geist), system-ui, sans-serif",
+          fontFamily: "var(--font-inter), system-ui, sans-serif",
         },
       }}
       localization={{
         signIn: {
           start: {
             title: "Sign in to Muditek",
-            subtitle: "Welcome back. Access your portal, playbooks, and archive.",
+            subtitle: "Your library: skills, resources, tools, and the newsletter archive.",
           },
         },
         signUp: {
           start: {
             title: "Create your Muditek account",
-            subtitle: "One email. Portal + newsletter archive. Unsubscribe anytime.",
+            subtitle: "One email. The library, the tools, and the newsletter archive in one place.",
           },
         },
       }}
@@ -120,7 +120,7 @@ export default function RootLayout({
                   height: 512,
                 },
                 description:
-                  "AI systems that eliminate operational waste. We diagnose where companies lose money to manual operations and build AI systems that fix it.",
+                  "AI transformation partner and outbound systems for B2B companies. Workflow audit, AI-executable business context, systems built and operated, teams trained.",
                 founder: {
                   "@type": "Person",
                   "@id": "https://muditek.com/#ghiles",
@@ -132,7 +132,7 @@ export default function RootLayout({
                   contactType: "sales",
                   email: "biz@ghiless.com",
                   url: "https://muditek.com/about",
-                  availableLanguage: ["en", "fr"],
+                  availableLanguage: ["en"],
                 },
                 sameAs: [
                   "https://www.linkedin.com/in/ghiles-moussaoui-b36218250/",
@@ -145,7 +145,7 @@ export default function RootLayout({
                 url: "https://muditek.com",
                 name: "Muditek",
                 description:
-                  "AI systems that eliminate operational waste. On-premises AI for telecom, revenue recovery for B2B SaaS, operational infrastructure for investment firms.",
+                  "AI transformation partner and outbound systems for B2B companies. Built and operated by Ghiles Moussaoui.",
                 publisher: { "@id": "https://muditek.com/#organization" },
                 inLanguage: "en",
               },

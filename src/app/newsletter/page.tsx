@@ -6,39 +6,37 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { EmailCapture } from "@/components/email-capture";
 import { FaqBlock } from "@/components/faq-block";
 import { MudikitCta } from "@/components/mudikit-cta";
-import { DataCitation } from "@/components/data-citation";
-import { DATA_POINTS } from "@/lib/data-points";
+import { IssueCover } from "@/components/issue-cover";
 import { getDb } from "@/lib/db";
-import { extractNewsletterThumbnailFromHtml } from "@/lib/newsletter-portal";
 
 const NEWSLETTER_FAQ = [
   {
-    q: "What does the Muditek newsletter cover?",
-    a: "AI automation systems, B2B revenue operations, and real implementation breakdowns. Every issue ships a system you can deploy: prompts, n8n workflows, scrapers, lead generation pipelines, agentic SDR setups. No theory, no hype. Only systems that have run in production.",
+    q: "What does the newsletter cover?",
+    a: "One working system per issue. The outbound engine, the lead research, the agents that run the marketing and the operations. What was built, how it runs, what broke and what got fixed. Written by the person running it.",
   },
   {
     q: "How often does it send?",
-    a: "Weekly. One email, one system, one breakdown. Sometimes a deep-dive, sometimes a quick playbook. Always under 10 minutes to read.",
+    a: "When a system is worth writing up. One email, one system, one breakdown. Sometimes a deep dive, sometimes a short playbook.",
   },
   {
     q: "Will issues move behind a paywall later?",
-    a: "No. The newsletter is the front door. Audits and custom builds live separately. Selected article-style issues stay readable in the archive.",
+    a: "No. The newsletter is the front door. Client work lives separately. Selected article-style issues stay readable here.",
   },
   {
     q: "Who reads it?",
-    a: "5,000+ B2B operators, AI builders, and founders across telecom, SaaS, agencies, and finance. Most subscribers run their own ops or sales teams and ship what they read here.",
+    a: "Founders, agency owners, and B2B operators who already use AI and want it to run real work. Most subscribers run their own operations or sales teams.",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "B2B Agents Newsletter | AI Automation Systems & Revenue Operations | Muditek",
+  title: "Newsletter | One Working System per Issue | Muditek",
   description:
-    "Join 5,000+ B2B operators. Weekly AI automation systems, n8n workflows, and revenue operations breakdowns you can deploy in production. Unsubscribe anytime.",
+    "One working system per issue: outbound engines, lead research, AI agents running marketing and operations. Written by the person who runs them. Unsubscribe anytime.",
   alternates: { canonical: "https://muditek.com/newsletter" },
   openGraph: {
-    title: "B2B Agents Newsletter | Muditek",
+    title: "Newsletter | Muditek",
     description:
-      "Join 5,000+ B2B operators. Weekly AI automation systems, workflows, and revenue ops breakdowns you can deploy.",
+      "One working system per issue: outbound engines, lead research, AI agents running marketing and operations.",
     url: "https://muditek.com/newsletter",
     type: "website",
   },
@@ -83,59 +81,22 @@ async function getIssues(): Promise<Issue[]> {
   }
 }
 
+/**
+ * Only a cover that was set on purpose. Images pulled out of the issue HTML
+ * were sponsor banners and old logos, so the typographic tile replaces them.
+ */
 function issueImage(issue: Issue): string | null {
   return (
     issue.stats?.thumbnail_url?.trim() ||
     issue.stats?.hero_image?.trim() ||
     issue.stats?.image?.trim() ||
-    extractNewsletterThumbnailFromHtml(issue.html) ||
-    `/api/portal/newsletter-covers/${encodeURIComponent(issue.slug)}`
-  );
-}
-
-function NewsletterCardCover({ issue, index }: { issue: Issue; index: number }) {
-  const image = issueImage(issue);
-  if (image) {
-    return (
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08] bg-card">
-        <img
-          src={image}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-          loading="lazy"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/75 via-background/10 to-transparent" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08] bg-[#101014]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(245,158,11,0.24),transparent_30%),radial-gradient(circle_at_80%_30%,rgba(16,185,129,0.16),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.07),rgba(255,255,255,0.01))]" />
-      <div className="absolute inset-0 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.035)_0_1px,transparent_1px_13px)]" />
-      <div className="absolute inset-0 flex flex-col justify-between p-5">
-        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/45">
-          <span>Article</span>
-          <span>{String(index + 1).padStart(2, "0")}</span>
-        </div>
-        <div>
-          <p className="line-clamp-2 text-[18px] font-black leading-[1.05] tracking-[-0.02em] text-foreground">
-            {issue.subject}
-          </p>
-          <div className="mt-4 h-px w-12 bg-primary/70" />
-        </div>
-      </div>
-    </div>
+    null
   );
 }
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
 export default async function NewsletterPage() {
@@ -146,142 +107,88 @@ export default async function NewsletterPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="pt-32 md:pt-44 pb-20 md:pb-28 w-full flex justify-center relative overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-[900px] w-full px-6 md:px-12 relative z-10 text-center">
-          <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-8 flex items-center justify-center gap-3">
-              <span className="w-8 h-[1px] bg-primary/50" />
-              B2B Agents Newsletter
-              <span className="w-8 h-[1px] bg-primary/50" />
-            </h2>
-          </ScrollReveal>
-
-          <ScrollReveal delay={80}>
-            <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.95] text-foreground mb-8 text-balance">
-              Every edition ships a <span className="text-primary italic font-medium">deployable system.</span>
-            </h1>
-          </ScrollReveal>
-
-          <ScrollReveal delay={160}>
-            <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed mb-4">
-              Outbound machines, AI agents, revenue ops. Full build, architecture, and code. No fluff. No theory.
-            </p>
-            <p className="text-sm text-foreground/50 max-w-xl mx-auto leading-relaxed mb-12 italic">
-              Read by{" "}
-              <DataCitation
-                claim="5,000+ B2B operators"
-                source={DATA_POINTS.newsletterSubscribers.source}
-                n={DATA_POINTS.newsletterSubscribers.n}
-              />
-              {" "}across telecom, SaaS, agencies, and finance.{" "}
-              <DataCitation
-                claim="29 issues shipped"
-                source={DATA_POINTS.issuesShipped.source}
-                n={DATA_POINTS.issuesShipped.n}
-              />
-              {" "}in 2026.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal delay={240}>
-            <div className="max-w-md mx-auto">
-              <EmailCapture
-                source="newsletter-hero"
-                buttonText="Subscribe"
-                successMessage="You're in. Check your inbox."
-                accentColor="primary"
-              />
-            </div>
+      <section className="w-full">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-36 md:pt-48 pb-20 md:pb-28 grid gap-12 lg:grid-cols-12 lg:gap-16 items-end">
+          <div className="lg:col-span-7">
+            <ScrollReveal>
+              <p className="text-base font-bold text-primary mb-8">The newsletter</p>
+              <h1 className="text-5xl sm:text-6xl lg:text-[84px] font-black tracking-[-0.04em] leading-[0.92] text-foreground text-balance mb-8 max-w-[12ch]">
+                One working system <span className="text-primary">per issue.</span>
+              </h1>
+            </ScrollReveal>
+            <ScrollReveal delay={100}>
+              <p className="text-xl md:text-2xl text-foreground/85 leading-[1.5] max-w-[52ch]">
+                The outbound engine, the owner lists no database has, the agents running the marketing. The full build, written by the person who runs it. Reply to any issue and it gets read.
+              </p>
+            </ScrollReveal>
+          </div>
+          <ScrollReveal delay={200} className="lg:col-span-5">
+            <EmailCapture source="newsletter-hero" buttonText="Subscribe" />
+            <p className="mt-4 text-sm text-foreground/60">Unsubscribe in one click, in every email.</p>
           </ScrollReveal>
         </div>
       </section>
 
       {/* ARCHIVE */}
-      <section className="py-32 md:py-40 w-full flex justify-center relative">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
-        <div className="max-w-[1100px] w-full px-6 md:px-12 relative z-10">
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28">
           <ScrollReveal>
-            <h2 className="text-sm font-black tracking-[0.3em] uppercase text-primary mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-primary/50" />
-              Selected Articles
+            <span className="rule" aria-hidden />
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance max-w-[20ch] mb-14">
+              Selected issues, readable here.
             </h2>
-            <h3 className="text-4xl md:text-5xl font-black tracking-[-0.03em] leading-[0.9] text-foreground mb-16">
-              Article-style issues live <span className="text-primary italic font-medium">here.</span>
-            </h3>
           </ScrollReveal>
 
           {issues.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {issues.map((issue, i) => (
-                <ScrollReveal key={issue.slug} delay={i * 40}>
-                  <Link
-                    href={`/newsletter/${issue.slug}`}
-                    className="group flex flex-col h-full border border-white/[0.08] bg-card/[0.2] hover:bg-card/[0.5] backdrop-blur-md rounded-[4px] transition-all duration-700 card-lift overflow-hidden relative"
-                  >
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/70 transition-all duration-[1.2s]" />
-                    <NewsletterCardCover issue={issue} index={i} />
-                    <div className="p-6 flex flex-col flex-1">
-                      <div className="text-sm font-mono text-foreground/50 tracking-wider mb-3">
-                        {formatDate(issue.sent_at)}
-                      </div>
-                      <h4 className="text-base font-bold text-foreground/90 group-hover:text-foreground transition-colors leading-snug mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+              {issues.map((issue, i) => {
+                const image = issueImage(issue);
+                return (
+                  <ScrollReveal key={issue.slug} delay={(i % 3) * 60}>
+                    <Link href={`/newsletter/${issue.slug}`} className="group flex flex-col h-full">
+                      <IssueCover src={image} title={issue.subject} />
+                      <p className="mt-5 text-sm text-foreground/60">{formatDate(issue.sent_at)}</p>
+                      <h3 className="mt-2 text-xl font-black tracking-[-0.02em] leading-tight text-foreground group-hover:text-primary transition-colors">
                         {issue.subject}
-                      </h4>
+                      </h3>
                       {issue.stats?.preview && (
-                        <p className="text-sm text-foreground/60 leading-relaxed line-clamp-2 mb-4">
-                          {issue.stats.preview}
-                        </p>
+                        <p className="mt-3 text-[17px] text-foreground/80 leading-[1.65] line-clamp-2">{issue.stats.preview}</p>
                       )}
-                      <div className="mt-auto pt-4 text-sm font-black uppercase tracking-[0.15em] text-primary group-hover:text-primary transition-colors flex items-center gap-2">
-                        Read
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="group-hover:translate-x-1 transition-transform"><path d="M2.5 6H9.5M7 3.5L9.5 6L7 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      </div>
-                    </div>
-                  </Link>
-                </ScrollReveal>
-              ))}
+                    </Link>
+                  </ScrollReveal>
+                );
+              })}
             </div>
           ) : (
             <ScrollReveal>
-              <div className="text-center py-20 border border-white/[0.08] bg-card/[0.2] rounded-[4px]">
-                <h4 className="text-lg font-black text-foreground/80 mb-4">No public articles selected yet</h4>
-                <p className="text-base text-foreground/60 mb-8 max-w-md mx-auto">
-                  Subscribe above to get new editions. Selected article-style issues will appear here after publishing.
-                </p>
+              <div className="border-t border-b border-white/[0.08] py-16">
+                <h3 className="text-2xl font-black text-foreground mb-3">No public issues selected yet.</h3>
+                <p className="text-base text-foreground/70 max-w-[50ch]">Subscribe above to get new editions. Selected article-style issues will appear here after publishing.</p>
               </div>
             </ScrollReveal>
           )}
         </div>
       </section>
 
-      {/* FAQ */}
-      <FaqBlock items={NEWSLETTER_FAQ} accentColor="primary" />
+      <FaqBlock items={NEWSLETTER_FAQ} />
 
-      {/* MUDIKIT CTA */}
       <MudikitCta
-        headline="Want the full library, not just the weekly issue? MudiKit · $47/mo"
-        body="The newsletter is the public layer. MudiKit is the paid portal layer: Claude Code skills, resource drops, and tools in one account."
+        headline="Want the files behind each issue?"
+        body="Every system in the newsletter has a skill or a resource behind it. The library holds them. Free with a portal account."
       />
 
       {/* BOTTOM CTA */}
-      <section className="py-32 w-full flex justify-center relative border-t border-white/[0.04] bg-card/[0.15] mesh-subtle">
-        <div className="max-w-[800px] w-full px-6 text-center">
-          <ScrollReveal>
-            <h2 className="text-3xl md:text-5xl font-black tracking-[-0.03em] leading-[1.05] mb-8 text-balance">
-              Every system I build gets shared here <span className="text-primary italic font-medium">first.</span>
+      <section className="w-full border-t border-white/[0.08]">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-20 md:py-28 grid gap-10 lg:grid-cols-12 lg:gap-16 items-start">
+          <ScrollReveal className="lg:col-span-7">
+            <span className="rule" aria-hidden />
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-foreground text-balance mb-5">
+              Every system I build gets shared here first.
             </h2>
-            <p className="text-lg text-foreground/70 max-w-xl mx-auto leading-relaxed mb-12">
-              Every issue points back to the portal so readers can open the resource, save it, and keep the system tied to one account.
-            </p>
-            <div className="max-w-md mx-auto">
-              <EmailCapture
-                source="newsletter-footer"
-                buttonText="Subscribe"
-                successMessage="You're in. Check your inbox."
-                accentColor="primary"
-              />
-            </div>
+            <p className="text-lg md:text-xl text-foreground/80 leading-[1.6] max-w-[52ch]">One email, one system, one breakdown. Unsubscribe in one click, in every email.</p>
+          </ScrollReveal>
+          <ScrollReveal delay={120} className="lg:col-span-5 lg:pt-14">
+            <EmailCapture source="newsletter-footer" buttonText="Subscribe" />
           </ScrollReveal>
         </div>
       </section>

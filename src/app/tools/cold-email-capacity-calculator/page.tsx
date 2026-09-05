@@ -4,7 +4,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { ColdEmailCapacityCalculator } from "@/components/cold-email-capacity-calculator";
-import { BOOKING_URL } from "@/lib/booking";
+import { NewsletterInline } from "@/components/newsletter-inline";
+import { BOOK_PATH } from "@/lib/booking";
 
 export const metadata: Metadata = {
   title: "Cold Email Capacity Calculator | Muditek",
@@ -30,24 +31,31 @@ export default function ColdEmailCapacityCalculatorPage() {
         }}
       />
       <main id="main-content">
-        <header className="border-b border-white/[0.06] pb-14 pt-36 md:pb-20 md:pt-48">
-          <div className="mx-auto w-full max-w-[1080px] px-6 md:px-12">
-            <Link href="/library" className="text-sm font-bold uppercase tracking-[0.18em] text-foreground/55 hover:text-primary">← Public library</Link>
-            <p className="mt-10 text-sm font-black uppercase tracking-[0.2em] text-primary">Runs in your browser</p>
-            <h1 className="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl">Cold Email Capacity Calculator</h1>
-            <p className="mt-7 max-w-[68ch] text-lg leading-8 text-foreground/70">
-              Calculate mailboxes, domains, monthly contact supply, funnel projections, and only the costs you enter. The output is a plan, not a performance claim.
+        <header className="w-full">
+          <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12 pt-36 md:pt-48 pb-16 md:pb-20">
+            <Link href="/tools" className="inline-flex items-center gap-2 text-sm font-bold text-foreground/60 hover:text-foreground transition-colors mb-8">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden><path d="M9.5 6H2.5M5 3.5L2.5 6L5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              All tools
+            </Link>
+            <p className="text-base font-bold text-primary mb-6">Tool · Runs in your browser</p>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.92] tracking-[-0.04em] text-balance max-w-[14ch]">Cold Email Capacity Calculator</h1>
+            <p className="mt-7 max-w-[62ch] text-lg md:text-xl leading-relaxed text-foreground/75">
+              Mailboxes, domains, monthly contact supply, funnel projections, and only the costs you enter. The output is a plan, not a performance claim.
             </p>
           </div>
         </header>
-        <section className="py-12 md:py-16">
+        <section className="border-t border-white/[0.08] py-12 md:py-16">
           <div className="mx-auto w-full max-w-[1120px] px-6 md:px-12">
             <ColdEmailCapacityCalculator />
           </div>
         </section>
-        <section className="border-t border-white/[0.06] py-16 text-center">
-          <h2 className="text-3xl font-black tracking-[-0.03em]">Want Muditek to run the appointment-setting work?</h2>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[2px] bg-primary px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-background">Book a call</a>
+        <NewsletterInline source="tool:cold-email-capacity-calculator" headline="Get the next system before it is published." />
+        <section className="w-full">
+          <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12 py-20 md:py-28 text-center">
+            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.035em] leading-[0.95] text-balance max-w-[18ch] mx-auto">Want Muditek to build and run the engine?</h2>
+            <p className="mx-auto mt-5 max-w-[46ch] text-base md:text-lg leading-relaxed text-foreground/70">Built in your name, operated by us, paid per qualified meeting held.</p>
+            <a href={BOOK_PATH} className="btn btn-solid mt-10">Book a call</a>
+          </div>
         </section>
       </main>
       <Footer />

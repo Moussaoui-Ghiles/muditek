@@ -5,24 +5,13 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/logo/logo";
 
-const TOPICS = [
-  { value: "ai-agents", label: "AI agents for enterprise" },
-  { value: "gtm-systems", label: "Go-to-market systems" },
-  { value: "solo-operator", label: "Solo operator playbooks" },
-];
-
 function SubscribeForm() {
   const searchParams = useSearchParams();
   const sourceParam = (searchParams.get("src") || searchParams.get("source") || "subscribe-page").slice(0, 50);
   const [email, setEmail] = useState("");
-  const [topics, setTopics] = useState<string[]>(TOPICS.map((t) => t.value));
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  function toggleTopic(v: string) {
-    setTopics((prev) => (prev.includes(v) ? prev.filter((t) => t !== v) : [...prev, v]));
-  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,106 +21,67 @@ function SubscribeForm() {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, topics, source: sourceParam }),
+        body: JSON.stringify({ email, source: sourceParam }),
       });
       const data = await res.json();
       if (res.ok) setDone(true);
-      else setError(data.error ?? "Something went wrong");
+      else setError(data.error ?? "Subscription failed. Try again.");
     } catch {
-      setError("Network error");
+      setError("Network error. Try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (done) {
-    return (
-      <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex flex-col items-center justify-center px-6">
-        <div className="absolute top-8 left-8">
-          <Link href="/" aria-label="Muditek home">
-            <Logo variant="mark+text" size={24} />
-          </Link>
-        </div>
-        <div className="max-w-md text-center">
-          <h1 className="text-3xl font-bold mb-4">You&apos;re in.</h1>
-          <p className="text-[#a0a0a6]">
-            Next issue drops this week. Check your inbox for a confirmation.
-          </p>
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-[100dvh] bg-[#0a0a0c] text-[#e8e8ec] flex flex-col items-center justify-center px-6 py-16">
-      <div className="absolute top-8 left-8">
+    <main className="min-h-[100dvh] bg-background text-foreground flex flex-col">
+      <div className="px-6 md:px-12 py-6">
         <Link href="/" aria-label="Muditek home">
           <Logo variant="mark+text" size={24} />
         </Link>
       </div>
-      <div className="w-full max-w-md">
-        <div className="mb-10 text-center">
-          <p className="text-xs font-mono tracking-wider text-[#a0a0a6] mb-3 uppercase">
-            Muditek Newsletter
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight mb-3">
-            The playbook behind $3M+ in B2B.
-          </h1>
-          <p className="text-[#a0a0a6]">
-            What I&apos;m shipping, what&apos;s working, what&apos;s breaking. Every week.
-          </p>
+
+      <div className="flex-1 flex items-center">
+        <div className="max-w-[1200px] w-full mx-auto px-6 md:px-12 py-16 grid gap-12 lg:grid-cols-12 lg:gap-16 items-center">
+          <div className="lg:col-span-7">
+            <p className="text-sm font-bold text-foreground/60 mb-8">The newsletter</p>
+            <h1 className="text-5xl sm:text-6xl lg:text-[80px] font-black tracking-[-0.04em] leading-[0.92] text-balance max-w-[12ch] mb-8">
+              One working system <span className="text-primary">per issue.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-foreground/75 leading-relaxed max-w-[50ch]">
+              What I am shipping, what is working, what is breaking. The outbound engine, the lead research, the agents running the operations. Written by the person running them.
+            </p>
+          </div>
+
+          <div className="lg:col-span-5">
+            {done ? (
+              <div className="border-t border-white/[0.08] pt-8" role="status">
+                <h2 className="text-3xl font-black tracking-[-0.02em] mb-3">You&apos;re in.</h2>
+                <p className="text-base text-foreground/70 leading-relaxed mb-8">Check your inbox for a confirmation. The next issue lands there.</p>
+                <Link href="/library" className="btn btn-outline">Open the library</Link>
+              </div>
+            ) : (
+              <form onSubmit={submit} className="border-t border-white/[0.08] pt-8">
+                <label htmlFor="email" className="block text-sm font-bold text-foreground mb-3">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="field"
+                />
+                {error && <p className="text-sm text-primary mt-3" role="alert">{error}</p>}
+                <button type="submit" disabled={submitting || !email} className="btn btn-solid w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {submitting ? "Sending" : "Subscribe"}
+                </button>
+                <p className="text-sm text-foreground/50 mt-4">Unsubscribe in one click, in every email.</p>
+              </form>
+            )}
+          </div>
         </div>
-
-        <form onSubmit={submit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              className="w-full px-4 py-3 bg-[#151517] border border-white/[0.06] rounded-lg text-[#e8e8ec] placeholder:text-[#636366] focus:outline-none focus:border-[#e8e8ec] transition-colors"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Topics</label>
-            <div className="space-y-2">
-              {TOPICS.map((t) => (
-                <label
-                  key={t.value}
-                  className="flex items-center gap-3 p-3 bg-[#151517] border border-white/[0.06] rounded-lg cursor-pointer hover:border-[#3a3a3e] transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={topics.includes(t.value)}
-                    onChange={() => toggleTopic(t.value)}
-                    className="size-4 accent-[#e8e8ec]"
-                  />
-                  <span className="text-sm">{t.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {error && <p className="text-sm text-red-400">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={submitting || !email || topics.length === 0}
-            className="w-full px-6 py-3.5 bg-[#e8e8ec] text-[#0a0a0c] font-bold rounded-lg hover:bg-white active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {submitting ? "Subscribing…" : "Get the newsletter"}
-          </button>
-
-          <p className="text-xs text-[#636366] text-center">
-            Unsubscribe anytime. One-click in every email.
-          </p>
-        </form>
       </div>
     </main>
   );

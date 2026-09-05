@@ -8,27 +8,22 @@ export default function NotFound() {
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-6 py-32">
         <div className="max-w-xl w-full text-center">
-          <p className="text-sm font-mono tracking-[0.3em] uppercase text-foreground/50 mb-6">
-            404
-          </p>
+          <p className="font-mono text-sm text-primary mb-6">404</p>
           <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.95] mb-6 text-balance">
-            This page doesn&apos;t <span className="text-primary italic font-medium">exist.</span>
+            This page does not <span className="text-primary">exist.</span>
           </h1>
-          <p className="text-base text-foreground/60 mb-10 max-w-md mx-auto">
-            The link may be stale or the page was moved. Jump back to the homepage or browse the newsletter archive.
+          <p className="text-lg text-foreground/80 mb-10 max-w-md mx-auto leading-relaxed">
+            The link may be stale or the page was moved. Start from the homepage or the library.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-foreground text-background text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:scale-[1.02] transition-transform"
+              className="btn btn-solid"
             >
               Home
             </Link>
-            <Link
-              href="/newsletter"
-              className="inline-flex items-center gap-2 px-8 py-3.5 border border-white/[0.12] text-foreground/80 text-sm font-black uppercase tracking-[0.2em] rounded-[2px] hover:bg-card/[0.5] transition-colors"
-            >
-              Newsletter
+            <Link href="/library" className="btn btn-outline">
+              Library
             </Link>
           </div>
         </div>

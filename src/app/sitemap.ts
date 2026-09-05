@@ -23,6 +23,9 @@ type SitemapEntry = {
 
 const MARKETING: SitemapEntry[] = [
   { path: "", priority: 1, changeFrequency: "weekly" },
+  { path: "/ai-transformation", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/outbound", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/ma-origination", priority: 0.9, changeFrequency: "monthly" },
   { path: "/mudiagent", priority: 0.9, changeFrequency: "monthly" },
   { path: "/revenue-leak-audit", priority: 0.9, changeFrequency: "monthly" },
   { path: "/pe-ops", priority: 0.9, changeFrequency: "monthly" },
@@ -33,6 +36,7 @@ const MARKETING: SitemapEntry[] = [
   { path: "/who-we-help", priority: 0.7, changeFrequency: "monthly" },
   { path: "/case-studies", priority: 0.7, changeFrequency: "monthly" },
   { path: "/subscribe", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/book", priority: 0.8, changeFrequency: "monthly" },
   ...PUBLIC_LIBRARY_PATHS.map((path) => ({
     path,
     priority: ["/library", "/playbooks", "/skills", "/tools"].includes(path) ? 0.8 : 0.7,
